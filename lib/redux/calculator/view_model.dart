@@ -1,5 +1,5 @@
-import 'package:bible_game/model/calculator_state.dart';
-import 'package:bible_game/redux/actions.dart';
+import 'package:bible_game/redux/app_state.dart';
+import 'package:bible_game/redux/calculator/actions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:redux/redux.dart';
 
@@ -22,11 +22,11 @@ class CalculatorViewModel {
 
   factory CalculatorViewModel.create(Store<AppState> store) {
     return CalculatorViewModel(
-      output: store.state.output,
-      operator: store.state.operator,
-      mode: store.state.mode,
-      a: store.state.a,
-      b: store.state.b,
+      output: store.state.calculator.output,
+      operator: store.state.calculator.operator,
+      mode: store.state.calculator.mode,
+      a: store.state.calculator.a,
+      b: store.state.calculator.b,
       handleInput: (String value) {
         store.dispatch(InputAction(value: value));
       },

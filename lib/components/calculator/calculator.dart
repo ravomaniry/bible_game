@@ -1,9 +1,9 @@
+import 'package:bible_game/redux/app_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
-import 'package:bible_game/model/calculator_state.dart';
-import 'package:bible_game/containers/calculator.dart';
+import 'package:bible_game/redux/calculator/view_model.dart';
 
 class Calculator extends StatelessWidget {
   Calculator({Key key}) : super(key: key);

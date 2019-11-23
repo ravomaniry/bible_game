@@ -1,8 +1,8 @@
-import 'package:bible_game/redux/reducers.dart';
+import 'package:bible_game/redux/app_state.dart';
+import 'package:bible_game/redux/main_reducer.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:bible_game/components/calculator/calculator.dart';
-import 'package:bible_game/model/calculator_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -10,14 +10,13 @@ void main() {
   testWidgets("Calculator widget test", (WidgetTester tester) async {
     final Store<AppState> store = Store<AppState>(
       mainReducer,
-      initialState: AppState(output: "", operator: "", mode: "a", b: 0, a: 0),
+      initialState: AppState.initialState(),
     );
     await tester.pumpWidget(
       StoreProvider<AppState>(
           store: store,
           child: MaterialApp(
             title: 'Flutter Calculator',
-            theme: ThemeData(primarySwatch: Colors.blue),
             home: Calculator(),
           )),
     );
