@@ -3,8 +3,11 @@ import 'package:flutter/foundation.dart';
 
 class AppState {
   CalculatorState calculator;
+  String mode;
 
-  AppState({@required this.calculator});
+  AppState({
+    @required this.calculator,
+  });
 
   factory AppState.initialState() {
     return AppState(
