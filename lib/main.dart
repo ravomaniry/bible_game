@@ -1,5 +1,7 @@
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/components/router.dart';
+import 'package:bible_game/redux/router/reducer.dart';
 import 'package:flutter/services.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter/material.dart';
@@ -11,16 +13,37 @@ void main() async {
   runApp(BibleGame());
 }
 
-class BibleGame extends StatelessWidget {
-  final Store<AppState> store = Store<AppState>(
+class BibleGame extends StatefulWidget {
+  final Store<AppState> _store = Store<AppState>(
     mainReducer,
     initialState: AppState.initialState(),
   );
 
   @override
+  State<StatefulWidget> createState() => _BibleGameState(_store);
+}
+
+class _BibleGameState extends State<BibleGame> {
+  final Store<AppState> _store;
+
+  _BibleGameState(this._store);
+
+  @override
+  void initState() {
+    super.initState();
+    handleBackBtnPress(_store);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    disposeBackBtnHandler();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return StoreProvider<AppState>(
-      store: store,
+      store: _store,
       child: MaterialApp(
         title: 'Flutter Calculator',
         theme: ThemeData(primarySwatch: Colors.blue),

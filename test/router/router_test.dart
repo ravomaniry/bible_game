@@ -1,3 +1,4 @@
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
@@ -24,6 +25,10 @@ void main() {
     await tester.tap(goToCalculatorBtn);
     await tester.pump();
     expect(calculatorFinder, findsOneWidget);
+    BackButtonInterceptor.popRoute();
+    await tester.pump();
+    expect(homeFinder, findsOneWidget);
+    BackButtonInterceptor.popRoute();
   });
 
   testWidgets("Router basic go to Words in word", (WidgetTester tester) async {

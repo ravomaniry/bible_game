@@ -25,6 +25,7 @@ dependencies:
   cupertino_icons: ^0.1.2
   flare_flutter: ^1.7.1
   equatable: ^1.0.1
+  back_button_interceptor: ^4.2.2
 
 dev_dependencies:
   flutter_test:
