@@ -24,7 +24,7 @@ class BibleVerse with EquatableMixin {
 
     void appendWord() {
       if (wordValue.length > 0) {
-        words.add(Word.from(wordValue, index)..resolved = separatorMode);
+        words.add(Word.from(wordValue, index, separatorMode)..resolved = separatorMode);
         separatorMode = false;
         wordValue = "";
         index++;

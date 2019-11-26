@@ -21,6 +21,7 @@ void main() {
         index: 1,
         resolved: true,
         bonus: null,
+        isSeparator: true,
         chars: [Char(value: " ")],
       ),
       Word(
@@ -39,8 +40,9 @@ void main() {
       ),
       Word(
         index: 3,
-        resolved: true,
         bonus: null,
+        resolved: true,
+        isSeparator: true,
         chars: [Char(value: "."), Char(value: " ")],
       ),
       Word(

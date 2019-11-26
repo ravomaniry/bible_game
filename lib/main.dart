@@ -1,17 +1,17 @@
 import 'package:bible_game/redux/app_state.dart';
+import 'package:bible_game/components/router.dart';
 import 'package:flutter/services.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:bible_game/redux/main_reducer.dart';
-import 'package:bible_game/components/calculator/calculator.dart';
 
 void main() async {
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  runApp(MyApp());
+  runApp(BibleGame());
 }
 
-class MyApp extends StatelessWidget {
+class BibleGame extends StatelessWidget {
   final Store<AppState> store = Store<AppState>(
     mainReducer,
     initialState: AppState.initialState(),
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Calculator',
         theme: ThemeData(primarySwatch: Colors.blue),
-        home: Calculator(),
+        home: Router(),
       ),
     );
   }

@@ -2,28 +2,37 @@ import 'package:bible_game/redux/app_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:redux/redux.dart';
 import 'package:bible_game/redux/calculator/view_model.dart';
 
 class Calculator extends StatelessWidget {
-  Calculator({Key key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
+    return StoreConnector<AppState, CalculatorViewModel>(
+      key: Key("calculator"),
+      converter: CalculatorViewModel.converter,
+      builder: _builder,
+    );
+  }
+
+  Widget _builder(BuildContext context, CalculatorViewModel viewModel) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Calculator"),
-      ),
-      backgroundColor: Color.fromARGB(255, 250, 250, 250),
-      body: StoreConnector<AppState, CalculatorViewModel>(
-        converter: (Store<AppState> store) => CalculatorViewModel.create(store),
-        builder: (BuildContext context, CalculatorViewModel viewModel) =>
-            Column(
-          children: [
-            _Display(viewModel),
-            _Keyboard(viewModel),
+        title: Row(
+          children: <Widget>[
+            Expanded(child: Text("Calculator")),
+            RaisedButton(
+              child: Text("Home!"),
+              onPressed: viewModel.goToHomePage,
+            ),
           ],
         ),
+      ),
+      backgroundColor: Color.fromARGB(255, 250, 250, 250),
+      body: Column(
+        children: [
+          _Display(viewModel),
+          _Keyboard(viewModel),
+        ],
       ),
     );
   }

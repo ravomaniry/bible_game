@@ -6,13 +6,20 @@ class Word with EquatableMixin {
   final Bonus bonus;
   final List<Char> chars;
   bool resolved;
+  final bool isSeparator;
   final int index;
 
-  Word({this.chars, this.resolved = false, this.bonus, @required this.index});
+  Word({
+    this.chars,
+    @required this.index,
+    this.resolved = false,
+    this.isSeparator = false,
+    this.bonus,
+  });
 
-  factory Word.from(String text, int index) {
+  factory Word.from(String text, int index, bool isSeparator) {
     final chars = text.split("").map((t) => Char(value: t)).toList();
-    return Word(chars: chars, index: index);
+    return Word(chars: chars, index: index, isSeparator: isSeparator);
   }
 
   Word copyWith({List<Char> chars, bool resolved, Bonus bonus}) {
@@ -31,12 +38,13 @@ class Word with EquatableMixin {
 
   @override
   String toString() {
-    return "${chars.map((x) => x.value).join('')} : ${chars.join(",")}, resolved=$resolved, bonus=$bonus";
+    return "${chars.map((x) => x.value).join('')} : ${chars.join(",")}," +
+        " isSeparator=$isSeparator resolved=$resolved, bonus=$bonus";
   }
 
   @override
   List<Object> get props {
-    return [chars, index, resolved, bonus];
+    return [chars, index, isSeparator, resolved, bonus];
   }
 }
 
