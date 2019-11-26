@@ -6,11 +6,13 @@ class AppState {
   Routes route;
   CalculatorState calculator;
   WordsInWordState wordsInWord;
+  bool quitSingleGameDialog;
 
   AppState({
     this.route = Routes.home,
     this.calculator,
     this.wordsInWord,
+    this.quitSingleGameDialog = false,
   });
 
   factory AppState.initialState() {

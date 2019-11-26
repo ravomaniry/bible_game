@@ -1,4 +1,5 @@
 import 'package:back_button_interceptor/back_button_interceptor.dart';
+import 'package:bible_game/components/dialogs/quit_single_game.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/components/router.dart';
 import 'package:bible_game/redux/router/reducer.dart';
@@ -47,7 +48,12 @@ class _BibleGameState extends State<BibleGame> {
       child: MaterialApp(
         title: 'Flutter Calculator',
         theme: ThemeData(primarySwatch: Colors.blue),
-        home: Router(),
+        home: Stack(
+          children: <Widget>[
+            Router(),
+            QuitSingleGameDialog(),
+          ],
+        ),
       ),
     );
   }

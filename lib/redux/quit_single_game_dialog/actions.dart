@@ -1,0 +1,3 @@
+class OpenQuitSingleGameDialog {}
+
+class CloseQuitSingleGameDialog {}
