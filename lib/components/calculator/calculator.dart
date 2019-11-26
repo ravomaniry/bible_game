@@ -17,15 +17,7 @@ class Calculator extends StatelessWidget {
   Widget _builder(BuildContext context, CalculatorViewModel viewModel) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: <Widget>[
-            Expanded(child: Text("Calculator")),
-            RaisedButton(
-              child: Text("Home!"),
-              onPressed: viewModel.goToHomePage,
-            ),
-          ],
-        ),
+        title: Text("Calculator"),
       ),
       backgroundColor: Color.fromARGB(255, 250, 250, 250),
       body: Column(
