@@ -26,6 +26,7 @@ dependencies:
   flare_flutter: ^1.7.1
   equatable: ^1.0.1
   back_button_interceptor: ^4.2.2
+  flame: ^0.17.0
 
 dev_dependencies:
   flutter_test:
