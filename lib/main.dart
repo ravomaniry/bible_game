@@ -1,24 +1,29 @@
-import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:bible_game/components/dialogs/quit_single_game.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/components/router.dart';
+import 'package:bible_game/redux/db/actions.dart';
 import 'package:bible_game/redux/router/reducer.dart';
 import 'package:flutter/services.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:bible_game/redux/main_reducer.dart';
+import 'package:redux_thunk/redux_thunk.dart';
 
 void main() async {
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  runApp(BibleGame());
+  final _store = Store<AppState>(
+    mainReducer,
+    initialState: AppState.initialState(rootBundle),
+    middleware: [thunkMiddleware],
+  );
+  runApp(BibleGame(_store));
 }
 
 class BibleGame extends StatefulWidget {
-  final Store<AppState> _store = Store<AppState>(
-    mainReducer,
-    initialState: AppState.initialState(),
-  );
+  final Store<AppState> _store;
+
+  BibleGame(this._store);
 
   @override
   State<StatefulWidget> createState() => _BibleGameState(_store);
@@ -33,6 +38,7 @@ class _BibleGameState extends State<BibleGame> {
   void initState() {
     super.initState();
     handleBackBtnPress(_store);
+    _store.dispatch(initDb);
   }
 
   @override

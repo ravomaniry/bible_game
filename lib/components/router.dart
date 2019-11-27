@@ -1,4 +1,5 @@
 import 'package:bible_game/components/calculator/calculator.dart';
+import 'package:bible_game/components/explorer/explorer.dart';
 import 'package:bible_game/components/home/home.dart';
 import 'package:bible_game/components/loader.dart';
 import 'package:bible_game/components/words_in_word/words_in_word.dart';
@@ -28,6 +29,8 @@ class Router extends StatelessWidget {
         return viewModel.calculatorIsReady ? Calculator() : Loader();
       case Routes.wordsInWord:
         return viewModel.wordsInWordIsReady ? WordsInWord() : Loader();
+      case Routes.explorer:
+        return Explorer();
       default:
         return Loader();
     }

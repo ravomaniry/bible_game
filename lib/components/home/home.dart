@@ -1,3 +1,4 @@
+import 'package:bible_game/components/loader.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/home/view_model.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,34 +16,37 @@ class Home extends StatelessWidget {
   }
 
   Widget _builder(BuildContext context, HomeViewModel viewModel) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Bible game"),
-      ),
-      body: Column(
-        children: <Widget>[
-          Expanded(child: Text("Home")),
-          Expanded(
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: RaisedButton(
-                    key: Key("goToCalculatorBtn"),
-                    child: Text("Calculator"),
-                    onPressed: viewModel.goToCalculator,
-                  ),
-                ),
-                Expanded(
-                  child: RaisedButton(
-                    key: Key("goToWordsInWordBtn"),
-                    child: Text("Words in Word"),
-                    onPressed: viewModel.goToWordsInWord,
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
+    if (viewModel.isReady) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("Bible game"),
+        ),
+        body: Column(
+          children: <Widget>[
+            Expanded(child: Text("Home")),
+            Expanded(
+              child: Column(
+                children: <Widget>[
+                  _buildDummyBtn("Explorer", "goToExplorer", viewModel.goToExplorer),
+                  _buildDummyBtn("Words in word", "goToWordsInWordBtn", viewModel.goToWordsInWord),
+                  _buildDummyBtn("Calculator", "goToCalculatorBtn", viewModel.goToCalculator),
+                ],
+              ),
+            )
+          ],
+        ),
+      );
+    }
+    return Loader();
+  }
+
+  Widget _buildDummyBtn(String text, String key, Function() onPressed) {
+    return Container(
+      alignment: Alignment.center,
+      child: RaisedButton(
+        key: Key(key),
+        child: Text(text),
+        onPressed: onPressed,
       ),
     );
   }

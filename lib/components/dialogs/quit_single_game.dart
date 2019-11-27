@@ -5,6 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 class QuitSingleGameDialog extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return StoreConnector<AppState, QuitSingleGameViewModel>(
+      converter: QuitSingleGameViewModel.converter,
+      builder: _builder,
+    );
+  }
+
   Widget _builder(BuildContext context, QuitSingleGameViewModel viewModel) {
     if (viewModel.isOpen) {
       return Container(
@@ -33,13 +41,5 @@ class QuitSingleGameDialog extends StatelessWidget {
       );
     }
     return SizedBox.shrink();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return StoreConnector<AppState, QuitSingleGameViewModel>(
-      converter: QuitSingleGameViewModel.converter,
-      builder: _builder,
-    );
   }
 }

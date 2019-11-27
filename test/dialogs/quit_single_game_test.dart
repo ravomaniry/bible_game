@@ -1,18 +1,37 @@
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:bible_game/main.dart';
+import 'package:bible_game/redux/app_state.dart';
+import 'package:bible_game/redux/explorer/state.dart';
+import 'package:bible_game/redux/main_reducer.dart';
+import 'package:bible_game/test_helpers/asset_bundle.dart';
+import 'package:bible_game/test_helpers/db_adapter_mock.dart';
 import 'package:flutter/material.dart';
+import 'package:redux/redux.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:redux_thunk/redux_thunk.dart';
 
 void main() {
   testWidgets("Quit single game basic flow", (WidgetTester tester) async {
-    await tester.pumpWidget(BibleGame());
+    final store = Store<AppState>(
+      mainReducer,
+      initialState: AppState(
+        dba: DbAdapterMock.withDefaultValues(),
+        assetBundle: AssetBundleMock.withDefaultValue(),
+        explorer: ExplorerState(),
+      ),
+      middleware: [thunkMiddleware],
+    );
+    await tester.pumpWidget(BibleGame(store));
     final wordsInWodBtn = find.byKey(Key("goToWordsInWordBtn"));
-    final homeScreen = find.byKey(Key("home"));
     final wordsInWordScreen = find.byKey(Key("wordsInWord"));
     final dialogScreen = find.byKey(Key("confirmQuitSingleGame"));
+    final loaderScreen = find.byKey(Key("loader"));
+    final homeScreen = find.byKey(Key("home"));
     final yesBtn = find.byKey(Key("dialogYesBtn"));
     final noBtn = find.byKey(Key("dialogNoBtn"));
 
+    expect(loaderScreen, findsOneWidget);
+    await tester.pump(Duration(seconds: 1));
     expect(homeScreen, findsOneWidget);
     await tester.tap(wordsInWodBtn);
     await tester.pump();
