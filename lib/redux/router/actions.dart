@@ -13,12 +13,4 @@ class GoToAction {
 
 final goToHome = GoToAction(Routes.home);
 final goToCalculator = GoToAction(Routes.calculator);
-final ThunkAction<AppState> goToWordsInWord = (Store<AppState> store) {
-  store.dispatch(GoToAction(Routes.wordsInWord));
-  store.dispatch(UpdateWordsInWordState(WordsInWordState(
-    verse: null,
-    cells: [],
-    chars: [],
-    selected: [],
-  )));
-};
+

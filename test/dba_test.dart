@@ -1,5 +1,6 @@
 import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
+import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/statics.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
@@ -17,6 +18,7 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         dba: dba,
+        explorer: ExplorerState(),
         assetBundle: AssetBundleMock.withDefaultValue(),
       ),
     );
@@ -32,15 +34,19 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         dba: dba,
+        explorer: ExplorerState(),
         assetBundle: AssetBundleMock.withDefaultValue(),
       ),
     );
     when(dba.init()).thenAnswer((_) => Future.value(true));
     when(dba.getBooksCount()).thenAnswer((_) => Future.value(0));
     when(dba.getVersesCount()).thenAnswer((_) => Future.value(0));
+    expect(store.state.dbIsReady, false);
+
     await tester.pumpWidget(BibleGame(store));
     expect(store.state.error, null);
     verify(dba.books.saveAll(any)).called(1);
     verify(dba.verses.saveAll(any)).called(1);
+    expect(store.state.dbIsReady, true);
   });
 }

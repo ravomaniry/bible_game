@@ -23,6 +23,10 @@ class DbAdapterMock extends Mock implements DbAdapter {
     when(adapter.init()).thenAnswer((_) => Future.value(true));
     when(adapter.getBooksCount()).thenAnswer((_) => Future.value((10)));
     when(adapter.getVersesCount()).thenAnswer((_) => Future.value((10)));
+    when(adapter.getBooks()).thenAnswer((_) => Future.value([
+          Books(id: 1, name: "Matio", chapters: 10),
+          Books(id: 2, name: "Marka", chapters: 20),
+        ]));
   }
 
   factory DbAdapterMock.withDefaultValues() {

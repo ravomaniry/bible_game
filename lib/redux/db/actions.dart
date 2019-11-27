@@ -18,8 +18,9 @@ final ThunkAction<AppState> initDb = (Store<AppState> store) async {
     final dba = store.state.dba;
     final isReady = await dba.init();
     if (isReady) {
-      checkAndUpdateBooks(dba, store.state.assetBundle, store.dispatch);
-      checkAndUpdateVerses(dba, store.state.assetBundle, store.dispatch);
+      await checkAndUpdateBooks(dba, store.state.assetBundle, store.dispatch);
+      await checkAndUpdateVerses(dba, store.state.assetBundle, store.dispatch);
+      store.dispatch(UpdateDbState(true));
     } else {
       store.dispatch(ReceiveError(Errors.dbNotReady));
     }
