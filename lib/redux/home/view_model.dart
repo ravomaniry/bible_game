@@ -1,7 +1,7 @@
+import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/router/actions.dart' as action;
 import 'package:flutter/foundation.dart';
 import 'package:redux/redux.dart';
-import '../app_state.dart';
 
 class HomeViewModel {
   Function() goToCalculator;

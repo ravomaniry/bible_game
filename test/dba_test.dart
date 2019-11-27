@@ -1,15 +1,13 @@
-import 'file:///media/data/sc/perso/bible_game/test/helpers/db_adapter_mock.dart';
-import 'package:bible_game/db/model.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/statics.dart';
+import 'package:bible_game/test_helpers/asset_bundle.dart';
+import 'package:bible_game/test_helpers/db_adapter_mock.dart';
 import 'package:mockito/mockito.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:redux_thunk/redux_thunk.dart';
-
-import 'helpers/asset_bundle.dart';
 
 void main() {
   testWidgets("Db initialization failure", (WidgetTester tester) async {
