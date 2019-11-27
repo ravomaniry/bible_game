@@ -1,5 +1,5 @@
 on: push
-name: build and test app
+name: Test
 jobs:
   build:
     name: install dependencies
