@@ -18,4 +18,16 @@ class DbAdapterMock extends Mock implements DbAdapter {
     this.verses = VersesMock();
     this.books = BooksMock();
   }
+
+  static mockMethodsWithDefaultValue(DbAdapterMock adapter) {
+    when(adapter.init()).thenAnswer((_) => Future.value(true));
+    when(adapter.getBooksCount()).thenAnswer((_) => Future.value((10)));
+    when(adapter.getVersesCount()).thenAnswer((_) => Future.value((10)));
+  }
+
+  factory DbAdapterMock.withDefaultValues() {
+    final adapter = DbAdapterMock();
+    mockMethodsWithDefaultValue(adapter);
+    return adapter;
+  }
 }

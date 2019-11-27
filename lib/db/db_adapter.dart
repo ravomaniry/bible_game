@@ -11,4 +11,12 @@ class DbAdapter {
     @required this.verses,
     @required this.model,
   });
+
+  Future<bool> init() async {
+    return model?.initializeDB() ?? false;
+  }
+
+  Future<int> getBooksCount() => books?.select(columnsToSelect: [BooksFields.name.count()])?.toCount();
+
+  Future<int> getVersesCount() => verses?.select(columnsToSelect: [VersesFields.id.count()])?.toCount();
 }

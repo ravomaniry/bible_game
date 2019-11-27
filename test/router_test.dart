@@ -1,4 +1,4 @@
-import 'package:bible_game/db/db_adapter_mock.dart';
+import 'file:///media/data/sc/perso/bible_game/test/helpers/db_adapter_mock.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
@@ -8,10 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
+import 'helpers/asset_bundle.dart';
 
 void main() {
   test("Router", () {
-    final state = mainReducer(AppState(dba: DbAdapterMock()), null);
+    final state = mainReducer(AppState(dba: DbAdapterMock.withDefaultValues(), assetBundle: AssetBundleMock()), null);
     final action = goToCalculator;
     final nextState = mainReducer(state, action);
     expect(nextState.route, Routes.calculator);
@@ -20,8 +21,8 @@ void main() {
   testWidgets("Router basic go to calculator", (WidgetTester tester) async {
     final store = Store<AppState>(
       mainReducer,
-      initialState: AppState(dba: DbAdapterMock()),
       middleware: [thunkMiddleware],
+      initialState: AppState(dba: DbAdapterMock.withDefaultValues(), assetBundle: AssetBundleMock()),
     );
     await tester.pumpWidget(BibleGame(store));
     final homeFinder = find.byKey(Key("home"));
@@ -37,8 +38,8 @@ void main() {
   testWidgets("Router basic go to Words in word", (WidgetTester tester) async {
     final store = Store<AppState>(
       mainReducer,
-      initialState: AppState(dba: DbAdapterMock()),
       middleware: [thunkMiddleware],
+      initialState: AppState(dba: DbAdapterMock.withDefaultValues(), assetBundle: AssetBundleMock()),
     );
     await tester.pumpWidget(BibleGame(store));
     final wordsInWordFinder = find.byKey(Key("wordsInWord"));

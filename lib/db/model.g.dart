@@ -59,7 +59,6 @@ class TableVerses extends SqfEntityTableBase {
       SqfEntityFieldBase('chapter', DbType.integer),
       SqfEntityFieldBase('verse', DbType.integer),
       SqfEntityFieldBase('text', DbType.text),
-      SqfEntityFieldBase('note', DbType.text),
     ];
     super.init();
   }
@@ -1077,14 +1076,13 @@ class BooksManager extends SqfEntityProvider {
 //endregion BooksManager
 // region Verses
 class Verses {
-  Verses({this.id, this.book, this.chapter, this.verse, this.text, this.note}) {
+  Verses({this.id, this.book, this.chapter, this.verse, this.text}) {
     setDefaultValues();
   }
-  Verses.withFields(this.book, this.chapter, this.verse, this.text, this.note) {
+  Verses.withFields(this.book, this.chapter, this.verse, this.text) {
     setDefaultValues();
   }
-  Verses.withId(
-      this.id, this.book, this.chapter, this.verse, this.text, this.note) {
+  Verses.withId(this.id, this.book, this.chapter, this.verse, this.text) {
     setDefaultValues();
   }
   Verses.fromMap(Map<String, dynamic> o) {
@@ -1096,8 +1094,6 @@ class Verses {
     verse = o['verse'] as int;
 
     text = o['text'] as String;
-
-    note = o['note'] as String;
   }
   // FIELDS (Verses)
   int id;
@@ -1105,7 +1101,6 @@ class Verses {
   int chapter;
   int verse;
   String text;
-  String note;
 
   BoolResult saveResult;
   // end FIELDS (Verses)
@@ -1150,10 +1145,6 @@ class Verses {
       map['text'] = text;
     }
 
-    if (note != null) {
-      map['note'] = note;
-    }
-
     return map;
   }
 
@@ -1179,10 +1170,6 @@ class Verses {
       map['text'] = text;
     }
 
-    if (note != null) {
-      map['note'] = note;
-    }
-
     return map;
   }
 
@@ -1197,7 +1184,7 @@ class Verses {
   }
 
   List<dynamic> toArgs() {
-    return [id, book, chapter, verse, text, note];
+    return [id, book, chapter, verse, text];
   }
 
   static Future<List<Verses>> fromWebUrl(String url) async {
@@ -1278,7 +1265,7 @@ class Verses {
   /// Returns a <List<BoolResult>>
   Future<List<BoolResult>> saveAll(List<Verses> verseses) async {
     final results = _mnVerses.saveAll(
-        'INSERT OR REPLACE INTO verses (id,  book, chapter, verse, text, note)  VALUES (?,?,?,?,?,?)',
+        'INSERT OR REPLACE INTO verses (id,  book, chapter, verse, text)  VALUES (?,?,?,?,?)',
         verseses);
     return results;
   }
@@ -1289,8 +1276,8 @@ class Verses {
   Future<int> _upsert() async {
     try {
       id = await _mnVerses.rawInsert(
-          'INSERT OR REPLACE INTO verses (id,  book, chapter, verse, text, note)  VALUES (?,?,?,?,?,?)',
-          [id, book, chapter, verse, text, note]);
+          'INSERT OR REPLACE INTO verses (id,  book, chapter, verse, text)  VALUES (?,?,?,?,?)',
+          [id, book, chapter, verse, text]);
       saveResult = BoolResult(
           success: true, successMessage: 'Verses id=$id updated successfuly');
       return id;
@@ -1307,7 +1294,7 @@ class Verses {
   /// Returns a <List<BoolResult>>
   Future<List<BoolResult>> upsertAll(List<Verses> verseses) async {
     final results = await _mnVerses.rawInsertAll(
-        'INSERT OR REPLACE INTO verses (id,  book, chapter, verse, text, note)  VALUES (?,?,?,?,?,?)',
+        'INSERT OR REPLACE INTO verses (id,  book, chapter, verse, text)  VALUES (?,?,?,?,?)',
         verseses);
     return results;
   }
@@ -1741,11 +1728,6 @@ class VersesFilterBuilder extends SearchCriteria {
     return _text = setField(_text, 'text', DbType.text);
   }
 
-  VersesField _note;
-  VersesField get note {
-    return _note = setField(_note, 'note', DbType.text);
-  }
-
   bool _getIsDeleted;
 
   void _buildParameters() {
@@ -2065,11 +2047,6 @@ class VersesFields {
   static TableField _fText;
   static TableField get text {
     return _fText = _fText ?? SqlSyntax.setField(_fText, 'text', DbType.text);
-  }
-
-  static TableField _fNote;
-  static TableField get note {
-    return _fNote = _fNote ?? SqlSyntax.setField(_fNote, 'note', DbType.text);
   }
 }
 // endregion VersesFields

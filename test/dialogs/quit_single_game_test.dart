@@ -1,5 +1,6 @@
 import 'package:back_button_interceptor/back_button_interceptor.dart';
-import 'package:bible_game/db/db_adapter_mock.dart';
+import '../helpers/asset_bundle.dart';
+import 'file:///media/data/sc/perso/bible_game/test/helpers/db_adapter_mock.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
@@ -12,7 +13,7 @@ void main() {
   testWidgets("Quit single game basic flow", (WidgetTester tester) async {
     final store = Store<AppState>(
       mainReducer,
-      initialState: AppState(dba: DbAdapterMock()),
+      initialState: AppState(dba: DbAdapterMock.withDefaultValues(), assetBundle: AssetBundleMock.withDefaultValue()),
       middleware: [thunkMiddleware],
     );
     await tester.pumpWidget(BibleGame(store));

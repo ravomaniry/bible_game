@@ -33,7 +33,6 @@ const versesTable = SqfEntityTable(
     SqfEntityField('chapter', DbType.integer),
     SqfEntityField('verse', DbType.integer),
     SqfEntityField('text', DbType.text),
-    SqfEntityField('note', DbType.text),
   ],
 );
 

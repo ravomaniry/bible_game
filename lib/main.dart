@@ -14,11 +14,9 @@ void main() async {
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   final _store = Store<AppState>(
     mainReducer,
-    initialState: AppState.initialState(),
+    initialState: AppState.initialState(rootBundle),
     middleware: [thunkMiddleware],
   );
-  _store.dispatch(initDb);
-
   runApp(BibleGame(_store));
 }
 
@@ -40,6 +38,7 @@ class _BibleGameState extends State<BibleGame> {
   void initState() {
     super.initState();
     handleBackBtnPress(_store);
+    _store.dispatch(initDb);
   }
 
   @override

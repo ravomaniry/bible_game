@@ -1,4 +1,4 @@
-import 'package:bible_game/db/db_adapter_mock.dart';
+import 'file:///media/data/sc/perso/bible_game/test/helpers/db_adapter_mock.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/calculator/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
@@ -7,6 +7,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:bible_game/components/calculator/calculator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'helpers/asset_bundle.dart';
 
 void main() {
   testWidgets("Calculator widget test", (WidgetTester tester) async {
@@ -15,6 +16,7 @@ void main() {
       initialState: AppState(
         calculator: CalculatorState(),
         dba: DbAdapterMock(),
+        assetBundle: AssetBundleMock(),
       ),
     );
     await tester.pumpWidget(
