@@ -1,8 +1,9 @@
 import 'package:bible_game/db/model.dart';
+import 'package:flutter/foundation.dart';
 
 class ExplorerState {
   final List<Books> books;
-  final int activeBook;
+  final Books activeBook;
   final List<Verses> verses;
 
   ExplorerState({
@@ -11,10 +12,10 @@ class ExplorerState {
     this.verses,
   });
 
-  ExplorerState copyWith({List<Books> books, int activeBook, List<Verses> verses}) {
+  ExplorerState copyWith({List<Books> books, @required Books activeBook, List<Verses> verses}) {
     return ExplorerState(
       books: books ?? this.books,
-      activeBook: activeBook ?? this.activeBook,
+      activeBook: activeBook,
       verses: verses ?? this.verses,
     );
   }

@@ -6,15 +6,17 @@ import 'package:flutter/material.dart';
 
 class ExplorerViewModel {
   final List<Books> books;
-  final int activeBook;
+  final Books activeBook;
   final List<Verses> verses;
-  final Function(int) loadVerses;
+  final Function(Books) loadVerses;
+  final Function() goToBooksList;
 
   ExplorerViewModel({
     @required this.books,
     @required this.activeBook,
     @required this.verses,
     @required this.loadVerses,
+    @required this.goToBooksList,
   });
 
   static ExplorerViewModel converter(Store<AppState> store) {
@@ -22,7 +24,8 @@ class ExplorerViewModel {
       books: store.state.explorer.books,
       verses: store.state.explorer.verses,
       activeBook: store.state.explorer.activeBook,
-      loadVerses: (int bookId) => store.dispatch(LoadVersesFor(bookId).thunk),
+      loadVerses: (Books book) => store.dispatch(LoadVersesFor(book).thunk),
+      goToBooksList: () => store.dispatch(ExplorerSetActiveBook(null)),
     );
   }
 }

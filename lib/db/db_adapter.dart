@@ -21,4 +21,11 @@ class DbAdapter {
   Future<int> getVersesCount() => verses?.select(columnsToSelect: [VersesFields.id.count()])?.toCount();
 
   Future<List<Books>> getBooks() => books?.select()?.toList();
+
+  Future<List<Verses>> getVerses(int bookId) {
+    if (verses == null) {
+      return null;
+    }
+    return verses.select().book.equals(bookId).toList();
+  }
 }

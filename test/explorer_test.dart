@@ -7,6 +7,7 @@ import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_test/flutter_test.dart' as prefix0;
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
@@ -26,6 +27,8 @@ void main() {
     final loaderFinder = find.byKey(Key("loader"));
     final explorerFinder = find.byKey(Key("explorer"));
     final explorerBtn = find.byKey(Key("goToExplorer"));
+    final booksList = find.byKey(Key("booksList"));
+    final verseDetails = find.byKey(Key("verseDetailsBackBtn"));
 
     await tester.pumpWidget(BibleGame(store));
     expect(loaderFinder, findsOneWidget);
@@ -36,5 +39,20 @@ void main() {
     expect(explorerFinder, findsOneWidget);
     expect(store.state.dbIsReady, true);
     expect(store.state.explorer.books.length, 2);
+    expect(booksList, findsOneWidget);
+    expect(verseDetails, findsNothing);
+
+    await tester.tap(find.byKey(Key("1")));
+    await tester.pump(Duration(seconds: 1));
+    prefix0.expect(store.state.explorer.activeBook.id, 1);
+    expect(store.state.explorer.verses.length, 1);
+    expect(booksList, findsNothing);
+    expect(verseDetails, findsOneWidget);
+
+    await tester.tap(find.byKey(Key("verseDetailsBackBtn")));
+    await tester.pump();
+    expect(state.explorer.activeBook, null);
+    expect(booksList, findsOneWidget);
+    expect(verseDetails, findsNothing);
   });
 }
