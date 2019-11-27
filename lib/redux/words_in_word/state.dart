@@ -1,13 +1,13 @@
 import 'package:bible_game/models/cell.dart';
 import 'package:bible_game/models/bible_verse.dart';
-import 'package:bible_game/models/word.dart';
+import 'package:bible_game/models/words_in_word/Char.dart';
 import 'package:flutter/foundation.dart';
 
 class WordsInWordState {
   final BibleVerse verse;
   final List<List<Cell>> cells;
-  final List<Char> chars;
-  final List<Char> selected;
+  final List<WordsInWordChar> chars;
+  final List<WordsInWordChar> selected;
 
   WordsInWordState({
     @required this.verse,
@@ -28,8 +28,8 @@ class WordsInWordState {
   WordsInWordState copyWith({
     BibleVerse verse,
     List<List<Cell>> cells,
-    List<Char> chars,
-    List<Char> selected,
+    List<WordsInWordChar> chars,
+    List<WordsInWordChar> selected,
   }) {
     return WordsInWordState(
       verse: verse ?? this.verse,

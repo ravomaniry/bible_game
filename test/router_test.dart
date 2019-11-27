@@ -1,4 +1,4 @@
-import 'package:back_button_interceptor/back_button_interceptor.dart';
+import 'package:bible_game/db/db_adapter_mock.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
@@ -6,17 +6,24 @@ import 'package:bible_game/redux/router/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:redux/redux.dart';
+import 'package:redux_thunk/redux_thunk.dart';
 
 void main() {
   test("Router", () {
-    final state = mainReducer(AppState.initialState(), null);
+    final state = mainReducer(AppState(dba: DbAdapterMock()), null);
     final action = goToCalculator;
     final nextState = mainReducer(state, action);
     expect(nextState.route, Routes.calculator);
   });
 
   testWidgets("Router basic go to calculator", (WidgetTester tester) async {
-    await tester.pumpWidget(BibleGame());
+    final store = Store<AppState>(
+      mainReducer,
+      initialState: AppState(dba: DbAdapterMock()),
+      middleware: [thunkMiddleware],
+    );
+    await tester.pumpWidget(BibleGame(store));
     final homeFinder = find.byKey(Key("home"));
     final calculatorFinder = find.byKey(Key("calculator"));
     final goToCalculatorBtn = find.byKey(Key("goToCalculatorBtn"));
@@ -28,7 +35,12 @@ void main() {
   });
 
   testWidgets("Router basic go to Words in word", (WidgetTester tester) async {
-    await tester.pumpWidget(BibleGame());
+    final store = Store<AppState>(
+      mainReducer,
+      initialState: AppState(dba: DbAdapterMock()),
+      middleware: [thunkMiddleware],
+    );
+    await tester.pumpWidget(BibleGame(store));
     final wordsInWordFinder = find.byKey(Key("wordsInWord"));
     final goToWordsInWordBtn = find.byKey(Key("goToWordsInWordBtn"));
 

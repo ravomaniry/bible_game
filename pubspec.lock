@@ -226,7 +226,7 @@ packages:
     source: hosted
     version: "2.2.4"
   flare_flutter:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: flare_flutter
       url: "https://pub.dartlang.org"
@@ -368,6 +368,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.6+3"
+  mockito:
+    dependency: "direct dev"
+    description:
+      name: mockito
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.1.1"
   multi_server_socket:
     dependency: transitive
     description:
@@ -501,6 +508,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.0"
+  redux_thunk:
+    dependency: "direct main"
+    description:
+      name: redux_thunk
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.1"
   shelf:
     dependency: transitive
     description:

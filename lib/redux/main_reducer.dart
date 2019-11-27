@@ -6,6 +6,7 @@ import 'package:bible_game/redux/words_in_word/reducer.dart';
 
 AppState mainReducer(AppState state, action) {
   return AppState(
+    dba: state.dba,
     calculator: calculatorReducer(state.calculator, action),
     route: routerReducer(state.route, action),
     wordsInWord: wordsInWordReducer(state.wordsInWord, action),

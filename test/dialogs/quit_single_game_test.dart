@@ -1,11 +1,21 @@
 import 'package:back_button_interceptor/back_button_interceptor.dart';
+import 'package:bible_game/db/db_adapter_mock.dart';
 import 'package:bible_game/main.dart';
+import 'package:bible_game/redux/app_state.dart';
+import 'package:bible_game/redux/main_reducer.dart';
 import 'package:flutter/material.dart';
+import 'package:redux/redux.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:redux_thunk/redux_thunk.dart';
 
 void main() {
   testWidgets("Quit single game basic flow", (WidgetTester tester) async {
-    await tester.pumpWidget(BibleGame());
+    final store = Store<AppState>(
+      mainReducer,
+      initialState: AppState(dba: DbAdapterMock()),
+      middleware: [thunkMiddleware],
+    );
+    await tester.pumpWidget(BibleGame(store));
     final wordsInWodBtn = find.byKey(Key("goToWordsInWordBtn"));
     final homeScreen = find.byKey(Key("home"));
     final wordsInWordScreen = find.byKey(Key("wordsInWord"));

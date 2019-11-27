@@ -1,3 +1,4 @@
+import 'package:bible_game/db/db_adapter_mock.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/calculator/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
@@ -11,7 +12,10 @@ void main() {
   testWidgets("Calculator widget test", (WidgetTester tester) async {
     final Store<AppState> store = Store<AppState>(
       mainReducer,
-      initialState: AppState.initialState()..calculator = CalculatorState(),
+      initialState: AppState(
+        calculator: CalculatorState(),
+        dba: DbAdapterMock(),
+      ),
     );
     await tester.pumpWidget(
       StoreProvider<AppState>(
