@@ -2,6 +2,7 @@ import 'package:bible_game/db/db_adapter.dart';
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/redux/error/actions.dart';
 import 'package:bible_game/statics.dart';
+import 'package:bible_game/utils/retry.dart';
 import 'package:flutter/services.dart';
 import 'package:redux/redux.dart';
 import 'package:bible_game/redux/app_state.dart';
@@ -29,13 +30,13 @@ final ThunkAction<AppState> initDb = (Store<AppState> store) async {
 
 Future checkAndUpdateBooks(DbAdapter dba, AssetBundle assetBundle, Function dispatch) async {
   try {
-    final count = await dba.getBooksCount();
+    final count = await retry<int>(() => dba.getBooksCount());
     if (count == null) {
       dispatch(ReceiveError(Errors.unknownDbError));
     } else if (count == 0) {
-      final source = await assetBundle.loadString("assets/db/new_testament_books.json");
+      final source = await retry<String>(() => assetBundle.loadString("assets/db/new_testament_books.json"));
       final books = await Books.fromJson(source);
-      await dba.books.saveAll(books);
+      await retry(() => dba.books.saveAll(books));
     }
   } catch (e) {
     dispatch(ReceiveError(Errors.unknownDbError));
@@ -45,13 +46,13 @@ Future checkAndUpdateBooks(DbAdapter dba, AssetBundle assetBundle, Function disp
 
 Future checkAndUpdateVerses(DbAdapter dba, AssetBundle assetBundle, Function dispatch) async {
   try {
-    final count = await dba.getVersesCount();
+    final count = await retry<int>(() => dba.getVersesCount());
     if (count == null) {
       dispatch(ReceiveError(Errors.unknownDbError));
     } else if (count == 0) {
-      final source = await assetBundle.loadString("assets/db/new_testament_verses.json");
+      final source = await retry<String>(() => assetBundle.loadString("assets/db/new_testament_verses.json"));
       final verses = await Verses.fromJson(source);
-      await dba.verses.saveAll(verses);
+      await retry(() => dba.verses.saveAll(verses));
     }
   } catch (e) {
     dispatch(ReceiveError(Errors.unknownDbError));

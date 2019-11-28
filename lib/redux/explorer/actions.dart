@@ -4,6 +4,7 @@ import 'package:bible_game/redux/error/actions.dart';
 import 'package:bible_game/redux/router/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/statics.dart';
+import 'package:bible_game/utils/retry.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 import 'package:redux/redux.dart';
 
@@ -12,6 +13,8 @@ class ReceiveExplorerBooksList {
 
   ReceiveExplorerBooksList(this.payload);
 }
+
+class GoToExplorerBooksList {}
 
 class ExplorerSetActiveBook {
   Books payload;
@@ -27,7 +30,7 @@ class ExplorerReceiveVerses {
 
 ThunkAction<AppState> loadBooks = (Store<AppState> store) async {
   try {
-    final books = await store.state.dba.getBooks();
+    final books = await retry<List<Books>>(() => store.state.dba.getBooks());
     if (books == null) {
       store.dispatch(ReceiveError(Errors.unknownDbError));
     } else {
@@ -53,7 +56,7 @@ class LoadVersesFor {
     this.thunk = (Store<AppState> store) async {
       store.dispatch(ExplorerSetActiveBook(this.book));
       try {
-        final verses = await store.state.dba.getVerses(book.id);
+        final verses = await retry<List<Verses>>(() => store.state.dba.getVerses(book.id));
         if (verses == null) {
           store.dispatch(ReceiveError(Errors.unknownDbError));
         } else {
@@ -66,5 +69,3 @@ class LoadVersesFor {
     };
   }
 }
-
-class GoToExplorerBooksList {}
