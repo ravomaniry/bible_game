@@ -30,6 +30,10 @@ class DbAdapter {
   }
 
   Future<Verses> getSingleVerse(int bookId, int chapter, int verse) async {
-    return verses?.select()?.book?.equals(bookId)?.chapter?.equals(chapter)?.verse?.equals(verse)?.toSingle();
+    return verses?.select()?.book?.equals(bookId)?.and?.chapter?.equals(chapter)?.and?.verse?.equals(verse)?.toSingle();
+  }
+
+  Future<Books> getBookById(int bookId) async {
+    return this.books?.getById(bookId);
   }
 }

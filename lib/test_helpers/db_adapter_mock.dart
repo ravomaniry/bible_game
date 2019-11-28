@@ -29,6 +29,7 @@ class DbAdapterMock extends Mock implements DbAdapter {
       "getSingleVerse",
       "verses.saveAll",
       "books.saveAll",
+      "getBookById",
     ]);
   }
 
@@ -57,6 +58,9 @@ class DbAdapterMock extends Mock implements DbAdapter {
       when(adapter.getSingleVerse(any, any, any)).thenAnswer((_) async {
         return Verses(book: 1, id: 2, chapter: 3, verse: 4, text: "Ny filazana ny razan'i Jesosy Kristy");
       });
+    }
+    if (methods.contains("getBookById")) {
+      when(adapter.getBookById(any)).thenAnswer((_) => Future.value(Books(id: 1, name: "Genesisy", chapters: 10)));
     }
     if (methods.contains("verses.saveAll")) {
       when(adapter.verses.saveAll(any)).thenAnswer((_) => Future.value());

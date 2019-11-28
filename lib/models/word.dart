@@ -10,21 +10,25 @@ class Word with EquatableMixin {
   final int index;
 
   Word({
-    this.chars,
+    @required this.value,
     @required this.index,
+    this.chars,
     this.resolved = false,
     this.isSeparator = false,
     this.bonus,
   });
 
+  final String value;
+
   factory Word.from(String text, int index, bool isSeparator) {
     final chars = text.split("").map((t) => Char(value: t)).toList();
-    return Word(chars: chars, index: index, isSeparator: isSeparator);
+    return Word(chars: chars, index: index, isSeparator: isSeparator, value: text);
   }
 
   Word copyWith({List<Char> chars, bool resolved, Bonus bonus}) {
     return Word(
       index: this.index,
+      value: this.value,
       chars: chars ?? this.chars,
       resolved: resolved ?? this.resolved,
       bonus: bonus ?? this.bonus,
