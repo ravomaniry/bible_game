@@ -49,9 +49,9 @@ final ThunkAction<AppState> goToWordsInWord = (Store<AppState> store) async {
 ThunkAction<AppState> loadWordsInWordNextVerse = (Store<AppState> store) async {
   store.dispatch(ResetWordsInWordVerse());
   final dba = store.state.dba;
-  var bookId = 2;
+  var bookId = 1;
   var chaptersNum = 1;
-  var verseNum = 2;
+  var verseNum = 0;
   if (store.state.wordsInWord.verse != null) {
     final currentVerse = store.state.wordsInWord.verse;
     bookId = currentVerse.bookId;

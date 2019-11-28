@@ -31,6 +31,6 @@ void main() {
     await tester.pump(Duration(milliseconds: 10));
     expect(store.state.error == null, true);
     expect(store.state.wordsInWord.verse, BibleVerse.fromModel(await state.dba.getSingleVerse(1, 2, 3), "Genesisy"));
-    verify(store.state.dba.getSingleVerse(1, 1, 2)).called(1);
+    verify(store.state.dba.getSingleVerse(1, 1, 1)).called(1);
   });
 }
