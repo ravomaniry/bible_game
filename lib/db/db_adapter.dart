@@ -28,4 +28,8 @@ class DbAdapter {
     }
     return verses.select().book.equals(bookId).toList();
   }
+
+  Future<Verses> getSingleVerse(int bookId, int chapter, int verse) async {
+    return verses?.select()?.book?.equals(bookId)?.chapter?.equals(chapter)?.verse?.equals(verse)?.toSingle();
+  }
 }

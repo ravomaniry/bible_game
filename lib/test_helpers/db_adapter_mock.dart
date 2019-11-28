@@ -30,6 +30,9 @@ class DbAdapterMock extends Mock implements DbAdapter {
     when(adapter.getVerses(1)).thenAnswer((_) async {
       return [Verses(book: 1, id: 2, chapter: 3, verse: 4, text: "Ny filazana ny razan'i Jesosy Kristy")];
     });
+    when(adapter.getSingleVerse(any, any, any)).thenAnswer((_) async {
+      return Verses(book: 1, id: 2, chapter: 3, verse: 4, text: "Ny filazana ny razan'i Jesosy Kristy");
+    });
   }
 
   factory DbAdapterMock.withDefaultValues() {
