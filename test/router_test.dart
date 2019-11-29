@@ -1,3 +1,4 @@
+import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/main.dart';
@@ -18,6 +19,7 @@ void main() {
           explorer: ExplorerState(),
           dba: DbAdapterMock.withDefaultValues(),
           assetBundle: AssetBundleMock(),
+          config: ConfigState.initialState(),
         ),
         null);
     final action = goToCalculator;
@@ -33,6 +35,7 @@ void main() {
         dba: DbAdapterMock.withDefaultValues(),
         assetBundle: AssetBundleMock(),
         explorer: ExplorerState(),
+        config: ConfigState.initialState(),
       ),
     );
     final homeFinder = find.byKey(Key("home"));
@@ -56,6 +59,7 @@ void main() {
         dba: DbAdapterMock.withDefaultValues(),
         assetBundle: AssetBundleMock(),
         explorer: ExplorerState(),
+        config: ConfigState.initialState(),
       ),
     );
     final wordsInWordFinder = find.byKey(Key("wordsInWord"));
@@ -76,6 +80,7 @@ void main() {
         dba: DbAdapterMock.withDefaultValues(),
         assetBundle: AssetBundleMock(),
         explorer: ExplorerState(),
+        config: ConfigState.initialState(),
       ),
     );
     final explorerFinder = find.byKey(Key("explorer"));

@@ -1,6 +1,7 @@
 import 'package:bible_game/db/db_adapter.dart';
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/redux/calculator/state.dart';
+import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/error/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/router/routes.dart';
@@ -18,6 +19,7 @@ class AppState {
   final ErrorState error;
   final AssetBundle assetBundle;
   final ExplorerState explorer;
+  final ConfigState config;
 
   AppState({
     this.route = Routes.home,
@@ -29,12 +31,14 @@ class AppState {
     @required this.dba,
     @required this.assetBundle,
     @required this.explorer,
+    @required this.config,
   });
 
   factory AppState.initialState(AssetBundle assetBundle) {
     return AppState(
       assetBundle: assetBundle,
       explorer: ExplorerState(),
+      config: ConfigState.initialState(),
       dba: DbAdapter(
         model: BibleGameModel(),
         books: Books(),

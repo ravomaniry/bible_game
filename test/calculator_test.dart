@@ -1,5 +1,6 @@
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/calculator/state.dart';
+import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
@@ -19,6 +20,7 @@ void main() {
         dba: DbAdapterMock(),
         assetBundle: AssetBundleMock(),
         explorer: ExplorerState(),
+        config: ConfigState.initialState(),
       ),
     );
     await tester.pumpWidget(

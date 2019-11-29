@@ -1,11 +1,15 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class Loader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Scaffold(
       key: Key("loader"),
-      child: Text("Loading ..."),
+      appBar: AppBar(
+        title: Text("Loading..."),
+      ),
+      body: Center(child: Text("Querying database ...")),
     );
   }
 }

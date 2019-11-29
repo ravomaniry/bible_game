@@ -18,7 +18,7 @@ class WordsInWordState {
 
   factory WordsInWordState.emptyState() {
     return WordsInWordState(
-      verse: BibleVerse(book: "Matio", chapter: 1, verse: 1, words: []),
+      verse: BibleVerse(book: "Matio", bookId: 1, chapter: 1, verse: 1, words: []),
       selected: [],
       chars: [],
       cells: [],

@@ -1,5 +1,6 @@
 import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
+import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/statics.dart';
@@ -21,6 +22,7 @@ void main() {
         dba: dba,
         explorer: ExplorerState(),
         assetBundle: AssetBundleMock.withDefaultValue(),
+        config: ConfigState.initialState(),
       ),
     );
     when(dba.init()).thenAnswer((_) => Future.value(false));
@@ -38,6 +40,7 @@ void main() {
         dba: dba,
         explorer: ExplorerState(),
         assetBundle: AssetBundleMock.withDefaultValue(),
+        config: ConfigState.initialState(),
       ),
     );
     when(dba.init()).thenAnswer((_) => Future.value(true));

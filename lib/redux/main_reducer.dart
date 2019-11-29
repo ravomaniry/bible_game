@@ -1,5 +1,6 @@
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/calculator/reducer.dart';
+import 'package:bible_game/redux/config/reducer.dart';
 import 'package:bible_game/redux/db/reducer.dart';
 import 'package:bible_game/redux/error/reducer.dart';
 import 'package:bible_game/redux/explorer/reducer.dart';
@@ -11,6 +12,7 @@ AppState mainReducer(AppState state, action) {
   return AppState(
     dba: state.dba,
     assetBundle: state.assetBundle,
+    config: configReducer(state.config, action),
     error: errorReducer(state.error, action),
     route: routerReducer(state.route, action),
     dbIsReady: dbReducer(state.dbIsReady, action),

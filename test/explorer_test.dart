@@ -1,5 +1,6 @@
 import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
+import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/redux/router/routes.dart';
@@ -18,6 +19,7 @@ void main() {
       assetBundle: AssetBundleMock.withDefaultValue(),
       dba: DbAdapterMock.withDefaultValues(),
       explorer: ExplorerState(),
+      config: ConfigState.initialState(),
     );
     final store = Store<AppState>(
       mainReducer,

@@ -7,6 +7,7 @@ import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/error/actions.dart';
 import 'package:bible_game/redux/router/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
+import 'package:bible_game/redux/words_in_word/cells_action.dart';
 import 'package:bible_game/redux/words_in_word/state.dart';
 import 'package:bible_game/statics.dart';
 import 'package:bible_game/utils/retry.dart';
@@ -52,21 +53,32 @@ ThunkAction<AppState> loadWordsInWordNextVerse = (Store<AppState> store) async {
   var bookId = 1;
   var chaptersNum = 1;
   var verseNum = 0;
+  String bookName = "";
+  int currentBookId = 0;
+  final currentVerse = store.state.wordsInWord.verse;
+
   if (store.state.wordsInWord.verse != null) {
-    final currentVerse = store.state.wordsInWord.verse;
     bookId = currentVerse.bookId;
     chaptersNum = currentVerse.chapter;
     verseNum = currentVerse.verse;
+    bookName = currentVerse.book;
+    currentBookId = currentVerse.bookId;
   }
 
   try {
     final verse = await retry<Verses>(() => _getNextVerse(bookId, chaptersNum, verseNum, dba));
-    final book = verse == null ? null : await retry<Books>(() => dba.getBookById(verse.book));
-    if (verse == null || book == null) {
+    if (verse != null && currentBookId != verse.book) {
+      final book = await retry<Books>(() => dba.getBookById(verse.book));
+      if (book != null) {
+        bookName = book.name;
+      }
+    }
+    if (verse == null || bookName == "") {
       store.dispatch(ReceiveError(Errors.unknownDbError));
     } else {
-      final bibleVerse = BibleVerse.fromModel(verse, book.name);
+      final bibleVerse = BibleVerse.fromModel(verse, bookName);
       store.dispatch(receiveVerse(bibleVerse, store.state.wordsInWord));
+      store.dispatch(recomputeCells);
     }
   } catch (e) {
     print(e);
