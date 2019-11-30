@@ -1,3 +1,5 @@
+import 'package:bible_game/components/words_in_word/controls.dart';
+import 'package:bible_game/components/words_in_word/header.dart';
 import 'package:bible_game/components/words_in_word/results.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/words_in_word/view_model.dart';
@@ -17,7 +19,7 @@ class WordsInWord extends StatelessWidget {
 
   Widget _builder(BuildContext context, WordsInWordViewModel viewModel) {
     return Scaffold(
-      appBar: AppBar(title: Text("Words in word")),
+      appBar: AppBar(title: Header(viewModel)),
       body: _body(context, viewModel),
     );
   }
@@ -29,6 +31,7 @@ class WordsInWord extends StatelessWidget {
     return Column(
       children: [
         WordsInWordResult(viewModel),
+        WordsInWordControls(viewModel),
       ],
     );
   }

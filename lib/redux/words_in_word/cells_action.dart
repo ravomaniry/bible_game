@@ -30,7 +30,7 @@ class ComputeCells {
 List<List<Cell>> computeCells(List<Word> words, double screenWidth) {
   final List<List<Cell>> cells = [];
   final cellWidth = 20;
-  final idealMaxWidth = screenWidth * 0.8;
+  final idealMaxWidth = screenWidth * 0.85;
   double currentX = 0;
   int currentIndex = 0;
 

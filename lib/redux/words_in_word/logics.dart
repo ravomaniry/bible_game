@@ -9,7 +9,7 @@ ThunkAction<AppState> initializeWordsInWordState = (Store<AppState> store) {
   final state = store.state.wordsInWord;
   final wordsToFind = state.verse.words.where((w) => !w.isSeparator).toList();
   var slots = generateEmptySlots(wordsToFind);
-//  slots = fillSlots(slots, wordsToFind);
+  slots = fillSlots(slots, wordsToFind);
 
   store.dispatch(UpdateWordsInWordState(state.copyWith(
     wordsToFind: wordsToFind,
@@ -79,5 +79,6 @@ List<Char> getAdditionalChars(Word word, List<Char> slots) {
       slotsCopy.remove(match);
     }
   }
+  missingChars.shuffle();
   return missingChars;
 }

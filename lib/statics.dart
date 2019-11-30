@@ -6,15 +6,34 @@ class Errors {
   static final unknownDbError = ErrorState("DB empty error", "Try restart the app");
 }
 
-class BibleGameColors {
-  static final wordsSeparator = Color.fromARGB(100, 255, 255, 255);
-  static final unrevealedWord = Color.fromARGB(255, 100, 100, 200);
-  static final revealedWord = Color.fromARGB(255, 0, 200, 0);
-  static final revealedChar = Color.fromARGB(255, 100, 240, 100);
-  static final resultBackground = Color.fromARGB(255, 200, 230, 255);
+class WordInWordsStyles {
+  static final wordsSeparatorColor = Color.fromARGB(100, 255, 255, 255);
+  static final unrevealedWordColor = Color.fromARGB(255, 100, 100, 200);
+  static final revealedWordColor = Color.fromARGB(255, 0, 200, 0);
+  static final revealedCharColor = Color.fromARGB(255, 100, 240, 100);
+  static final resultBackgroundColor = Color.fromARGB(255, 200, 230, 255);
   static final revealedCharStyle = TextStyle(color: Color.fromARGB(255, 255, 255, 255));
+  static final separatorCharStyle = TextStyle(
+    color: Colors.black,
+    fontWeight: FontWeight.bold,
+  );
   static final revealedWordStyle = TextStyle(
     color: Color.fromARGB(255, 255, 255, 255),
+    fontWeight: FontWeight.bold,
+  );
+
+  static final visitedSlotDecoration = BoxDecoration(
+    borderRadius: BorderRadius.all(Radius.circular(6)),
+    color: Color.fromARGB(255, 160, 160, 160),
+    border: Border.all(color: Color.fromARGB(255, 100, 100, 100)),
+  );
+  static final availSlotDecoration = BoxDecoration(
+    borderRadius: BorderRadius.all(Radius.circular(6)),
+    color: Color.fromARGB(255, 100, 100, 200),
+    border: Border.all(color: Color.fromARGB(255, 100, 230, 100)),
+  );
+  static final slotTextStyle = TextStyle(
+    color: Colors.white,
     fontWeight: FontWeight.bold,
   );
 }

@@ -48,6 +48,8 @@ void main() {
       Word.from("Jesosy", 10, false),
       Word.from("Kristy", 12, false),
     ]);
+    expect(store.state.wordsInWord.slots.length, 8);
+    expect(store.state.wordsInWord.slotsBackup.length, 8);
     verify(store.state.dba.getSingleVerse(1, 1, 1)).called(1);
     verify(store.state.dba.getBookById(1)).called(1);
   });
@@ -107,9 +109,9 @@ void main() {
         config: ConfigState.initialState(),
       ),
     );
-    store.dispatch(UpdateScreenWidth(200));
+    store.dispatch(UpdateScreenWidth(190));
     store.dispatch(goToWordsInWord);
-    expect(store.state.config.screenWidth, 200);
+    expect(store.state.config.screenWidth, 190);
     await Future.delayed(Duration(milliseconds: 10));
     final expectedCells = [
       [Cell(0, 0), Cell(0, 1), Cell(1, 0)],

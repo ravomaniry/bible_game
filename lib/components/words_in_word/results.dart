@@ -3,6 +3,7 @@ import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/words_in_word/view_model.dart';
 import 'package:bible_game/statics.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class WordsInWordResult extends StatelessWidget {
   final WordsInWordViewModel _viewModel;
@@ -26,7 +27,7 @@ class WordsInWordResult extends StatelessWidget {
       final List<Widget> rowWidgets = _viewModel.cells.map(_buildRow).toList();
       return Expanded(
         child: Container(
-          decoration: BoxDecoration(color: BibleGameColors.resultBackground),
+          decoration: BoxDecoration(color: WordInWordsStyles.resultBackgroundColor),
           child: ListView(children: rowWidgets),
         ),
       );
@@ -52,26 +53,34 @@ class _CellDisplay extends StatelessWidget {
 
   Color getBackgroundColor(Char char) {
     if (_word.isSeparator) {
-      return BibleGameColors.wordsSeparator;
+      if (char.value == " ") {
+        return Colors.transparent;
+      }
+      return WordInWordsStyles.wordsSeparatorColor;
     } else if (_word.resolved) {
-      return BibleGameColors.revealedWord;
+      return WordInWordsStyles.revealedWordColor;
     } else {
       if (char.resolved) {
-        return BibleGameColors.revealedChar;
+        return WordInWordsStyles.revealedCharColor;
       }
-      return BibleGameColors.unrevealedWord;
+      return WordInWordsStyles.unrevealedWordColor;
     }
   }
 
   String getContentToDisplay(Char char) {
+    if (_word.isSeparator) {
+      return char.value;
+    }
     return char.resolved ? char.value : "";
   }
 
   TextStyle getTextStyle(Char char) {
-    if (_word.resolved) {
-      return BibleGameColors.revealedWordStyle;
+    if (_word.isSeparator) {
+      return WordInWordsStyles.separatorCharStyle;
+    } else if (_word.resolved) {
+      return WordInWordsStyles.revealedWordStyle;
     } else if (char.resolved) {
-      return BibleGameColors.revealedCharStyle;
+      return WordInWordsStyles.revealedCharStyle;
     }
     return null;
   }
@@ -82,9 +91,8 @@ class _CellDisplay extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: Color.fromARGB(255, 220, 220, 220)),
+//        border: Border.all(color: Color.fromARGB(255, 220, 220, 220)),
         color: getBackgroundColor(char),
-        boxShadow: [BoxShadow(color: Color.fromARGB(150, 0, 0, 0))],
       ),
       margin: EdgeInsets.only(right: 4, bottom: 4, top: 4),
       child: SizedBox(
