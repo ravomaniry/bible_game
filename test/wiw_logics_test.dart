@@ -6,12 +6,13 @@ void main() {
   test("fillSlots", () {
     // Different letters
     List<Char> slots = [null, null, null, null, null, null];
+    List<Char> filled = [];
     var words = [
       Word.from("Na", 0, false),
       Word.from("Ito", 1, false),
       Word.from("e", 1, false),
     ];
-    var filled = fillSlots(slots, words);
+    filled = fillSlots(slots, words);
     filled.sort((a, b) => a.value.codeUnitAt(0) - b.value.codeUnitAt(0));
     expect(filled, Word.from("AEINOT", 0, true).chars);
 
@@ -36,5 +37,27 @@ void main() {
     filled = fillSlots(slots, words);
     filled.sort((a, b) => a.value.codeUnitAt(0) - b.value.codeUnitAt(0));
     expect(filled, Word.from("AAAAZZZ", 0, false).chars);
+
+    // Empty slots after filling
+    slots = [...Word.from("JESOSY", 0, false).chars, null];
+    words = [
+      Word.from("jesosy", 0, false),
+      Word.from("tia", 1, false),
+      Word.from("ny", 2, false),
+    ];
+    filled = fillSlots(slots, words);
+    filled.sort((a, b) => a.value.codeUnitAt(0) - b.value.codeUnitAt(0));
+    expect(filled, Word.from("EJNOSSY", 0, false).chars);
+
+    // Not enough space
+    slots = [...Word.from("AAIZ", 0, false).chars, null];
+    words = [
+      Word.from("jesosy", 0, false),
+      Word.from("teny", 1, false),
+      Word.from("ny", 2, false),
+    ];
+    filled = fillSlots(slots, words);
+    filled.sort((a, b) => a.value.codeUnitAt(0) - b.value.codeUnitAt(0));
+    expect(filled, Word.from("AAINY", 0, false).chars);
   });
 }

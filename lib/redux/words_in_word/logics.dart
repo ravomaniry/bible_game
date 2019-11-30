@@ -28,42 +28,63 @@ List<Char> generateEmptySlots(List<Word> words) {
 List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
   final targetLength = prevSlots.length;
   final slots = prevSlots.where((char) => char != null).toList();
+  final remainingSlots = targetLength - slots.length;
   final wordsCopy = List<Word>.from(words);
-  bool canAdd = false;
 
-  while (wordsCopy.length > 0 && slots.length < targetLength) {
-    print("--------------------- I suspect you to cause infinite loop.");
-
-    final wordIndex = Random().nextInt(wordsCopy.length);
-    final word = wordsCopy[wordIndex];
-    final additionalChars = getAdditionalChars(word, slots);
-    if (!canAdd) {
-      canAdd = targetLength >= slots.length + additionalChars.length;
-    }
-    if (canAdd) {
-      wordsCopy.removeAt(wordIndex);
-      for (final char in additionalChars) {
-        if (slots.length < targetLength) {
-          slots.add(Char(
-            value: char.comparisonValue.toUpperCase(),
-            comparisonValue: char.comparisonValue,
-          ));
-        }
+  final List<List<Char>> eligibleAdditionalChars = [];
+  final List<List<Char>> otherAdditionalChars = [];
+  var shortestAdditionalChars = slots.length;
+  for (int index = 0; index < wordsCopy.length; index++) {
+    final additional = getAdditionalChars(words[index], slots);
+    if (additional.length > 0) {
+      if (additional.length <= remainingSlots) {
+        eligibleAdditionalChars.add(additional);
+      } else {
+        otherAdditionalChars.add(additional);
+      }
+      if (shortestAdditionalChars > additional.length) {
+        shortestAdditionalChars = additional.length;
       }
     }
   }
 
-  if (slots.length < targetLength && words.length > 0) {
-    final allChars = words.map((w) => w.chars).reduce((a, b) => [a, b].expand((x) => x).toList()).toList();
-    for (final char in allChars) {
-      final matchesInWords = allChars.where((c) => c.comparisonValue == char.comparisonValue).length;
-      var matchesInSlots = slots.where((c) => c.comparisonValue == char.comparisonValue).length;
-      while (matchesInWords > matchesInSlots && slots.length < targetLength) {
-        matchesInSlots++;
-        slots.add(Char(value: char.comparisonValue.toUpperCase(), comparisonValue: char.comparisonValue));
+  if (eligibleAdditionalChars.length == 0) {
+    while ((targetLength - slots.length) < shortestAdditionalChars) {
+      slots.removeLast();
+    }
+    for (int i = otherAdditionalChars.length - 1; i >= 0; i--) {
+      if (otherAdditionalChars[i].length <= shortestAdditionalChars) {
+        eligibleAdditionalChars.add(otherAdditionalChars[i]);
+        otherAdditionalChars.removeAt(i);
       }
-      if (slots.length == targetLength) {
+    }
+  }
+
+  while (eligibleAdditionalChars.length > 0 && slots.length < targetLength) {
+    final randomIndex = Random().nextInt(eligibleAdditionalChars.length);
+    final additionalChars = eligibleAdditionalChars[randomIndex];
+    eligibleAdditionalChars.removeAt(randomIndex);
+    for (final char in additionalChars) {
+      if (slots.length < targetLength) {
+        slots.add(Char(
+          value: char.comparisonValue.toUpperCase(),
+          comparisonValue: char.comparisonValue,
+        ));
+      } else {
         break;
+      }
+    }
+  }
+
+  if (slots.length < targetLength && otherAdditionalChars.length > 0) {
+    otherAdditionalChars.sort((a, b) => a.length - b.length);
+    for (int i = 0; i < otherAdditionalChars.length && slots.length < targetLength; i++) {
+      for (final char in otherAdditionalChars[i]) {
+        if (slots.length < targetLength) {
+          slots.add(char);
+        } else {
+          break;
+        }
       }
     }
   }
