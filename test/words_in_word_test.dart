@@ -2,12 +2,14 @@ import 'package:bible_game/db/model.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/cell.dart';
+import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/actions.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
+import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
 import 'package:flutter/material.dart';
@@ -37,10 +39,15 @@ void main() {
     expect(store.state.error == null, true);
     expect(store.state.wordsInWord.verse, BibleVerse.fromModel(await state.dba.getSingleVerse(1, 2, 3), "Genesisy"));
     expect(store.state.wordsInWord.resolvedWords, []);
-    expect(
-      store.state.wordsInWord.wordsToFind,
-      BibleVerse.fromModel(await state.dba.getSingleVerse(1, 2, 3), "Genesisy").words,
-    );
+    expect(store.state.wordsInWord.wordsToFind, [
+      Word.from("Ny", 0, false),
+      Word.from("filazana", 2, false),
+      Word.from("ny", 4, false),
+      Word.from("razan", 6, false),
+      Word.from("i", 8, false),
+      Word.from("Jesosy", 10, false),
+      Word.from("Kristy", 12, false),
+    ]);
     verify(store.state.dba.getSingleVerse(1, 1, 1)).called(1);
     verify(store.state.dba.getBookById(1)).called(1);
   });
@@ -56,22 +63,23 @@ void main() {
 
     when(state.dba.getBookById(1)).thenAnswer((_) => Future.value(Books(id: 1, name: "Genesisy", chapters: 10)));
     when(state.dba.getSingleVerse(1, 1, 1))
-        .thenAnswer((_) => Future.value(Verses(id: 1, book: 1, chapter: 1, verse: 1, text: "Test0")));
+        .thenAnswer((_) => Future.value(Verses(id: 1, book: 1, chapter: 1, verse: 1, text: "TestA")));
     when(state.dba.getSingleVerse(1, 1, 2))
-        .thenAnswer((_) => Future.value(Verses(id: 1, book: 1, chapter: 1, verse: 2, text: "Test1")));
+        .thenAnswer((_) => Future.value(Verses(id: 1, book: 1, chapter: 1, verse: 2, text: "TestB")));
     when(state.dba.getSingleVerse(1, 1, 3)).thenAnswer((_) => Future.value(null));
     when(state.dba.getSingleVerse(1, 2, 1))
-        .thenAnswer((_) => Future.value(Verses(id: 1, book: 1, chapter: 2, verse: 1, text: "Test2")));
+        .thenAnswer((_) => Future.value(Verses(id: 1, book: 1, chapter: 2, verse: 1, text: "TestC.")));
 
     store.dispatch(goToWordsInWord);
     await Future.delayed(Duration(seconds: 1));
-    var verse = BibleVerse.fromModel(Verses(id: 1, book: 1, chapter: 1, verse: 1, text: "Test0"), "Genesisy");
+    var verse = BibleVerse.fromModel(Verses(id: 1, book: 1, chapter: 1, verse: 1, text: "TestA"), "Genesisy");
     expect(store.state.wordsInWord.verse, verse);
     verify(store.state.dba.getSingleVerse(1, 1, 1)).called(1);
     verify(store.state.dba.getBookById(1)).called(1);
     // Next should not call get book anymore
-    verse = BibleVerse.fromModel(Verses(id: 1, book: 1, chapter: 1, verse: 2, text: "Test1"), "Genesisy");
-    store.dispatch(loadWordsInWordNextVerse);
+    verse = BibleVerse.fromModel(Verses(id: 1, book: 1, chapter: 1, verse: 2, text: "TestB"), "Genesisy");
+    await loadWordsInWordNextVerse(store);
+    store.dispatch(initializeWordsInWordState);
     await Future.delayed(Duration(seconds: 1));
     expect(store.state.wordsInWord.verse, verse);
     expect(store.state.wordsInWord.wordsToFind, verse.words);
@@ -79,10 +87,11 @@ void main() {
     verify(store.state.dba.getSingleVerse(1, 1, 2)).called(1);
     verifyNever(store.state.dba.getBookById(1));
     // Next should increment chapter
-    store.dispatch(loadWordsInWordNextVerse);
+    await loadWordsInWordNextVerse(store);
+    store.dispatch(initializeWordsInWordState);
     await Future.delayed(Duration(seconds: 1));
     expect(store.state.wordsInWord.verse,
-        BibleVerse.fromModel(Verses(id: 1, book: 1, chapter: 2, verse: 1, text: "Test2"), "Genesisy"));
+        BibleVerse.fromModel(Verses(id: 1, book: 1, chapter: 2, verse: 1, text: "TestC."), "Genesisy"));
     verify(store.state.dba.getSingleVerse(1, 2, 1)).called(1);
     verifyNever(store.state.dba.getBookById(1));
   });

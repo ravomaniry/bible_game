@@ -8,6 +8,7 @@ import 'package:bible_game/redux/error/actions.dart';
 import 'package:bible_game/redux/router/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/redux/words_in_word/cells_action.dart';
+import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/redux/words_in_word/state.dart';
 import 'package:bible_game/statics.dart';
 import 'package:bible_game/utils/retry.dart';
@@ -33,23 +34,28 @@ class SelectWordsInWordChar {
 }
 
 UpdateWordsInWordState receiveVerse(BibleVerse verse, WordsInWordState state) {
-  return UpdateWordsInWordState(state.copyWith(verse: verse, wordsToFind: verse.words, resolvedWords: []));
+  return UpdateWordsInWordState(state.copyWith(verse: verse));
 }
+
+final resetWordsInWord = UpdateWordsInWordState(WordsInWordState(
+  verse: null,
+  cells: [],
+  slots: [],
+  proposition: [],
+  wordsToFind: [],
+  resolvedWords: [],
+));
 
 final ThunkAction<AppState> goToWordsInWord = (Store<AppState> store) async {
   store.dispatch(GoToAction(Routes.wordsInWord));
-  store.dispatch(UpdateWordsInWordState(WordsInWordState(
-    verse: null,
-    cells: [],
-    slots: [],
-    proposition: [],
-    wordsToFind: [],
-    resolvedWords: [],
-  )));
-  store.dispatch(loadWordsInWordNextVerse);
+  store.dispatch(resetWordsInWord);
+  await loadWordsInWordNextVerse(store);
+  store.dispatch(recomputeCells);
+  // maybe let the event loop ticks here if the app drops frames
+  store.dispatch(initializeWordsInWordState);
 };
 
-ThunkAction<AppState> loadWordsInWordNextVerse = (Store<AppState> store) async {
+Future<void> loadWordsInWordNextVerse(Store<AppState> store) async {
   store.dispatch(ResetWordsInWordVerse());
   final dba = store.state.dba;
   var bookId = 1;
@@ -80,13 +86,12 @@ ThunkAction<AppState> loadWordsInWordNextVerse = (Store<AppState> store) async {
     } else {
       final bibleVerse = BibleVerse.fromModel(verse, bookName);
       store.dispatch(receiveVerse(bibleVerse, store.state.wordsInWord));
-      store.dispatch(recomputeCells);
     }
   } catch (e) {
     print(e);
     store.dispatch(ReceiveError(Errors.unknownDbError));
   }
-};
+}
 
 Future<Verses> _getNextVerse(int bookId, int chapterNum, int verseNum, DbAdapter dba) async {
   var next = await dba.getSingleVerse(bookId, chapterNum, verseNum + 1);

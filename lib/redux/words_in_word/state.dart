@@ -9,12 +9,14 @@ class WordsInWordState {
   final List<Word> wordsToFind;
   final List<List<Cell>> cells;
   final List<Char> slots;
+  final List<Char> slotsBackup;
   final List<Char> proposition;
 
   WordsInWordState({
     @required this.verse,
     @required this.cells,
     @required this.slots,
+    @required this.slotsBackup,
     @required this.proposition,
     @required this.wordsToFind,
     this.resolvedWords = const [],
@@ -28,6 +30,7 @@ class WordsInWordState {
       proposition: [],
       slots: [],
       cells: [],
+      slotsBackup: [],
     );
   }
 
@@ -35,7 +38,8 @@ class WordsInWordState {
     BibleVerse verse,
     List<List<Cell>> cells,
     List<Char> slots,
-    List<Char> selected,
+    List<Char> slotsBackup,
+    List<Char> proposition,
     List<Word> wordsToFind,
     List<Word> resolvedWords,
   }) {
@@ -43,7 +47,8 @@ class WordsInWordState {
       verse: verse ?? this.verse,
       cells: cells ?? this.cells,
       slots: slots ?? this.slots,
-      proposition: selected ?? this.proposition,
+      slotsBackup: slotsBackup ?? this.slotsBackup,
+      proposition: proposition ?? this.proposition,
       wordsToFind: wordsToFind ?? this.wordsToFind,
       resolvedWords: resolvedWords ?? this.resolvedWords,
     );
