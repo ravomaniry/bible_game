@@ -23,6 +23,7 @@ class WordsInWordViewModel {
   final Function(double) updateScreenWidth;
   final Function(int) slotClickHandler;
   final Function() propose;
+  final Function() tempNextVerseHandler;
 
   WordsInWordViewModel({
     @required this.verse,
@@ -38,6 +39,7 @@ class WordsInWordViewModel {
     @required this.updateScreenWidth,
     @required this.slotClickHandler,
     @required this.propose,
+    @required this.tempNextVerseHandler,
   });
 
   static WordsInWordViewModel converter(Store<AppState> store) {
@@ -58,6 +60,7 @@ class WordsInWordViewModel {
       },
       slotClickHandler: (int index) => store.dispatch(SlotClickHandler(index).thunk),
       propose: () => store.dispatch(proposeWordsInWord),
+      tempNextVerseHandler: () => store.dispatch(tempWordsInWordNext),
     );
   }
 }

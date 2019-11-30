@@ -41,6 +41,7 @@ final resetWordsInWord = UpdateWordsInWordState(WordsInWordState(
   verse: null,
   cells: [],
   slots: [],
+  slotsBackup: [],
   proposition: [],
   wordsToFind: [],
   resolvedWords: [],
@@ -52,6 +53,12 @@ final ThunkAction<AppState> goToWordsInWord = (Store<AppState> store) async {
   await loadWordsInWordNextVerse(store);
   store.dispatch(recomputeCells);
   // maybe let the event loop ticks here if the app drops frames
+  store.dispatch(initializeWordsInWordState);
+};
+
+final ThunkAction<AppState> tempWordsInWordNext = (Store<AppState> store) async {
+  await loadWordsInWordNextVerse(store);
+  store.dispatch(recomputeCells);
   store.dispatch(initializeWordsInWordState);
 };
 

@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:bible_game/db/model.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
@@ -33,6 +32,8 @@ List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
   bool canAdd = false;
 
   while (wordsCopy.length > 0 && slots.length < targetLength) {
+    print("--------------------- I suspect you to cause infinite loop.");
+
     final wordIndex = Random().nextInt(wordsCopy.length);
     final word = wordsCopy[wordIndex];
     final additionalChars = getAdditionalChars(word, slots);
@@ -52,7 +53,7 @@ List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
     }
   }
 
-  if (slots.length < targetLength) {
+  if (slots.length < targetLength && words.length > 0) {
     final allChars = words.map((w) => w.chars).reduce((a, b) => [a, b].expand((x) => x).toList()).toList();
     for (final char in allChars) {
       final matchesInWords = allChars.where((c) => c.comparisonValue == char.comparisonValue).length;

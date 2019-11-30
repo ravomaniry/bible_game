@@ -11,7 +11,7 @@ class WordInWordsStyles {
   static final unrevealedWordColor = Color.fromARGB(255, 100, 100, 200);
   static final revealedWordColor = Color.fromARGB(255, 0, 200, 0);
   static final revealedCharColor = Color.fromARGB(255, 100, 240, 100);
-  static final resultBackgroundColor = Color.fromARGB(255, 200, 230, 255);
+  static final resultBackgroundColor = Color.fromARGB(255, 230, 230, 255);
   static final revealedCharStyle = TextStyle(color: Color.fromARGB(255, 255, 255, 255));
   static final separatorCharStyle = TextStyle(
     color: Colors.black,

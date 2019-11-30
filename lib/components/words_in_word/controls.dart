@@ -74,6 +74,13 @@ class SlotItem extends StatelessWidget {
 
   SlotItem(this._slot, this._index, this._onClick);
 
+  Function() get onClick {
+    if (_slot == null) {
+      return null;
+    }
+    return () => _onClick(_index);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -85,7 +92,7 @@ class SlotItem extends StatelessWidget {
       child: MaterialButton(
         key: Key("slot_$_index"),
         padding: EdgeInsets.all(0),
-        onPressed: () => _onClick(_index),
+        onPressed: onClick,
         child: Text(_slot?.value ?? "", style: WordInWordsStyles.slotTextStyle),
       ),
     );

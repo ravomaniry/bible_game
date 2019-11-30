@@ -8,6 +8,7 @@ class BibleVerse with EquatableMixin {
   final int bookId;
   final int chapter;
   final int verse;
+  final String text;
   final List<Word> words;
   static final separatorRegex = RegExp("[^a-zàô]", caseSensitive: false);
 
@@ -17,6 +18,7 @@ class BibleVerse with EquatableMixin {
     @required this.chapter,
     @required this.verse,
     @required this.words,
+    @required this.text,
   });
 
   factory BibleVerse.fromModel(Verses model, String bookName) {
@@ -59,7 +61,14 @@ class BibleVerse with EquatableMixin {
     }
     appendWord();
 
-    return BibleVerse(book: book, chapter: chapter, verse: verse, words: words, bookId: bookId);
+    return BibleVerse(
+      book: book,
+      chapter: chapter,
+      verse: verse,
+      words: words,
+      bookId: bookId,
+      text: text,
+    );
   }
 
   BibleVerse copyWith({String book, int bookId, int chapter, int verse, List<Word> words}) {
@@ -69,6 +78,7 @@ class BibleVerse with EquatableMixin {
       chapter: chapter ?? this.chapter,
       verse: verse ?? this.verse,
       words: words ?? this.words,
+      text: this.text,
     );
   }
 

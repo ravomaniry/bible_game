@@ -70,6 +70,8 @@ class _CellDisplay extends StatelessWidget {
   String getContentToDisplay(Char char) {
     if (_word.isSeparator) {
       return char.value;
+    } else if (_word.resolved) {
+      return char.value;
     }
     return char.resolved ? char.value : "";
   }
