@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:bible_game/db/db_adapter.dart';
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/models/bible_verse.dart';
-import 'package:bible_game/models/words_in_word/Char.dart';
+import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/error/actions.dart';
 import 'package:bible_game/redux/router/actions.dart';
@@ -27,13 +27,13 @@ class UpdateWordsInWordState {
 }
 
 class SelectWordsInWordChar {
-  final WordsInWordChar payload;
+  final Char payload;
 
   SelectWordsInWordChar(this.payload);
 }
 
 UpdateWordsInWordState receiveVerse(BibleVerse verse, WordsInWordState state) {
-  return UpdateWordsInWordState(state.copyWith(verse: verse));
+  return UpdateWordsInWordState(state.copyWith(verse: verse, wordsToFind: verse.words, resolvedWords: []));
 }
 
 final ThunkAction<AppState> goToWordsInWord = (Store<AppState> store) async {
@@ -41,8 +41,10 @@ final ThunkAction<AppState> goToWordsInWord = (Store<AppState> store) async {
   store.dispatch(UpdateWordsInWordState(WordsInWordState(
     verse: null,
     cells: [],
-    chars: [],
-    selected: [],
+    slots: [],
+    proposition: [],
+    wordsToFind: [],
+    resolvedWords: [],
   )));
   store.dispatch(loadWordsInWordNextVerse);
 };

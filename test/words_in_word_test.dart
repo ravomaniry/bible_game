@@ -17,7 +17,7 @@ import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
 void main() {
-  testWidgets("Words in word test", (WidgetTester tester) async {
+  testWidgets("Words in word intial state", (WidgetTester tester) async {
     final state = AppState(
       assetBundle: AssetBundleMock.withDefaultValue(),
       dba: DbAdapterMock.withDefaultValues(),
@@ -36,6 +36,11 @@ void main() {
     await tester.pump(Duration(milliseconds: 10));
     expect(store.state.error == null, true);
     expect(store.state.wordsInWord.verse, BibleVerse.fromModel(await state.dba.getSingleVerse(1, 2, 3), "Genesisy"));
+    expect(store.state.wordsInWord.resolvedWords, []);
+    expect(
+      store.state.wordsInWord.wordsToFind,
+      BibleVerse.fromModel(await state.dba.getSingleVerse(1, 2, 3), "Genesisy").words,
+    );
     verify(store.state.dba.getSingleVerse(1, 1, 1)).called(1);
     verify(store.state.dba.getBookById(1)).called(1);
   });
@@ -60,17 +65,17 @@ void main() {
 
     store.dispatch(goToWordsInWord);
     await Future.delayed(Duration(seconds: 1));
-    expect(
-      store.state.wordsInWord.verse,
-      BibleVerse.fromModel(Verses(id: 1, book: 1, chapter: 1, verse: 1, text: "Test0"), "Genesisy"),
-    );
+    var verse = BibleVerse.fromModel(Verses(id: 1, book: 1, chapter: 1, verse: 1, text: "Test0"), "Genesisy");
+    expect(store.state.wordsInWord.verse, verse);
     verify(store.state.dba.getSingleVerse(1, 1, 1)).called(1);
     verify(store.state.dba.getBookById(1)).called(1);
     // Next should not call get book anymore
+    verse = BibleVerse.fromModel(Verses(id: 1, book: 1, chapter: 1, verse: 2, text: "Test1"), "Genesisy");
     store.dispatch(loadWordsInWordNextVerse);
     await Future.delayed(Duration(seconds: 1));
-    expect(store.state.wordsInWord.verse,
-        BibleVerse.fromModel(Verses(id: 1, book: 1, chapter: 1, verse: 2, text: "Test1"), "Genesisy"));
+    expect(store.state.wordsInWord.verse, verse);
+    expect(store.state.wordsInWord.wordsToFind, verse.words);
+    expect(store.state.wordsInWord.resolvedWords, []);
     verify(store.state.dba.getSingleVerse(1, 1, 2)).called(1);
     verifyNever(store.state.dba.getBookById(1));
     // Next should increment chapter
