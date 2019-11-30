@@ -5,6 +5,7 @@ import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/actions.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
 import 'package:bible_game/redux/words_in_word/cells_action.dart';
+import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:redux/redux.dart';
 
@@ -20,6 +21,8 @@ class WordsInWordViewModel {
   final Function() submitHandler;
   final Function() cancelHandler;
   final Function(double) updateScreenWidth;
+  final Function(int) slotClickHandler;
+  final Function() propose;
 
   WordsInWordViewModel({
     @required this.verse,
@@ -33,6 +36,8 @@ class WordsInWordViewModel {
     @required this.submitHandler,
     @required this.cancelHandler,
     @required this.updateScreenWidth,
+    @required this.slotClickHandler,
+    @required this.propose,
   });
 
   static WordsInWordViewModel converter(Store<AppState> store) {
@@ -51,6 +56,8 @@ class WordsInWordViewModel {
         store.dispatch(UpdateScreenWidth(screenWidth));
         store.dispatch(ComputeCells(screenWidth).thunk);
       },
+      slotClickHandler: (int index) => store.dispatch(SlotClickHandler(index).thunk),
+      propose: () => store.dispatch(proposeWordsInWord),
     );
   }
 }

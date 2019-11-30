@@ -8,10 +8,13 @@ import 'package:bible_game/redux/config/actions.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
+import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
+import 'package:bible_game/redux/words_in_word/state.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -122,5 +125,78 @@ void main() {
       [Cell(12, 0), Cell(12, 1), Cell(12, 2), Cell(12, 3), Cell(12, 4), Cell(12, 5)]
     ];
     expect(store.state.wordsInWord.cells, expectedCells);
+  });
+
+  testWidgets("In game interractivity - Tap + propose", (WidgetTester tester) async {
+    final verse = BibleVerse.from(bookId: 1, book: "Matio", chapter: 1, verse: 1, text: "Ny teny ny Azy");
+    final initialState = AppState(
+      route: Routes.wordsInWord,
+      dba: DbAdapterMock.withDefaultValues(),
+      assetBundle: AssetBundleMock.withDefaultValue(),
+      explorer: ExplorerState(),
+      config: ConfigState.initialState(),
+      wordsInWord: WordsInWordState.emptyState(),
+    );
+    final store = Store<AppState>(mainReducer, middleware: [thunkMiddleware], initialState: initialState);
+    store.dispatch(receiveVerse(verse, store.state.wordsInWord));
+    store.dispatch(initializeWordsInWordState);
+    store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
+      slots: Word.from("NYTENY", 0, false).chars,
+      slotsBackup: Word.from("NYTENY", 0, false).chars,
+    )));
+
+    await tester.pumpWidget(BibleGame(store));
+    expect(find.byKey(Key("wordsInWord")), findsOneWidget);
+    expect(store.state.wordsInWord.slots, Word.from("NYTENY", 0, false).chars);
+    expect(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars);
+    expect(store.state.wordsInWord.wordsToFind, [
+      Word.from("Ny", 0, false),
+      Word.from("teny", 2, false),
+      Word.from("ny", 4, false),
+      Word.from("Azy", 6, false),
+    ]);
+
+    await tester.tap(find.byKey(Key("slot_0")));
+    await tester.tap(find.byKey(Key("slot_3")));
+    await tester.pump(Duration(milliseconds: 10));
+    expect(store.state.wordsInWord.proposition, [
+      Char(value: "N", comparisonValue: "n"),
+      Char(value: "E", comparisonValue: "e"),
+    ]);
+    expect(store.state.wordsInWord.slots, [
+      null,
+      ...Word.from("YT", 0, false).chars,
+      null,
+      ...Word.from("NY", 0, false).chars,
+    ]);
+
+    await tester.tap(find.byKey(Key("proposeBtn")));
+    await tester.pump(Duration(milliseconds: 10));
+    expect(store.state.wordsInWord.proposition, []);
+    expect(listEquals(store.state.wordsInWord.slots, Word.from("NYTENY", 0, false).chars), true);
+    expect(listEquals(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars), true);
+    expect(store.state.wordsInWord.wordsToFind.length, 4);
+    expect(store.state.wordsInWord.resolvedWords, []);
+
+    await tester.tap(find.byKey(Key("slot_4")));
+    await tester.pump(Duration(milliseconds: 10));
+    await tester.tap(find.byKey(Key("slot_1")));
+    await tester.pump(Duration(milliseconds: 10));
+    await tester.tap(find.byKey(Key("proposeBtn")));
+    await tester.pump(Duration(milliseconds: 10));
+    expect(store.state.wordsInWord.proposition, []);
+    expect(listEquals(store.state.wordsInWord.slots, Word.from("NYTENY", 0, false).chars), false);
+    expect(listEquals(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars), false);
+    expect(store.state.wordsInWord.wordsToFind, [Word.from("teny", 2, false), Word.from("Azy", 6, false)]);
+    expect(store.state.wordsInWord.resolvedWords, [Word.from("Ny", 0, false), Word.from("ny", 4, false)]);
+    expect(store.state.wordsInWord.verse.words, [
+      Word.from("Ny", 0, false).copyWith(resolved: true),
+      Word.from(" ", 1, true),
+      Word.from("teny", 2, false),
+      Word.from(" ", 3, true),
+      Word.from("ny", 4, false).copyWith(resolved: true),
+      Word.from(" ", 5, true),
+      Word.from("Azy", 6, false),
+    ]);
   });
 }

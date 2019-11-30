@@ -37,7 +37,7 @@ class BibleVerse with EquatableMixin {
 
     void appendWord() {
       if (wordValue.length > 0) {
-        words.add(Word.from(wordValue, index, separatorMode)..resolved = separatorMode);
+        words.add(Word.from(wordValue, index, separatorMode));
         separatorMode = false;
         wordValue = "";
         index++;
@@ -79,7 +79,7 @@ class BibleVerse with EquatableMixin {
 
   @override
   String toString() {
-    return "$book $chapter:$verse - ${words.length} words: ${words.join("; ")}";
+    return "$book $chapter:$verse - ${words.length} words: ${words.join("\n")}";
   }
 
   @override

@@ -1,4 +1,6 @@
 import 'dart:math';
+import 'package:bible_game/db/model.dart';
+import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
@@ -81,4 +83,70 @@ List<Char> getAdditionalChars(Word word, List<Char> slots) {
   }
   missingChars.shuffle();
   return missingChars;
+}
+
+class SlotClickHandler {
+  final int _index;
+  ThunkAction<AppState> thunk;
+
+  SlotClickHandler(this._index) {
+    thunk = (Store<AppState> store) {
+      final state = store.state.wordsInWord;
+      final slots = List<Char>.from(state.slots);
+      final proposition = List<Char>.from(state.proposition);
+      proposition.add(slots[_index]);
+      slots[_index] = null;
+      store.dispatch(UpdateWordsInWordState(state.copyWith(
+        slots: slots,
+        proposition: proposition,
+      )));
+    };
+  }
+}
+
+ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
+  final state = store.state.wordsInWord;
+  final wordsToFind = List<Word>.from(state.wordsToFind);
+  final resolvedWords = List<Word>.from(state.resolvedWords);
+  final proposition = state.proposition;
+  var verse = state.verse;
+  var slots = List<Char>.from(state.slots);
+  var slotsBackup = List<Char>.from(state.slotsBackup);
+  bool hasFoundMatch = false;
+
+  for (final word in state.wordsToFind) {
+    if (word.sameAsChars(proposition)) {
+      hasFoundMatch = true;
+      resolvedWords.add(word);
+      wordsToFind.remove(word);
+    }
+  }
+
+  if (hasFoundMatch) {
+    slots = fillSlots(slots, wordsToFind);
+    slotsBackup = slots;
+    verse = updateVerseResolvedWords(proposition, verse);
+  } else {
+    slots = slotsBackup;
+  }
+
+  store.dispatch(UpdateWordsInWordState(state.copyWith(
+    verse: verse,
+    slots: slots,
+    proposition: [],
+    slotsBackup: slotsBackup,
+    resolvedWords: resolvedWords,
+    wordsToFind: wordsToFind,
+  )));
+};
+
+BibleVerse updateVerseResolvedWords(List<Char> proposition, BibleVerse verse) {
+  final words = List<Word>.from(verse.words);
+  for (int i = 0; i < words.length; i++) {
+    final word = words[i];
+    if (!word.resolved && word.sameAsChars(proposition)) {
+      words[i] = word.copyWith(resolved: true);
+    }
+  }
+  return verse.copyWith(words: words);
 }

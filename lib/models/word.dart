@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 class Word with EquatableMixin {
   final Bonus bonus;
   final List<Char> chars;
-  bool resolved;
+  final bool resolved;
   final bool isSeparator;
   final int index;
 
@@ -22,7 +22,13 @@ class Word with EquatableMixin {
 
   factory Word.from(String text, int index, bool isSeparator) {
     final chars = text.split("").map((t) => Char(value: t, comparisonValue: Char.getComparisonValue(t))).toList();
-    return Word(chars: chars, index: index, isSeparator: isSeparator, value: text);
+    return Word(
+      chars: chars,
+      index: index,
+      isSeparator: isSeparator,
+      resolved: isSeparator,
+      value: text,
+    );
   }
 
   Word copyWith({List<Char> chars, bool resolved, Bonus bonus}) {
@@ -44,9 +50,21 @@ class Word with EquatableMixin {
     return copyWith(chars: chars);
   }
 
+  bool sameAsChars(List<Char> chars) {
+    if (chars.length == this.chars.length) {
+      for (int i = 0; i < chars.length; i++) {
+        if (chars[i].comparisonValue != this.chars[i].comparisonValue) {
+          return false;
+        }
+      }
+      return true;
+    }
+    return false;
+  }
+
   @override
   String toString() {
-    return "$value: isSeparator=$isSeparator resolved=$resolved, bonus=$bonus [${chars.join(",")}]";
+    return "\n$value: isSeparator=$isSeparator resolved=$resolved, bonus=$bonus  \n\t[${chars.join(",\n\t")}]";
   }
 
   @override
