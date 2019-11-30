@@ -39,6 +39,7 @@ class PropositionDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialButton(
       key: Key("proposeBtn"),
+      padding: EdgeInsets.all(0),
       onPressed: clickHandler,
       child: Text(
         _proposition.map((x) => x.value).join(""),
