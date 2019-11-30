@@ -45,7 +45,6 @@ void main() {
     expect(store.state.wordsInWord.wordsToFind, [
       Word.from("Ny", 0, false),
       Word.from("filazana", 2, false),
-      Word.from("ny", 4, false),
       Word.from("razan", 6, false),
       Word.from("i", 8, false),
       Word.from("Jesosy", 10, false),
@@ -152,7 +151,6 @@ void main() {
     expect(store.state.wordsInWord.wordsToFind, [
       Word.from("Ny", 0, false),
       Word.from("teny", 2, false),
-      Word.from("ny", 4, false),
       Word.from("Azy", 6, false),
     ]);
 
@@ -175,7 +173,7 @@ void main() {
     expect(store.state.wordsInWord.proposition, []);
     expect(listEquals(store.state.wordsInWord.slots, Word.from("NYTENY", 0, false).chars), true);
     expect(listEquals(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars), true);
-    expect(store.state.wordsInWord.wordsToFind.length, 4);
+    expect(store.state.wordsInWord.wordsToFind.length, 3);
     expect(store.state.wordsInWord.resolvedWords, []);
 
     await tester.tap(find.byKey(Key("slot_4")));
@@ -188,7 +186,7 @@ void main() {
     expect(listEquals(store.state.wordsInWord.slots, Word.from("NYTENY", 0, false).chars), false);
     expect(listEquals(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars), false);
     expect(store.state.wordsInWord.wordsToFind, [Word.from("teny", 2, false), Word.from("Azy", 6, false)]);
-    expect(store.state.wordsInWord.resolvedWords, [Word.from("Ny", 0, false), Word.from("ny", 4, false)]);
+    expect(store.state.wordsInWord.resolvedWords, [Word.from("Ny", 0, false)]);
     expect(store.state.wordsInWord.verse.words, [
       Word.from("Ny", 0, false).copyWith(resolved: true),
       Word.from(" ", 1, true),

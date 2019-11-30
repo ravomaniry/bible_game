@@ -8,10 +8,9 @@ import 'package:redux/redux.dart';
 
 ThunkAction<AppState> initializeWordsInWordState = (Store<AppState> store) {
   final state = store.state.wordsInWord;
-  final wordsToFind = state.verse.words.where((w) => !w.isSeparator).toList();
+  final wordsToFind = extractWordsToFind(state.verse.words);
   var slots = generateEmptySlots(wordsToFind);
   slots = fillSlots(slots, wordsToFind);
-
   store.dispatch(UpdateWordsInWordState(state.copyWith(
     wordsToFind: wordsToFind,
     slots: slots,
@@ -20,15 +19,25 @@ ThunkAction<AppState> initializeWordsInWordState = (Store<AppState> store) {
   )));
 };
 
+List<Word> extractWordsToFind(List<Word> words) {
+  final List<Word> wordsToFind = [];
+  for (final word in words) {
+    if (!word.isSeparator && wordsToFind.where((w) => w.sameAsChars(word.chars)).length == 0) {
+      wordsToFind.add(word);
+    }
+  }
+  return wordsToFind;
+}
+
 List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
   final targetLength = prevSlots.length;
   final slots = prevSlots.where((char) => char != null).toList();
   final remainingSlots = targetLength - slots.length;
   final wordsCopy = List<Word>.from(words);
-
   final List<List<Char>> eligibleAdditionalChars = [];
   List<List<Char>> otherAdditionalChars = [];
   var shortestAdditionalChars = slots.length;
+
   for (int index = 0; index < wordsCopy.length; index++) {
     final additional = getAdditionalChars(words[index], slots);
     if (additional.length > 0) {
@@ -65,13 +74,11 @@ List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
           value: char.comparisonValue.toUpperCase(),
           comparisonValue: char.comparisonValue,
         ));
-      } else {
-        break;
       }
     }
   }
 
-  if (slots.length < targetLength && otherAdditionalChars.length > 0) {
+  if (slots.length < targetLength) {
     List<Word> otherWords = [];
     for (final word in wordsCopy) {
       final additional = getAdditionalChars(word, slots);
@@ -82,17 +89,19 @@ List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
     }
     otherWords.sort((a, b) => getAdditionalChars(a, slots).length - getAdditionalChars(b, slots).length);
 
-    for (final word in otherWords) {
-      final additional = getAdditionalChars(word, slots);
-      for (final char in additional) {
-        if (slots.length < targetLength) {
-          slots.add(Char(value: char.comparisonValue.toUpperCase(), comparisonValue: char.comparisonValue));
-        } else {
+    if (otherWords.length > 0) {
+      for (final word in otherWords) {
+        final additional = getAdditionalChars(word, slots);
+        for (final char in additional) {
+          if (slots.length < targetLength) {
+            slots.add(Char(value: char.comparisonValue.toUpperCase(), comparisonValue: char.comparisonValue));
+          } else {
+            break;
+          }
+        }
+        if (slots.length == targetLength) {
           break;
         }
-      }
-      if (slots.length == targetLength) {
-        break;
       }
     }
   }

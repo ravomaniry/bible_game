@@ -66,7 +66,7 @@ void main() {
     words = [
       Word.from("ABCD", 0, false),
       Word.from("ABCDEFG", 0, false),
-      Word.from("EFGHIJ", 0, false),
+      Word.from("HIJKLM", 0, false),
     ];
     filled = fillSlots(slots, words);
     filled.sort((a, b) => a.value.codeUnitAt(0) - b.value.codeUnitAt(0));
