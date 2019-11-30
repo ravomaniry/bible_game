@@ -8,34 +8,41 @@ void main() {
       book: "Matio",
       chapter: 4,
       verse: 10,
-      text: "Aza menatra. Mijoroa",
+      text: "Azà menatra. Mijorôa",
     );
     final List<Word> words = [
       Word(
         index: 0,
         resolved: false,
         bonus: null,
-        chars: [Char(value: "A"), Char(value: "z"), Char(value: "a")],
+        value: "Azà",
+        chars: [
+          Char(value: "A", comparisonValue: "a"),
+          Char(value: "z", comparisonValue: "z"),
+          Char(value: "à", comparisonValue: "a"),
+        ],
       ),
       Word(
         index: 1,
         resolved: true,
         bonus: null,
         isSeparator: true,
-        chars: [Char(value: " ")],
+        value: " ",
+        chars: [Char(value: " ", comparisonValue: " ")],
       ),
       Word(
         index: 2,
         resolved: false,
         bonus: null,
+        value: "menatra",
         chars: [
-          Char(value: "m"),
-          Char(value: "e"),
-          Char(value: "n"),
-          Char(value: "a"),
-          Char(value: "t"),
-          Char(value: "r"),
-          Char(value: "a"),
+          Char(value: "m", comparisonValue: "m"),
+          Char(value: "e", comparisonValue: "e"),
+          Char(value: "n", comparisonValue: "n"),
+          Char(value: "a", comparisonValue: "a"),
+          Char(value: "t", comparisonValue: "t"),
+          Char(value: "r", comparisonValue: "r"),
+          Char(value: "a", comparisonValue: "a"),
         ],
       ),
       Word(
@@ -43,26 +50,31 @@ void main() {
         bonus: null,
         resolved: true,
         isSeparator: true,
-        chars: [Char(value: "."), Char(value: " ")],
+        value: ". ",
+        chars: [
+          Char(value: ".", comparisonValue: "."),
+          Char(value: " ", comparisonValue: " "),
+        ],
       ),
       Word(
         index: 4,
         resolved: false,
         bonus: null,
+        value: "Mijorôa",
         chars: [
-          Char(value: "M"),
-          Char(value: "i"),
-          Char(value: "j"),
-          Char(value: "o"),
-          Char(value: "r"),
-          Char(value: "o"),
-          Char(value: "a"),
+          Char(value: "M", comparisonValue: "m"),
+          Char(value: "i", comparisonValue: "i"),
+          Char(value: "j", comparisonValue: "j"),
+          Char(value: "o", comparisonValue: "o"),
+          Char(value: "r", comparisonValue: "r"),
+          Char(value: "ô", comparisonValue: "o"),
+          Char(value: "a", comparisonValue: "a"),
         ],
       )
     ];
     expect(
       verse,
-      BibleVerse(book: "Matio", chapter: 4, verse: 10, words: words),
+      BibleVerse(book: "Matio", bookId: 1, chapter: 4, verse: 10, words: words),
     );
     expect(verse, verse.copyWith());
   });
@@ -73,27 +85,33 @@ void main() {
         index: 0,
         resolved: false,
         bonus: null,
-        chars: [Char(value: "A"), Char(value: "z"), Char(value: "a")],
+        value: "Aza",
+        chars: [
+          Char(value: "A", comparisonValue: "a"),
+          Char(value: "z", comparisonValue: "z"),
+          Char(value: "a", comparisonValue: "a"),
+        ],
       ),
       Word(
         index: 1,
         resolved: false,
         bonus: null,
-        chars: [Char(value: ". ")],
+        value: ".",
+        chars: [Char(value: ".", comparisonValue: ".")],
       ),
     ];
-    final verse = BibleVerse(book: "Marka", chapter: 10, verse: 20, words: words);
+    final verse = BibleVerse(book: "Marka", bookId: 1, chapter: 10, verse: 20, words: words);
     expect(
       verse.copyWith(book: "Matio"),
-      BibleVerse(book: "Matio", chapter: 10, verse: 20, words: words),
+      BibleVerse(book: "Matio", bookId: 1, chapter: 10, verse: 20, words: words),
     );
     expect(
       verse.copyWith(chapter: 1, verse: 2, words: words),
-      BibleVerse(book: "Marka", chapter: 1, verse: 2, words: words),
+      BibleVerse(book: "Marka", bookId: 1, chapter: 1, verse: 2, words: words),
     );
     expect(
       verse.copyWith(book: "Matio", chapter: 1, verse: 2, words: words),
-      BibleVerse(book: "Matio", chapter: 1, verse: 2, words: words),
+      BibleVerse(book: "Matio", bookId: 1, chapter: 1, verse: 2, words: words),
     );
     expect(
       verse.copyWithWord(0, words[0].copyWith(resolved: true)),
@@ -101,12 +119,18 @@ void main() {
         book: "Marka",
         chapter: 10,
         verse: 20,
+        bookId: 1,
         words: [
           Word(
             index: 0,
             resolved: true,
             bonus: null,
-            chars: [Char(value: "A"), Char(value: "z"), Char(value: "a")],
+            value: "Aza",
+            chars: [
+              Char(value: "A", comparisonValue: "a"),
+              Char(value: "z", comparisonValue: "z"),
+              Char(value: "a", comparisonValue: "a"),
+            ],
           ),
           words[1]
         ],

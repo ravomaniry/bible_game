@@ -7,7 +7,11 @@ void main() {
       index: 0,
       resolved: false,
       bonus: null,
-      chars: [Char(value: "A"), Char(value: "z")],
+      value: "Az",
+      chars: [
+        Char(value: "A", comparisonValue: "a"),
+        Char(value: "z", comparisonValue: "z"),
+      ],
     );
     expect(
       original.copyWith(resolved: true),
@@ -15,25 +19,34 @@ void main() {
         index: 0,
         resolved: true,
         bonus: null,
-        chars: [Char(value: "A"), Char(value: "z")],
+        value: "Az",
+        chars: [
+          Char(value: "A", comparisonValue: "a"),
+          Char(value: "z", comparisonValue: "z"),
+        ],
       ),
     );
     expect(
-      original.copyWith(resolved: true, chars: [Char(value: "b")]),
+      original.copyWith(resolved: true, chars: [Char(value: "b", comparisonValue: "b")]),
       Word(
         index: 0,
         resolved: true,
         bonus: null,
-        chars: [Char(value: "b")],
+        value: "b",
+        chars: [Char(value: "b", comparisonValue: "b")],
       ),
     );
     expect(
-      original.copyWithChar(1, Char(value: "z", resolved: true)),
+      original.copyWithChar(1, Char(value: "z", comparisonValue: "z", resolved: true)),
       Word(
         index: 0,
         resolved: false,
         bonus: null,
-        chars: [Char(value: "A"), Char(value: "z", resolved: true)],
+        value: "Az",
+        chars: [
+          Char(value: "A", comparisonValue: "a"),
+          Char(value: "z", comparisonValue: "z", resolved: true),
+        ],
       ),
     );
   });
