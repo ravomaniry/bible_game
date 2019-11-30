@@ -1,5 +1,6 @@
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -59,5 +60,19 @@ void main() {
     filled = fillSlots(slots, words);
     filled.sort((a, b) => a.value.codeUnitAt(0) - b.value.codeUnitAt(0));
     expect(filled, Word.from("AAINY", 0, false).chars);
+
+    // Take the shortest additional word
+    slots = [null, null, null, null, null];
+    words = [
+      Word.from("ABCD", 0, false),
+      Word.from("ABCDEFG", 0, false),
+      Word.from("EFGHIJ", 0, false),
+    ];
+    filled = fillSlots(slots, words);
+    filled.sort((a, b) => a.value.codeUnitAt(0) - b.value.codeUnitAt(0));
+    final isOk = listEquals(filled, Word.from("ABCDE", 0, false).chars) ||
+        listEquals(filled, Word.from("ABCDF", 0, false).chars) ||
+        listEquals(filled, Word.from("ABCDG", 0, false).chars);
+    expect(isOk, true);
   });
 }

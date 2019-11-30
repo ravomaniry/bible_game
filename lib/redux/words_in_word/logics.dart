@@ -20,11 +20,6 @@ ThunkAction<AppState> initializeWordsInWordState = (Store<AppState> store) {
   )));
 };
 
-List<Char> generateEmptySlots(List<Word> words) {
-  final num = max(6, words.map((w) => w.chars.length).reduce((a, b) => max(a, b)));
-  return List<Char>(num);
-}
-
 List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
   final targetLength = prevSlots.length;
   final slots = prevSlots.where((char) => char != null).toList();
@@ -32,7 +27,7 @@ List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
   final wordsCopy = List<Word>.from(words);
 
   final List<List<Char>> eligibleAdditionalChars = [];
-  final List<List<Char>> otherAdditionalChars = [];
+  List<List<Char>> otherAdditionalChars = [];
   var shortestAdditionalChars = slots.length;
   for (int index = 0; index < wordsCopy.length; index++) {
     final additional = getAdditionalChars(words[index], slots);
@@ -77,19 +72,37 @@ List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
   }
 
   if (slots.length < targetLength && otherAdditionalChars.length > 0) {
-    otherAdditionalChars.sort((a, b) => a.length - b.length);
-    for (int i = 0; i < otherAdditionalChars.length && slots.length < targetLength; i++) {
-      for (final char in otherAdditionalChars[i]) {
+    List<Word> otherWords = [];
+    for (final word in wordsCopy) {
+      final additional = getAdditionalChars(word, slots);
+      if (additional.length > 0) {
+        otherAdditionalChars.add(additional);
+        otherWords.add(word);
+      }
+    }
+    otherWords.sort((a, b) => getAdditionalChars(a, slots).length - getAdditionalChars(b, slots).length);
+
+    for (final word in otherWords) {
+      final additional = getAdditionalChars(word, slots);
+      for (final char in additional) {
         if (slots.length < targetLength) {
-          slots.add(char);
+          slots.add(Char(value: char.comparisonValue.toUpperCase(), comparisonValue: char.comparisonValue));
         } else {
           break;
         }
+      }
+      if (slots.length == targetLength) {
+        break;
       }
     }
   }
 
   return slots;
+}
+
+List<Char> generateEmptySlots(List<Word> words) {
+  final num = max(6, words.map((w) => w.chars.length).reduce((a, b) => max(a, b)));
+  return List<Char>(num);
 }
 
 List<Char> getAdditionalChars(Word word, List<Char> slots) {
