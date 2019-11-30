@@ -1,5 +1,7 @@
 import 'package:bible_game/models/cell.dart';
+import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/words_in_word/view_model.dart';
+import 'package:bible_game/statics.dart';
 import 'package:flutter/cupertino.dart';
 
 class WordsInWordResult extends StatelessWidget {
@@ -23,23 +25,78 @@ class WordsInWordResult extends StatelessWidget {
     if (verse != null && cells != null) {
       final List<Widget> rowWidgets = _viewModel.cells.map(_buildRow).toList();
       return Expanded(
-        child: ListView(children: rowWidgets),
+        child: Container(
+          decoration: BoxDecoration(color: BibleGameColors.resultBackground),
+          child: ListView(children: rowWidgets),
+        ),
       );
     }
     return Text("Nothing to show!!!");
   }
 
   Widget _buildRow(List<Cell> _row) {
-    return Row(children: _row.map((cell) => _buildCell(cell)).toList());
+    return Row(children: _row.map(_buildCell).toList());
   }
 
   Widget _buildCell(Cell cell) {
-    return SizedBox(
-      key: Key("${cell.wordIndex}_${cell.charIndex}"),
-      width: 20,
-      height: 20,
-      child: Center(
-        child: Text(_viewModel.verse.words[cell.wordIndex].chars[cell.charIndex].value),
+    final word = _viewModel.verse.words[cell.wordIndex];
+    return _CellDisplay(word, cell);
+  }
+}
+
+class _CellDisplay extends StatelessWidget {
+  final Word _word;
+  final Cell _cell;
+
+  _CellDisplay(this._word, this._cell);
+
+  Color getBackgroundColor(Char char) {
+    if (_word.isSeparator) {
+      return BibleGameColors.wordsSeparator;
+    } else if (_word.resolved) {
+      return BibleGameColors.revealedWord;
+    } else {
+      if (char.resolved) {
+        return BibleGameColors.revealedChar;
+      }
+      return BibleGameColors.unrevealedWord;
+    }
+  }
+
+  String getContentToDisplay(Char char) {
+    return char.resolved ? char.value : "";
+  }
+
+  TextStyle getTextStyle(Char char) {
+    if (_word.resolved) {
+      return BibleGameColors.revealedWordStyle;
+    } else if (char.resolved) {
+      return BibleGameColors.revealedCharStyle;
+    }
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final char = _word.chars[_cell.charIndex];
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: Color.fromARGB(255, 220, 220, 220)),
+        color: getBackgroundColor(char),
+        boxShadow: [BoxShadow(color: Color.fromARGB(150, 0, 0, 0))],
+      ),
+      margin: EdgeInsets.only(right: 4, bottom: 4, top: 4),
+      child: SizedBox(
+        key: Key("${_cell.wordIndex}_${_cell.charIndex}"),
+        width: 20,
+        height: 20,
+        child: Center(
+          child: Text(
+            getContentToDisplay(char),
+            style: getTextStyle(char),
+          ),
+        ),
       ),
     );
   }
