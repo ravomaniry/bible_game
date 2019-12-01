@@ -37,29 +37,33 @@ class BibleVerse with EquatableMixin {
     var wordValue = "";
     var separatorMode = false;
 
-    void appendWord() {
+    void appendWord(bool isLastWord) {
       if (wordValue.length > 0) {
-        words.add(Word.from(wordValue, index, separatorMode));
-        separatorMode = false;
-        wordValue = "";
-        index++;
+        if (!isLastWord || wordValue.trim() != "") {
+          words.add(Word.from(wordValue, index, separatorMode));
+          separatorMode = false;
+          wordValue = "";
+          index++;
+        }
       }
     }
 
     for (var i = 0; i < text.length; i++) {
-      if (separatorRegex.hasMatch(text[i])) {
+      if (text[i] == "[") {
+        break;
+      } else if (separatorRegex.hasMatch(text[i])) {
         if (!separatorMode) {
-          appendWord();
+          appendWord(false);
           separatorMode = true;
         }
       } else {
         if (separatorMode) {
-          appendWord();
+          appendWord(false);
         }
       }
       wordValue += text[i];
     }
-    appendWord();
+    appendWord(true);
 
     return BibleVerse(
       book: book,
