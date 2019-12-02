@@ -30,7 +30,7 @@ class WordInWordsStyles {
   static final availSlotDecoration = BoxDecoration(
     borderRadius: BorderRadius.all(Radius.circular(6)),
     color: Color.fromARGB(255, 100, 100, 200),
-    border: Border.all(color: Color.fromARGB(255, 100, 230, 100)),
+    border: Border.all(color: Color.fromARGB(255, 80, 80, 160)),
   );
   static final slotTextStyle = TextStyle(
     color: Colors.white,
