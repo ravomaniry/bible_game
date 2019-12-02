@@ -181,7 +181,7 @@ ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
   for (final word in state.wordsToFind) {
     if (word.sameAsChars(proposition)) {
       hasFoundMatch = true;
-      resolvedWords.add(word);
+      resolvedWords.add(word.resolvedVersion);
       wordsToFind.remove(word);
       foundWord = word;
     }

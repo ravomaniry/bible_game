@@ -45,14 +45,7 @@ void main() {
     expect(store.state.wordsInWord.resolvedWords, []);
     expect(
       store.state.wordsInWord.wordsToFind.map((w) => w.value),
-      [
-        Word.from("Ny", 0, false),
-        Word.from("filazana", 2, false),
-        Word.from("razan", 6, false),
-        Word.from("i", 8, false),
-        Word.from("Jesosy", 10, false),
-        Word.from("Kristy", 12, false),
-      ].map((w) => w.value),
+      ["Ny", "filazana", "razan", "i", "Jesosy", "Kristy"],
     );
     expect(store.state.wordsInWord.slots.length, 8);
     expect(store.state.wordsInWord.slotsBackup.length, 8);
@@ -166,14 +159,7 @@ void main() {
     expect(find.byKey(Key("wordsInWord")), findsOneWidget);
     expect(store.state.wordsInWord.slots, Word.from("NYTENY", 0, false).chars);
     expect(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars);
-    expect(
-      store.state.wordsInWord.wordsToFind.map((w) => w.value),
-      [
-        Word.from("Ny", 0, false),
-        Word.from("teny", 2, false),
-        Word.from("Azy", 6, false),
-      ].map((w) => w.value),
-    );
+    expect(store.state.wordsInWord.wordsToFind.map((w) => w.value), ["Ny", "teny", "Azy"]);
 
     await tester.tap(find.byKey(Key("slot_0")));
     await tester.tap(find.byKey(Key("slot_3")));
@@ -206,19 +192,8 @@ void main() {
     expect(store.state.wordsInWord.proposition, []);
     expect(listEquals(store.state.wordsInWord.slots, Word.from("NYTENY", 0, false).chars), false);
     expect(listEquals(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars), false);
-    expect(
-      store.state.wordsInWord.wordsToFind.map((w) => w.value),
-      [Word.from("teny", 2, false), Word.from("Azy", 6, false)].map((w) => w.value),
-    );
-    expect(store.state.wordsInWord.resolvedWords, [Word.from("Ny", 0, false)]);
-    expect(store.state.wordsInWord.verse.words, [
-      Word.from("Ny", 0, false).copyWith(resolved: true),
-      Word.from(" ", 1, true),
-      Word.from("teny", 2, false),
-      Word.from(" ", 3, true),
-      Word.from("ny", 4, false).copyWith(resolved: true),
-      Word.from(" ", 5, true),
-      Word.from("Azy", 6, false),
-    ]);
+    expect(store.state.wordsInWord.wordsToFind.map((w) => w.value), ["teny", "Azy"]);
+    expect(store.state.wordsInWord.resolvedWords, [Word.from("Ny", 0, false).copyWith(resolved: true)]);
+    expect(store.state.wordsInWord.verse.words.map((w) => w.value), ["Ny", " ", "teny", " ", "ny", " ", "Azy"]);
   });
 }
