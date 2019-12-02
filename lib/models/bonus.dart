@@ -6,3 +6,7 @@ class Bonus {
 
   Bonus({@required this.name, @required this.point});
 }
+
+class RevealCharBonus extends Bonus {
+  RevealCharBonus() : super(name: "Reveal charachter", point: 0);
+}

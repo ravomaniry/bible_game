@@ -1,4 +1,5 @@
 import 'package:bible_game/models/bible_verse.dart';
+import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
@@ -109,5 +110,27 @@ void main() {
     expect(store.state.wordsInWord.slotsBackup, containsAll(Word.from("ADCDE", 0, false).chars));
     expect(store.state.wordsInWord.slots, containsAll(Word.from("ADCDE", 0, false).chars));
     expect(store.state.wordsInWord.proposition, []);
+  });
+
+  test("Find nearest element", () {
+    final list = [10, 11, 12, 13, 14, 15];
+    final validator = (int value) => value % 3 == 0;
+    expect(findNearestElement(list, 3, validator), 2);
+    expect(findNearestElement(list, 0, validator), 2);
+    expect(findNearestElement(list, 3, (int value) => value % 5 == 0), 5);
+    expect(findNearestElement(list, 5, (value) => value % 2 == 0), 4);
+  });
+
+  test("updateVerseBasedOnBonus", () {
+    final verse = BibleVerse.from(text: "Jesosy no fiainana");
+    final bonus = RevealCharBonus();
+    final updated = updateVerseBasedOnBonus(bonus, verse);
+    final charsBefore =
+        verse.words.where((w) => !w.isSeparator && !w.resolved).map((w) => w.chars).reduce((a, b) => [...a, ...b]);
+    final charsAfter =
+        updated.words.where((w) => !w.isSeparator && !w.resolved).map((w) => w.chars).reduce((a, b) => [...a, ...b]);
+    expect(updateVerseBasedOnBonus(null, verse), verse);
+    expect(charsBefore.where((c) => c.resolved).length, 0);
+    expect(charsAfter.where((c) => c.resolved).length, 1);
   });
 }

@@ -1,6 +1,6 @@
 import 'dart:math';
-
 import 'package:bible_game/models/bible_verse.dart';
+import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
@@ -10,7 +10,7 @@ import 'package:redux_thunk/redux_thunk.dart';
 
 ThunkAction<AppState> initializeWordsInWordState = (Store<AppState> store) {
   final state = store.state.wordsInWord;
-  final wordsToFind = extractWordsToFind(state.verse.words);
+  final wordsToFind = addRandomBonuses(extractWordsToFind(state.verse.words));
   var slots = generateEmptySlots(wordsToFind);
   slots = fillSlots(slots, wordsToFind);
   store.dispatch(UpdateWordsInWordState(state.copyWith(
@@ -30,6 +30,22 @@ List<Word> extractWordsToFind(List<Word> words) {
     }
   }
   return wordsToFind;
+}
+
+List<Word> addRandomBonuses(List<Word> wordsToFind) {
+  final random = Random();
+  final ratio = random.nextDouble() * 0.75;
+  return wordsToFind.map((word) {
+    final shouldHaveBonus = ratio > random.nextDouble();
+    if (shouldHaveBonus) {
+      return word.copyWith(bonus: getRandomBonus());
+    }
+    return word;
+  }).toList();
+}
+
+Bonus getRandomBonus() {
+  return RevealCharBonus();
 }
 
 List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
@@ -156,6 +172,7 @@ ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
   final wordsToFind = List<Word>.from(state.wordsToFind);
   final resolvedWords = List<Word>.from(state.resolvedWords);
   final proposition = state.proposition;
+  Word foundWord;
   var verse = state.verse;
   var slots = List<Char>.from(state.slots);
   var slotsBackup = List<Char>.from(state.slotsBackup);
@@ -166,6 +183,7 @@ ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
       hasFoundMatch = true;
       resolvedWords.add(word);
       wordsToFind.remove(word);
+      foundWord = word;
     }
   }
 
@@ -173,6 +191,7 @@ ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
     slots = fillSlots(slots, wordsToFind);
     slotsBackup = slots;
     verse = updateVerseResolvedWords(proposition, verse);
+    verse = updateVerseBasedOnBonus(foundWord.bonus, verse);
   } else {
     slots = slotsBackup;
   }
@@ -197,6 +216,43 @@ BibleVerse updateVerseResolvedWords(List<Char> proposition, BibleVerse verse) {
     }
   }
   return verse.copyWith(words: words);
+}
+
+BibleVerse updateVerseBasedOnBonus(Bonus bonus, BibleVerse verse) {
+  if (bonus is RevealCharBonus) {
+    final random = Random();
+    int wordStartingIndex = random.nextInt(verse.words.length);
+    final charValidator = (Char char) => !char.resolved;
+    final wordValidator = (Word word) {
+      return !word.isSeparator && !word.resolved && word.chars.where(charValidator).length > 0;
+    };
+    final wordIndex = findNearestElement(verse.words, wordStartingIndex, wordValidator);
+
+    if (wordIndex != null) {
+      final word = verse.words[wordIndex];
+      final charStaringIndex = random.nextInt(word.chars.length);
+      final charIndex = findNearestElement(word.chars, charStaringIndex, charValidator);
+      final copy = word.copyWithChar(charIndex, word.chars[charIndex].copyWith(resolved: true));
+      final words = List<Word>.from(verse.words)..[wordIndex] = copy;
+      return verse.copyWith(words: words);
+    }
+  }
+  return verse;
+}
+
+int findNearestElement<T>(List<T> list, int startingIndex, Function(T) validator) {
+  int minIndex = startingIndex;
+  int maxIndex = startingIndex + 1;
+  while (minIndex >= 0 || maxIndex < list.length) {
+    if (minIndex >= 0 && validator(list[minIndex])) {
+      return minIndex;
+    } else if (maxIndex < list.length && validator(list[maxIndex])) {
+      return maxIndex;
+    }
+    minIndex--;
+    maxIndex++;
+  }
+  return null;
 }
 
 ThunkAction<AppState> shuffleSlotsAction = (Store<AppState> store) {

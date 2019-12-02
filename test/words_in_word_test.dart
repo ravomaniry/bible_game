@@ -43,14 +43,17 @@ void main() {
     expect(store.state.error == null, true);
     expect(store.state.wordsInWord.verse, BibleVerse.fromModel(await state.dba.getSingleVerse(1, 2, 3), "Genesisy"));
     expect(store.state.wordsInWord.resolvedWords, []);
-    expect(store.state.wordsInWord.wordsToFind, [
-      Word.from("Ny", 0, false),
-      Word.from("filazana", 2, false),
-      Word.from("razan", 6, false),
-      Word.from("i", 8, false),
-      Word.from("Jesosy", 10, false),
-      Word.from("Kristy", 12, false),
-    ]);
+    expect(
+      store.state.wordsInWord.wordsToFind.map((w) => w.value),
+      [
+        Word.from("Ny", 0, false),
+        Word.from("filazana", 2, false),
+        Word.from("razan", 6, false),
+        Word.from("i", 8, false),
+        Word.from("Jesosy", 10, false),
+        Word.from("Kristy", 12, false),
+      ].map((w) => w.value),
+    );
     expect(store.state.wordsInWord.slots.length, 8);
     expect(store.state.wordsInWord.slotsBackup.length, 8);
     verify(store.state.dba.getSingleVerse(1, 1, 1)).called(1);
@@ -87,7 +90,7 @@ void main() {
     store.dispatch(initializeWordsInWordState);
     await Future.delayed(Duration(seconds: 1));
     expect(store.state.wordsInWord.verse, verse);
-    expect(store.state.wordsInWord.wordsToFind, verse.words);
+    expect(store.state.wordsInWord.wordsToFind.map((w) => w.value), verse.words.map((w) => w.value));
     expect(store.state.wordsInWord.resolvedWords, []);
     verify(store.state.dba.getSingleVerse(1, 1, 2)).called(1);
     verifyNever(store.state.dba.getBookById(1));
@@ -163,11 +166,14 @@ void main() {
     expect(find.byKey(Key("wordsInWord")), findsOneWidget);
     expect(store.state.wordsInWord.slots, Word.from("NYTENY", 0, false).chars);
     expect(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars);
-    expect(store.state.wordsInWord.wordsToFind, [
-      Word.from("Ny", 0, false),
-      Word.from("teny", 2, false),
-      Word.from("Azy", 6, false),
-    ]);
+    expect(
+      store.state.wordsInWord.wordsToFind.map((w) => w.value),
+      [
+        Word.from("Ny", 0, false),
+        Word.from("teny", 2, false),
+        Word.from("Azy", 6, false),
+      ].map((w) => w.value),
+    );
 
     await tester.tap(find.byKey(Key("slot_0")));
     await tester.tap(find.byKey(Key("slot_3")));
@@ -200,7 +206,10 @@ void main() {
     expect(store.state.wordsInWord.proposition, []);
     expect(listEquals(store.state.wordsInWord.slots, Word.from("NYTENY", 0, false).chars), false);
     expect(listEquals(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars), false);
-    expect(store.state.wordsInWord.wordsToFind, [Word.from("teny", 2, false), Word.from("Azy", 6, false)]);
+    expect(
+      store.state.wordsInWord.wordsToFind.map((w) => w.value),
+      [Word.from("teny", 2, false), Word.from("Azy", 6, false)].map((w) => w.value),
+    );
     expect(store.state.wordsInWord.resolvedWords, [Word.from("Ny", 0, false)]);
     expect(store.state.wordsInWord.verse.words, [
       Word.from("Ny", 0, false).copyWith(resolved: true),
