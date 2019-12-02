@@ -1,7 +1,13 @@
+import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
+import 'package:bible_game/redux/app_state.dart';
+import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
+import 'package:bible_game/redux/words_in_word/state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:redux/redux.dart';
+import 'package:redux_thunk/redux_thunk.dart';
 
 void main() {
   test("fillSlots", () {
@@ -74,5 +80,33 @@ void main() {
         listEquals(filled, Word.from("ABCDF", 0, false).chars) ||
         listEquals(filled, Word.from("ABCDG", 0, false).chars);
     expect(isOk, true);
+  });
+
+  test("Shuffle slots", () async {
+    final slots = [...Word.from("ADC", 0, false).chars, null, null];
+    final store = Store<AppState>(mainReducer,
+        middleware: [thunkMiddleware],
+        initialState: AppState(
+          assetBundle: null,
+          config: null,
+          dba: null,
+          explorer: null,
+          wordsInWord: WordsInWordState(
+            cells: [],
+            proposition: Word.from("DE", 0, false).chars,
+            slots: slots,
+            slotsBackup: Word.from("ADCDE", 0, false).chars,
+            verse: BibleVerse.from(text: "Aza menatra"),
+            wordsToFind: [Word.from("Aza", 0, false), Word.from("menatra", 2, false)],
+          ),
+        ));
+    store.dispatch(shuffleSlotsAction);
+    expect(store.state.wordsInWord.slots == slots, false);
+    expect(store.state.wordsInWord.slotsBackup, containsAll(Word.from("ADCDE", 0, false).chars));
+    expect(store.state.wordsInWord.slots, containsAll(Word.from("ADC", 0, false).chars));
+    store.dispatch(proposeWordsInWord);
+    expect(store.state.wordsInWord.slotsBackup, containsAll(Word.from("ADCDE", 0, false).chars));
+    expect(store.state.wordsInWord.slots, containsAll(Word.from("ADCDE", 0, false).chars));
+    expect(store.state.wordsInWord.proposition, []);
   });
 }

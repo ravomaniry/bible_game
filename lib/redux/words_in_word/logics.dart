@@ -1,10 +1,11 @@
 import 'dart:math';
+
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
-import 'package:redux_thunk/redux_thunk.dart';
 import 'package:redux/redux.dart';
+import 'package:redux_thunk/redux_thunk.dart';
 
 ThunkAction<AppState> initializeWordsInWordState = (Store<AppState> store) {
   final state = store.state.wordsInWord;
@@ -194,3 +195,24 @@ BibleVerse updateVerseResolvedWords(List<Char> proposition, BibleVerse verse) {
   }
   return verse.copyWith(words: words);
 }
+
+ThunkAction<AppState> shuffleSlotsAction = (Store<AppState> store) {
+  final state = store.state.wordsInWord;
+  final slotsBackup = List<Char>.from(state.slotsBackup)..shuffle();
+  final slots = List<Char>.from(slotsBackup);
+  final proposition = state.proposition;
+
+  for (final char in proposition) {
+    for (int slotIndex = 0; slotIndex < slotsBackup.length; slotIndex++) {
+      if (char.comparisonValue == slots[slotIndex]?.comparisonValue) {
+        slots[slotIndex] = null;
+        break;
+      }
+    }
+  }
+
+  store.dispatch(UpdateWordsInWordState(state.copyWith(
+    slots: slots,
+    slotsBackup: slotsBackup,
+  )));
+};

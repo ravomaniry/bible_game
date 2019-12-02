@@ -5,8 +5,8 @@ import 'package:bible_game/redux/router/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/statics.dart';
 import 'package:bible_game/utils/retry.dart';
-import 'package:redux_thunk/redux_thunk.dart';
 import 'package:redux/redux.dart';
+import 'package:redux_thunk/redux_thunk.dart';
 
 class ReceiveExplorerBooksList {
   final List<Books> payload;

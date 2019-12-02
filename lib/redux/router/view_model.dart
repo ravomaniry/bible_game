@@ -1,8 +1,8 @@
-import 'package:redux/redux.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/router/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
 import 'package:flutter/foundation.dart';
+import 'package:redux/redux.dart';
 
 class RouterViewModel {
   final Routes route;
