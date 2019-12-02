@@ -118,7 +118,7 @@ void main() {
     final expectedCells = [
       [Cell(0, 0), Cell(0, 1), Cell(1, 0)],
       [Cell(2, 0), Cell(2, 1), Cell(2, 2), Cell(2, 3), Cell(2, 4), Cell(2, 5), Cell(2, 6), Cell(2, 7)],
-      [Cell(3, 0), Cell(4, 0), Cell(4, 1), Cell(5, 0)],
+      [Cell(4, 0), Cell(4, 1), Cell(5, 0)],
       [Cell(6, 0), Cell(6, 1), Cell(6, 2), Cell(6, 3), Cell(6, 4), Cell(7, 0), Cell(8, 0), Cell(9, 0)],
       [Cell(10, 0), Cell(10, 1), Cell(10, 2), Cell(10, 3), Cell(10, 4), Cell(10, 5), Cell(11, 0)],
       [Cell(12, 0), Cell(12, 1), Cell(12, 2), Cell(12, 3), Cell(12, 4), Cell(12, 5)]

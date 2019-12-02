@@ -1,8 +1,8 @@
 import 'package:bible_game/models/cell.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
-import 'package:redux_thunk/redux_thunk.dart';
 import 'package:redux/redux.dart';
+import 'package:redux_thunk/redux_thunk.dart';
 
 class UpdateWordsInWordCells {
   List<List<Cell>> payload;
@@ -33,6 +33,7 @@ List<List<Cell>> computeCells(List<Word> words, double screenWidth) {
   final idealMaxWidth = screenWidth * 0.85;
   double currentX = 0;
   int currentIndex = 0;
+  bool isNewLine = false;
 
   if (screenWidth == 0) {
     return cells;
@@ -45,13 +46,17 @@ List<List<Cell>> computeCells(List<Word> words, double screenWidth) {
     final width = cellWidth * word.chars.length.toDouble();
     if (currentX + width <= idealMaxWidth) {
       currentX += width;
+      isNewLine = false;
     } else {
+      isNewLine = true;
       currentIndex++;
       currentX = width;
       cells.add([]);
     }
-    for (int charIndex = 0; charIndex < word.chars.length; charIndex++) {
-      cells[currentIndex].add(Cell(wordIndex, charIndex));
+    if (!isNewLine || word.value != " ") {
+      for (int charIndex = 0; charIndex < word.chars.length; charIndex++) {
+        cells[currentIndex].add(Cell(wordIndex, charIndex));
+      }
     }
   }
   return cells;
