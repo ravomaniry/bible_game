@@ -21,10 +21,7 @@ class Word with EquatableMixin {
   });
 
   factory Word.from(String text, int index, bool isSeparator) {
-    final chars = text
-        .split("")
-        .map((t) => Char(value: t, comparisonValue: Char.getComparisonValue(t)))
-        .toList();
+    final chars = text.split("").map((t) => Char(value: t, comparisonValue: Char.getComparisonValue(t))).toList();
     return Word(
       chars: chars,
       index: index,
@@ -45,6 +42,16 @@ class Word with EquatableMixin {
       chars: chars ?? this.chars,
       resolved: resolved ?? this.resolved,
       bonus: bonus ?? this.bonus,
+    );
+  }
+
+  Word get resolvedVersion {
+    return Word(
+      index: this.index,
+      value: this.value,
+      chars: this.chars,
+      resolved: true,
+      bonus: null,
     );
   }
 
