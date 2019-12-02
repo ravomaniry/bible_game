@@ -36,7 +36,7 @@ class WordsInWordResult extends StatelessWidget {
   }
 
   Widget _buildRow(List<Cell> _row) {
-    return Row(children: _row.map(_buildCell).toList());
+    return Wrap(children: _row.map(_buildCell).toList());
   }
 
   Widget _buildCell(Cell cell) {
@@ -93,7 +93,6 @@ class _CellDisplay extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(4),
-//        border: Border.all(color: Color.fromARGB(255, 220, 220, 220)),
         color: getBackgroundColor(char),
       ),
       margin: EdgeInsets.only(right: 4, bottom: 4, top: 4),

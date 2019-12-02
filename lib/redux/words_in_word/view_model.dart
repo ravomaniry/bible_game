@@ -24,6 +24,7 @@ class WordsInWordViewModel {
   final Function(int) slotClickHandler;
   final Function() propose;
   final Function() tempNextVerseHandler;
+  final Function() shuffleSlots;
 
   WordsInWordViewModel({
     @required this.verse,
@@ -40,6 +41,7 @@ class WordsInWordViewModel {
     @required this.slotClickHandler,
     @required this.propose,
     @required this.tempNextVerseHandler,
+    @required this.shuffleSlots,
   });
 
   static WordsInWordViewModel converter(Store<AppState> store) {
@@ -61,6 +63,7 @@ class WordsInWordViewModel {
       slotClickHandler: (int index) => store.dispatch(SlotClickHandler(index).thunk),
       propose: () => store.dispatch(proposeWordsInWord),
       tempNextVerseHandler: () => store.dispatch(tempWordsInWordNext),
+      shuffleSlots: () => store.dispatch(shuffleSlotsAction),
     );
   }
 }
