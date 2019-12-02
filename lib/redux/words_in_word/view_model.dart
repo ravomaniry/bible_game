@@ -15,6 +15,7 @@ class WordsInWordViewModel {
   final List<Word> resolvedWords;
   final List<Word> wordsToFind;
   final List<Char> slots;
+  final List<List<int>> slotIndexes;
   final List<Char> proposition;
   final double screenWidth;
   final Function(Char) selectHandler;
@@ -32,6 +33,7 @@ class WordsInWordViewModel {
     @required this.resolvedWords,
     @required this.wordsToFind,
     @required this.slots,
+    @required this.slotIndexes,
     @required this.proposition,
     @required this.screenWidth,
     @required this.selectHandler,
@@ -51,6 +53,7 @@ class WordsInWordViewModel {
       wordsToFind: store.state.wordsInWord.wordsToFind,
       resolvedWords: store.state.wordsInWord.resolvedWords,
       slots: store.state.wordsInWord.slots,
+      slotIndexes: store.state.wordsInWord.slotsDisplayIndexes,
       proposition: store.state.wordsInWord.proposition,
       screenWidth: store.state.config.screenWidth,
       selectHandler: (Char char) => store.dispatch(SelectWordsInWordChar(char)),
@@ -59,6 +62,7 @@ class WordsInWordViewModel {
       updateScreenWidth: (double screenWidth) {
         store.dispatch(UpdateScreenWidth(screenWidth));
         store.dispatch(ComputeCells(screenWidth).thunk);
+        store.dispatch(recomputeSlotsIndexes);
       },
       slotClickHandler: (int index) => store.dispatch(SlotClickHandler(index).thunk),
       propose: () => store.dispatch(proposeWordsInWord),

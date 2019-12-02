@@ -10,6 +10,7 @@ import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
+import 'package:bible_game/redux/words_in_word/cells_action.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/redux/words_in_word/state.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
@@ -100,7 +101,7 @@ void main() {
     verifyNever(store.state.dba.getBookById(1));
   });
 
-  test("Compute cells", () async {
+  test("Compute cells and slots", () async {
     final store = Store<AppState>(
       mainReducer,
       middleware: [thunkMiddleware],
@@ -111,9 +112,10 @@ void main() {
         config: ConfigState.initialState(),
       ),
     );
-    store.dispatch(UpdateScreenWidth(190));
+    // reminder: cellWidth = 24 | screenWidth -= 10
+    store.dispatch(UpdateScreenWidth(205));
     store.dispatch(goToWordsInWord);
-    expect(store.state.config.screenWidth, 190);
+    expect(store.state.config.screenWidth, 205);
     await Future.delayed(Duration(milliseconds: 10));
     final expectedCells = [
       [Cell(0, 0), Cell(0, 1), Cell(1, 0)],
@@ -124,6 +126,16 @@ void main() {
       [Cell(12, 0), Cell(12, 1), Cell(12, 2), Cell(12, 3), Cell(12, 4), Cell(12, 5)]
     ];
     expect(store.state.wordsInWord.cells, expectedCells);
+
+    // Slots | reminder: slotWidth = 36 | screenWidth *= 0.9 for margin
+    store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
+      slots: Word.from("ABCDEFG", 0, false).chars,
+    )));
+    store.dispatch(recomputeSlotsIndexes);
+    expect(store.state.wordsInWord.slotsDisplayIndexes, [
+      [0, 1, 2, 3, 4],
+      [5, 6],
+    ]);
   });
 
   testWidgets("In game interractivity - Tap + propose", (WidgetTester tester) async {
@@ -142,6 +154,9 @@ void main() {
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
       slots: Word.from("NYTENY", 0, false).chars,
       slotsBackup: Word.from("NYTENY", 0, false).chars,
+      slotsDisplayIndexes: [
+        [0, 1, 2, 3, 4, 5]
+      ],
     )));
 
     await tester.pumpWidget(BibleGame(store));

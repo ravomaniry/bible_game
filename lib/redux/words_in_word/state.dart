@@ -11,6 +11,7 @@ class WordsInWordState {
   final List<Char> slots;
   final List<Char> slotsBackup;
   final List<Char> proposition;
+  final List<List<int>> slotsDisplayIndexes;
 
   WordsInWordState({
     @required this.verse,
@@ -20,11 +21,12 @@ class WordsInWordState {
     @required this.proposition,
     @required this.wordsToFind,
     this.resolvedWords = const [],
+    this.slotsDisplayIndexes = const [],
   });
 
   factory WordsInWordState.emptyState() {
     return WordsInWordState(
-      verse: BibleVerse(book: "Matio", bookId: 1, chapter: 1, verse: 1, words: []),
+      verse: BibleVerse(book: "Matio", bookId: 1, chapter: 1, verse: 1, words: [], text: ""),
       wordsToFind: [],
       resolvedWords: [],
       proposition: [],
@@ -42,6 +44,7 @@ class WordsInWordState {
     List<Char> proposition,
     List<Word> wordsToFind,
     List<Word> resolvedWords,
+    List<List<int>> slotsDisplayIndexes,
   }) {
     return WordsInWordState(
       verse: verse ?? this.verse,
@@ -51,6 +54,7 @@ class WordsInWordState {
       proposition: proposition ?? this.proposition,
       wordsToFind: wordsToFind ?? this.wordsToFind,
       resolvedWords: resolvedWords ?? this.resolvedWords,
+      slotsDisplayIndexes: slotsDisplayIndexes ?? this.slotsDisplayIndexes,
     );
   }
 }

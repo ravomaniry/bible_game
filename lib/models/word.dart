@@ -2,12 +2,14 @@ import 'package:bible_game/models/bonus.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
+@immutable
 class Word with EquatableMixin {
   final Bonus bonus;
   final List<Char> chars;
   final bool resolved;
   final bool isSeparator;
   final int index;
+  final String value;
 
   Word({
     @required this.value,
@@ -18,10 +20,11 @@ class Word with EquatableMixin {
     this.bonus,
   });
 
-  final String value;
-
   factory Word.from(String text, int index, bool isSeparator) {
-    final chars = text.split("").map((t) => Char(value: t, comparisonValue: Char.getComparisonValue(t))).toList();
+    final chars = text
+        .split("")
+        .map((t) => Char(value: t, comparisonValue: Char.getComparisonValue(t)))
+        .toList();
     return Word(
       chars: chars,
       index: index,
@@ -73,13 +76,19 @@ class Word with EquatableMixin {
   }
 }
 
+@immutable
 class Char with EquatableMixin {
   final String value;
   final String comparisonValue;
   final bool resolved;
   final Bonus bonus;
 
-  Char({@required this.value, @required this.comparisonValue, this.resolved = false, this.bonus});
+  Char({
+    @required this.value,
+    @required this.comparisonValue,
+    this.resolved = false,
+    this.bonus,
+  });
 
   Char copyWith({bool resolved, Bonus bonus}) {
     return Char(

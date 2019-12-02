@@ -1,6 +1,7 @@
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
+import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/redux/words_in_word/state.dart';
@@ -88,7 +89,7 @@ void main() {
         middleware: [thunkMiddleware],
         initialState: AppState(
           assetBundle: null,
-          config: null,
+          config: ConfigState(screenWidth: 100),
           dba: null,
           explorer: null,
           wordsInWord: WordsInWordState(

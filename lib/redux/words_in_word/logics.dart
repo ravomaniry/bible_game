@@ -4,6 +4,7 @@ import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
+import 'package:bible_game/redux/words_in_word/cells_action.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
@@ -18,6 +19,7 @@ ThunkAction<AppState> initializeWordsInWordState = (Store<AppState> store) {
     slotsBackup: slots,
     resolvedWords: [],
   )));
+  store.dispatch(recomputeSlotsIndexes);
 };
 
 List<Word> extractWordsToFind(List<Word> words) {
@@ -183,6 +185,7 @@ ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
     resolvedWords: resolvedWords,
     wordsToFind: wordsToFind,
   )));
+  store.dispatch(recomputeSlotsIndexes);
 };
 
 BibleVerse updateVerseResolvedWords(List<Char> proposition, BibleVerse verse) {

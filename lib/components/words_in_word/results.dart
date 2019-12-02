@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 
 class WordsInWordResult extends StatelessWidget {
   final WordsInWordViewModel _viewModel;
+  static final double cellWidth = 24;
+  static final double cellHeight = 28;
 
   WordsInWordResult(this._viewModel);
 
@@ -90,16 +92,18 @@ class _CellDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final char = _word.chars[_cell.charIndex];
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(4),
-        color: getBackgroundColor(char),
-      ),
-      margin: EdgeInsets.only(right: 4, bottom: 4, top: 4),
-      child: SizedBox(
+    return SizedBox(
+      width: WordsInWordResult.cellWidth,
+      height: WordsInWordResult.cellHeight,
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 220),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4),
+          color: getBackgroundColor(char),
+        ),
+        alignment: Alignment.center,
         key: Key("${_cell.wordIndex}_${_cell.charIndex}"),
-        width: 20,
-        height: 20,
+        margin: EdgeInsets.only(right: 2, bottom: 6),
         child: Center(
           child: Text(
             getContentToDisplay(char),

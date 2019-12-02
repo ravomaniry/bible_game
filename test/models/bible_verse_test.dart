@@ -107,18 +107,45 @@ void main() {
         chars: [Char(value: ".", comparisonValue: ".")],
       ),
     ];
-    final verse = BibleVerse(book: "Marka", bookId: 1, chapter: 10, verse: 20, words: words);
+    final verse = BibleVerse(
+      book: "Marka",
+      bookId: 1,
+      chapter: 10,
+      verse: 20,
+      words: words,
+      text: "Aza .",
+    );
     expect(
       verse.copyWith(book: "Matio"),
-      BibleVerse(book: "Matio", bookId: 1, chapter: 10, verse: 20, words: words),
+      BibleVerse(
+        book: "Matio",
+        bookId: 1,
+        chapter: 10,
+        verse: 20,
+        words: words,
+        text: "Aza .",
+      ),
     );
     expect(
       verse.copyWith(chapter: 1, verse: 2, words: words),
-      BibleVerse(book: "Marka", bookId: 1, chapter: 1, verse: 2, words: words),
+      BibleVerse(
+          book: "Marka",
+          bookId: 1,
+          chapter: 1,
+          verse: 2,
+          words: words,
+          text: "Aza ."),
     );
     expect(
       verse.copyWith(book: "Matio", chapter: 1, verse: 2, words: words),
-      BibleVerse(book: "Matio", bookId: 1, chapter: 1, verse: 2, words: words),
+      BibleVerse(
+        book: "Matio",
+        bookId: 1,
+        chapter: 1,
+        verse: 2,
+        words: words,
+        text: "Aza .",
+      ),
     );
     expect(
       verse.copyWithWord(0, words[0].copyWith(resolved: true)),
@@ -127,6 +154,7 @@ void main() {
         chapter: 10,
         verse: 20,
         bookId: 1,
+        text: "Aza .",
         words: [
           Word(
             index: 0,

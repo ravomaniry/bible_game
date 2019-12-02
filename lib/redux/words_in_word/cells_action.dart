@@ -1,6 +1,9 @@
+import 'package:bible_game/components/words_in_word/controls.dart';
+import 'package:bible_game/components/words_in_word/results.dart';
 import 'package:bible_game/models/cell.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
+import 'package:bible_game/redux/words_in_word/actions.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
@@ -29,8 +32,8 @@ class ComputeCells {
 
 List<List<Cell>> computeCells(List<Word> words, double screenWidth) {
   final List<List<Cell>> cells = [];
-  final cellWidth = 20;
-  final idealMaxWidth = screenWidth * 0.85;
+  final cellWidth = WordsInWordResult.cellWidth;
+  final idealMaxWidth = screenWidth - 10;
   double currentX = 0;
   int currentIndex = 0;
   bool isNewLine = false;
@@ -61,3 +64,25 @@ List<List<Cell>> computeCells(List<Word> words, double screenWidth) {
   }
   return cells;
 }
+
+ThunkAction<AppState> recomputeSlotsIndexes = (Store<AppState> store) {
+  final state = store.state.wordsInWord;
+  final screenWidth = store.state.config.screenWidth;
+  final List<List<int>> indexes = [[]];
+  final slotWidth = SlotItem.width + SlotItem.margin;
+  int rowIndex = 0;
+  double currentX = 0;
+
+  if (screenWidth > 0) {
+    for (int i = 0; i < state.slots.length; i++) {
+      if (currentX + slotWidth > screenWidth * 0.9) {
+        rowIndex++;
+        indexes.add([]);
+        currentX = 0;
+      }
+      indexes[rowIndex].add(i);
+      currentX += slotWidth;
+    }
+    store.dispatch(UpdateWordsInWordState(state.copyWith(slotsDisplayIndexes: indexes)));
+  }
+};
