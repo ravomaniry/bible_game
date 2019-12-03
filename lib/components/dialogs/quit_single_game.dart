@@ -16,26 +16,35 @@ class QuitSingleGameDialog extends StatelessWidget {
   Widget _builder(BuildContext context, QuitSingleGameViewModel viewModel) {
     if (viewModel.isOpen) {
       return Container(
-        key: Key("confirmQuitSingleGame"),
-        child: Center(
-          child: Column(
-            children: <Widget>[
-              Text("Do you really want to quit"),
-              Row(
-                children: <Widget>[
-                  RaisedButton(
-                    key: Key("dialogYesBtn"),
-                    child: Text("Yes"),
-                    onPressed: viewModel.confirmHandler,
-                  ),
-                  RaisedButton(
-                    key: Key("dialogNoBtn"),
-                    child: Text("NO"),
-                    onPressed: viewModel.cancelHandler,
-                  )
-                ],
-              )
-            ],
+        color: Color.fromARGB(190, 0, 0, 0),
+        child: Dialog(
+          key: Key("confirmQuitSingleGame"),
+          elevation: 10,
+          child: Container(
+            height: MediaQuery.of(context).size.height / 4,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text("Do you really want to quit"),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    FlatButton(
+                      textColor: Colors.deepOrange,
+                      key: Key("dialogYesBtn"),
+                      child: Text("Yes"),
+                      onPressed: viewModel.confirmHandler,
+                    ),
+                    FlatButton(
+                      textColor: Colors.blue,
+                      key: Key("dialogNoBtn"),
+                      child: Text("NO"),
+                      onPressed: viewModel.cancelHandler,
+                    )
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       );
