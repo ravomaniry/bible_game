@@ -8,5 +8,7 @@ class Bonus {
 }
 
 class RevealCharBonus extends Bonus {
-  RevealCharBonus() : super(name: "Reveal charachter", point: 0);
+  final int power;
+
+  RevealCharBonus(this.power) : super(name: "Reveal charachter", point: 0);
 }

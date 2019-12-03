@@ -123,7 +123,7 @@ void main() {
 
   test("updateVerseBasedOnBonus", () {
     final verse = BibleVerse.from(text: "Jesosy no fiainana");
-    final bonus = RevealCharBonus();
+    final bonus = RevealCharBonus(3);
     final updated = updateVerseBasedOnBonus(bonus, verse);
     final charsBefore =
         verse.words.where((w) => !w.isSeparator && !w.resolved).map((w) => w.chars).reduce((a, b) => [...a, ...b]);
@@ -131,6 +131,6 @@ void main() {
         updated.words.where((w) => !w.isSeparator && !w.resolved).map((w) => w.chars).reduce((a, b) => [...a, ...b]);
     expect(updateVerseBasedOnBonus(null, verse), verse);
     expect(charsBefore.where((c) => c.resolved).length, 0);
-    expect(charsAfter.where((c) => c.resolved).length, 1);
+    expect(charsAfter.where((c) => c.resolved).length, 3);
   });
 }

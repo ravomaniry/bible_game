@@ -61,12 +61,10 @@ class _CellDisplay extends StatelessWidget {
       return WordInWordsStyles.wordsSeparatorColor;
     } else if (_word.resolved) {
       return WordInWordsStyles.revealedWordColor;
-    } else {
-      if (char.resolved) {
-        return WordInWordsStyles.revealedCharColor;
-      }
-      return WordInWordsStyles.unrevealedWordColor;
+    } else if (char.resolved) {
+      return WordInWordsStyles.revealedCharColor;
     }
+    return WordInWordsStyles.unrevealedWordColor;
   }
 
   String getContentToDisplay(Char char) {

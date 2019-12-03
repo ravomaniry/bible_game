@@ -10,7 +10,7 @@ import 'package:redux_thunk/redux_thunk.dart';
 
 ThunkAction<AppState> initializeWordsInWordState = (Store<AppState> store) {
   final state = store.state.wordsInWord;
-  final wordsToFind = addRandomBonuses(extractWordsToFind(state.verse.words));
+  final wordsToFind = extractWordsToFind(state.verse.words).map(addRandomBonusToWord).toList();
   var slots = generateEmptySlots(wordsToFind);
   slots = fillSlots(slots, wordsToFind);
   store.dispatch(UpdateWordsInWordState(state.copyWith(
@@ -32,20 +32,16 @@ List<Word> extractWordsToFind(List<Word> words) {
   return wordsToFind;
 }
 
-List<Word> addRandomBonuses(List<Word> wordsToFind) {
+Word addRandomBonusToWord(Word word) {
   final random = Random();
-  final ratio = random.nextDouble() * 0.75;
-  return wordsToFind.map((word) {
-    final shouldHaveBonus = ratio > random.nextDouble();
-    if (shouldHaveBonus) {
-      return word.copyWith(bonus: getRandomBonus());
-    }
-    return word;
-  }).toList();
-}
-
-Bonus getRandomBonus() {
-  return RevealCharBonus();
+  int power = 1;
+  if (word.chars.length > 1) {
+    power += Random().nextInt((word.chars.length * 0.8).floor());
+  }
+  if (random.nextDouble() > 0.5) {
+    return word.copyWith(bonus: RevealCharBonus(power));
+  }
+  return word;
 }
 
 List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
@@ -221,20 +217,22 @@ BibleVerse updateVerseResolvedWords(List<Char> proposition, BibleVerse verse) {
 BibleVerse updateVerseBasedOnBonus(Bonus bonus, BibleVerse verse) {
   if (bonus is RevealCharBonus) {
     final random = Random();
-    int wordStartingIndex = random.nextInt(verse.words.length);
     final charValidator = (Char char) => !char.resolved;
     final wordValidator = (Word word) {
-      return !word.isSeparator && !word.resolved && word.chars.where(charValidator).length > 0;
+      return !word.isSeparator && !word.resolved && word.chars.where(charValidator).length > 1;
     };
-    final wordIndex = findNearestElement(verse.words, wordStartingIndex, wordValidator);
 
-    if (wordIndex != null) {
-      final word = verse.words[wordIndex];
-      final charStaringIndex = random.nextInt(word.chars.length);
-      final charIndex = findNearestElement(word.chars, charStaringIndex, charValidator);
-      final copy = word.copyWithChar(charIndex, word.chars[charIndex].copyWith(resolved: true));
-      final words = List<Word>.from(verse.words)..[wordIndex] = copy;
-      return verse.copyWith(words: words);
+    for (int bonusPower = bonus.power; bonusPower > 0; bonusPower--) {
+      int wordStartingIndex = random.nextInt(verse.words.length);
+      final wordIndex = findNearestElement(verse.words, wordStartingIndex, wordValidator);
+      if (wordIndex != null) {
+        final word = verse.words[wordIndex];
+        final charStaringIndex = random.nextInt(word.chars.length);
+        final charIndex = findNearestElement(word.chars, charStaringIndex, charValidator);
+        final copy = word.copyWithChar(charIndex, word.chars[charIndex].copyWith(resolved: true));
+        final words = List<Word>.from(verse.words)..[wordIndex] = copy;
+        verse = verse.copyWith(words: words);
+      }
     }
   }
   return verse;
