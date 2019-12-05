@@ -36,4 +36,8 @@ class WordInWordsStyles {
     color: Colors.white,
     fontWeight: FontWeight.bold,
   );
+  static final propositionStyle = TextStyle(
+    color: Colors.white,
+    letterSpacing: 1,
+  );
 }

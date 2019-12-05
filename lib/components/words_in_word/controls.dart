@@ -46,21 +46,27 @@ class PropositionDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 24,
-      width: MediaQuery.of(context).size.width,
-      child: FlatButton(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(color: WordInWordsStyles.unrevealedWordColor),
-        ),
-        key: Key("proposeBtn"),
-        padding: EdgeInsets.all(0),
-        onPressed: clickHandler,
-        child: Text(
-          _proposition.map((x) => x.value).join(""),
-        ),
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          height: 24,
+          decoration: BoxDecoration(
+            color: WordInWordsStyles.revealedCharColor,
+            borderRadius: BorderRadius.circular(6),
+          ),
+          child: FlatButton(
+            key: Key("proposeBtn"),
+            splashColor: WordInWordsStyles.revealedWordColor,
+            padding: EdgeInsets.only(top: 0, bottom: 0, left: 10, right: 10),
+            onPressed: clickHandler,
+            child: Text(
+              _proposition.map((x) => x.value).join(""),
+              style: WordInWordsStyles.propositionStyle,
+            ),
+          ),
+        )
+      ],
     );
   }
 }
