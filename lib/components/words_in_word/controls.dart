@@ -1,6 +1,6 @@
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/words_in_word/view_model.dart';
-import 'package:bible_game/statics.dart';
+import 'package:bible_game/statics/styles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix4_transform/matrix4_transform.dart';

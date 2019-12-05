@@ -3,6 +3,7 @@ import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
+import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
@@ -20,6 +21,7 @@ void main() {
         assetBundle: AssetBundleMock.withDefaultValue(),
         explorer: ExplorerState(),
         config: ConfigState.initialState(),
+        inventory: InventoryState.emptyState(),
       ),
       middleware: [thunkMiddleware],
     );
@@ -29,8 +31,10 @@ void main() {
     final dialogScreen = find.byKey(Key("confirmQuitSingleGame"));
     final loaderScreen = find.byKey(Key("loader"));
     final homeScreen = find.byKey(Key("home"));
+    final inventoryScreen = find.byKey(Key("inventoryDialog"));
     final yesBtn = find.byKey(Key("dialogYesBtn"));
     final noBtn = find.byKey(Key("dialogNoBtn"));
+    final inventoryBtn = find.byKey(Key("inventoryBtn"));
 
     expect(loaderScreen, findsOneWidget);
     await tester.pump(Duration(seconds: 1));
@@ -58,5 +62,13 @@ void main() {
     await tester.tap(yesBtn);
     await tester.pump();
     expect(homeScreen, findsOneWidget);
+
+    // Open inventory and press back btn and tap yes
+    await tester.tap(inventoryBtn);
+    await tester.pump();
+    expect(inventoryScreen, findsOneWidget);
+    await BackButtonInterceptor.popRoute();
+    await tester.pump(Duration(milliseconds: 10));
+    expect(inventoryScreen, findsNothing);
   });
 }

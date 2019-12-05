@@ -4,16 +4,18 @@ import 'package:bible_game/redux/calculator/state.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/error/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
+import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/redux/words_in_word/state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 class AppState {
-  Routes route;
-  CalculatorState calculator;
-  WordsInWordState wordsInWord;
-  bool quitSingleGameDialog;
+  final Routes route;
+  final CalculatorState calculator;
+  final WordsInWordState wordsInWord;
+  final bool quitSingleGameDialog;
+  final InventoryState inventory;
   final DbAdapter dba;
   final bool dbIsReady;
   final ErrorState error;
@@ -32,6 +34,7 @@ class AppState {
     @required this.assetBundle,
     @required this.explorer,
     @required this.config,
+    @required this.inventory,
   });
 
   factory AppState.initialState(AssetBundle assetBundle) {
@@ -39,6 +42,7 @@ class AppState {
       assetBundle: assetBundle,
       explorer: ExplorerState(),
       config: ConfigState.initialState(),
+      inventory: InventoryState.emptyState(),
       dba: DbAdapter(
         model: BibleGameModel(),
         books: Books(),

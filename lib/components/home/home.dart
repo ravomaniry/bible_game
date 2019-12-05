@@ -29,6 +29,7 @@ class Home extends StatelessWidget {
                 children: <Widget>[
                   _buildDummyBtn("Explorer", "goToExplorer", viewModel.goToExplorer),
                   _buildDummyBtn("Words in word", "goToWordsInWordBtn", viewModel.goToWordsInWord),
+                  _buildDummyBtn("Inventory", "inventoryBtn", viewModel.openInventory),
                   _buildDummyBtn("Calculator", "goToCalculatorBtn", viewModel.goToCalculator),
                 ],
               ),

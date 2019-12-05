@@ -2,6 +2,7 @@ import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
+import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
@@ -19,6 +20,7 @@ void main() {
       dba: DbAdapterMock.withDefaultValues(),
       explorer: ExplorerState(),
       config: ConfigState.initialState(),
+      inventory: InventoryState.emptyState(),
     );
     final store = Store<AppState>(
       mainReducer,

@@ -28,6 +28,7 @@ dependencies:
   flame: ^0.17.0
   redux_thunk: ^0.2.1
   matrix4_transform: ^1.1.3
+  badges: ^1.1.0
 
 dev_dependencies:
   flutter_test:

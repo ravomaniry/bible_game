@@ -39,7 +39,7 @@ Word addRandomBonusToWord(Word word) {
     power += Random().nextInt((word.chars.length * 0.8).floor());
   }
   if (random.nextDouble() > 0.5) {
-    return word.copyWith(bonus: RevealCharBonus(power));
+    return word.copyWith(bonus: RevealCharBonus(power, 0));
   }
   return word;
 }

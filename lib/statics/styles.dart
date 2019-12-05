@@ -1,10 +1,4 @@
-import 'package:bible_game/redux/error/state.dart';
 import 'package:flutter/material.dart';
-
-class Errors {
-  static final dbNotReady = ErrorState("DB not ready", "Try restart the app!");
-  static final unknownDbError = ErrorState("DB empty error", "Try restart the app");
-}
 
 class WordInWordsStyles {
   static final wordsSeparatorColor = Color.fromARGB(100, 255, 255, 255);
@@ -39,5 +33,16 @@ class WordInWordsStyles {
   static final propositionStyle = TextStyle(
     color: Colors.white,
     letterSpacing: 1,
+  );
+}
+
+class InventoryStyles {
+  static final outerDecoration = BoxDecoration(
+    color: Color.fromARGB(100, 0, 0, 0),
+  );
+
+  static final innerDecoration = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.circular(6),
   );
 }

@@ -1,9 +1,10 @@
 import 'package:bible_game/components/dialogs/quit_single_game.dart';
+import 'package:bible_game/components/inventory/inventory.dart';
 import 'package:bible_game/components/router.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/db/actions.dart';
 import 'package:bible_game/redux/main_reducer.dart';
-import 'package:bible_game/redux/router/reducer.dart';
+import 'package:bible_game/redux/router/actions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -57,6 +58,7 @@ class _BibleGameState extends State<BibleGame> {
         home: Stack(
           children: <Widget>[
             Router(),
+            Inventory(),
             QuitSingleGameDialog(),
           ],
         ),

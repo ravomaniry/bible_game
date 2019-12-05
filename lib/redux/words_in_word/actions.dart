@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:bible_game/db/db_adapter.dart';
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/models/bible_verse.dart';
@@ -11,7 +10,7 @@ import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/redux/words_in_word/cells_action.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/redux/words_in_word/state.dart';
-import 'package:bible_game/statics.dart';
+import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/utils/retry.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';

@@ -3,7 +3,7 @@ import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/error/actions.dart';
 import 'package:bible_game/redux/router/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
-import 'package:bible_game/statics.dart';
+import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/utils/retry.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';

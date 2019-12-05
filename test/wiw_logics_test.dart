@@ -3,6 +3,7 @@ import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
+import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/redux/words_in_word/state.dart';
@@ -93,6 +94,7 @@ void main() {
           config: ConfigState(screenWidth: 100),
           dba: null,
           explorer: null,
+          inventory: InventoryState.emptyState(),
           wordsInWord: WordsInWordState(
             cells: [],
             proposition: Word.from("DE", 0, false).chars,
@@ -123,7 +125,7 @@ void main() {
 
   test("updateVerseBasedOnBonus", () {
     final verse = BibleVerse.from(text: "Jesosy no fiainana");
-    final bonus = RevealCharBonus(3);
+    final bonus = RevealCharBonus(3, 0);
     final updated = updateVerseBasedOnBonus(bonus, verse);
     final charsBefore =
         verse.words.where((w) => !w.isSeparator && !w.resolved).map((w) => w.chars).reduce((a, b) => [...a, ...b]);

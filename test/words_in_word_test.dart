@@ -7,6 +7,7 @@ import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/actions.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
+import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
@@ -29,6 +30,7 @@ void main() {
       dba: DbAdapterMock.withDefaultValues(),
       explorer: ExplorerState(),
       config: ConfigState.initialState(),
+      inventory: InventoryState.emptyState(),
     );
     final store = Store<AppState>(
       mainReducer,
@@ -59,6 +61,7 @@ void main() {
       assetBundle: AssetBundleMock.withDefaultValue(),
       explorer: ExplorerState(),
       config: ConfigState.initialState(),
+      inventory: InventoryState.emptyState(),
     );
     final store = Store<AppState>(mainReducer, initialState: state, middleware: [thunkMiddleware]);
 
@@ -106,6 +109,7 @@ void main() {
         assetBundle: AssetBundleMock.withDefaultValue(),
         explorer: ExplorerState(),
         config: ConfigState.initialState(),
+        inventory: InventoryState.emptyState(),
       ),
     );
     // reminder: cellWidth = 24 | screenWidth -= 10
@@ -143,6 +147,7 @@ void main() {
       explorer: ExplorerState(),
       config: ConfigState.initialState(),
       wordsInWord: WordsInWordState.emptyState(),
+      inventory: InventoryState.emptyState(),
     );
     final store = Store<AppState>(mainReducer, middleware: [thunkMiddleware], initialState: initialState);
     store.dispatch(receiveVerse(verse, store.state.wordsInWord));

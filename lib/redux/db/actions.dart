@@ -2,7 +2,7 @@ import 'package:bible_game/db/db_adapter.dart';
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/error/actions.dart';
-import 'package:bible_game/statics.dart';
+import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/utils/retry.dart';
 import 'package:flutter/services.dart';
 import 'package:redux/redux.dart';
