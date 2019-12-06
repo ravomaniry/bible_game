@@ -1,8 +1,10 @@
 import 'dart:math';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/bonus.dart';
+import 'package:bible_game/models/thunk_container.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
+import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
 import 'package:bible_game/redux/words_in_word/cells_action.dart';
 import 'package:redux/redux.dart';
@@ -67,7 +69,7 @@ List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
     }
   }
 
-  if (eligibleAdditionalChars.length == 0) {
+  if (eligibleAdditionalChars.length == 0 && otherAdditionalChars.length > 0) {
     while ((targetLength - slots.length) < shortestAdditionalChars) {
       slots.removeLast();
     }
@@ -120,7 +122,6 @@ List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
       }
     }
   }
-
   return slots;
 }
 
@@ -144,9 +145,8 @@ List<Char> getAdditionalChars(Word word, List<Char> slots) {
   return missingChars;
 }
 
-class SlotClickHandler {
+class SlotClickHandler extends ThunkContainer {
   final int _index;
-  ThunkAction<AppState> thunk;
 
   SlotClickHandler(this._index) {
     thunk = (Store<AppState> store) {
@@ -168,7 +168,7 @@ ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
   final wordsToFind = List<Word>.from(state.wordsToFind);
   final resolvedWords = List<Word>.from(state.resolvedWords);
   final proposition = state.proposition;
-  Word foundWord;
+  Word revealed;
   var verse = state.verse;
   var slots = List<Char>.from(state.slots);
   var slotsBackup = List<Char>.from(state.slotsBackup);
@@ -179,7 +179,7 @@ ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
       hasFoundMatch = true;
       resolvedWords.add(word.resolvedVersion);
       wordsToFind.remove(word);
-      foundWord = word;
+      revealed = word;
     }
   }
 
@@ -187,9 +187,14 @@ ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
     slots = fillSlots(slots, wordsToFind);
     slotsBackup = slots;
     verse = updateVerseResolvedWords(proposition, verse);
-    verse = updateVerseBasedOnBonus(foundWord.bonus, verse);
+    verse = updateVerseBasedOnBonus(revealed.bonus, verse);
+    store.dispatch(IncrementMoney(revealed).thunk);
   } else {
     slots = slotsBackup;
+  }
+
+  if (wordsToFind.length == 0) {
+    store.dispatch(InvalidateCombo());
   }
 
   store.dispatch(UpdateWordsInWordState(state.copyWith(

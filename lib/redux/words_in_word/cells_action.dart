@@ -1,6 +1,7 @@
 import 'package:bible_game/components/words_in_word/controls.dart';
 import 'package:bible_game/components/words_in_word/results.dart';
 import 'package:bible_game/models/cell.dart';
+import 'package:bible_game/models/thunk_container.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
@@ -18,9 +19,8 @@ ThunkAction<AppState> recomputeCells = (Store<AppState> store) {
   store.dispatch(UpdateWordsInWordCells(cells));
 };
 
-class ComputeCells {
+class ComputeCells extends ThunkContainer {
   final double screenWidth;
-  ThunkAction<AppState> thunk;
 
   ComputeCells(this.screenWidth) {
     this.thunk = (Store<AppState> store) {

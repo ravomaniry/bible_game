@@ -3,6 +3,7 @@ import 'package:bible_game/models/cell.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/actions.dart';
+import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
 import 'package:bible_game/redux/words_in_word/cells_action.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
@@ -10,6 +11,8 @@ import 'package:flutter/foundation.dart';
 import 'package:redux/redux.dart';
 
 class WordsInWordViewModel {
+  final int combo;
+  final int money;
   final BibleVerse verse;
   final List<List<Cell>> cells;
   final List<Word> resolvedWords;
@@ -26,8 +29,11 @@ class WordsInWordViewModel {
   final Function() propose;
   final Function() tempNextVerseHandler;
   final Function() shuffleSlots;
+  final Function() invalidateCombo;
 
   WordsInWordViewModel({
+    @required this.money,
+    @required this.combo,
     @required this.verse,
     @required this.cells,
     @required this.resolvedWords,
@@ -44,10 +50,13 @@ class WordsInWordViewModel {
     @required this.propose,
     @required this.tempNextVerseHandler,
     @required this.shuffleSlots,
+    @required this.invalidateCombo,
   });
 
   static WordsInWordViewModel converter(Store<AppState> store) {
     return WordsInWordViewModel(
+      money: store.state.inventory.money,
+      combo: store.state.inventory.combo,
       verse: store.state.wordsInWord.verse,
       cells: store.state.wordsInWord.cells,
       wordsToFind: store.state.wordsInWord.wordsToFind,
@@ -68,6 +77,7 @@ class WordsInWordViewModel {
       propose: () => store.dispatch(proposeWordsInWord),
       tempNextVerseHandler: () => store.dispatch(tempWordsInWordNext),
       shuffleSlots: () => store.dispatch(shuffleSlotsAction),
+      invalidateCombo: () => store.dispatch(InvalidateCombo()),
     );
   }
 }

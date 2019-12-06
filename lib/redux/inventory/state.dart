@@ -4,6 +4,7 @@ class InventoryState {
   final bool isOpen;
   final bool isInGame;
   final int money;
+  final int combo;
   final int revealCharBonus1;
   final int revealCharBonus2;
   final int revealCharBonus5;
@@ -14,6 +15,7 @@ class InventoryState {
     @required this.isOpen,
     @required this.isInGame,
     @required this.money,
+    @required this.combo,
     @required this.revealCharBonus1,
     @required this.revealCharBonus2,
     @required this.revealCharBonus5,
@@ -26,6 +28,7 @@ class InventoryState {
       isOpen: false,
       isInGame: false,
       money: 100,
+      combo: 1,
       revealCharBonus1: 0,
       revealCharBonus2: 0,
       revealCharBonus5: 0,
@@ -38,6 +41,7 @@ class InventoryState {
     bool isOpen,
     bool isInGame,
     int money,
+    int combo,
     int revealCharBonus1,
     int revealCharBonus2,
     int revealCharBonus5,
@@ -48,6 +52,7 @@ class InventoryState {
       isOpen: isOpen ?? this.isOpen,
       isInGame: isInGame ?? this.isInGame,
       money: money ?? this.money,
+      combo: combo ?? this.combo,
       revealCharBonus1: revealCharBonus1 ?? this.revealCharBonus1,
       revealCharBonus2: revealCharBonus2 ?? this.revealCharBonus2,
       revealCharBonus5: revealCharBonus5 ?? this.revealCharBonus5,

@@ -1,3 +1,5 @@
+import 'package:animator/animator.dart';
+import 'package:bible_game/components/words_in_word/bonuses.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/words_in_word/view_model.dart';
 import 'package:bible_game/statics/styles.dart';
@@ -18,12 +20,14 @@ class WordsInWordControls extends StatelessWidget {
         child: Column(
           children: [
             PropositionDisplay(_viewModel.proposition, _viewModel.propose),
+            ComboDisplay(_viewModel.combo, _viewModel.invalidateCombo),
             SlotsDisplay(
               _viewModel.slots,
               _viewModel.slotClickHandler,
               _viewModel.shuffleSlots,
               _viewModel.slotIndexes,
             ),
+            BonusesDisplay(_viewModel),
           ],
         ),
       ),
@@ -149,5 +153,28 @@ class SlotItem extends StatelessWidget {
       return WordInWordsStyles.visitedSlotDecoration;
     }
     return WordInWordsStyles.availSlotDecoration;
+  }
+}
+
+class ComboDisplay extends StatelessWidget {
+  final int _combo;
+  final Function() _invalidateCombo;
+
+  ComboDisplay(this._combo, this._invalidateCombo);
+
+  @override
+  Widget build(BuildContext context) {
+    if (_combo == 1) {
+      return SizedBox(height: 4);
+    }
+    return Animator(
+      duration: Duration(seconds: 20),
+      endAnimationListener: (_) => _invalidateCombo(),
+      builder: (Animation anim) => Container(
+        width: MediaQuery.of(context).size.width * (1 - anim.value),
+        height: 4,
+        decoration: BoxDecoration(color: WordInWordsStyles.revealedWordColor),
+      ),
+    );
   }
 }

@@ -3,12 +3,16 @@ import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 
 InventoryState inventoryReducer(InventoryState state, action) {
-  if (action is OpenInventoryDialog) {
+  if (action is UpdateInventory) {
+    return action.payload;
+  } else if (action is OpenInventoryDialog) {
     return state.copyWith(isOpen: true, isInGame: action.isInGame);
   } else if (action is CloseInventoryDialog) {
     return state.copyWith(isOpen: false);
   } else if (action is BuyBonus) {
     return _buyBonusReducerUtil(state, action.payload);
+  } else if (action is InvalidateCombo) {
+    return state.copyWith(combo: 1);
   }
   return state;
 }

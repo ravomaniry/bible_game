@@ -7,6 +7,7 @@ import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/actions.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
+import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/redux/router/routes.dart';
@@ -200,5 +201,71 @@ void main() {
     expect(store.state.wordsInWord.wordsToFind.map((w) => w.value), ["teny", "Azy"]);
     expect(store.state.wordsInWord.resolvedWords, [Word.from("Ny", 0, false).copyWith(resolved: true)]);
     expect(store.state.wordsInWord.verse.words.map((w) => w.value), ["Ny", " ", "teny", " ", "ny", " ", "Azy"]);
+  });
+
+  testWidgets("Score and combo", (WidgetTester tester) async {
+    final verse = BibleVerse.from(bookId: 1, book: "Matio", chapter: 1, verse: 1, text: "abcd efghi jkl");
+    final initialState = AppState(
+      route: Routes.wordsInWord,
+      dba: DbAdapterMock.withDefaultValues(),
+      assetBundle: AssetBundleMock.withDefaultValue(),
+      explorer: ExplorerState(),
+      config: ConfigState.initialState(),
+      wordsInWord: WordsInWordState.emptyState(),
+      inventory: InventoryState.emptyState().copyWith(money: 0),
+    );
+    final store = Store<AppState>(mainReducer, middleware: [thunkMiddleware], initialState: initialState);
+    store
+      ..dispatch(receiveVerse(verse, store.state.wordsInWord))
+      ..dispatch(initializeWordsInWordState)
+      ..dispatch(UpdateWordsInWordState(
+        store.state.wordsInWord.copyWith(
+          slots: Word.from("EFGHIJKLABCD", 0, false).chars,
+          slotsBackup: Word.from("EFGHIJKLABCD", 0, false).chars,
+          slotsDisplayIndexes: [
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+          ],
+        ),
+      ));
+
+    final proposeBtn = find.byKey(Key("proposeBtn"));
+    final slots = store.state.wordsInWord.slotsDisplayIndexes[0].map((i) => find.byKey(Key("slot_$i"))).toList();
+    await tester.pumpWidget(BibleGame(store));
+    // Combo should be 2 and money=4 (A B C D)
+    await tester.tap(slots[8]);
+    await tester.tap(slots[9]);
+    await tester.tap(slots[10]);
+    await tester.tap(slots[11]);
+    await tester.pump();
+    await tester.tap(proposeBtn);
+    await tester.pump(Duration(milliseconds: 10));
+    expect(store.state.wordsInWord.wordsToFind.length, 2);
+    expect(store.state.inventory.money, 4);
+    expect(store.state.inventory.combo, 4);
+
+    // Now it should be 3 and money+=6 (J K L)
+    await tester.tap(slots[5]);
+    await tester.tap(slots[6]);
+    await tester.tap(slots[7]);
+    await tester.pump();
+    await tester.tap(proposeBtn);
+    await tester.pump();
+    expect(store.state.wordsInWord.wordsToFind.length, 1);
+    expect(store.state.inventory.money, 16);
+    expect(store.state.inventory.combo, 5);
+
+    store.dispatch(InvalidateCombo());
+    expect(store.state.inventory.combo, 1);
+    await tester.tap(slots[0]);
+    await tester.tap(slots[1]);
+    await tester.tap(slots[2]);
+    await tester.tap(slots[3]);
+    await tester.tap(slots[4]);
+    await tester.pump();
+    await tester.tap(proposeBtn);
+    await tester.pump();
+    expect(store.state.wordsInWord.wordsToFind, []);
+    expect(store.state.inventory.money, 21);
+    expect(store.state.inventory.combo, 1);
   });
 }
