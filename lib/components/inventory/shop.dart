@@ -44,7 +44,7 @@ class Shop extends StatelessWidget {
 
   Widget _buildBonus(Bonus bonus) {
     if (bonus is RevealCharBonus) {
-      return _RevealCharDisplay(_state, bonus, _buyBonus);
+      return _RevealCharDisplayWrapper(_state, bonus, _buyBonus);
     } else if (bonus is SolveOneTurn) {
       return _SolveOneTurnDisplay(_state, bonus, _buyBonus);
     }
@@ -52,31 +52,16 @@ class Shop extends StatelessWidget {
   }
 }
 
-class _RevealCharDisplay extends StatelessWidget {
+class _RevealCharDisplayWrapper extends StatelessWidget {
   final InventoryState _state;
   final RevealCharBonus _bonus;
   final Function(Bonus) _buy;
 
-  _RevealCharDisplay(this._state, this._bonus, this._buy, {Key key}) : super(key: key);
+  _RevealCharDisplayWrapper(this._state, this._bonus, this._buy, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 40,
-      padding: EdgeInsets.all(0),
-      child: FlatButton(
-        padding: EdgeInsets.all(0),
-        key: Key("revealCharBonusBtn_${_bonus.power}"),
-        onPressed: () => _buy(_bonus),
-        child: Badge(
-          badgeContent: Text("$_number"),
-          child: Container(
-            padding: EdgeInsets.only(top: 14),
-            child: Text(_bonus.name),
-          ),
-        ),
-      ),
-    );
+    return RevealCharBonusDisplay(_bonus, _number, () => _buy(_bonus));
   }
 
   int get _number {
@@ -90,6 +75,34 @@ class _RevealCharDisplay extends StatelessWidget {
       return _state.revealCharBonus10;
     }
     return 0;
+  }
+}
+
+class RevealCharBonusDisplay extends StatelessWidget {
+  final int _number;
+  final RevealCharBonus _bonus;
+  final Function() _onPressed;
+
+  RevealCharBonusDisplay(this._bonus, this._number, this._onPressed);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 40,
+      padding: EdgeInsets.all(0),
+      child: FlatButton(
+        padding: EdgeInsets.all(0),
+        key: Key("revealCharBonusBtn_${_bonus.power}"),
+        onPressed: _onPressed,
+        child: Badge(
+          badgeContent: Text("$_number"),
+          child: Container(
+            padding: EdgeInsets.only(top: 14),
+            child: Text(_bonus.name),
+          ),
+        ),
+      ),
+    );
   }
 }
 

@@ -29,6 +29,12 @@ class BuyBonus {
   BuyBonus(this.payload);
 }
 
+class DecrementBonus {
+  final Bonus payload;
+
+  DecrementBonus(this.payload);
+}
+
 class IncrementMoney extends ThunkContainer {
   final Word _revealedWord;
 

@@ -4,7 +4,10 @@ import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/inventory/state.dart';
+import 'package:bible_game/redux/inventory/use_bonus_action.dart';
 import 'package:bible_game/redux/main_reducer.dart';
+import 'package:bible_game/redux/router/routes.dart';
+import 'package:bible_game/redux/words_in_word/actions.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/redux/words_in_word/state.dart';
 import 'package:flutter/foundation.dart';
@@ -125,14 +128,61 @@ void main() {
 
   test("updateVerseBasedOnBonus", () {
     final verse = BibleVerse.from(text: "Jesosy no fiainana");
+    final store = Store<AppState>(
+      mainReducer,
+      middleware: [thunkMiddleware],
+      initialState: AppState(
+          assetBundle: null,
+          config: ConfigState(screenWidth: 100),
+          dba: null,
+          route: Routes.wordsInWord,
+          explorer: null,
+          inventory: InventoryState.emptyState(),
+          wordsInWord: WordsInWordState.emptyState().copyWith(
+            verse: BibleVerse.from(text: "Jesosy no fiainana"),
+          )),
+    );
     final bonus = RevealCharBonus(3, 0);
-    final updated = updateVerseBasedOnBonus(bonus, verse);
-    final charsBefore =
-        verse.words.where((w) => !w.isSeparator && !w.resolved).map((w) => w.chars).reduce((a, b) => [...a, ...b]);
-    final charsAfter =
-        updated.words.where((w) => !w.isSeparator && !w.resolved).map((w) => w.chars).reduce((a, b) => [...a, ...b]);
-    expect(updateVerseBasedOnBonus(null, verse), verse);
+    store.dispatch(UseBonus(bonus, false).thunk);
+    final charsBefore = verse.words
+        .where(
+          (w) => !w.isSeparator && !w.resolved,
+        )
+        .map((w) => w.chars)
+        .reduce((a, b) => [...a, ...b]);
+    final charsAfter = store.state.wordsInWord.verse.words
+        .where((w) => !w.isSeparator && !w.resolved)
+        .map((w) => w.chars)
+        .reduce((a, b) => [...a, ...b]);
     expect(charsBefore.where((c) => c.resolved).length, 0);
     expect(charsAfter.where((c) => c.resolved).length, 3);
+  });
+
+  test("useBonus", () {
+    final store = Store<AppState>(
+      mainReducer,
+      middleware: [thunkMiddleware],
+      initialState: AppState(
+        assetBundle: null,
+        config: ConfigState(screenWidth: 100),
+        dba: null,
+        route: Routes.wordsInWord,
+        explorer: null,
+        wordsInWord: WordsInWordState.emptyState().copyWith(),
+        inventory: InventoryState.emptyState().copyWith(
+          revealCharBonus1: 10,
+          revealCharBonus2: 20,
+          revealCharBonus5: 50,
+          revealCharBonus10: 100,
+        ),
+      ),
+    );
+    final verse = BibleVerse.from(text: "ABCDE EFGHI HIJKL MNOPQ RSTUV");
+    store.dispatch(receiveVerse(verse, store.state.wordsInWord));
+    store.dispatch(initializeWordsInWordState);
+    var unrevealed = store.state.wordsInWord.verse.words
+        .map((x) => x.chars.where((c) => !c.resolved).length)
+        .reduce((a, b) => a + b);
+    print(unrevealed);
   });
 }

@@ -14,7 +14,7 @@ class WordsInWordResult extends StatelessWidget {
 
   void checkScreenWidth(BuildContext context) {
     final currentWidth = MediaQuery.of(context).size.width;
-    if (_viewModel.screenWidth != currentWidth) {
+    if (_viewModel.config.screenWidth != currentWidth) {
       _viewModel.updateScreenWidth(currentWidth);
     }
   }
@@ -22,11 +22,11 @@ class WordsInWordResult extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     checkScreenWidth(context);
-    final verse = _viewModel.verse;
-    final cells = _viewModel.cells;
+    final verse = _viewModel.wordsInWord.verse;
+    final cells = _viewModel.wordsInWord.cells;
 
     if (verse != null && cells != null) {
-      final List<Widget> rowWidgets = _viewModel.cells.map(_buildRow).toList();
+      final List<Widget> rowWidgets = cells.map(_buildRow).toList();
       return Expanded(
         child: Container(
           decoration: BoxDecoration(color: WordInWordsStyles.resultBackgroundColor),
@@ -42,7 +42,7 @@ class WordsInWordResult extends StatelessWidget {
   }
 
   Widget _buildCell(Cell cell) {
-    final word = _viewModel.verse.words[cell.wordIndex];
+    final word = _viewModel.wordsInWord.verse.words[cell.wordIndex];
     return _CellDisplay(word, cell);
   }
 }

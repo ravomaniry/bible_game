@@ -5,6 +5,7 @@ import 'package:bible_game/models/thunk_container.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
+import 'package:bible_game/redux/inventory/use_bonus_action.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
 import 'package:bible_game/redux/words_in_word/cells_action.dart';
 import 'package:redux/redux.dart';
@@ -187,16 +188,17 @@ ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
     slots = fillSlots(slots, wordsToFind);
     slotsBackup = slots;
     verse = updateVerseResolvedWords(proposition, verse);
-    verse = updateVerseBasedOnBonus(revealed.bonus, verse);
-    store.dispatch(IncrementMoney(revealed).thunk);
   } else {
     slots = slotsBackup;
   }
 
+  if (hasFoundMatch) {
+    store.dispatch(IncrementMoney(revealed).thunk);
+    store.dispatch(UseBonus(revealed.bonus, false).thunk);
+  }
   if (wordsToFind.length == 0) {
     store.dispatch(InvalidateCombo());
   }
-
   store.dispatch(UpdateWordsInWordState(state.copyWith(
     verse: verse,
     slots: slots,
@@ -217,45 +219,6 @@ BibleVerse updateVerseResolvedWords(List<Char> proposition, BibleVerse verse) {
     }
   }
   return verse.copyWith(words: words);
-}
-
-BibleVerse updateVerseBasedOnBonus(Bonus bonus, BibleVerse verse) {
-  if (bonus is RevealCharBonus) {
-    final random = Random();
-    final charValidator = (Char char) => !char.resolved;
-    final wordValidator = (Word word) {
-      return !word.isSeparator && !word.resolved && word.chars.where(charValidator).length > 1;
-    };
-
-    for (int bonusPower = bonus.power; bonusPower > 0; bonusPower--) {
-      int wordStartingIndex = random.nextInt(verse.words.length);
-      final wordIndex = findNearestElement(verse.words, wordStartingIndex, wordValidator);
-      if (wordIndex != null) {
-        final word = verse.words[wordIndex];
-        final charStaringIndex = random.nextInt(word.chars.length);
-        final charIndex = findNearestElement(word.chars, charStaringIndex, charValidator);
-        final copy = word.copyWithChar(charIndex, word.chars[charIndex].copyWith(resolved: true));
-        final words = List<Word>.from(verse.words)..[wordIndex] = copy;
-        verse = verse.copyWith(words: words);
-      }
-    }
-  }
-  return verse;
-}
-
-int findNearestElement<T>(List<T> list, int startingIndex, Function(T) validator) {
-  int minIndex = startingIndex;
-  int maxIndex = startingIndex + 1;
-  while (minIndex >= 0 || maxIndex < list.length) {
-    if (minIndex >= 0 && validator(list[minIndex])) {
-      return minIndex;
-    } else if (maxIndex < list.length && validator(list[maxIndex])) {
-      return maxIndex;
-    }
-    minIndex--;
-    maxIndex++;
-  }
-  return null;
 }
 
 ThunkAction<AppState> shuffleSlotsAction = (Store<AppState> store) {

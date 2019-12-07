@@ -9,15 +9,17 @@ class TempNextSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (_viewModel.wordsToFind.isEmpty) {
+    final state = _viewModel.wordsInWord;
+
+    if (state.wordsToFind.isEmpty) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(_viewModel.verse.text),
+          Text(state.verse.text),
           Container(
             alignment: Alignment.centerRight,
             child: Text(
-              "${_viewModel.verse.book} ${_viewModel.verse.chapter}: ${_viewModel.verse.verse}",
+              "${state.verse.book} ${state.verse.chapter}: ${state.verse.verse}",
               style: TextStyle(fontStyle: FontStyle.italic),
             ),
           ),
