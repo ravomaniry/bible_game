@@ -28,17 +28,22 @@ InventoryState _decrementBonusReducerUtil(InventoryState state, Bonus bonus) {
 }
 
 InventoryState _changeBonusNumber(InventoryState state, Bonus bonus, int delta) {
-  final canChange = delta == -1 || state.money >= bonus.price;
+  final canChange = state.money >= bonus.price * delta;
   if (canChange) {
-    state = state.copyWith(money: state.money - bonus.price);
-    if (bonus is RevealCharBonus1) {
-      return state.copyWith(revealCharBonus1: state.revealCharBonus1 + delta);
-    } else if (bonus is RevealCharBonus2) {
-      return state.copyWith(revealCharBonus2: state.revealCharBonus2 + delta);
-    } else if (bonus is RevealCharBonus5) {
-      return state.copyWith(revealCharBonus5: state.revealCharBonus5 + delta);
-    } else if (bonus is RevealCharBonus10) {
-      return state.copyWith(revealCharBonus10: state.revealCharBonus10 + delta);
+    if (delta > 0) {
+      state = state.copyWith(money: state.money - bonus.price * delta);
+    }
+    if (bonus is RevealCharBonus) {
+      switch (bonus.power) {
+        case 1:
+          return state.copyWith(revealCharBonus1: state.revealCharBonus1 + delta);
+        case 2:
+          return state.copyWith(revealCharBonus2: state.revealCharBonus2 + delta);
+        case 5:
+          return state.copyWith(revealCharBonus5: state.revealCharBonus5 + delta);
+        case 10:
+          return state.copyWith(revealCharBonus10: state.revealCharBonus10 + delta);
+      }
     } else if (bonus is SolveOneTurn) {
       return state.copyWith(solveOneTurnBonus: state.solveOneTurnBonus + delta);
     }

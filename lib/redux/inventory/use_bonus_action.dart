@@ -15,7 +15,7 @@ class UseBonus extends ThunkContainer {
   UseBonus(this._bonus, this._triggeredByUser) {
     this.thunk = (Store<AppState> store) {
       final isUsed = useBonus(store);
-      if (_triggeredByUser && !isUsed) {
+      if (_triggeredByUser && isUsed) {
         store.dispatch(DecrementBonus(_bonus));
       }
     };

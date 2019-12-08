@@ -269,4 +269,96 @@ void main() {
     expect(store.state.inventory.money, 21);
     expect(store.state.inventory.combo, 1);
   });
+
+  testWidgets("Click on bonuses", (WidgetTester tester) async {
+    final verse = BibleVerse.from(book: "", bookId: 1, chapter: 1, verse: 1, text: "ABCDEFGHIJKLMNOPQRST");
+    final state = AppState(
+      dba: DbAdapterMock.withDefaultValues(),
+      assetBundle: AssetBundleMock.withDefaultValue(),
+      explorer: ExplorerState(),
+      config: ConfigState.initialState(),
+      inventory: InventoryState.emptyState().copyWith(
+        money: 100,
+        revealCharBonus1: 1,
+        revealCharBonus2: 2,
+        revealCharBonus5: 5,
+        revealCharBonus10: 10,
+        solveOneTurnBonus: 20,
+      ),
+      route: Routes.wordsInWord,
+      wordsInWord: WordsInWordState(
+        verse: verse,
+        slots: verse.words[0].chars,
+        slotsBackup: [],
+        cells: [],
+        wordsToFind: verse.words,
+        proposition: [],
+      ),
+    );
+    final store = Store<AppState>(
+      mainReducer,
+      initialState: state,
+      middleware: [thunkMiddleware],
+    );
+    await tester.pumpWidget(BibleGame(store));
+
+    // 1 - tap and tap again when there is no sold
+    await tester.tap(find.byKey(Key("revealCharBonusBtn_1")));
+    await tester.pump();
+    expect(store.state.wordsInWord.verse.words[0].chars.where((c) => !c.resolved).length, 19);
+    expect(store.state.inventory.revealCharBonus1, 0);
+    await tester.tap(find.byKey(Key("revealCharBonusBtn_1")));
+    await tester.pump();
+    expect(store.state.wordsInWord.verse.words[0].chars.where((c) => !c.resolved).length, 19);
+    expect(store.state.inventory.revealCharBonus1, 0);
+    // 2
+    await tester.pumpWidget(BibleGame(store));
+    await tester.tap(find.byKey(Key("revealCharBonusBtn_2")));
+    await tester.pump();
+    expect(store.state.wordsInWord.verse.words[0].chars.where((c) => !c.resolved).length, 17);
+    expect(store.state.inventory.revealCharBonus2, 1);
+    // 5
+    await tester.pumpWidget(BibleGame(store));
+    await tester.tap(find.byKey(Key("revealCharBonusBtn_5")));
+    await tester.tap(find.byKey(Key("revealCharBonusBtn_5")));
+    await tester.pump();
+    expect(store.state.wordsInWord.verse.words[0].chars.where((c) => !c.resolved).length, 7);
+    expect(store.state.inventory.revealCharBonus5, 3);
+    // 10 and only 6 is left and ignore the last tap as there is nothing to do
+    await tester.pumpWidget(BibleGame(store));
+    await tester.tap(find.byKey(Key("revealCharBonusBtn_10")));
+    await tester.tap(find.byKey(Key("revealCharBonusBtn_10")));
+    await tester.pump();
+    expect(store.state.wordsInWord.verse.words[0].chars.where((c) => !c.resolved).length, 1);
+    expect(store.state.inventory.revealCharBonus10, 9);
+    // Tap buttons when there is nothing to do
+    await tester.tap(find.byKey(Key("revealCharBonusBtn_2")));
+    await tester.tap(find.byKey(Key("revealCharBonusBtn_1")));
+    await tester.tap(find.byKey(Key("revealCharBonusBtn_5")));
+    await tester.pump();
+    expect(store.state.wordsInWord.verse.words[0].chars.where((c) => !c.resolved).length, 1);
+    expect(store.state.inventory.revealCharBonus10, 9);
+    expect(store.state.inventory.money, 100);
+
+    // No sold
+    store.dispatch(UpdateInventory(InventoryState.emptyState().copyWith(
+      revealCharBonus1: 0,
+      revealCharBonus2: 0,
+      revealCharBonus5: 0,
+      revealCharBonus10: 0,
+    )));
+    store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(verse: verse)));
+    // Tap buttons when there is nothing to do
+    await tester.pump();
+    await tester.tap(find.byKey(Key("revealCharBonusBtn_1")));
+    await tester.tap(find.byKey(Key("revealCharBonusBtn_2")));
+    await tester.tap(find.byKey(Key("revealCharBonusBtn_5")));
+    await tester.tap(find.byKey(Key("revealCharBonusBtn_10")));
+    await tester.pump();
+    expect(store.state.wordsInWord.verse.words[0].chars.where((c) => !c.resolved).length, 20);
+    expect(store.state.inventory.revealCharBonus1, 0);
+    expect(store.state.inventory.revealCharBonus2, 0);
+    expect(store.state.inventory.revealCharBonus5, 0);
+    expect(store.state.inventory.revealCharBonus10, 0);
+  });
 }
