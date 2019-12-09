@@ -18,23 +18,37 @@ class Home extends StatelessWidget {
   Widget _builder(BuildContext context, HomeViewModel viewModel) {
     if (viewModel.isReady) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text("Bible game"),
-        ),
-        body: Column(
-          children: <Widget>[
-            Expanded(child: Text("Home")),
-            Expanded(
-              child: Column(
-                children: <Widget>[
-                  _buildDummyBtn("Explorer", "goToExplorer", viewModel.goToExplorer),
-                  _buildDummyBtn("Words in word", "goToWordsInWordBtn", viewModel.goToWordsInWord),
-                  _buildDummyBtn("Inventory", "inventoryBtn", viewModel.openInventory),
-                  _buildDummyBtn("Calculator", "goToCalculatorBtn", viewModel.goToCalculator),
-                ],
+        body: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/forest.jpg'),
+            ),
+          ),
+          child: Container(
+            decoration: const BoxDecoration(
+              gradient: RadialGradient(
+                center: Alignment.center,
+                colors: [Colors.transparent, Color.fromARGB(160, 0, 0, 0)],
+                radius: 0.8,
+                stops: [0.8, 1],
               ),
-            )
-          ],
+            ),
+            child: Column(
+              children: <Widget>[
+                Expanded(child: Text("Home")),
+                Expanded(
+                  child: Column(
+                    children: <Widget>[
+                      _buildDummyBtn("Explorer", "goToExplorer", viewModel.goToExplorer),
+                      _buildDummyBtn("Words in word", "goToWordsInWordBtn", viewModel.goToWordsInWord),
+                      _buildDummyBtn("Inventory", "inventoryBtn", viewModel.openInventory),
+                      _buildDummyBtn("Calculator", "goToCalculatorBtn", viewModel.goToCalculator),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
         ),
       );
     }
@@ -44,9 +58,23 @@ class Home extends StatelessWidget {
   Widget _buildDummyBtn(String text, String key, Function() onPressed) {
     return Container(
       alignment: Alignment.center,
-      child: RaisedButton(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("assets/images/wood_panel.png"),
+        ),
+      ),
+      child: FlatButton(
         key: Key(key),
-        child: Text(text),
+        child: Text(
+          text,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            shadows: [
+              BoxShadow(offset: Offset(1, 1), color: Colors.grey, blurRadius: 1),
+            ],
+          ),
+        ),
         onPressed: onPressed,
       ),
     );

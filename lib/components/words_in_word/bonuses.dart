@@ -49,6 +49,6 @@ class _RevealCharDisplayWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RevealCharBonusDisplay(_bonus, _number, _onPressed);
+    return RevealCharBonusDisplay(_bonus, _number, _number == 0, _onPressed);
   }
 }

@@ -29,12 +29,20 @@ class WordsInWord extends StatelessWidget {
     if (viewModel.wordsInWord.verse == null) {
       return Text("Loading...");
     }
-    return Column(
-      children: [
-        WordsInWordResult(viewModel),
-        WordsInWordControls(viewModel),
-        TempNextSection(viewModel),
-      ],
+    return Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          fit: BoxFit.fill,
+          image: AssetImage("assets/images/grass.jpg"),
+        ),
+      ),
+      child: Column(
+        children: [
+          WordsInWordResult(viewModel),
+          WordsInWordControls(viewModel),
+          TempNextSection(viewModel),
+        ],
+      ),
     );
   }
 }

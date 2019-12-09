@@ -17,7 +17,9 @@ class WordsInWordControls extends StatelessWidget {
     final state = _viewModel.wordsInWord;
     return Expanded(
       child: Container(
-        decoration: BoxDecoration(color: Colors.white),
+        decoration: const BoxDecoration(
+          color: Color.fromARGB(100, 255, 255, 255),
+        ),
         child: Column(
           children: [
             PropositionDisplay(state.proposition, _viewModel.propose),
@@ -55,19 +57,28 @@ class PropositionDisplay extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          height: 24,
+          height: 32,
+          constraints: const BoxConstraints(
+            minWidth: 200,
+          ),
           decoration: BoxDecoration(
-            color: WordInWordsStyles.revealedCharColor,
-            borderRadius: BorderRadius.circular(6),
+            image: DecorationImage(
+              fit: BoxFit.fill,
+              image: AssetImage("assets/images/panels_with_nail.png"),
+            ),
           ),
           child: FlatButton(
             key: Key("proposeBtn"),
-            splashColor: WordInWordsStyles.revealedWordColor,
-            padding: EdgeInsets.only(top: 0, bottom: 0, left: 10, right: 10),
+            splashColor: Colors.white,
+            padding: EdgeInsets.only(top: 0, bottom: 0, left: 30, right: 30),
             onPressed: clickHandler,
             child: Text(
               _proposition.map((x) => x.value).join(""),
-              style: WordInWordsStyles.propositionStyle,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
+              ),
             ),
           ),
         )
@@ -87,7 +98,7 @@ class SlotsDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 4),
+      margin: const EdgeInsets.only(top: 4),
       child: GestureDetector(
         onHorizontalDragEnd: (_) => _shuffle(),
         child: Column(
@@ -139,21 +150,25 @@ class SlotItem extends StatelessWidget {
       child: AnimatedContainer(
         transform: transform,
         duration: Duration(milliseconds: 120),
-        decoration: _getDecoration(),
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            fit: BoxFit.fill,
+            image: AssetImage("assets/images/word_block.png"),
+          ),
+        ),
         alignment: Alignment.center,
         margin: EdgeInsets.only(right: margin, bottom: margin),
         width: width,
         height: width,
-        child: Text(_slot?.value ?? "", style: WordInWordsStyles.slotTextStyle),
+        child: Text(
+          _slot?.value ?? "",
+          style: const TextStyle(
+            color: Color.fromARGB(255, 93, 41, 44),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
     );
-  }
-
-  BoxDecoration _getDecoration() {
-    if (_slot == null) {
-      return WordInWordsStyles.visitedSlotDecoration;
-    }
-    return WordInWordsStyles.availSlotDecoration;
   }
 }
 

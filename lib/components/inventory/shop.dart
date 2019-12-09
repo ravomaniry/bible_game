@@ -61,7 +61,7 @@ class _RevealCharDisplayWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RevealCharBonusDisplay(_bonus, _number, () => _buy(_bonus));
+    return RevealCharBonusDisplay(_bonus, _number, false, () => _buy(_bonus));
   }
 
   int get _number {
@@ -80,25 +80,36 @@ class _RevealCharDisplayWrapper extends StatelessWidget {
 
 class RevealCharBonusDisplay extends StatelessWidget {
   final int _number;
+  final bool _disabled;
   final RevealCharBonus _bonus;
   final Function() _onPressed;
 
-  RevealCharBonusDisplay(this._bonus, this._number, this._onPressed);
+  RevealCharBonusDisplay(this._bonus, this._number, this._disabled, this._onPressed);
+
+  double get _opacity {
+    return _disabled ? 0.4 : 1;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 40,
-      padding: EdgeInsets.all(0),
-      child: FlatButton(
+    return Opacity(
+      opacity: _opacity,
+      child: Container(
+        width: 40,
         padding: EdgeInsets.all(0),
-        key: Key("revealCharBonusBtn_${_bonus.power}"),
-        onPressed: _onPressed,
-        child: Badge(
-          badgeContent: Text("$_number"),
-          child: Container(
-            padding: EdgeInsets.only(top: 14),
-            child: Text(_bonus.name),
+        child: FlatButton(
+          padding: EdgeInsets.all(0),
+          key: Key("revealCharBonusBtn_${_bonus.power}"),
+          onPressed: _onPressed,
+          child: Badge(
+            badgeContent: Text("$_number"),
+            child: Container(
+              padding: EdgeInsets.all(6),
+              child: Image(
+                fit: BoxFit.fitWidth,
+                image: AssetImage("assets/images/wood_medal_${_bonus.power}.png"),
+              ),
+            ),
           ),
         ),
       ),

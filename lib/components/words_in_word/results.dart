@@ -29,7 +29,6 @@ class WordsInWordResult extends StatelessWidget {
       final List<Widget> rowWidgets = cells.map(_buildRow).toList();
       return Expanded(
         child: Container(
-          decoration: BoxDecoration(color: WordInWordsStyles.resultBackgroundColor),
           child: ListView(children: rowWidgets),
         ),
       );
