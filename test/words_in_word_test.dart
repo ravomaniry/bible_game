@@ -1,6 +1,7 @@
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/models/bible_verse.dart';
+import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/models/cell.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
@@ -9,7 +10,6 @@ import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/inventory/state.dart';
-import 'package:bible_game/redux/inventory/use_bonus_action.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
@@ -361,4 +361,60 @@ void main() {
     expect(store.state.inventory.revealCharBonus5, 0);
     expect(store.state.inventory.revealCharBonus10, 0);
   });
+
+  testWidgets("useBonus", (WidgetTester tester) async {
+    final store = Store<AppState>(
+      mainReducer,
+      middleware: [thunkMiddleware],
+      initialState: AppState(
+        assetBundle: null,
+        config: ConfigState(screenWidth: 100),
+        dba: DbAdapterMock.withDefaultValues(),
+        route: Routes.wordsInWord,
+        explorer: null,
+        wordsInWord: WordsInWordState.emptyState().copyWith(),
+        inventory: InventoryState.emptyState().copyWith(
+          revealCharBonus1: 10,
+          revealCharBonus2: 20,
+          revealCharBonus5: 50,
+          revealCharBonus10: 100,
+        ),
+      ),
+    );
+    final verse = BibleVerse.from(text: "ABCDE EFGHI HIJKL MNOPQ");
+    store.dispatch(receiveVerse(verse, store.state.wordsInWord));
+    store.dispatch(initializeWordsInWordState);
+    store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
+      verse: verse,
+      wordsToFind: [
+        verse.words[0].copyWith(bonus: RevealCharBonus(1, 0)),
+        verse.words[2].copyWith(bonus: RevealCharBonus(2, 0)),
+        verse.words[4].copyWith(bonus: RevealCharBonus(5, 0)),
+      ],
+    )));
+    expect(countUnrevealedWord(store.state.wordsInWord.verse.words), 20);
+    // A B C D E: bonus = 1
+    store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
+      proposition: verse.words[0].chars,
+    )));
+    store.dispatch(proposeWordsInWord);
+    expect(countUnrevealedWord(store.state.wordsInWord.verse.words), 14);
+    // E F G H I: bonus = 3
+    store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
+      proposition: verse.words[2].chars,
+    )));
+    final prevUnrevealedCount = countUnrevealedWord([store.state.wordsInWord.verse.words[2]]);
+    store.dispatch(proposeWordsInWord);
+    if (prevUnrevealedCount == 5) {
+      expect(countUnrevealedWord(store.state.wordsInWord.verse.words), 7);
+    } else {
+      expect(countUnrevealedWord(store.state.wordsInWord.verse.words), 8);
+    }
+  });
+}
+
+int countUnrevealedWord(List<Word> words) {
+  final wordLengths =
+      words.where((w) => !w.isSeparator && !w.resolved).map((w) => w.chars.where((c) => !c.resolved).length);
+  return wordLengths.isEmpty ? 0 : wordLengths.reduce((a, b) => a + b);
 }

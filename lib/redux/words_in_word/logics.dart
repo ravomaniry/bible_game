@@ -192,13 +192,6 @@ ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
     slots = slotsBackup;
   }
 
-  if (hasFoundMatch) {
-    store.dispatch(IncrementMoney(revealed).thunk);
-    store.dispatch(UseBonus(revealed.bonus, false).thunk);
-  }
-  if (wordsToFind.length == 0) {
-    store.dispatch(InvalidateCombo());
-  }
   store.dispatch(UpdateWordsInWordState(state.copyWith(
     verse: verse,
     slots: slots,
@@ -208,6 +201,14 @@ ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
     wordsToFind: wordsToFind,
   )));
   store.dispatch(recomputeSlotsIndexes);
+
+  if (wordsToFind.length == 0) {
+    store.dispatch(InvalidateCombo());
+  }
+  if (hasFoundMatch) {
+    store.dispatch(IncrementMoney(revealed).thunk);
+    store.dispatch(UseBonus(revealed.bonus, false).thunk);
+  }
 };
 
 BibleVerse updateVerseResolvedWords(List<Char> proposition, BibleVerse verse) {

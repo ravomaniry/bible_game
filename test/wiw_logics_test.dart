@@ -157,32 +157,4 @@ void main() {
     expect(charsBefore.where((c) => c.resolved).length, 0);
     expect(charsAfter.where((c) => c.resolved).length, 3);
   });
-
-  test("useBonus", () {
-    final store = Store<AppState>(
-      mainReducer,
-      middleware: [thunkMiddleware],
-      initialState: AppState(
-        assetBundle: null,
-        config: ConfigState(screenWidth: 100),
-        dba: null,
-        route: Routes.wordsInWord,
-        explorer: null,
-        wordsInWord: WordsInWordState.emptyState().copyWith(),
-        inventory: InventoryState.emptyState().copyWith(
-          revealCharBonus1: 10,
-          revealCharBonus2: 20,
-          revealCharBonus5: 50,
-          revealCharBonus10: 100,
-        ),
-      ),
-    );
-    final verse = BibleVerse.from(text: "ABCDE EFGHI HIJKL MNOPQ RSTUV");
-    store.dispatch(receiveVerse(verse, store.state.wordsInWord));
-    store.dispatch(initializeWordsInWordState);
-    var unrevealed = store.state.wordsInWord.verse.words
-        .map((x) => x.chars.where((c) => !c.resolved).length)
-        .reduce((a, b) => a + b);
-    print(unrevealed);
-  });
 }
