@@ -201,13 +201,12 @@ ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
     wordsToFind: wordsToFind,
   )));
   store.dispatch(recomputeSlotsIndexes);
-
-  if (wordsToFind.length == 0) {
-    store.dispatch(InvalidateCombo());
-  }
   if (hasFoundMatch) {
     store.dispatch(IncrementMoney(revealed).thunk);
     store.dispatch(UseBonus(revealed.bonus, false).thunk);
+  }
+  if (wordsToFind.length == 0) {
+    store.dispatch(InvalidateCombo());
   }
 };
 
