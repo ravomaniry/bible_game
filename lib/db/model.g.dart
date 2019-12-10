@@ -67,6 +67,41 @@ class TableVerses extends SqfEntityTableBase {
     return _instance = _instance ?? TableVerses();
   }
 }
+
+// Game TABLE
+class TableGame extends SqfEntityTableBase {
+  TableGame() {
+    // declare properties of EntityTable
+    tableName = 'games';
+    primaryKeyName = 'id';
+    primaryKeyType = PrimaryKeyType.integer_auto_incremental;
+    useSoftDeleting = true;
+    // when useSoftDeleting is true, creates a field named 'isDeleted' on the table, and set to '1' this field when item deleted (does not hard delete)
+
+    // declare fields
+    fields = [
+      SqfEntityFieldBase('name', DbType.text),
+      SqfEntityFieldBase('startBook', DbType.integer),
+      SqfEntityFieldBase('startChapter', DbType.integer),
+      SqfEntityFieldBase('startVerse', DbType.integer),
+      SqfEntityFieldBase('endBook', DbType.integer),
+      SqfEntityFieldBase('endChapter', DbType.integer),
+      SqfEntityFieldBase('endVerse', DbType.integer),
+      SqfEntityFieldBase('nextBook', DbType.integer),
+      SqfEntityFieldBase('nextChapter', DbType.integer),
+      SqfEntityFieldBase('nextVerse', DbType.integer),
+      SqfEntityFieldBase('money', DbType.integer),
+      SqfEntityFieldBase('bonuses', DbType.text),
+      SqfEntityFieldBase('versesCount', DbType.text),
+      SqfEntityFieldBase('resolvedVersesCount', DbType.text),
+    ];
+    super.init();
+  }
+  static SqfEntityTableBase _instance;
+  static SqfEntityTableBase get getInstance {
+    return _instance = _instance ?? TableGame();
+  }
+}
 // END TABLES
 
 // BEGIN SEQUENCES
@@ -96,6 +131,7 @@ class BibleGameModel extends SqfEntityModelProvider {
     databaseTables = [
       TableBooks.getInstance,
       TableVerses.getInstance,
+      TableGame.getInstance,
     ];
 
     sequences = [
@@ -2060,6 +2096,1325 @@ class VersesManager extends SqfEntityProvider {
 }
 
 //endregion VersesManager
+// region Game
+class Game {
+  Game(
+      {this.id,
+      this.name,
+      this.startBook,
+      this.startChapter,
+      this.startVerse,
+      this.endBook,
+      this.endChapter,
+      this.endVerse,
+      this.nextBook,
+      this.nextChapter,
+      this.nextVerse,
+      this.money,
+      this.bonuses,
+      this.versesCount,
+      this.resolvedVersesCount,
+      this.isDeleted}) {
+    setDefaultValues();
+  }
+  Game.withFields(
+      this.name,
+      this.startBook,
+      this.startChapter,
+      this.startVerse,
+      this.endBook,
+      this.endChapter,
+      this.endVerse,
+      this.nextBook,
+      this.nextChapter,
+      this.nextVerse,
+      this.money,
+      this.bonuses,
+      this.versesCount,
+      this.resolvedVersesCount,
+      this.isDeleted) {
+    setDefaultValues();
+  }
+  Game.withId(
+      this.id,
+      this.name,
+      this.startBook,
+      this.startChapter,
+      this.startVerse,
+      this.endBook,
+      this.endChapter,
+      this.endVerse,
+      this.nextBook,
+      this.nextChapter,
+      this.nextVerse,
+      this.money,
+      this.bonuses,
+      this.versesCount,
+      this.resolvedVersesCount,
+      this.isDeleted) {
+    setDefaultValues();
+  }
+  Game.fromMap(Map<String, dynamic> o) {
+    id = o['id'] as int;
+    name = o['name'] as String;
+
+    startBook = o['startBook'] as int;
+
+    startChapter = o['startChapter'] as int;
+
+    startVerse = o['startVerse'] as int;
+
+    endBook = o['endBook'] as int;
+
+    endChapter = o['endChapter'] as int;
+
+    endVerse = o['endVerse'] as int;
+
+    nextBook = o['nextBook'] as int;
+
+    nextChapter = o['nextChapter'] as int;
+
+    nextVerse = o['nextVerse'] as int;
+
+    money = o['money'] as int;
+
+    bonuses = o['bonuses'] as String;
+
+    versesCount = o['versesCount'] as String;
+
+    resolvedVersesCount = o['resolvedVersesCount'] as String;
+
+    isDeleted = o['isDeleted'] != null ? o['isDeleted'] == 1 : null;
+  }
+  // FIELDS (Game)
+  int id;
+  String name;
+  int startBook;
+  int startChapter;
+  int startVerse;
+  int endBook;
+  int endChapter;
+  int endVerse;
+  int nextBook;
+  int nextChapter;
+  int nextVerse;
+  int money;
+  String bonuses;
+  String versesCount;
+  String resolvedVersesCount;
+  bool isDeleted;
+
+  BoolResult saveResult;
+  // end FIELDS (Game)
+
+  static const bool _softDeleteActivated = true;
+  GameManager __mnGame;
+
+  GameManager get _mnGame {
+    return __mnGame = __mnGame ?? GameManager();
+  }
+
+  // METHODS
+  Map<String, dynamic> toMap({bool forQuery = false, bool forJson = false}) {
+    final map = Map<String, dynamic>();
+    if (id != null) {
+      map['id'] = id;
+    }
+    if (name != null) {
+      map['name'] = name;
+    }
+
+    if (startBook != null) {
+      map['startBook'] = startBook;
+    }
+
+    if (startChapter != null) {
+      map['startChapter'] = startChapter;
+    }
+
+    if (startVerse != null) {
+      map['startVerse'] = startVerse;
+    }
+
+    if (endBook != null) {
+      map['endBook'] = endBook;
+    }
+
+    if (endChapter != null) {
+      map['endChapter'] = endChapter;
+    }
+
+    if (endVerse != null) {
+      map['endVerse'] = endVerse;
+    }
+
+    if (nextBook != null) {
+      map['nextBook'] = nextBook;
+    }
+
+    if (nextChapter != null) {
+      map['nextChapter'] = nextChapter;
+    }
+
+    if (nextVerse != null) {
+      map['nextVerse'] = nextVerse;
+    }
+
+    if (money != null) {
+      map['money'] = money;
+    }
+
+    if (bonuses != null) {
+      map['bonuses'] = bonuses;
+    }
+
+    if (versesCount != null) {
+      map['versesCount'] = versesCount;
+    }
+
+    if (resolvedVersesCount != null) {
+      map['resolvedVersesCount'] = resolvedVersesCount;
+    }
+
+    if (isDeleted != null) {
+      map['isDeleted'] = forQuery ? (isDeleted ? 1 : 0) : isDeleted;
+    }
+
+    return map;
+  }
+
+  Future<Map<String, dynamic>> toMapWithChilds(
+      [bool forQuery = false, bool forJson = false]) async {
+    final map = Map<String, dynamic>();
+    if (id != null) {
+      map['id'] = id;
+    }
+    if (name != null) {
+      map['name'] = name;
+    }
+
+    if (startBook != null) {
+      map['startBook'] = startBook;
+    }
+
+    if (startChapter != null) {
+      map['startChapter'] = startChapter;
+    }
+
+    if (startVerse != null) {
+      map['startVerse'] = startVerse;
+    }
+
+    if (endBook != null) {
+      map['endBook'] = endBook;
+    }
+
+    if (endChapter != null) {
+      map['endChapter'] = endChapter;
+    }
+
+    if (endVerse != null) {
+      map['endVerse'] = endVerse;
+    }
+
+    if (nextBook != null) {
+      map['nextBook'] = nextBook;
+    }
+
+    if (nextChapter != null) {
+      map['nextChapter'] = nextChapter;
+    }
+
+    if (nextVerse != null) {
+      map['nextVerse'] = nextVerse;
+    }
+
+    if (money != null) {
+      map['money'] = money;
+    }
+
+    if (bonuses != null) {
+      map['bonuses'] = bonuses;
+    }
+
+    if (versesCount != null) {
+      map['versesCount'] = versesCount;
+    }
+
+    if (resolvedVersesCount != null) {
+      map['resolvedVersesCount'] = resolvedVersesCount;
+    }
+
+    if (isDeleted != null) {
+      map['isDeleted'] = forQuery ? (isDeleted ? 1 : 0) : isDeleted;
+    }
+
+    return map;
+  }
+
+  /// This method always returns Json String
+  String toJson() {
+    return json.encode(toMap(forJson: true));
+  }
+
+  /// This method always returns Json String
+  Future<String> toJsonWithChilds() async {
+    return json.encode(await toMapWithChilds());
+  }
+
+  List<dynamic> toArgs() {
+    return [
+      id,
+      name,
+      startBook,
+      startChapter,
+      startVerse,
+      endBook,
+      endChapter,
+      endVerse,
+      nextBook,
+      nextChapter,
+      nextVerse,
+      money,
+      bonuses,
+      versesCount,
+      resolvedVersesCount,
+      isDeleted
+    ];
+  }
+
+  static Future<List<Game>> fromWebUrl(String url) async {
+    try {
+      final response = await http.get(url);
+      return await fromJson(response.body);
+    } catch (e) {
+      print('SQFENTITY ERROR Game.fromWebUrl: ErrorMessage: ${e.toString()}');
+      return null;
+    }
+  }
+
+  static Future<List<Game>> fromJson(String jsonBody) async {
+    final Iterable list = await json.decode(jsonBody) as Iterable;
+    var objList = List<Game>();
+    try {
+      objList = list
+          .map((game) => Game.fromMap(game as Map<String, dynamic>))
+          .toList();
+    } catch (e) {
+      print('SQFENTITY ERROR Game.fromJson: ErrorMessage: ${e.toString()}');
+    }
+    return objList;
+  }
+
+  static Future<List<Game>> fromObjectList(Future<List<dynamic>> o) async {
+    final data = await o;
+    return Game.fromMapList(data);
+  }
+
+  static List<Game> fromMapList(List<dynamic> data) {
+    final List<Game> objList = List<Game>();
+    for (final Map map in data as List<Map>) {
+      final obj = Game.fromMap(map as Map<String, dynamic>);
+      objList.add(obj);
+    }
+    return objList;
+  }
+
+  /// returns Game by ID if exist, otherwise returns null
+  /// <param name='id'>Primary Key Value</param>
+  /// <returns>returns Game if exist, otherwise returns null
+  Future<Game> getById(int id) async {
+    if (id == null) {
+      return null;
+    }
+    Game gameObj;
+    final data = await _mnGame.getById(id);
+    if (data.length != 0) {
+      gameObj = Game.fromMap(data[0] as Map<String, dynamic>);
+    } else {
+      gameObj = null;
+    }
+    return gameObj;
+  }
+
+  /// Saves the object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
+
+  /// <returns>Returns id
+  Future<int> save() async {
+    if (id == null || id == 0) {
+      id = await _mnGame.insert(this);
+    } else {
+      id = await _upsert();
+    }
+    return id;
+  }
+
+  /// saveAs Game. Returns a new Primary Key value of Game
+
+  /// <returns>Returns a new Primary Key value of Game
+  Future<int> saveAs() async {
+    id = null;
+    return save();
+  }
+
+  /// saveAll method saves the sent List<Game> as a batch in one transaction
+  /// Returns a <List<BoolResult>>
+  Future<List<BoolResult>> saveAll(List<Game> games) async {
+    final results = _mnGame.saveAll(
+        'INSERT OR REPLACE INTO games (id,  name, startBook, startChapter, startVerse, endBook, endChapter, endVerse, nextBook, nextChapter, nextVerse, money, bonuses, versesCount, resolvedVersesCount,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+        games);
+    return results;
+  }
+
+  /// Updates if the record exists, otherwise adds a new row
+
+  /// <returns>Returns id
+  Future<int> _upsert() async {
+    try {
+      id = await _mnGame.rawInsert(
+          'INSERT OR REPLACE INTO games (id,  name, startBook, startChapter, startVerse, endBook, endChapter, endVerse, nextBook, nextChapter, nextVerse, money, bonuses, versesCount, resolvedVersesCount,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+          [
+            id,
+            name,
+            startBook,
+            startChapter,
+            startVerse,
+            endBook,
+            endChapter,
+            endVerse,
+            nextBook,
+            nextChapter,
+            nextVerse,
+            money,
+            bonuses,
+            versesCount,
+            resolvedVersesCount,
+            isDeleted
+          ]);
+      saveResult = BoolResult(
+          success: true, successMessage: 'Game id=$id updated successfuly');
+      return id;
+    } catch (e) {
+      saveResult = BoolResult(
+          success: false,
+          errorMessage: 'Game Save failed. Error: ${e.toString()}');
+      return 0;
+    }
+  }
+
+  /// inserts or replaces the sent List<Todo> as a batch in one transaction.
+  /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
+  /// Returns a <List<BoolResult>>
+  Future<List<BoolResult>> upsertAll(List<Game> games) async {
+    final results = await _mnGame.rawInsertAll(
+        'INSERT OR REPLACE INTO games (id,  name, startBook, startChapter, startVerse, endBook, endChapter, endVerse, nextBook, nextChapter, nextVerse, money, bonuses, versesCount, resolvedVersesCount,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+        games);
+    return results;
+  }
+
+  /// Deletes Game
+
+  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+  Future<BoolResult> delete([bool hardDelete = false]) async {
+    print('SQFENTITIY: delete Game invoked (id=$id)');
+    if (!_softDeleteActivated || hardDelete || isDeleted) {
+      return _mnGame
+          .delete(QueryParams(whereString: 'id=?', whereArguments: [id]));
+    } else {
+      return _mnGame.updateBatch(
+          QueryParams(whereString: 'id=?', whereArguments: [id]),
+          {'isDeleted': 1});
+    }
+  }
+
+  /// Recover Game>
+
+  /// <returns>BoolResult res.success=Recovered, not res.success=Can not recovered
+  Future<BoolResult> recover([bool recoverChilds = true]) async {
+    print('SQFENTITIY: recover Game invoked (id=$id)');
+    {
+      return _mnGame.updateBatch(
+          QueryParams(whereString: 'id=?', whereArguments: [id]),
+          {'isDeleted': 0});
+    }
+  }
+
+  //private GameFilterBuilder _Select;
+  GameFilterBuilder select({List<String> columnsToSelect, bool getIsDeleted}) {
+    return GameFilterBuilder(this)
+      .._getIsDeleted = getIsDeleted == true
+      ..qparams.selectColumns = columnsToSelect;
+  }
+
+  GameFilterBuilder distinct(
+      {List<String> columnsToSelect, bool getIsDeleted}) {
+    return GameFilterBuilder(this)
+      .._getIsDeleted = getIsDeleted == true
+      ..qparams.selectColumns = columnsToSelect
+      ..qparams.distinct = true;
+  }
+
+  void setDefaultValues() {
+    isDeleted = isDeleted ?? false;
+  }
+  // END METHODS
+  // CUSTOM CODES
+  /*
+    you must define customCode property of your SqfEntityTable constant for ex:
+    const tablePerson = SqfEntityTable(
+    tableName: 'person',
+    primaryKeyName: 'id',
+    primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+    fields: [
+      SqfEntityField('firstName', DbType.text),
+      SqfEntityField('lastName', DbType.text),
+    ],
+    customCode: '''
+     String fullName()
+     { 
+       return '$firstName $lastName';
+     }
+    ''');
+   */
+  // END CUSTOM CODES
+}
+// endregion game
+
+// region GameField
+class GameField extends SearchCriteria {
+  GameField(this.gameFB) {
+    param = DbParameter();
+  }
+  DbParameter param;
+  String _waitingNot = '';
+  GameFilterBuilder gameFB;
+
+  GameField get not {
+    _waitingNot = ' NOT ';
+    return this;
+  }
+
+  GameFilterBuilder equals(var pValue) {
+    param.expression = '=';
+    gameFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, gameFB.parameters, param, SqlSyntax.EQuals,
+            gameFB._addedBlocks)
+        : setCriteria(pValue, gameFB.parameters, param, SqlSyntax.NotEQuals,
+            gameFB._addedBlocks);
+    _waitingNot = '';
+    gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
+        gameFB._addedBlocks.retVal;
+    return gameFB;
+  }
+
+  GameFilterBuilder equalsOrNull(var pValue) {
+    param.expression = '=';
+    gameFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, gameFB.parameters, param, SqlSyntax.EQualsOrNull,
+            gameFB._addedBlocks)
+        : setCriteria(pValue, gameFB.parameters, param,
+            SqlSyntax.NotEQualsOrNull, gameFB._addedBlocks);
+    _waitingNot = '';
+    gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
+        gameFB._addedBlocks.retVal;
+    return gameFB;
+  }
+
+  GameFilterBuilder isNull() {
+    gameFB._addedBlocks = setCriteria(
+        0,
+        gameFB.parameters,
+        param,
+        SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+        gameFB._addedBlocks);
+    _waitingNot = '';
+    gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
+        gameFB._addedBlocks.retVal;
+    return gameFB;
+  }
+
+  GameFilterBuilder contains(dynamic pValue) {
+    if (pValue != null) {
+      gameFB._addedBlocks = setCriteria(
+          '%${pValue.toString()}%',
+          gameFB.parameters,
+          param,
+          SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+          gameFB._addedBlocks);
+      _waitingNot = '';
+      gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
+          gameFB._addedBlocks.retVal;
+    }
+    return gameFB;
+  }
+
+  GameFilterBuilder startsWith(dynamic pValue) {
+    if (pValue != null) {
+      gameFB._addedBlocks = setCriteria(
+          '${pValue.toString()}%',
+          gameFB.parameters,
+          param,
+          SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+          gameFB._addedBlocks);
+      _waitingNot = '';
+      gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
+          gameFB._addedBlocks.retVal;
+      gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
+          gameFB._addedBlocks.retVal;
+    }
+    return gameFB;
+  }
+
+  GameFilterBuilder endsWith(dynamic pValue) {
+    if (pValue != null) {
+      gameFB._addedBlocks = setCriteria(
+          '%${pValue.toString()}',
+          gameFB.parameters,
+          param,
+          SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+          gameFB._addedBlocks);
+      _waitingNot = '';
+      gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
+          gameFB._addedBlocks.retVal;
+    }
+    return gameFB;
+  }
+
+  GameFilterBuilder between(dynamic pFirst, dynamic pLast) {
+    if (pFirst != null && pLast != null) {
+      gameFB._addedBlocks = setCriteria(
+          pFirst,
+          gameFB.parameters,
+          param,
+          SqlSyntax.Between.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+          gameFB._addedBlocks,
+          pLast);
+    } else if (pFirst != null) {
+      if (_waitingNot != '') {
+        gameFB._addedBlocks = setCriteria(pFirst, gameFB.parameters, param,
+            SqlSyntax.LessThan, gameFB._addedBlocks);
+      } else {
+        gameFB._addedBlocks = setCriteria(pFirst, gameFB.parameters, param,
+            SqlSyntax.GreaterThanOrEquals, gameFB._addedBlocks);
+      }
+    } else if (pLast != null) {
+      if (_waitingNot != '') {
+        gameFB._addedBlocks = setCriteria(pLast, gameFB.parameters, param,
+            SqlSyntax.GreaterThan, gameFB._addedBlocks);
+      } else {
+        gameFB._addedBlocks = setCriteria(pLast, gameFB.parameters, param,
+            SqlSyntax.LessThanOrEquals, gameFB._addedBlocks);
+      }
+    }
+    _waitingNot = '';
+    gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
+        gameFB._addedBlocks.retVal;
+    return gameFB;
+  }
+
+  GameFilterBuilder greaterThan(dynamic pValue) {
+    param.expression = '>';
+    gameFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, gameFB.parameters, param, SqlSyntax.GreaterThan,
+            gameFB._addedBlocks)
+        : setCriteria(pValue, gameFB.parameters, param,
+            SqlSyntax.LessThanOrEquals, gameFB._addedBlocks);
+    _waitingNot = '';
+    gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
+        gameFB._addedBlocks.retVal;
+    return gameFB;
+  }
+
+  GameFilterBuilder lessThan(dynamic pValue) {
+    param.expression = '<';
+    gameFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, gameFB.parameters, param, SqlSyntax.LessThan,
+            gameFB._addedBlocks)
+        : setCriteria(pValue, gameFB.parameters, param,
+            SqlSyntax.GreaterThanOrEquals, gameFB._addedBlocks);
+    _waitingNot = '';
+    gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
+        gameFB._addedBlocks.retVal;
+    return gameFB;
+  }
+
+  GameFilterBuilder greaterThanOrEquals(dynamic pValue) {
+    param.expression = '>=';
+    gameFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, gameFB.parameters, param,
+            SqlSyntax.GreaterThanOrEquals, gameFB._addedBlocks)
+        : setCriteria(pValue, gameFB.parameters, param, SqlSyntax.LessThan,
+            gameFB._addedBlocks);
+    _waitingNot = '';
+    gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
+        gameFB._addedBlocks.retVal;
+    return gameFB;
+  }
+
+  GameFilterBuilder lessThanOrEquals(dynamic pValue) {
+    param.expression = '<=';
+    gameFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, gameFB.parameters, param,
+            SqlSyntax.LessThanOrEquals, gameFB._addedBlocks)
+        : setCriteria(pValue, gameFB.parameters, param, SqlSyntax.GreaterThan,
+            gameFB._addedBlocks);
+    _waitingNot = '';
+    gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
+        gameFB._addedBlocks.retVal;
+    return gameFB;
+  }
+
+  GameFilterBuilder inValues(var pValue) {
+    gameFB._addedBlocks = setCriteria(
+        pValue,
+        gameFB.parameters,
+        param,
+        SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
+        gameFB._addedBlocks);
+    _waitingNot = '';
+    gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
+        gameFB._addedBlocks.retVal;
+    return gameFB;
+  }
+}
+// endregion GameField
+
+// region GameFilterBuilder
+class GameFilterBuilder extends SearchCriteria {
+  GameFilterBuilder(Game obj) {
+    whereString = '';
+    qparams = QueryParams();
+    parameters = List<DbParameter>();
+    orderByList = List<String>();
+    groupByList = List<String>();
+    _addedBlocks = AddedBlocks(List<bool>(), List<bool>());
+    _addedBlocks.needEndBlock.add(false);
+    _addedBlocks.waitingStartBlock.add(false);
+    _pagesize = 0;
+    _page = 0;
+    _obj = obj;
+  }
+  AddedBlocks _addedBlocks;
+  int _blockIndex = 0;
+  List<DbParameter> parameters;
+  List<String> orderByList;
+  Game _obj;
+  QueryParams qparams;
+  int _pagesize;
+  int _page;
+
+  /// put the sql keyword 'AND'
+  GameFilterBuilder get and {
+    if (parameters.isNotEmpty) {
+      parameters[parameters.length - 1].wOperator = ' AND ';
+    }
+    return this;
+  }
+
+  /// put the sql keyword 'OR'
+  GameFilterBuilder get or {
+    if (parameters.isNotEmpty) {
+      parameters[parameters.length - 1].wOperator = ' OR ';
+    }
+    return this;
+  }
+
+  /// open parentheses
+  GameFilterBuilder get startBlock {
+    _addedBlocks.waitingStartBlock.add(true);
+    _addedBlocks.needEndBlock.add(false);
+    _blockIndex++;
+    if (_blockIndex > 1) _addedBlocks.needEndBlock[_blockIndex - 1] = true;
+    return this;
+  }
+
+  /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
+  GameFilterBuilder where(String whereCriteria) {
+    if (whereCriteria != null && whereCriteria != '') {
+      final DbParameter param = DbParameter();
+      _addedBlocks =
+          setCriteria(0, parameters, param, '($whereCriteria)', _addedBlocks);
+      _addedBlocks.needEndBlock[_blockIndex] = _addedBlocks.retVal;
+    }
+    return this;
+  }
+
+  /// page = page number,
+  ///
+  /// pagesize = row(s) per page
+  GameFilterBuilder page(int page, int pagesize) {
+    if (page > 0) _page = page;
+    if (pagesize > 0) _pagesize = pagesize;
+    return this;
+  }
+
+  /// int count = LIMIT
+  GameFilterBuilder top(int count) {
+    if (count > 0) {
+      _pagesize = count;
+    }
+    return this;
+  }
+
+  /// close parentheses
+  GameFilterBuilder get endBlock {
+    if (_addedBlocks.needEndBlock[_blockIndex]) {
+      parameters[parameters.length - 1].whereString += ' ) ';
+    }
+    _addedBlocks.needEndBlock.removeAt(_blockIndex);
+    _addedBlocks.waitingStartBlock.removeAt(_blockIndex);
+    _blockIndex--;
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='name, date'
+  ///
+  /// Example 2: argFields = ['name', 'date']
+  GameFilterBuilder orderBy(var argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        orderByList.add(argFields);
+      } else {
+        for (String s in argFields) {
+          if (s != null && s != '') orderByList.add(' $s ');
+        }
+      }
+    }
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='field1, field2'
+  ///
+  /// Example 2: argFields = ['field1', 'field2']
+  GameFilterBuilder orderByDesc(var argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        orderByList.add('$argFields desc ');
+      } else {
+        for (String s in argFields) {
+          if (s != null && s != '') orderByList.add(' $s desc ');
+        }
+      }
+    }
+    return this;
+  }
+
+  /// argFields might be String or List<String>.
+  ///
+  /// Example 1: argFields='field1, field2'
+  ///
+  /// Example 2: argFields = ['field1', 'field2']
+  GameFilterBuilder groupBy(var argFields) {
+    if (argFields != null) {
+      if (argFields is String) {
+        groupByList.add(' $argFields ');
+      } else {
+        for (String s in argFields) {
+          if (s != null && s != '') groupByList.add(' $s ');
+        }
+      }
+    }
+    return this;
+  }
+
+  GameField setField(GameField field, String colName, DbType dbtype) {
+    return GameField(this)
+      ..param = DbParameter(
+          dbType: dbtype,
+          columnName: colName,
+          wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
+  }
+
+  GameField _id;
+  GameField get id {
+    return _id = setField(_id, 'id', DbType.integer);
+  }
+
+  GameField _name;
+  GameField get name {
+    return _name = setField(_name, 'name', DbType.text);
+  }
+
+  GameField _startBook;
+  GameField get startBook {
+    return _startBook = setField(_startBook, 'startBook', DbType.integer);
+  }
+
+  GameField _startChapter;
+  GameField get startChapter {
+    return _startChapter =
+        setField(_startChapter, 'startChapter', DbType.integer);
+  }
+
+  GameField _startVerse;
+  GameField get startVerse {
+    return _startVerse = setField(_startVerse, 'startVerse', DbType.integer);
+  }
+
+  GameField _endBook;
+  GameField get endBook {
+    return _endBook = setField(_endBook, 'endBook', DbType.integer);
+  }
+
+  GameField _endChapter;
+  GameField get endChapter {
+    return _endChapter = setField(_endChapter, 'endChapter', DbType.integer);
+  }
+
+  GameField _endVerse;
+  GameField get endVerse {
+    return _endVerse = setField(_endVerse, 'endVerse', DbType.integer);
+  }
+
+  GameField _nextBook;
+  GameField get nextBook {
+    return _nextBook = setField(_nextBook, 'nextBook', DbType.integer);
+  }
+
+  GameField _nextChapter;
+  GameField get nextChapter {
+    return _nextChapter = setField(_nextChapter, 'nextChapter', DbType.integer);
+  }
+
+  GameField _nextVerse;
+  GameField get nextVerse {
+    return _nextVerse = setField(_nextVerse, 'nextVerse', DbType.integer);
+  }
+
+  GameField _money;
+  GameField get money {
+    return _money = setField(_money, 'money', DbType.integer);
+  }
+
+  GameField _bonuses;
+  GameField get bonuses {
+    return _bonuses = setField(_bonuses, 'bonuses', DbType.text);
+  }
+
+  GameField _versesCount;
+  GameField get versesCount {
+    return _versesCount = setField(_versesCount, 'versesCount', DbType.text);
+  }
+
+  GameField _resolvedVersesCount;
+  GameField get resolvedVersesCount {
+    return _resolvedVersesCount =
+        setField(_resolvedVersesCount, 'resolvedVersesCount', DbType.text);
+  }
+
+  GameField _isDeleted;
+  GameField get isDeleted {
+    return _isDeleted = setField(_isDeleted, 'isDeleted', DbType.bool);
+  }
+
+  bool _getIsDeleted;
+
+  void _buildParameters() {
+    if (_page > 0 && _pagesize > 0) {
+      qparams
+        ..limit = _pagesize
+        ..offset = (_page - 1) * _pagesize;
+    } else {
+      qparams
+        ..limit = _pagesize
+        ..offset = _page;
+    }
+    for (DbParameter param in parameters) {
+      if (param.columnName != null) {
+        if (param.value is List) {
+          param.value = param.value
+              .toString()
+              .replaceAll('[', '')
+              .replaceAll(']', '')
+              .toString();
+          whereString += param.whereString
+              .replaceAll('{field}', param.columnName)
+              .replaceAll('?', param.value.toString());
+          param.value = null;
+        } else {
+          whereString +=
+              param.whereString.replaceAll('{field}', param.columnName);
+        }
+        if (!param.whereString.contains('?')) {
+        } else {
+          switch (param.dbType) {
+            case DbType.bool:
+              param.value =
+                  param.value == null ? null : param.value == true ? 1 : 0;
+              param.value2 =
+                  param.value2 == null ? null : param.value2 == true ? 1 : 0;
+              break;
+            case DbType.date:
+            case DbType.datetime:
+              param.value = param.value == null
+                  ? null
+                  : (param.value as DateTime).millisecondsSinceEpoch;
+              param.value2 = param.value2 == null
+                  ? null
+                  : (param.value2 as DateTime).millisecondsSinceEpoch;
+              break;
+            default:
+          }
+          if (param.value != null) {
+            whereArguments.add(param.value);
+          }
+          if (param.value2 != null) {
+            whereArguments.add(param.value2);
+          }
+        }
+      } else {
+        whereString += param.whereString;
+      }
+    }
+    if (Game._softDeleteActivated) {
+      if (whereString != '') {
+        whereString =
+            '${!_getIsDeleted ? 'ifnull(isDeleted,0)=0 AND' : ''} ($whereString)';
+      } else if (!_getIsDeleted) {
+        whereString = 'ifnull(isDeleted,0)=0';
+      }
+    }
+
+    if (whereString != '') {
+      qparams.whereString = whereString;
+    }
+    qparams
+      ..whereArguments = whereArguments
+      ..groupBy = groupByList.join(',')
+      ..orderBy = orderByList.join(',');
+  }
+
+  /// Deletes List<Game> batch by query
+  ///
+  /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
+  Future<BoolResult> delete([bool hardDelete = false]) async {
+    _buildParameters();
+    var r = BoolResult();
+    if (Game._softDeleteActivated && !hardDelete) {
+      r = await _obj._mnGame.updateBatch(qparams, {'isDeleted': 1});
+    } else {
+      r = await _obj._mnGame.delete(qparams);
+    }
+    return r;
+  }
+
+  Future<BoolResult> recover() async {
+    _getIsDeleted = true;
+    _buildParameters();
+    print('SQFENTITIY: recover Game batch invoked');
+    return _obj._mnGame.updateBatch(qparams, {'isDeleted': 0});
+  }
+
+  /// using:
+  ///
+  /// update({'fieldName': Value})
+  ///
+  /// fieldName must be String. Value is dynamic, it can be any of the (int, bool, String.. )
+  Future<BoolResult> update(Map<String, dynamic> values) {
+    _buildParameters();
+    if (qparams.limit > 0 || qparams.offset > 0) {
+      qparams.whereString =
+          'id IN (SELECT id from games ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
+    }
+    return _obj._mnGame.updateBatch(qparams, values);
+  }
+
+  /// This method always returns GameObj if exist, otherwise returns null
+  /// <returns>List<Game>
+  Future<Game> toSingle([VoidCallback game(Game o)]) async {
+    _pagesize = 1;
+    _buildParameters();
+    final objFuture = _obj._mnGame.toList(qparams);
+    final data = await objFuture;
+    Game retVal;
+    if (data.isNotEmpty) {
+      retVal = Game.fromMap(data[0] as Map<String, dynamic>);
+    } else {
+      retVal = null;
+    }
+    if (game != null) {
+      game(retVal);
+    }
+    return retVal;
+  }
+
+  /// This method always returns int.
+  ///
+  /// <returns>int
+  Future<int> toCount([VoidCallback gameCount(int c)]) async {
+    _buildParameters();
+    qparams.selectColumns = ['COUNT(1) AS CNT'];
+    final gamesFuture = await _obj._mnGame.toList(qparams);
+    final int count = gamesFuture[0]['CNT'] as int;
+    if (gameCount != null) {
+      gameCount(count);
+    }
+    return count;
+  }
+
+  /// This method always returns List<Game>.
+  /// <returns>List<Game>
+  Future<List<Game>> toList([VoidCallback gameList(List<Game> o)]) async {
+    final data = await toMapList();
+    final List<Game> gamesData = Game.fromMapList(data);
+    if (gameList != null) gameList(gamesData);
+    return gamesData;
+  }
+
+  /// This method always returns Json String
+  Future<String> toJson() async {
+    final list = List<dynamic>();
+    final data = await toList();
+    for (var o in data) {
+      list.add(o.toMap());
+    }
+    return json.encode(list);
+  }
+
+  /// This method always returns Json String.
+  Future<String> toJsonWithChilds() async {
+    final list = List<dynamic>();
+    final data = await toList();
+    for (var o in data) {
+      list.add(await o.toMapWithChilds());
+    }
+    return json.encode(list);
+  }
+
+  /// This method always returns List<dynamic>.
+  ///
+  /// <returns>List<dynamic>
+  Future<List<dynamic>> toMapList() async {
+    _buildParameters();
+    return await _obj._mnGame.toList(qparams);
+  }
+
+  /// Returns List<DropdownMenuItem<Game>>
+  Future<List<DropdownMenuItem<Game>>> toDropDownMenu(String displayTextColumn,
+      [VoidCallback dropDownMenu(List<DropdownMenuItem<Game>> o)]) async {
+    _buildParameters();
+    final gamesFuture = _obj._mnGame.toList(qparams);
+
+    final data = await gamesFuture;
+    final int count = data.length;
+    final List<DropdownMenuItem<Game>> items = List()
+      ..add(DropdownMenuItem(
+        value: Game(),
+        child: Text('Select Game'),
+      ));
+    for (int i = 0; i < count; i++) {
+      items.add(
+        DropdownMenuItem(
+          value: Game.fromMap(data[i] as Map<String, dynamic>),
+          child: Text(data[i][displayTextColumn].toString()),
+        ),
+      );
+    }
+    if (dropDownMenu != null) {
+      dropDownMenu(items);
+    }
+    return items;
+  }
+
+  /// Returns List<DropdownMenuItem<int>>
+  Future<List<DropdownMenuItem<int>>> toDropDownMenuInt(
+      String displayTextColumn,
+      [VoidCallback dropDownMenu(List<DropdownMenuItem<int>> o)]) async {
+    _buildParameters();
+    qparams.selectColumns = ['id', displayTextColumn];
+    final gamesFuture = _obj._mnGame.toList(qparams);
+
+    final data = await gamesFuture;
+    final int count = data.length;
+    final List<DropdownMenuItem<int>> items = List()
+      ..add(DropdownMenuItem(
+        value: 0,
+        child: Text('Select Game'),
+      ));
+    for (int i = 0; i < count; i++) {
+      items.add(
+        DropdownMenuItem(
+          value: data[i]['id'] as int,
+          child: Text(data[i][displayTextColumn].toString()),
+        ),
+      );
+    }
+    if (dropDownMenu != null) {
+      dropDownMenu(items);
+    }
+    return items;
+  }
+
+  /// This method always returns Primary Key List<int>.
+  /// <returns>List<int>
+  Future<List<int>> toListPrimaryKey([bool buildParameters = true]) async {
+    if (buildParameters) _buildParameters();
+    final List<int> idData = List<int>();
+    qparams.selectColumns = ['id'];
+    final idFuture = await _obj._mnGame.toList(qparams);
+
+    final int count = idFuture.length;
+    for (int i = 0; i < count; i++) {
+      idData.add(idFuture[i]['id'] as int);
+    }
+    return idData;
+  }
+
+  /// Returns List<dynamic> for selected columns. Use this method for 'groupBy' with min,max,avg..
+  ///
+  /// Sample usage: (see EXAMPLE 4.2 at https://github.com/hhtokpinar/sqfEntity#group-by)
+  Future<List<dynamic>> toListObject(
+      [VoidCallback listObject(List<dynamic> o)]) async {
+    _buildParameters();
+
+    final objectFuture = _obj._mnGame.toList(qparams);
+
+    final List<dynamic> objectsData = List<dynamic>();
+    final data = await objectFuture;
+    final int count = data.length;
+    for (int i = 0; i < count; i++) {
+      objectsData.add(data[i]);
+    }
+    if (listObject != null) {
+      listObject(objectsData);
+    }
+    return objectsData;
+  }
+
+  /// Returns List<String> for selected first column
+  ///
+  /// Sample usage: await Game.select(columnsToSelect: ['columnName']).toListString()
+  Future<List<String>> toListString(
+      [VoidCallback listString(List<String> o)]) async {
+    _buildParameters();
+
+    final objectFuture = _obj._mnGame.toList(qparams);
+
+    final List<String> objectsData = List<String>();
+    final data = await objectFuture;
+    final int count = data.length;
+    for (int i = 0; i < count; i++) {
+      objectsData.add(data[i][qparams.selectColumns[0]].toString());
+    }
+    if (listString != null) {
+      listString(objectsData);
+    }
+    return objectsData;
+  }
+}
+// endregion GameFilterBuilder
+
+// region GameFields
+class GameFields {
+  static TableField _fId;
+  static TableField get id {
+    return _fId = _fId ?? SqlSyntax.setField(_fId, 'id', DbType.integer);
+  }
+
+  static TableField _fName;
+  static TableField get name {
+    return _fName = _fName ?? SqlSyntax.setField(_fName, 'name', DbType.text);
+  }
+
+  static TableField _fStartBook;
+  static TableField get startBook {
+    return _fStartBook = _fStartBook ??
+        SqlSyntax.setField(_fStartBook, 'startBook', DbType.integer);
+  }
+
+  static TableField _fStartChapter;
+  static TableField get startChapter {
+    return _fStartChapter = _fStartChapter ??
+        SqlSyntax.setField(_fStartChapter, 'startChapter', DbType.integer);
+  }
+
+  static TableField _fStartVerse;
+  static TableField get startVerse {
+    return _fStartVerse = _fStartVerse ??
+        SqlSyntax.setField(_fStartVerse, 'startVerse', DbType.integer);
+  }
+
+  static TableField _fEndBook;
+  static TableField get endBook {
+    return _fEndBook =
+        _fEndBook ?? SqlSyntax.setField(_fEndBook, 'endBook', DbType.integer);
+  }
+
+  static TableField _fEndChapter;
+  static TableField get endChapter {
+    return _fEndChapter = _fEndChapter ??
+        SqlSyntax.setField(_fEndChapter, 'endChapter', DbType.integer);
+  }
+
+  static TableField _fEndVerse;
+  static TableField get endVerse {
+    return _fEndVerse = _fEndVerse ??
+        SqlSyntax.setField(_fEndVerse, 'endVerse', DbType.integer);
+  }
+
+  static TableField _fNextBook;
+  static TableField get nextBook {
+    return _fNextBook = _fNextBook ??
+        SqlSyntax.setField(_fNextBook, 'nextBook', DbType.integer);
+  }
+
+  static TableField _fNextChapter;
+  static TableField get nextChapter {
+    return _fNextChapter = _fNextChapter ??
+        SqlSyntax.setField(_fNextChapter, 'nextChapter', DbType.integer);
+  }
+
+  static TableField _fNextVerse;
+  static TableField get nextVerse {
+    return _fNextVerse = _fNextVerse ??
+        SqlSyntax.setField(_fNextVerse, 'nextVerse', DbType.integer);
+  }
+
+  static TableField _fMoney;
+  static TableField get money {
+    return _fMoney =
+        _fMoney ?? SqlSyntax.setField(_fMoney, 'money', DbType.integer);
+  }
+
+  static TableField _fBonuses;
+  static TableField get bonuses {
+    return _fBonuses =
+        _fBonuses ?? SqlSyntax.setField(_fBonuses, 'bonuses', DbType.text);
+  }
+
+  static TableField _fVersesCount;
+  static TableField get versesCount {
+    return _fVersesCount = _fVersesCount ??
+        SqlSyntax.setField(_fVersesCount, 'versesCount', DbType.text);
+  }
+
+  static TableField _fResolvedVersesCount;
+  static TableField get resolvedVersesCount {
+    return _fResolvedVersesCount = _fResolvedVersesCount ??
+        SqlSyntax.setField(
+            _fResolvedVersesCount, 'resolvedVersesCount', DbType.text);
+  }
+
+  static TableField _fIsDeleted;
+  static TableField get isDeleted {
+    return _fIsDeleted = _fIsDeleted ??
+        SqlSyntax.setField(_fIsDeleted, 'isDeleted', DbType.integer);
+  }
+}
+// endregion GameFields
+
+//region GameManager
+class GameManager extends SqfEntityProvider {
+  GameManager() : super(BibleGameModel(), tableName: _tableName, colId: _colId);
+  static String _tableName = 'games';
+  static String _colId = 'id';
+}
+
+//endregion GameManager
 /// Region SEQUENCE IdentitySequence
 class IdentitySequence {
   /// Assigns a new value when it is triggered and returns the new value

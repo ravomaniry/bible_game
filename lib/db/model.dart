@@ -37,11 +37,35 @@ const versesTable = SqfEntityTable(
   ],
 );
 
+const gamesTable = SqfEntityTable(
+  tableName: 'games',
+  primaryKeyType: PrimaryKeyType.integer_auto_incremental,
+  primaryKeyName: 'id',
+  useSoftDeleting: true,
+  modelName: 'Game',
+  fields: [
+    SqfEntityField('name', DbType.text),
+    SqfEntityField('startBook', DbType.integer),
+    SqfEntityField('startChapter', DbType.integer),
+    SqfEntityField('startVerse', DbType.integer),
+    SqfEntityField('endBook', DbType.integer),
+    SqfEntityField('endChapter', DbType.integer),
+    SqfEntityField('endVerse', DbType.integer),
+    SqfEntityField('nextBook', DbType.integer),
+    SqfEntityField('nextChapter', DbType.integer),
+    SqfEntityField('nextVerse', DbType.integer),
+    SqfEntityField('money', DbType.integer),
+    SqfEntityField('bonuses', DbType.text),
+    SqfEntityField('versesCount', DbType.text),
+    SqfEntityField('resolvedVersesCount', DbType.text),
+  ],
+);
+
 @SqfEntityBuilder(model)
 const model = SqfEntityModel(
   modelName: 'BibleGameModel',
   databaseName: 'bible_game.db',
-  databaseTables: [booksTable, versesTable],
+  databaseTables: [booksTable, versesTable, gamesTable],
   sequences: [SqfEntitySequence(sequenceName: 'identity')],
   bundledDatabasePath: null,
 );
