@@ -4,6 +4,7 @@ import 'package:bible_game/redux/config/reducer.dart';
 import 'package:bible_game/redux/db/reducer.dart';
 import 'package:bible_game/redux/error/reducer.dart';
 import 'package:bible_game/redux/explorer/reducer.dart';
+import 'package:bible_game/redux/games/reducer.dart';
 import 'package:bible_game/redux/inventory/reducer.dart';
 import 'package:bible_game/redux/quit_single_game_dialog/reducer.dart';
 import 'package:bible_game/redux/router/reducer.dart';
@@ -17,6 +18,7 @@ AppState mainReducer(AppState state, action) {
     error: errorReducer(state.error, action),
     route: routerReducer(state.route, action),
     dbIsReady: dbReducer(state.dbIsReady, action),
+    games: gamesListStateReducer(state.games, action),
     explorer: explorerReducer(state.explorer, action),
     calculator: calculatorReducer(state.calculator, action),
     wordsInWord: wordsInWordReducer(state.wordsInWord, action),

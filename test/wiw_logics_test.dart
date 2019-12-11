@@ -3,6 +3,7 @@ import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
+import 'package:bible_game/redux/games/state.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/inventory/use_bonus_action.dart';
 import 'package:bible_game/redux/main_reducer.dart';
@@ -92,6 +93,7 @@ void main() {
     final store = Store<AppState>(mainReducer,
         middleware: [thunkMiddleware],
         initialState: AppState(
+          games: GamesListState.emptyState(),
           assetBundle: null,
           config: ConfigState(screenWidth: 100),
           dba: null,
@@ -132,6 +134,7 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
           assetBundle: null,
+          games: GamesListState.emptyState(),
           config: ConfigState(screenWidth: 100),
           dba: null,
           route: Routes.wordsInWord,

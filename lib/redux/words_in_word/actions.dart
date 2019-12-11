@@ -109,7 +109,7 @@ Future<VerseModel> _getNextVerse(int bookId, int chapterNum, int verseNum, DbAda
   if (next != null) {
     return next;
   }
-  final booksNum = await dba.getBooksCount();
+  final booksNum = await dba.booksCount;
   if (bookId < booksNum) {
     return dba.getSingleVerse(bookId + 1, 1, 1);
   } else {

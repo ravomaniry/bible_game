@@ -93,8 +93,8 @@ class TableGameModel extends SqfEntityTableBase {
       SqfEntityFieldBase('nextVerse', DbType.integer),
       SqfEntityFieldBase('money', DbType.integer),
       SqfEntityFieldBase('bonuses', DbType.text),
-      SqfEntityFieldBase('versesCount', DbType.text),
-      SqfEntityFieldBase('resolvedVersesCount', DbType.text),
+      SqfEntityFieldBase('versesCount', DbType.integer),
+      SqfEntityFieldBase('resolvedVersesCount', DbType.integer),
     ];
     super.init();
   }
@@ -2195,9 +2195,9 @@ class GameModel {
 
     bonuses = o['bonuses'] as String;
 
-    versesCount = o['versesCount'] as String;
+    versesCount = o['versesCount'] as int;
 
-    resolvedVersesCount = o['resolvedVersesCount'] as String;
+    resolvedVersesCount = o['resolvedVersesCount'] as int;
 
     isDeleted = o['isDeleted'] != null ? o['isDeleted'] == 1 : null;
   }
@@ -2215,8 +2215,8 @@ class GameModel {
   int nextVerse;
   int money;
   String bonuses;
-  String versesCount;
-  String resolvedVersesCount;
+  int versesCount;
+  int resolvedVersesCount;
   bool isDeleted;
 
   BoolResult saveResult;
@@ -3017,13 +3017,13 @@ class GameModelFilterBuilder extends SearchCriteria {
 
   GameModelField _versesCount;
   GameModelField get versesCount {
-    return _versesCount = setField(_versesCount, 'versesCount', DbType.text);
+    return _versesCount = setField(_versesCount, 'versesCount', DbType.integer);
   }
 
   GameModelField _resolvedVersesCount;
   GameModelField get resolvedVersesCount {
     return _resolvedVersesCount =
-        setField(_resolvedVersesCount, 'resolvedVersesCount', DbType.text);
+        setField(_resolvedVersesCount, 'resolvedVersesCount', DbType.integer);
   }
 
   GameModelField _isDeleted;
@@ -3411,14 +3411,14 @@ class GameModelFields {
   static TableField _fVersesCount;
   static TableField get versesCount {
     return _fVersesCount = _fVersesCount ??
-        SqlSyntax.setField(_fVersesCount, 'versesCount', DbType.text);
+        SqlSyntax.setField(_fVersesCount, 'versesCount', DbType.integer);
   }
 
   static TableField _fResolvedVersesCount;
   static TableField get resolvedVersesCount {
     return _fResolvedVersesCount = _fResolvedVersesCount ??
         SqlSyntax.setField(
-            _fResolvedVersesCount, 'resolvedVersesCount', DbType.text);
+            _fResolvedVersesCount, 'resolvedVersesCount', DbType.integer);
   }
 
   static TableField _fIsDeleted;

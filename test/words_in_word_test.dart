@@ -8,6 +8,7 @@ import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/actions.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
+import 'package:bible_game/redux/games/state.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
@@ -28,6 +29,7 @@ import 'package:redux_thunk/redux_thunk.dart';
 void main() {
   testWidgets("Words in word intial state", (WidgetTester tester) async {
     final state = AppState(
+      games: GamesListState.emptyState(),
       assetBundle: AssetBundleMock.withDefaultValue(),
       dba: DbAdapterMock.withDefaultValues(),
       explorer: ExplorerState(),
@@ -59,6 +61,7 @@ void main() {
 
   test("Get next verse", () async {
     final state = AppState(
+      games: GamesListState.emptyState(),
       dba: DbAdapterMock(),
       assetBundle: AssetBundleMock.withDefaultValue(),
       explorer: ExplorerState(),
@@ -107,6 +110,7 @@ void main() {
       mainReducer,
       middleware: [thunkMiddleware],
       initialState: AppState(
+        games: GamesListState.emptyState(),
         dba: DbAdapterMock.withDefaultValues(),
         assetBundle: AssetBundleMock.withDefaultValue(),
         explorer: ExplorerState(),
@@ -143,6 +147,7 @@ void main() {
   testWidgets("In game interractivity - Tap + propose", (WidgetTester tester) async {
     final verse = BibleVerse.from(bookId: 1, book: "Matio", chapter: 1, verse: 1, text: "Ny teny ny Azy");
     final initialState = AppState(
+      games: GamesListState.emptyState(),
       route: Routes.wordsInWord,
       dba: DbAdapterMock.withDefaultValues(),
       assetBundle: AssetBundleMock.withDefaultValue(),
@@ -208,6 +213,7 @@ void main() {
     final verse = BibleVerse.from(bookId: 1, book: "Matio", chapter: 1, verse: 1, text: "abcd efghi jkl");
     final initialState = AppState(
       route: Routes.wordsInWord,
+      games: GamesListState.emptyState(),
       dba: DbAdapterMock.withDefaultValues(),
       assetBundle: AssetBundleMock.withDefaultValue(),
       explorer: ExplorerState(),
@@ -273,6 +279,7 @@ void main() {
   testWidgets("Click on bonuses", (WidgetTester tester) async {
     final verse = BibleVerse.from(book: "", bookId: 1, chapter: 1, verse: 1, text: "ABCDEFGHIJKLMNOPQRST");
     final state = AppState(
+      games: GamesListState.emptyState(),
       dba: DbAdapterMock.withDefaultValues(),
       assetBundle: AssetBundleMock.withDefaultValue(),
       explorer: ExplorerState(),
@@ -368,6 +375,7 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         assetBundle: null,
+        games: GamesListState.emptyState(),
         config: ConfigState(screenWidth: 100),
         dba: DbAdapterMock.withDefaultValues(),
         route: Routes.wordsInWord,

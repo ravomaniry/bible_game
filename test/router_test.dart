@@ -1,5 +1,6 @@
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
+import 'package:bible_game/redux/games/state.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/main.dart';
@@ -17,6 +18,7 @@ void main() {
   test("Router", () {
     final state = mainReducer(
         AppState(
+          games: GamesListState.emptyState(),
           explorer: ExplorerState(),
           dba: DbAdapterMock.withDefaultValues(),
           assetBundle: AssetBundleMock(),
@@ -34,6 +36,7 @@ void main() {
       mainReducer,
       middleware: [thunkMiddleware],
       initialState: AppState(
+        games: GamesListState.emptyState(),
         dba: DbAdapterMock.withDefaultValues(),
         assetBundle: AssetBundleMock(),
         explorer: ExplorerState(),
@@ -59,6 +62,7 @@ void main() {
       mainReducer,
       middleware: [thunkMiddleware],
       initialState: AppState(
+        games: GamesListState.emptyState(),
         dba: DbAdapterMock.withDefaultValues(),
         assetBundle: AssetBundleMock(),
         explorer: ExplorerState(),
@@ -81,6 +85,7 @@ void main() {
       mainReducer,
       middleware: [thunkMiddleware],
       initialState: AppState(
+        games: GamesListState.emptyState(),
         dba: DbAdapterMock.withDefaultValues(),
         assetBundle: AssetBundleMock(),
         explorer: ExplorerState(),

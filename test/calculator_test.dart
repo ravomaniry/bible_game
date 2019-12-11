@@ -2,6 +2,7 @@ import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/calculator/state.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
+import 'package:bible_game/redux/games/state.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
@@ -17,6 +18,7 @@ void main() {
     final Store<AppState> store = Store<AppState>(
       mainReducer,
       initialState: AppState(
+        games: GamesListState.emptyState(),
         calculator: CalculatorState(),
         dba: DbAdapterMock(),
         assetBundle: AssetBundleMock(),

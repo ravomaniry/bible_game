@@ -30,7 +30,7 @@ class ExplorerReceiveVerses {
 
 ThunkAction<AppState> loadBooks = (Store<AppState> store) async {
   try {
-    final books = await retry<List<BookModel>>(() => store.state.dba.getBooks());
+    final books = await retry<List<BookModel>>(() => store.state.dba.books);
     if (books == null) {
       store.dispatch(ReceiveError(Errors.unknownDbError));
     } else {

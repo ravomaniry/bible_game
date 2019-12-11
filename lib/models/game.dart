@@ -7,8 +7,8 @@ import 'package:flutter/cupertino.dart';
 final _moneyJsonEntry = "money";
 final _revealCharBonusJsonEntry = "rcb_";
 
-int _getRevealCharBonusNum(int power, Map<String, int> bonuses) {
-  return bonuses["$_revealCharBonusJsonEntry$power"];
+int _getRevealCharBonusNum(int power, Map<String, dynamic> bonuses) {
+  return bonuses["$_revealCharBonusJsonEntry$power"] as int;
 }
 
 class GameModelWrapper {
@@ -29,7 +29,7 @@ class GameModelWrapper {
   });
 
   factory GameModelWrapper.fromModel(GameModel model) {
-    final Map<String, int> bonuses = json.decode(model.bonuses);
+    final Map<String, dynamic> bonuses = json.decode(model.bonuses);
     final int money = bonuses["$_moneyJsonEntry"] ?? 0;
     final int revealChar1 = _getRevealCharBonusNum(1, bonuses) ?? 0;
     final int revealChar2 = _getRevealCharBonusNum(2, bonuses) ?? 0;

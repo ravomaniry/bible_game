@@ -2,6 +2,7 @@ import 'package:bible_game/db/db_adapter.dart';
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/error/actions.dart';
+import 'package:bible_game/redux/games/actions.dart';
 import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/utils/retry.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +22,7 @@ final ThunkAction<AppState> initDb = (Store<AppState> store) async {
     if (isReady) {
       await checkAndUpdateBooks(dba, store.state.assetBundle, store.dispatch);
       await checkAndUpdateVerses(dba, store.state.assetBundle, store.dispatch);
+      store.dispatch(initializeGames);
       store.dispatch(UpdateDbState(true));
     } else {
       store.dispatch(ReceiveError(Errors.dbNotReady));
@@ -30,13 +32,13 @@ final ThunkAction<AppState> initDb = (Store<AppState> store) async {
 
 Future checkAndUpdateBooks(DbAdapter dba, AssetBundle assetBundle, Function dispatch) async {
   try {
-    final count = await retry<int>(() => dba.getBooksCount());
+    final count = await retry<int>(() => dba.booksCount);
     if (count == null) {
       dispatch(ReceiveError(Errors.unknownDbError));
     } else if (count == 0) {
       final source = await retry<String>(() => assetBundle.loadString("assets/db/new_testament_books.json"));
       final books = await BookModel.fromJson(source);
-      await retry(() => dba.books.saveAll(books));
+      await retry(() => dba.bookModel.saveAll(books));
     }
   } catch (e) {
     dispatch(ReceiveError(Errors.unknownDbError));
@@ -46,16 +48,16 @@ Future checkAndUpdateBooks(DbAdapter dba, AssetBundle assetBundle, Function disp
 
 Future checkAndUpdateVerses(DbAdapter dba, AssetBundle assetBundle, Function dispatch) async {
   try {
-    final count = await retry<int>(() => dba.getVersesCount());
+    final count = await retry<int>(() => dba.versesCount);
     if (count == null) {
       dispatch(ReceiveError(Errors.unknownDbError));
     } else if (count == 0) {
       final source = await retry<String>(() => assetBundle.loadString("assets/db/new_testament_verses.json"));
       final verses = await VerseModel.fromJson(source);
-      await retry(() => dba.verses.saveAll(verses));
+      await retry(() => dba.verseModel.saveAll(verses));
     }
   } catch (e) {
     dispatch(ReceiveError(Errors.unknownDbError));
-    print(e.toString());
+    print(e);
   }
 }

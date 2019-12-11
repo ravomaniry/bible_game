@@ -4,24 +4,29 @@ import 'package:mockito/mockito.dart';
 
 class ModelMock extends Mock implements BibleGameModel {}
 
-class BooksMock extends Mock implements BookModel {}
+class BookModelMock extends Mock implements BookModel {}
 
-class VersesMock extends Mock implements VerseModel {}
+class VerseModelMock extends Mock implements VerseModel {}
+
+class GameModelMock extends Mock implements GameModel {}
 
 class DbAdapterMock extends Mock implements DbAdapter {
-  BibleGameModel model;
-  VerseModel verses;
-  BookModel books;
+  BookModel bookModel;
+  VerseModel verseModel;
+  BibleGameModel db;
+  GameModel gameModel;
 
   DbAdapterMock() {
-    this.model = ModelMock();
-    this.verses = VersesMock();
-    this.books = BooksMock();
+    this.db = ModelMock();
+    this.verseModel = VerseModelMock();
+    this.bookModel = BookModelMock();
+    this.gameModel = GameModelMock();
   }
 
   static mockMethodsWithDefaultValue(DbAdapterMock adapter) {
     mockMethods(adapter, [
       "init",
+      "games",
       "getBooksCount",
       "getVersesCount",
       "getBooks",
@@ -37,14 +42,37 @@ class DbAdapterMock extends Mock implements DbAdapter {
     if (methods.contains("init")) {
       when(adapter.init()).thenAnswer((_) => Future.value(true));
     }
+    if (methods.contains("games")) {
+      when(adapter.games).thenAnswer(
+        (_) => Future.value([
+          GameModel(
+            id: 1,
+            name: "Hello",
+            startBook: 1,
+            startChapter: 1,
+            startVerse: 1,
+            endBook: 1,
+            endChapter: 1,
+            endVerse: 10,
+            nextBook: 1,
+            nextChapter: 1,
+            nextVerse: 2,
+            versesCount: 10,
+            resolvedVersesCount: 0,
+            money: 0,
+            bonuses: "{}",
+          ),
+        ]),
+      );
+    }
     if (methods.contains("getBooksCount")) {
-      when(adapter.getBooksCount()).thenAnswer((_) => Future.value((10)));
+      when(adapter.booksCount).thenAnswer((_) => Future.value((10)));
     }
     if (methods.contains("getVersesCount")) {
-      when(adapter.getVersesCount()).thenAnswer((_) => Future.value((10)));
+      when(adapter.versesCount).thenAnswer((_) => Future.value((10)));
     }
     if (methods.contains("getBooks")) {
-      when(adapter.getBooks()).thenAnswer((_) => Future.value([
+      when(adapter.books).thenAnswer((_) => Future.value([
             BookModel(id: 1, name: "Matio", chapters: 10),
             BookModel(id: 2, name: "Marka", chapters: 20),
           ]));
@@ -63,10 +91,10 @@ class DbAdapterMock extends Mock implements DbAdapter {
       when(adapter.getBookById(any)).thenAnswer((_) => Future.value(BookModel(id: 1, name: "Genesisy", chapters: 10)));
     }
     if (methods.contains("verses.saveAll")) {
-      when(adapter.verses.saveAll(any)).thenAnswer((_) => Future.value());
+      when(adapter.verseModel.saveAll(any)).thenAnswer((_) => Future.value());
     }
     if (methods.contains("books.saveAll")) {
-      when(adapter.books.saveAll(any)).thenAnswer((_) => Future.value());
+      when(adapter.bookModel.saveAll(any)).thenAnswer((_) => Future.value());
     }
   }
 

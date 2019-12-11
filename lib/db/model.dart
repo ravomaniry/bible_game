@@ -56,8 +56,8 @@ const gamesTable = SqfEntityTable(
     SqfEntityField('nextVerse', DbType.integer),
     SqfEntityField('money', DbType.integer),
     SqfEntityField('bonuses', DbType.text),
-    SqfEntityField('versesCount', DbType.text),
-    SqfEntityField('resolvedVersesCount', DbType.text),
+    SqfEntityField('versesCount', DbType.integer),
+    SqfEntityField('resolvedVersesCount', DbType.integer),
   ],
 );
 

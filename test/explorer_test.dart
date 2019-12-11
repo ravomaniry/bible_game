@@ -2,6 +2,7 @@ import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
+import 'package:bible_game/redux/games/state.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/redux/router/routes.dart';
@@ -16,6 +17,7 @@ void main() {
   testWidgets("Explorer widget test", (WidgetTester tester) async {
     final state = AppState(
       route: Routes.home,
+      games: GamesListState.emptyState(),
       assetBundle: AssetBundleMock.withDefaultValue(),
       dba: DbAdapterMock.withDefaultValues(),
       explorer: ExplorerState(),
