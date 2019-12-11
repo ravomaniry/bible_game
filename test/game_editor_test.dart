@@ -28,6 +28,7 @@ void main() {
     );
 
     await tester.pumpWidget(BibleGame(store));
+    await tester.pump(Duration(milliseconds: 10));
     // Check if the data loading is fine
     expect(store.state.games.list.length, 1);
     expect(store.state.games.books.length, 2);
