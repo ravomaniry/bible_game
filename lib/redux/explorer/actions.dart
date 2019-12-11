@@ -9,7 +9,7 @@ import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
 class ReceiveExplorerBooksList {
-  final List<Books> payload;
+  final List<BookModel> payload;
 
   ReceiveExplorerBooksList(this.payload);
 }
@@ -17,20 +17,20 @@ class ReceiveExplorerBooksList {
 class GoToExplorerBooksList {}
 
 class ExplorerSetActiveBook {
-  Books payload;
+  BookModel payload;
 
   ExplorerSetActiveBook(this.payload);
 }
 
 class ExplorerReceiveVerses {
-  final List<Verses> payload;
+  final List<VerseModel> payload;
 
   ExplorerReceiveVerses(this.payload);
 }
 
 ThunkAction<AppState> loadBooks = (Store<AppState> store) async {
   try {
-    final books = await retry<List<Books>>(() => store.state.dba.getBooks());
+    final books = await retry<List<BookModel>>(() => store.state.dba.getBooks());
     if (books == null) {
       store.dispatch(ReceiveError(Errors.unknownDbError));
     } else {
@@ -48,7 +48,7 @@ ThunkAction<AppState> goToExplorer = (Store<AppState> store) async {
 };
 
 class LoadVersesFor {
-  final Books book;
+  final BookModel book;
 
   ThunkAction<AppState> thunk;
 
@@ -56,7 +56,7 @@ class LoadVersesFor {
     this.thunk = (Store<AppState> store) async {
       store.dispatch(ExplorerSetActiveBook(this.book));
       try {
-        final verses = await retry<List<Verses>>(() => store.state.dba.getVerses(book.id));
+        final verses = await retry<List<VerseModel>>(() => store.state.dba.getVerses(book.id));
         if (verses == null) {
           store.dispatch(ReceiveError(Errors.unknownDbError));
         } else {

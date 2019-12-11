@@ -81,9 +81,9 @@ Future<void> loadWordsInWordNextVerse(Store<AppState> store) async {
   }
 
   try {
-    final verse = await retry<Verses>(() => _getNextVerse(bookId, chaptersNum, verseNum, dba));
+    final verse = await retry<VerseModel>(() => _getNextVerse(bookId, chaptersNum, verseNum, dba));
     if (verse != null && currentBookId != verse.book) {
-      final book = await retry<Books>(() => dba.getBookById(verse.book));
+      final book = await retry<BookModel>(() => dba.getBookById(verse.book));
       if (book != null) {
         bookName = book.name;
       }
@@ -100,7 +100,7 @@ Future<void> loadWordsInWordNextVerse(Store<AppState> store) async {
   }
 }
 
-Future<Verses> _getNextVerse(int bookId, int chapterNum, int verseNum, DbAdapter dba) async {
+Future<VerseModel> _getNextVerse(int bookId, int chapterNum, int verseNum, DbAdapter dba) async {
   var next = await dba.getSingleVerse(bookId, chapterNum, verseNum + 1);
   if (next != null) {
     return next;
@@ -113,6 +113,6 @@ Future<Verses> _getNextVerse(int bookId, int chapterNum, int verseNum, DbAdapter
   if (bookId < booksNum) {
     return dba.getSingleVerse(bookId + 1, 1, 1);
   } else {
-    return (Completer<Verses>()..completeError(null)).future;
+    return (Completer<VerseModel>()..completeError(null)).future;
   }
 }

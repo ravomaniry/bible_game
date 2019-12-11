@@ -67,23 +67,23 @@ void main() {
     );
     final store = Store<AppState>(mainReducer, initialState: state, middleware: [thunkMiddleware]);
 
-    when(state.dba.getBookById(1)).thenAnswer((_) => Future.value(Books(id: 1, name: "Genesisy", chapters: 10)));
+    when(state.dba.getBookById(1)).thenAnswer((_) => Future.value(BookModel(id: 1, name: "Genesisy", chapters: 10)));
     when(state.dba.getSingleVerse(1, 1, 1))
-        .thenAnswer((_) => Future.value(Verses(id: 1, book: 1, chapter: 1, verse: 1, text: "TestA")));
+        .thenAnswer((_) => Future.value(VerseModel(id: 1, book: 1, chapter: 1, verse: 1, text: "TestA")));
     when(state.dba.getSingleVerse(1, 1, 2))
-        .thenAnswer((_) => Future.value(Verses(id: 1, book: 1, chapter: 1, verse: 2, text: "TestB")));
+        .thenAnswer((_) => Future.value(VerseModel(id: 1, book: 1, chapter: 1, verse: 2, text: "TestB")));
     when(state.dba.getSingleVerse(1, 1, 3)).thenAnswer((_) => Future.value(null));
     when(state.dba.getSingleVerse(1, 2, 1))
-        .thenAnswer((_) => Future.value(Verses(id: 1, book: 1, chapter: 2, verse: 1, text: "TestC.")));
+        .thenAnswer((_) => Future.value(VerseModel(id: 1, book: 1, chapter: 2, verse: 1, text: "TestC.")));
 
     store.dispatch(goToWordsInWord);
     await Future.delayed(Duration(seconds: 1));
-    var verse = BibleVerse.fromModel(Verses(id: 1, book: 1, chapter: 1, verse: 1, text: "TestA"), "Genesisy");
+    var verse = BibleVerse.fromModel(VerseModel(id: 1, book: 1, chapter: 1, verse: 1, text: "TestA"), "Genesisy");
     expect(store.state.wordsInWord.verse, verse);
     verify(store.state.dba.getSingleVerse(1, 1, 1)).called(1);
     verify(store.state.dba.getBookById(1)).called(1);
     // Next should not call get book anymore
-    verse = BibleVerse.fromModel(Verses(id: 1, book: 1, chapter: 1, verse: 2, text: "TestB"), "Genesisy");
+    verse = BibleVerse.fromModel(VerseModel(id: 1, book: 1, chapter: 1, verse: 2, text: "TestB"), "Genesisy");
     await loadWordsInWordNextVerse(store);
     store.dispatch(initializeWordsInWordState);
     await Future.delayed(Duration(seconds: 1));
@@ -97,7 +97,7 @@ void main() {
     store.dispatch(initializeWordsInWordState);
     await Future.delayed(Duration(seconds: 1));
     expect(store.state.wordsInWord.verse,
-        BibleVerse.fromModel(Verses(id: 1, book: 1, chapter: 2, verse: 1, text: "TestC."), "Genesisy"));
+        BibleVerse.fromModel(VerseModel(id: 1, book: 1, chapter: 2, verse: 1, text: "TestC."), "Genesisy"));
     verify(store.state.dba.getSingleVerse(1, 2, 1)).called(1);
     verifyNever(store.state.dba.getBookById(1));
   });

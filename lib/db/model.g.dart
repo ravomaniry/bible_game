@@ -12,16 +12,16 @@ part of 'model.dart';
 
 //  To use these SqfEntity classes do following:
 //  - import model.dart into where to use
-//  - start typing ex:Books.select()... (add a few filters with fluent methods)...(add orderBy/orderBydesc if you want)...
+//  - start typing ex:BookModel.select()... (add a few filters with fluent methods)...(add orderBy/orderBydesc if you want)...
 //  - and then just put end of filters / or end of only select()  toSingle() / or toList()
 //  - you can select one or return List<yourObject> by your filters and orders
 //  - also you can batch update or batch delete by using delete/update methods instead of tosingle/tolist methods
 //    Enjoy.. Huseyin Tokpunar
 
 // BEGIN TABLES
-// Books TABLE
-class TableBooks extends SqfEntityTableBase {
-  TableBooks() {
+// BookModel TABLE
+class TableBookModel extends SqfEntityTableBase {
+  TableBookModel() {
     // declare properties of EntityTable
     tableName = 'books';
     primaryKeyName = 'id';
@@ -38,13 +38,13 @@ class TableBooks extends SqfEntityTableBase {
   }
   static SqfEntityTableBase _instance;
   static SqfEntityTableBase get getInstance {
-    return _instance = _instance ?? TableBooks();
+    return _instance = _instance ?? TableBookModel();
   }
 }
 
-// Verses TABLE
-class TableVerses extends SqfEntityTableBase {
-  TableVerses() {
+// VerseModel TABLE
+class TableVerseModel extends SqfEntityTableBase {
+  TableVerseModel() {
     // declare properties of EntityTable
     tableName = 'verses';
     primaryKeyName = 'id';
@@ -54,7 +54,8 @@ class TableVerses extends SqfEntityTableBase {
 
     // declare fields
     fields = [
-      SqfEntityFieldRelationshipBase(TableBooks.getInstance, DeleteRule.CASCADE,
+      SqfEntityFieldRelationshipBase(
+          TableBookModel.getInstance, DeleteRule.CASCADE,
           fieldName: 'book'),
       SqfEntityFieldBase('chapter', DbType.integer),
       SqfEntityFieldBase('verse', DbType.integer),
@@ -64,13 +65,13 @@ class TableVerses extends SqfEntityTableBase {
   }
   static SqfEntityTableBase _instance;
   static SqfEntityTableBase get getInstance {
-    return _instance = _instance ?? TableVerses();
+    return _instance = _instance ?? TableVerseModel();
   }
 }
 
-// Game TABLE
-class TableGame extends SqfEntityTableBase {
-  TableGame() {
+// GameModel TABLE
+class TableGameModel extends SqfEntityTableBase {
+  TableGameModel() {
     // declare properties of EntityTable
     tableName = 'games';
     primaryKeyName = 'id';
@@ -99,7 +100,7 @@ class TableGame extends SqfEntityTableBase {
   }
   static SqfEntityTableBase _instance;
   static SqfEntityTableBase get getInstance {
-    return _instance = _instance ?? TableGame();
+    return _instance = _instance ?? TableGameModel();
   }
 }
 // END TABLES
@@ -129,9 +130,9 @@ class BibleGameModel extends SqfEntityModelProvider {
   BibleGameModel() {
     databaseName = model.databaseName;
     databaseTables = [
-      TableBooks.getInstance,
-      TableVerses.getInstance,
-      TableGame.getInstance,
+      TableBookModel.getInstance,
+      TableVerseModel.getInstance,
+      TableGameModel.getInstance,
     ];
 
     sequences = [
@@ -150,18 +151,18 @@ class BibleGameModel extends SqfEntityModelProvider {
 // END DATABASE MODEL
 
 // BEGIN ENTITIES
-// region Books
-class Books {
-  Books({this.id, this.name, this.chapters}) {
+// region BookModel
+class BookModel {
+  BookModel({this.id, this.name, this.chapters}) {
     setDefaultValues();
   }
-  Books.withFields(this.name, this.chapters) {
+  BookModel.withFields(this.name, this.chapters) {
     setDefaultValues();
   }
-  Books.withId(this.id, this.name, this.chapters) {
+  BookModel.withId(this.id, this.name, this.chapters) {
     setDefaultValues();
   }
-  Books.fromMap(Map<String, dynamic> o) {
+  BookModel.fromMap(Map<String, dynamic> o) {
     id = o['id'] as int;
     name = o['name'] as String;
 
@@ -169,31 +170,31 @@ class Books {
 
     isSaved = true;
   }
-  // FIELDS (Books)
+  // FIELDS (BookModel)
   int id;
   String name;
   int chapters;
   bool isSaved;
   BoolResult saveResult;
-  // end FIELDS (Books)
+  // end FIELDS (BookModel)
 
-// COLLECTIONS (Books)
-  /// get Verses(s) filtered by book=id
-  VersesFilterBuilder getVerseses(
+// COLLECTIONS (BookModel)
+  /// get VerseModel(s) filtered by book=id
+  VerseModelFilterBuilder getVerseModels(
       {List<String> columnsToSelect, bool getIsDeleted}) {
-    return Verses()
+    return VerseModel()
         .select(columnsToSelect: columnsToSelect, getIsDeleted: getIsDeleted)
         .book
         .equals(id)
         .and;
   }
-// END COLLECTIONS (Books)
+// END COLLECTIONS (BookModel)
 
   static const bool _softDeleteActivated = false;
-  BooksManager __mnBooks;
+  BookModelManager __mnBookModel;
 
-  BooksManager get _mnBooks {
-    return __mnBooks = __mnBooks ?? BooksManager();
+  BookModelManager get _mnBookModel {
+    return __mnBookModel = __mnBookModel ?? BookModelManager();
   }
 
   // METHODS
@@ -227,11 +228,11 @@ class Books {
       map['chapters'] = chapters;
     }
 
-// COLLECTIONS (Books)
+// COLLECTIONS (BookModel)
     if (!forQuery) {
-      map['Verseses'] = await getVerseses().toMapList();
+      map['VerseModels'] = await getVerseModels().toMapList();
     }
-// END COLLECTIONS (Books)
+// END COLLECTIONS (BookModel)
 
     return map;
   }
@@ -250,58 +251,61 @@ class Books {
     return [id, name, chapters];
   }
 
-  static Future<List<Books>> fromWebUrl(String url) async {
+  static Future<List<BookModel>> fromWebUrl(String url) async {
     try {
       final response = await http.get(url);
       return await fromJson(response.body);
     } catch (e) {
-      print('SQFENTITY ERROR Books.fromWebUrl: ErrorMessage: ${e.toString()}');
+      print(
+          'SQFENTITY ERROR BookModel.fromWebUrl: ErrorMessage: ${e.toString()}');
       return null;
     }
   }
 
-  static Future<List<Books>> fromJson(String jsonBody) async {
+  static Future<List<BookModel>> fromJson(String jsonBody) async {
     final Iterable list = await json.decode(jsonBody) as Iterable;
-    var objList = List<Books>();
+    var objList = List<BookModel>();
     try {
       objList = list
-          .map((books) => Books.fromMap(books as Map<String, dynamic>))
+          .map((bookmodel) =>
+              BookModel.fromMap(bookmodel as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      print('SQFENTITY ERROR Books.fromJson: ErrorMessage: ${e.toString()}');
+      print(
+          'SQFENTITY ERROR BookModel.fromJson: ErrorMessage: ${e.toString()}');
     }
     return objList;
   }
 
-  static Future<List<Books>> fromObjectList(Future<List<dynamic>> o) async {
+  static Future<List<BookModel>> fromObjectList(Future<List<dynamic>> o) async {
     final data = await o;
-    return Books.fromMapList(data);
+    return BookModel.fromMapList(data);
   }
 
-  static List<Books> fromMapList(List<dynamic> data) {
-    final List<Books> objList = List<Books>();
+  static List<BookModel> fromMapList(List<dynamic> data) {
+    final List<BookModel> objList = List<BookModel>();
     for (final Map map in data as List<Map>) {
-      final obj = Books.fromMap(map as Map<String, dynamic>);
+      final obj = BookModel.fromMap(map as Map<String, dynamic>);
       objList.add(obj);
     }
     return objList;
   }
 
-  /// returns Books by ID if exist, otherwise returns null
+  /// returns BookModel by ID if exist, otherwise returns null
   /// <param name='id'>Primary Key Value</param>
-  /// <returns>returns Books if exist, otherwise returns null
-  Future<Books> getById(int id) async {
+  /// <returns>returns BookModel if exist, otherwise returns null
+  Future<BookModel> getById(int id) async {
     if (id == null) {
       return null;
     }
-    Books booksObj;
-    final data = await _mnBooks.getById(id);
+    BookModel bookmodelObj;
+    final data = await _mnBookModel.getById(id);
     if (data.length != 0) {
-      booksObj = Books.fromMap(data[0] as Map<String, dynamic>);
+      bookmodelObj = BookModel.fromMap(data[0] as Map<String, dynamic>);
     } else {
-      booksObj = null;
+      bookmodelObj = null;
     }
-    return booksObj;
+    return bookmodelObj;
   }
 
   /// Saves the object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
@@ -309,7 +313,7 @@ class Books {
   /// <returns>Returns id
   Future<int> save() async {
     if (id == null || id == 0 || !isSaved) {
-      id = await _mnBooks.insert(this);
+      id = await _mnBookModel.insert(this);
       isSaved = true;
     } else {
       id = await _upsert();
@@ -317,21 +321,21 @@ class Books {
     return id;
   }
 
-  /// saveAs Books. Returns a new Primary Key value of Books
+  /// saveAs BookModel. Returns a new Primary Key value of BookModel
 
-  /// <returns>Returns a new Primary Key value of Books
+  /// <returns>Returns a new Primary Key value of BookModel
   Future<int> saveAs() async {
     isSaved = false;
 
     return save();
   }
 
-  /// saveAll method saves the sent List<Books> as a batch in one transaction
+  /// saveAll method saves the sent List<BookModel> as a batch in one transaction
   /// Returns a <List<BoolResult>>
-  Future<List<BoolResult>> saveAll(List<Books> bookses) async {
-    final results = _mnBooks.saveAll(
+  Future<List<BoolResult>> saveAll(List<BookModel> bookmodels) async {
+    final results = _mnBookModel.saveAll(
         'INSERT OR REPLACE INTO books (id,  name, chapters)  VALUES (?,?,?)',
-        bookses);
+        bookmodels);
     return results;
   }
 
@@ -340,16 +344,17 @@ class Books {
   /// <returns>Returns id
   Future<int> _upsert() async {
     try {
-      id = await _mnBooks.rawInsert(
+      id = await _mnBookModel.rawInsert(
           'INSERT OR REPLACE INTO books (id,  name, chapters)  VALUES (?,?,?)',
           [id, name, chapters]);
       saveResult = BoolResult(
-          success: true, successMessage: 'Books id=$id updated successfuly');
+          success: true,
+          successMessage: 'BookModel id=$id updated successfuly');
       return id;
     } catch (e) {
       saveResult = BoolResult(
           success: false,
-          errorMessage: 'Books Save failed. Error: ${e.toString()}');
+          errorMessage: 'BookModel Save failed. Error: ${e.toString()}');
       return 0;
     }
   }
@@ -357,45 +362,46 @@ class Books {
   /// inserts or replaces the sent List<Todo> as a batch in one transaction.
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a <List<BoolResult>>
-  Future<List<BoolResult>> upsertAll(List<Books> bookses) async {
-    final results = await _mnBooks.rawInsertAll(
+  Future<List<BoolResult>> upsertAll(List<BookModel> bookmodels) async {
+    final results = await _mnBookModel.rawInsertAll(
         'INSERT OR REPLACE INTO books (id,  name, chapters)  VALUES (?,?,?)',
-        bookses);
+        bookmodels);
     return results;
   }
 
-  /// Deletes Books
+  /// Deletes BookModel
 
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
-    print('SQFENTITIY: delete Books invoked (id=$id)');
+    print('SQFENTITIY: delete BookModel invoked (id=$id)');
     var result = BoolResult();
     {
-      result = await Verses().select().book.equals(id).delete(hardDelete);
+      result = await VerseModel().select().book.equals(id).delete(hardDelete);
     }
     if (!result.success) {
       return result;
     }
     if (!_softDeleteActivated || hardDelete) {
-      return _mnBooks
+      return _mnBookModel
           .delete(QueryParams(whereString: 'id=?', whereArguments: [id]));
     } else {
-      return _mnBooks.updateBatch(
+      return _mnBookModel.updateBatch(
           QueryParams(whereString: 'id=?', whereArguments: [id]),
           {'isDeleted': 1});
     }
   }
 
-  //private BooksFilterBuilder _Select;
-  BooksFilterBuilder select({List<String> columnsToSelect, bool getIsDeleted}) {
-    return BooksFilterBuilder(this)
+  //private BookModelFilterBuilder _Select;
+  BookModelFilterBuilder select(
+      {List<String> columnsToSelect, bool getIsDeleted}) {
+    return BookModelFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect;
   }
 
-  BooksFilterBuilder distinct(
+  BookModelFilterBuilder distinct(
       {List<String> columnsToSelect, bool getIsDeleted}) {
-    return BooksFilterBuilder(this)
+    return BookModelFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect
       ..qparams.distinct = true;
@@ -425,210 +431,210 @@ class Books {
    */
   // END CUSTOM CODES
 }
-// endregion books
+// endregion bookmodel
 
-// region BooksField
-class BooksField extends SearchCriteria {
-  BooksField(this.booksFB) {
+// region BookModelField
+class BookModelField extends SearchCriteria {
+  BookModelField(this.bookmodelFB) {
     param = DbParameter();
   }
   DbParameter param;
   String _waitingNot = '';
-  BooksFilterBuilder booksFB;
+  BookModelFilterBuilder bookmodelFB;
 
-  BooksField get not {
+  BookModelField get not {
     _waitingNot = ' NOT ';
     return this;
   }
 
-  BooksFilterBuilder equals(var pValue) {
+  BookModelFilterBuilder equals(var pValue) {
     param.expression = '=';
-    booksFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, booksFB.parameters, param, SqlSyntax.EQuals,
-            booksFB._addedBlocks)
-        : setCriteria(pValue, booksFB.parameters, param, SqlSyntax.NotEQuals,
-            booksFB._addedBlocks);
+    bookmodelFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, bookmodelFB.parameters, param, SqlSyntax.EQuals,
+            bookmodelFB._addedBlocks)
+        : setCriteria(pValue, bookmodelFB.parameters, param,
+            SqlSyntax.NotEQuals, bookmodelFB._addedBlocks);
     _waitingNot = '';
-    booksFB._addedBlocks.needEndBlock[booksFB._blockIndex] =
-        booksFB._addedBlocks.retVal;
-    return booksFB;
+    bookmodelFB._addedBlocks.needEndBlock[bookmodelFB._blockIndex] =
+        bookmodelFB._addedBlocks.retVal;
+    return bookmodelFB;
   }
 
-  BooksFilterBuilder equalsOrNull(var pValue) {
+  BookModelFilterBuilder equalsOrNull(var pValue) {
     param.expression = '=';
-    booksFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, booksFB.parameters, param, SqlSyntax.EQualsOrNull,
-            booksFB._addedBlocks)
-        : setCriteria(pValue, booksFB.parameters, param,
-            SqlSyntax.NotEQualsOrNull, booksFB._addedBlocks);
+    bookmodelFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, bookmodelFB.parameters, param,
+            SqlSyntax.EQualsOrNull, bookmodelFB._addedBlocks)
+        : setCriteria(pValue, bookmodelFB.parameters, param,
+            SqlSyntax.NotEQualsOrNull, bookmodelFB._addedBlocks);
     _waitingNot = '';
-    booksFB._addedBlocks.needEndBlock[booksFB._blockIndex] =
-        booksFB._addedBlocks.retVal;
-    return booksFB;
+    bookmodelFB._addedBlocks.needEndBlock[bookmodelFB._blockIndex] =
+        bookmodelFB._addedBlocks.retVal;
+    return bookmodelFB;
   }
 
-  BooksFilterBuilder isNull() {
-    booksFB._addedBlocks = setCriteria(
+  BookModelFilterBuilder isNull() {
+    bookmodelFB._addedBlocks = setCriteria(
         0,
-        booksFB.parameters,
+        bookmodelFB.parameters,
         param,
         SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-        booksFB._addedBlocks);
+        bookmodelFB._addedBlocks);
     _waitingNot = '';
-    booksFB._addedBlocks.needEndBlock[booksFB._blockIndex] =
-        booksFB._addedBlocks.retVal;
-    return booksFB;
+    bookmodelFB._addedBlocks.needEndBlock[bookmodelFB._blockIndex] =
+        bookmodelFB._addedBlocks.retVal;
+    return bookmodelFB;
   }
 
-  BooksFilterBuilder contains(dynamic pValue) {
+  BookModelFilterBuilder contains(dynamic pValue) {
     if (pValue != null) {
-      booksFB._addedBlocks = setCriteria(
+      bookmodelFB._addedBlocks = setCriteria(
           '%${pValue.toString()}%',
-          booksFB.parameters,
+          bookmodelFB.parameters,
           param,
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-          booksFB._addedBlocks);
+          bookmodelFB._addedBlocks);
       _waitingNot = '';
-      booksFB._addedBlocks.needEndBlock[booksFB._blockIndex] =
-          booksFB._addedBlocks.retVal;
+      bookmodelFB._addedBlocks.needEndBlock[bookmodelFB._blockIndex] =
+          bookmodelFB._addedBlocks.retVal;
     }
-    return booksFB;
+    return bookmodelFB;
   }
 
-  BooksFilterBuilder startsWith(dynamic pValue) {
+  BookModelFilterBuilder startsWith(dynamic pValue) {
     if (pValue != null) {
-      booksFB._addedBlocks = setCriteria(
+      bookmodelFB._addedBlocks = setCriteria(
           '${pValue.toString()}%',
-          booksFB.parameters,
+          bookmodelFB.parameters,
           param,
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-          booksFB._addedBlocks);
+          bookmodelFB._addedBlocks);
       _waitingNot = '';
-      booksFB._addedBlocks.needEndBlock[booksFB._blockIndex] =
-          booksFB._addedBlocks.retVal;
-      booksFB._addedBlocks.needEndBlock[booksFB._blockIndex] =
-          booksFB._addedBlocks.retVal;
+      bookmodelFB._addedBlocks.needEndBlock[bookmodelFB._blockIndex] =
+          bookmodelFB._addedBlocks.retVal;
+      bookmodelFB._addedBlocks.needEndBlock[bookmodelFB._blockIndex] =
+          bookmodelFB._addedBlocks.retVal;
     }
-    return booksFB;
+    return bookmodelFB;
   }
 
-  BooksFilterBuilder endsWith(dynamic pValue) {
+  BookModelFilterBuilder endsWith(dynamic pValue) {
     if (pValue != null) {
-      booksFB._addedBlocks = setCriteria(
+      bookmodelFB._addedBlocks = setCriteria(
           '%${pValue.toString()}',
-          booksFB.parameters,
+          bookmodelFB.parameters,
           param,
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-          booksFB._addedBlocks);
+          bookmodelFB._addedBlocks);
       _waitingNot = '';
-      booksFB._addedBlocks.needEndBlock[booksFB._blockIndex] =
-          booksFB._addedBlocks.retVal;
+      bookmodelFB._addedBlocks.needEndBlock[bookmodelFB._blockIndex] =
+          bookmodelFB._addedBlocks.retVal;
     }
-    return booksFB;
+    return bookmodelFB;
   }
 
-  BooksFilterBuilder between(dynamic pFirst, dynamic pLast) {
+  BookModelFilterBuilder between(dynamic pFirst, dynamic pLast) {
     if (pFirst != null && pLast != null) {
-      booksFB._addedBlocks = setCriteria(
+      bookmodelFB._addedBlocks = setCriteria(
           pFirst,
-          booksFB.parameters,
+          bookmodelFB.parameters,
           param,
           SqlSyntax.Between.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-          booksFB._addedBlocks,
+          bookmodelFB._addedBlocks,
           pLast);
     } else if (pFirst != null) {
       if (_waitingNot != '') {
-        booksFB._addedBlocks = setCriteria(pFirst, booksFB.parameters, param,
-            SqlSyntax.LessThan, booksFB._addedBlocks);
+        bookmodelFB._addedBlocks = setCriteria(pFirst, bookmodelFB.parameters,
+            param, SqlSyntax.LessThan, bookmodelFB._addedBlocks);
       } else {
-        booksFB._addedBlocks = setCriteria(pFirst, booksFB.parameters, param,
-            SqlSyntax.GreaterThanOrEquals, booksFB._addedBlocks);
+        bookmodelFB._addedBlocks = setCriteria(pFirst, bookmodelFB.parameters,
+            param, SqlSyntax.GreaterThanOrEquals, bookmodelFB._addedBlocks);
       }
     } else if (pLast != null) {
       if (_waitingNot != '') {
-        booksFB._addedBlocks = setCriteria(pLast, booksFB.parameters, param,
-            SqlSyntax.GreaterThan, booksFB._addedBlocks);
+        bookmodelFB._addedBlocks = setCriteria(pLast, bookmodelFB.parameters,
+            param, SqlSyntax.GreaterThan, bookmodelFB._addedBlocks);
       } else {
-        booksFB._addedBlocks = setCriteria(pLast, booksFB.parameters, param,
-            SqlSyntax.LessThanOrEquals, booksFB._addedBlocks);
+        bookmodelFB._addedBlocks = setCriteria(pLast, bookmodelFB.parameters,
+            param, SqlSyntax.LessThanOrEquals, bookmodelFB._addedBlocks);
       }
     }
     _waitingNot = '';
-    booksFB._addedBlocks.needEndBlock[booksFB._blockIndex] =
-        booksFB._addedBlocks.retVal;
-    return booksFB;
+    bookmodelFB._addedBlocks.needEndBlock[bookmodelFB._blockIndex] =
+        bookmodelFB._addedBlocks.retVal;
+    return bookmodelFB;
   }
 
-  BooksFilterBuilder greaterThan(dynamic pValue) {
+  BookModelFilterBuilder greaterThan(dynamic pValue) {
     param.expression = '>';
-    booksFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, booksFB.parameters, param, SqlSyntax.GreaterThan,
-            booksFB._addedBlocks)
-        : setCriteria(pValue, booksFB.parameters, param,
-            SqlSyntax.LessThanOrEquals, booksFB._addedBlocks);
+    bookmodelFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, bookmodelFB.parameters, param,
+            SqlSyntax.GreaterThan, bookmodelFB._addedBlocks)
+        : setCriteria(pValue, bookmodelFB.parameters, param,
+            SqlSyntax.LessThanOrEquals, bookmodelFB._addedBlocks);
     _waitingNot = '';
-    booksFB._addedBlocks.needEndBlock[booksFB._blockIndex] =
-        booksFB._addedBlocks.retVal;
-    return booksFB;
+    bookmodelFB._addedBlocks.needEndBlock[bookmodelFB._blockIndex] =
+        bookmodelFB._addedBlocks.retVal;
+    return bookmodelFB;
   }
 
-  BooksFilterBuilder lessThan(dynamic pValue) {
+  BookModelFilterBuilder lessThan(dynamic pValue) {
     param.expression = '<';
-    booksFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, booksFB.parameters, param, SqlSyntax.LessThan,
-            booksFB._addedBlocks)
-        : setCriteria(pValue, booksFB.parameters, param,
-            SqlSyntax.GreaterThanOrEquals, booksFB._addedBlocks);
+    bookmodelFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, bookmodelFB.parameters, param, SqlSyntax.LessThan,
+            bookmodelFB._addedBlocks)
+        : setCriteria(pValue, bookmodelFB.parameters, param,
+            SqlSyntax.GreaterThanOrEquals, bookmodelFB._addedBlocks);
     _waitingNot = '';
-    booksFB._addedBlocks.needEndBlock[booksFB._blockIndex] =
-        booksFB._addedBlocks.retVal;
-    return booksFB;
+    bookmodelFB._addedBlocks.needEndBlock[bookmodelFB._blockIndex] =
+        bookmodelFB._addedBlocks.retVal;
+    return bookmodelFB;
   }
 
-  BooksFilterBuilder greaterThanOrEquals(dynamic pValue) {
+  BookModelFilterBuilder greaterThanOrEquals(dynamic pValue) {
     param.expression = '>=';
-    booksFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, booksFB.parameters, param,
-            SqlSyntax.GreaterThanOrEquals, booksFB._addedBlocks)
-        : setCriteria(pValue, booksFB.parameters, param, SqlSyntax.LessThan,
-            booksFB._addedBlocks);
+    bookmodelFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, bookmodelFB.parameters, param,
+            SqlSyntax.GreaterThanOrEquals, bookmodelFB._addedBlocks)
+        : setCriteria(pValue, bookmodelFB.parameters, param, SqlSyntax.LessThan,
+            bookmodelFB._addedBlocks);
     _waitingNot = '';
-    booksFB._addedBlocks.needEndBlock[booksFB._blockIndex] =
-        booksFB._addedBlocks.retVal;
-    return booksFB;
+    bookmodelFB._addedBlocks.needEndBlock[bookmodelFB._blockIndex] =
+        bookmodelFB._addedBlocks.retVal;
+    return bookmodelFB;
   }
 
-  BooksFilterBuilder lessThanOrEquals(dynamic pValue) {
+  BookModelFilterBuilder lessThanOrEquals(dynamic pValue) {
     param.expression = '<=';
-    booksFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, booksFB.parameters, param,
-            SqlSyntax.LessThanOrEquals, booksFB._addedBlocks)
-        : setCriteria(pValue, booksFB.parameters, param, SqlSyntax.GreaterThan,
-            booksFB._addedBlocks);
+    bookmodelFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, bookmodelFB.parameters, param,
+            SqlSyntax.LessThanOrEquals, bookmodelFB._addedBlocks)
+        : setCriteria(pValue, bookmodelFB.parameters, param,
+            SqlSyntax.GreaterThan, bookmodelFB._addedBlocks);
     _waitingNot = '';
-    booksFB._addedBlocks.needEndBlock[booksFB._blockIndex] =
-        booksFB._addedBlocks.retVal;
-    return booksFB;
+    bookmodelFB._addedBlocks.needEndBlock[bookmodelFB._blockIndex] =
+        bookmodelFB._addedBlocks.retVal;
+    return bookmodelFB;
   }
 
-  BooksFilterBuilder inValues(var pValue) {
-    booksFB._addedBlocks = setCriteria(
+  BookModelFilterBuilder inValues(var pValue) {
+    bookmodelFB._addedBlocks = setCriteria(
         pValue,
-        booksFB.parameters,
+        bookmodelFB.parameters,
         param,
         SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-        booksFB._addedBlocks);
+        bookmodelFB._addedBlocks);
     _waitingNot = '';
-    booksFB._addedBlocks.needEndBlock[booksFB._blockIndex] =
-        booksFB._addedBlocks.retVal;
-    return booksFB;
+    bookmodelFB._addedBlocks.needEndBlock[bookmodelFB._blockIndex] =
+        bookmodelFB._addedBlocks.retVal;
+    return bookmodelFB;
   }
 }
-// endregion BooksField
+// endregion BookModelField
 
-// region BooksFilterBuilder
-class BooksFilterBuilder extends SearchCriteria {
-  BooksFilterBuilder(Books obj) {
+// region BookModelFilterBuilder
+class BookModelFilterBuilder extends SearchCriteria {
+  BookModelFilterBuilder(BookModel obj) {
     whereString = '';
     qparams = QueryParams();
     parameters = List<DbParameter>();
@@ -645,13 +651,13 @@ class BooksFilterBuilder extends SearchCriteria {
   int _blockIndex = 0;
   List<DbParameter> parameters;
   List<String> orderByList;
-  Books _obj;
+  BookModel _obj;
   QueryParams qparams;
   int _pagesize;
   int _page;
 
   /// put the sql keyword 'AND'
-  BooksFilterBuilder get and {
+  BookModelFilterBuilder get and {
     if (parameters.isNotEmpty) {
       parameters[parameters.length - 1].wOperator = ' AND ';
     }
@@ -659,7 +665,7 @@ class BooksFilterBuilder extends SearchCriteria {
   }
 
   /// put the sql keyword 'OR'
-  BooksFilterBuilder get or {
+  BookModelFilterBuilder get or {
     if (parameters.isNotEmpty) {
       parameters[parameters.length - 1].wOperator = ' OR ';
     }
@@ -667,7 +673,7 @@ class BooksFilterBuilder extends SearchCriteria {
   }
 
   /// open parentheses
-  BooksFilterBuilder get startBlock {
+  BookModelFilterBuilder get startBlock {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
@@ -676,7 +682,7 @@ class BooksFilterBuilder extends SearchCriteria {
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  BooksFilterBuilder where(String whereCriteria) {
+  BookModelFilterBuilder where(String whereCriteria) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter();
       _addedBlocks =
@@ -689,14 +695,14 @@ class BooksFilterBuilder extends SearchCriteria {
   /// page = page number,
   ///
   /// pagesize = row(s) per page
-  BooksFilterBuilder page(int page, int pagesize) {
+  BookModelFilterBuilder page(int page, int pagesize) {
     if (page > 0) _page = page;
     if (pagesize > 0) _pagesize = pagesize;
     return this;
   }
 
   /// int count = LIMIT
-  BooksFilterBuilder top(int count) {
+  BookModelFilterBuilder top(int count) {
     if (count > 0) {
       _pagesize = count;
     }
@@ -704,7 +710,7 @@ class BooksFilterBuilder extends SearchCriteria {
   }
 
   /// close parentheses
-  BooksFilterBuilder get endBlock {
+  BookModelFilterBuilder get endBlock {
     if (_addedBlocks.needEndBlock[_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
     }
@@ -719,7 +725,7 @@ class BooksFilterBuilder extends SearchCriteria {
   /// Example 1: argFields='name, date'
   ///
   /// Example 2: argFields = ['name', 'date']
-  BooksFilterBuilder orderBy(var argFields) {
+  BookModelFilterBuilder orderBy(var argFields) {
     if (argFields != null) {
       if (argFields is String) {
         orderByList.add(argFields);
@@ -737,7 +743,7 @@ class BooksFilterBuilder extends SearchCriteria {
   /// Example 1: argFields='field1, field2'
   ///
   /// Example 2: argFields = ['field1', 'field2']
-  BooksFilterBuilder orderByDesc(var argFields) {
+  BookModelFilterBuilder orderByDesc(var argFields) {
     if (argFields != null) {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
@@ -755,7 +761,7 @@ class BooksFilterBuilder extends SearchCriteria {
   /// Example 1: argFields='field1, field2'
   ///
   /// Example 2: argFields = ['field1', 'field2']
-  BooksFilterBuilder groupBy(var argFields) {
+  BookModelFilterBuilder groupBy(var argFields) {
     if (argFields != null) {
       if (argFields is String) {
         groupByList.add(' $argFields ');
@@ -768,26 +774,26 @@ class BooksFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  BooksField setField(BooksField field, String colName, DbType dbtype) {
-    return BooksField(this)
+  BookModelField setField(BookModelField field, String colName, DbType dbtype) {
+    return BookModelField(this)
       ..param = DbParameter(
           dbType: dbtype,
           columnName: colName,
           wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
   }
 
-  BooksField _id;
-  BooksField get id {
+  BookModelField _id;
+  BookModelField get id {
     return _id = setField(_id, 'id', DbType.integer);
   }
 
-  BooksField _name;
-  BooksField get name {
+  BookModelField _name;
+  BookModelField get name {
     return _name = setField(_name, 'name', DbType.text);
   }
 
-  BooksField _chapters;
-  BooksField get chapters {
+  BookModelField _chapters;
+  BookModelField get chapters {
     return _chapters = setField(_chapters, 'chapters', DbType.integer);
   }
 
@@ -850,7 +856,7 @@ class BooksFilterBuilder extends SearchCriteria {
         whereString += param.whereString;
       }
     }
-    if (Books._softDeleteActivated) {
+    if (BookModel._softDeleteActivated) {
       if (whereString != '') {
         whereString =
             '${!_getIsDeleted ? 'ifnull(isDeleted,0)=0 AND' : ''} ($whereString)';
@@ -868,16 +874,16 @@ class BooksFilterBuilder extends SearchCriteria {
       ..orderBy = orderByList.join(',');
   }
 
-  /// Deletes List<Books> batch by query
+  /// Deletes List<BookModel> batch by query
   ///
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
-    if (Books._softDeleteActivated && !hardDelete) {
-      r = await _obj._mnBooks.updateBatch(qparams, {'isDeleted': 1});
+    if (BookModel._softDeleteActivated && !hardDelete) {
+      r = await _obj._mnBookModel.updateBatch(qparams, {'isDeleted': 1});
     } else {
-      r = await _obj._mnBooks.delete(qparams);
+      r = await _obj._mnBookModel.delete(qparams);
     }
     return r;
   }
@@ -893,24 +899,24 @@ class BooksFilterBuilder extends SearchCriteria {
       qparams.whereString =
           'id IN (SELECT id from books ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
     }
-    return _obj._mnBooks.updateBatch(qparams, values);
+    return _obj._mnBookModel.updateBatch(qparams, values);
   }
 
-  /// This method always returns BooksObj if exist, otherwise returns null
-  /// <returns>List<Books>
-  Future<Books> toSingle([VoidCallback books(Books o)]) async {
+  /// This method always returns BookModelObj if exist, otherwise returns null
+  /// <returns>List<BookModel>
+  Future<BookModel> toSingle([VoidCallback bookmodel(BookModel o)]) async {
     _pagesize = 1;
     _buildParameters();
-    final objFuture = _obj._mnBooks.toList(qparams);
+    final objFuture = _obj._mnBookModel.toList(qparams);
     final data = await objFuture;
-    Books retVal;
+    BookModel retVal;
     if (data.isNotEmpty) {
-      retVal = Books.fromMap(data[0] as Map<String, dynamic>);
+      retVal = BookModel.fromMap(data[0] as Map<String, dynamic>);
     } else {
       retVal = null;
     }
-    if (books != null) {
-      books(retVal);
+    if (bookmodel != null) {
+      bookmodel(retVal);
     }
     return retVal;
   }
@@ -918,24 +924,25 @@ class BooksFilterBuilder extends SearchCriteria {
   /// This method always returns int.
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback booksCount(int c)]) async {
+  Future<int> toCount([VoidCallback bookmodelCount(int c)]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final booksesFuture = await _obj._mnBooks.toList(qparams);
-    final int count = booksesFuture[0]['CNT'] as int;
-    if (booksCount != null) {
-      booksCount(count);
+    final bookmodelsFuture = await _obj._mnBookModel.toList(qparams);
+    final int count = bookmodelsFuture[0]['CNT'] as int;
+    if (bookmodelCount != null) {
+      bookmodelCount(count);
     }
     return count;
   }
 
-  /// This method always returns List<Books>.
-  /// <returns>List<Books>
-  Future<List<Books>> toList([VoidCallback booksList(List<Books> o)]) async {
+  /// This method always returns List<BookModel>.
+  /// <returns>List<BookModel>
+  Future<List<BookModel>> toList(
+      [VoidCallback bookmodelList(List<BookModel> o)]) async {
     final data = await toMapList();
-    final List<Books> booksesData = Books.fromMapList(data);
-    if (booksList != null) booksList(booksesData);
-    return booksesData;
+    final List<BookModel> bookmodelsData = BookModel.fromMapList(data);
+    if (bookmodelList != null) bookmodelList(bookmodelsData);
+    return bookmodelsData;
   }
 
   /// This method always returns Json String
@@ -963,26 +970,27 @@ class BooksFilterBuilder extends SearchCriteria {
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
-    return await _obj._mnBooks.toList(qparams);
+    return await _obj._mnBookModel.toList(qparams);
   }
 
-  /// Returns List<DropdownMenuItem<Books>>
-  Future<List<DropdownMenuItem<Books>>> toDropDownMenu(String displayTextColumn,
-      [VoidCallback dropDownMenu(List<DropdownMenuItem<Books>> o)]) async {
+  /// Returns List<DropdownMenuItem<BookModel>>
+  Future<List<DropdownMenuItem<BookModel>>> toDropDownMenu(
+      String displayTextColumn,
+      [VoidCallback dropDownMenu(List<DropdownMenuItem<BookModel>> o)]) async {
     _buildParameters();
-    final booksesFuture = _obj._mnBooks.toList(qparams);
+    final bookmodelsFuture = _obj._mnBookModel.toList(qparams);
 
-    final data = await booksesFuture;
+    final data = await bookmodelsFuture;
     final int count = data.length;
-    final List<DropdownMenuItem<Books>> items = List()
+    final List<DropdownMenuItem<BookModel>> items = List()
       ..add(DropdownMenuItem(
-        value: Books(),
-        child: Text('Select Books'),
+        value: BookModel(),
+        child: Text('Select BookModel'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
         DropdownMenuItem(
-          value: Books.fromMap(data[i] as Map<String, dynamic>),
+          value: BookModel.fromMap(data[i] as Map<String, dynamic>),
           child: Text(data[i][displayTextColumn].toString()),
         ),
       );
@@ -999,14 +1007,14 @@ class BooksFilterBuilder extends SearchCriteria {
       [VoidCallback dropDownMenu(List<DropdownMenuItem<int>> o)]) async {
     _buildParameters();
     qparams.selectColumns = ['id', displayTextColumn];
-    final booksesFuture = _obj._mnBooks.toList(qparams);
+    final bookmodelsFuture = _obj._mnBookModel.toList(qparams);
 
-    final data = await booksesFuture;
+    final data = await bookmodelsFuture;
     final int count = data.length;
     final List<DropdownMenuItem<int>> items = List()
       ..add(DropdownMenuItem(
         value: 0,
-        child: Text('Select Books'),
+        child: Text('Select BookModel'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -1028,7 +1036,7 @@ class BooksFilterBuilder extends SearchCriteria {
     if (buildParameters) _buildParameters();
     final List<int> idData = List<int>();
     qparams.selectColumns = ['id'];
-    final idFuture = await _obj._mnBooks.toList(qparams);
+    final idFuture = await _obj._mnBookModel.toList(qparams);
 
     final int count = idFuture.length;
     for (int i = 0; i < count; i++) {
@@ -1044,7 +1052,7 @@ class BooksFilterBuilder extends SearchCriteria {
       [VoidCallback listObject(List<dynamic> o)]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnBooks.toList(qparams);
+    final objectFuture = _obj._mnBookModel.toList(qparams);
 
     final List<dynamic> objectsData = List<dynamic>();
     final data = await objectFuture;
@@ -1060,12 +1068,12 @@ class BooksFilterBuilder extends SearchCriteria {
 
   /// Returns List<String> for selected first column
   ///
-  /// Sample usage: await Books.select(columnsToSelect: ['columnName']).toListString()
+  /// Sample usage: await BookModel.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
       [VoidCallback listString(List<String> o)]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnBooks.toList(qparams);
+    final objectFuture = _obj._mnBookModel.toList(qparams);
 
     final List<String> objectsData = List<String>();
     final data = await objectFuture;
@@ -1079,10 +1087,10 @@ class BooksFilterBuilder extends SearchCriteria {
     return objectsData;
   }
 }
-// endregion BooksFilterBuilder
+// endregion BookModelFilterBuilder
 
-// region BooksFields
-class BooksFields {
+// region BookModelFields
+class BookModelFields {
   static TableField _fId;
   static TableField get id {
     return _fId = _fId ?? SqlSyntax.setField(_fId, 'id', DbType.integer);
@@ -1099,29 +1107,29 @@ class BooksFields {
         SqlSyntax.setField(_fChapters, 'chapters', DbType.integer);
   }
 }
-// endregion BooksFields
+// endregion BookModelFields
 
-//region BooksManager
-class BooksManager extends SqfEntityProvider {
-  BooksManager()
+//region BookModelManager
+class BookModelManager extends SqfEntityProvider {
+  BookModelManager()
       : super(BibleGameModel(), tableName: _tableName, colId: _colId);
   static String _tableName = 'books';
   static String _colId = 'id';
 }
 
-//endregion BooksManager
-// region Verses
-class Verses {
-  Verses({this.id, this.book, this.chapter, this.verse, this.text}) {
+//endregion BookModelManager
+// region VerseModel
+class VerseModel {
+  VerseModel({this.id, this.book, this.chapter, this.verse, this.text}) {
     setDefaultValues();
   }
-  Verses.withFields(this.book, this.chapter, this.verse, this.text) {
+  VerseModel.withFields(this.book, this.chapter, this.verse, this.text) {
     setDefaultValues();
   }
-  Verses.withId(this.id, this.book, this.chapter, this.verse, this.text) {
+  VerseModel.withId(this.id, this.book, this.chapter, this.verse, this.text) {
     setDefaultValues();
   }
-  Verses.fromMap(Map<String, dynamic> o) {
+  VerseModel.fromMap(Map<String, dynamic> o) {
     id = o['id'] as int;
     book = o['book'] as int;
 
@@ -1131,7 +1139,7 @@ class Verses {
 
     text = o['text'] as String;
   }
-  // FIELDS (Verses)
+  // FIELDS (VerseModel)
   int id;
   int book;
   int chapter;
@@ -1139,24 +1147,24 @@ class Verses {
   String text;
 
   BoolResult saveResult;
-  // end FIELDS (Verses)
+  // end FIELDS (VerseModel)
 
-// RELATIONSHIPS (Verses)
-  /// get Books By Book
-  Future<Books> getBooks([VoidCallback books(Books o)]) async {
-    final _obj = await Books().getById(book);
-    if (books != null) {
-      books(_obj);
+// RELATIONSHIPS (VerseModel)
+  /// get BookModel By Book
+  Future<BookModel> getBookModel([VoidCallback bookmodel(BookModel o)]) async {
+    final _obj = await BookModel().getById(book);
+    if (bookmodel != null) {
+      bookmodel(_obj);
     }
     return _obj;
   }
-  // END RELATIONSHIPS (Verses)
+  // END RELATIONSHIPS (VerseModel)
 
   static const bool _softDeleteActivated = false;
-  VersesManager __mnVerses;
+  VerseModelManager __mnVerseModel;
 
-  VersesManager get _mnVerses {
-    return __mnVerses = __mnVerses ?? VersesManager();
+  VerseModelManager get _mnVerseModel {
+    return __mnVerseModel = __mnVerseModel ?? VerseModelManager();
   }
 
   // METHODS
@@ -1223,58 +1231,62 @@ class Verses {
     return [id, book, chapter, verse, text];
   }
 
-  static Future<List<Verses>> fromWebUrl(String url) async {
+  static Future<List<VerseModel>> fromWebUrl(String url) async {
     try {
       final response = await http.get(url);
       return await fromJson(response.body);
     } catch (e) {
-      print('SQFENTITY ERROR Verses.fromWebUrl: ErrorMessage: ${e.toString()}');
+      print(
+          'SQFENTITY ERROR VerseModel.fromWebUrl: ErrorMessage: ${e.toString()}');
       return null;
     }
   }
 
-  static Future<List<Verses>> fromJson(String jsonBody) async {
+  static Future<List<VerseModel>> fromJson(String jsonBody) async {
     final Iterable list = await json.decode(jsonBody) as Iterable;
-    var objList = List<Verses>();
+    var objList = List<VerseModel>();
     try {
       objList = list
-          .map((verses) => Verses.fromMap(verses as Map<String, dynamic>))
+          .map((versemodel) =>
+              VerseModel.fromMap(versemodel as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      print('SQFENTITY ERROR Verses.fromJson: ErrorMessage: ${e.toString()}');
+      print(
+          'SQFENTITY ERROR VerseModel.fromJson: ErrorMessage: ${e.toString()}');
     }
     return objList;
   }
 
-  static Future<List<Verses>> fromObjectList(Future<List<dynamic>> o) async {
+  static Future<List<VerseModel>> fromObjectList(
+      Future<List<dynamic>> o) async {
     final data = await o;
-    return Verses.fromMapList(data);
+    return VerseModel.fromMapList(data);
   }
 
-  static List<Verses> fromMapList(List<dynamic> data) {
-    final List<Verses> objList = List<Verses>();
+  static List<VerseModel> fromMapList(List<dynamic> data) {
+    final List<VerseModel> objList = List<VerseModel>();
     for (final Map map in data as List<Map>) {
-      final obj = Verses.fromMap(map as Map<String, dynamic>);
+      final obj = VerseModel.fromMap(map as Map<String, dynamic>);
       objList.add(obj);
     }
     return objList;
   }
 
-  /// returns Verses by ID if exist, otherwise returns null
+  /// returns VerseModel by ID if exist, otherwise returns null
   /// <param name='id'>Primary Key Value</param>
-  /// <returns>returns Verses if exist, otherwise returns null
-  Future<Verses> getById(int id) async {
+  /// <returns>returns VerseModel if exist, otherwise returns null
+  Future<VerseModel> getById(int id) async {
     if (id == null) {
       return null;
     }
-    Verses versesObj;
-    final data = await _mnVerses.getById(id);
+    VerseModel versemodelObj;
+    final data = await _mnVerseModel.getById(id);
     if (data.length != 0) {
-      versesObj = Verses.fromMap(data[0] as Map<String, dynamic>);
+      versemodelObj = VerseModel.fromMap(data[0] as Map<String, dynamic>);
     } else {
-      versesObj = null;
+      versemodelObj = null;
     }
-    return versesObj;
+    return versemodelObj;
   }
 
   /// Saves the object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
@@ -1282,27 +1294,27 @@ class Verses {
   /// <returns>Returns id
   Future<int> save() async {
     if (id == null || id == 0) {
-      id = await _mnVerses.insert(this);
+      id = await _mnVerseModel.insert(this);
     } else {
       id = await _upsert();
     }
     return id;
   }
 
-  /// saveAs Verses. Returns a new Primary Key value of Verses
+  /// saveAs VerseModel. Returns a new Primary Key value of VerseModel
 
-  /// <returns>Returns a new Primary Key value of Verses
+  /// <returns>Returns a new Primary Key value of VerseModel
   Future<int> saveAs() async {
     id = null;
     return save();
   }
 
-  /// saveAll method saves the sent List<Verses> as a batch in one transaction
+  /// saveAll method saves the sent List<VerseModel> as a batch in one transaction
   /// Returns a <List<BoolResult>>
-  Future<List<BoolResult>> saveAll(List<Verses> verseses) async {
-    final results = _mnVerses.saveAll(
+  Future<List<BoolResult>> saveAll(List<VerseModel> versemodels) async {
+    final results = _mnVerseModel.saveAll(
         'INSERT OR REPLACE INTO verses (id,  book, chapter, verse, text)  VALUES (?,?,?,?,?)',
-        verseses);
+        versemodels);
     return results;
   }
 
@@ -1311,16 +1323,17 @@ class Verses {
   /// <returns>Returns id
   Future<int> _upsert() async {
     try {
-      id = await _mnVerses.rawInsert(
+      id = await _mnVerseModel.rawInsert(
           'INSERT OR REPLACE INTO verses (id,  book, chapter, verse, text)  VALUES (?,?,?,?,?)',
           [id, book, chapter, verse, text]);
       saveResult = BoolResult(
-          success: true, successMessage: 'Verses id=$id updated successfuly');
+          success: true,
+          successMessage: 'VerseModel id=$id updated successfuly');
       return id;
     } catch (e) {
       saveResult = BoolResult(
           success: false,
-          errorMessage: 'Verses Save failed. Error: ${e.toString()}');
+          errorMessage: 'VerseModel Save failed. Error: ${e.toString()}');
       return 0;
     }
   }
@@ -1328,39 +1341,39 @@ class Verses {
   /// inserts or replaces the sent List<Todo> as a batch in one transaction.
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a <List<BoolResult>>
-  Future<List<BoolResult>> upsertAll(List<Verses> verseses) async {
-    final results = await _mnVerses.rawInsertAll(
+  Future<List<BoolResult>> upsertAll(List<VerseModel> versemodels) async {
+    final results = await _mnVerseModel.rawInsertAll(
         'INSERT OR REPLACE INTO verses (id,  book, chapter, verse, text)  VALUES (?,?,?,?,?)',
-        verseses);
+        versemodels);
     return results;
   }
 
-  /// Deletes Verses
+  /// Deletes VerseModel
 
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
-    print('SQFENTITIY: delete Verses invoked (id=$id)');
+    print('SQFENTITIY: delete VerseModel invoked (id=$id)');
     if (!_softDeleteActivated || hardDelete) {
-      return _mnVerses
+      return _mnVerseModel
           .delete(QueryParams(whereString: 'id=?', whereArguments: [id]));
     } else {
-      return _mnVerses.updateBatch(
+      return _mnVerseModel.updateBatch(
           QueryParams(whereString: 'id=?', whereArguments: [id]),
           {'isDeleted': 1});
     }
   }
 
-  //private VersesFilterBuilder _Select;
-  VersesFilterBuilder select(
+  //private VerseModelFilterBuilder _Select;
+  VerseModelFilterBuilder select(
       {List<String> columnsToSelect, bool getIsDeleted}) {
-    return VersesFilterBuilder(this)
+    return VerseModelFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect;
   }
 
-  VersesFilterBuilder distinct(
+  VerseModelFilterBuilder distinct(
       {List<String> columnsToSelect, bool getIsDeleted}) {
-    return VersesFilterBuilder(this)
+    return VerseModelFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect
       ..qparams.distinct = true;
@@ -1388,210 +1401,210 @@ class Verses {
    */
   // END CUSTOM CODES
 }
-// endregion verses
+// endregion versemodel
 
-// region VersesField
-class VersesField extends SearchCriteria {
-  VersesField(this.versesFB) {
+// region VerseModelField
+class VerseModelField extends SearchCriteria {
+  VerseModelField(this.versemodelFB) {
     param = DbParameter();
   }
   DbParameter param;
   String _waitingNot = '';
-  VersesFilterBuilder versesFB;
+  VerseModelFilterBuilder versemodelFB;
 
-  VersesField get not {
+  VerseModelField get not {
     _waitingNot = ' NOT ';
     return this;
   }
 
-  VersesFilterBuilder equals(var pValue) {
+  VerseModelFilterBuilder equals(var pValue) {
     param.expression = '=';
-    versesFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, versesFB.parameters, param, SqlSyntax.EQuals,
-            versesFB._addedBlocks)
-        : setCriteria(pValue, versesFB.parameters, param, SqlSyntax.NotEQuals,
-            versesFB._addedBlocks);
+    versemodelFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, versemodelFB.parameters, param, SqlSyntax.EQuals,
+            versemodelFB._addedBlocks)
+        : setCriteria(pValue, versemodelFB.parameters, param,
+            SqlSyntax.NotEQuals, versemodelFB._addedBlocks);
     _waitingNot = '';
-    versesFB._addedBlocks.needEndBlock[versesFB._blockIndex] =
-        versesFB._addedBlocks.retVal;
-    return versesFB;
+    versemodelFB._addedBlocks.needEndBlock[versemodelFB._blockIndex] =
+        versemodelFB._addedBlocks.retVal;
+    return versemodelFB;
   }
 
-  VersesFilterBuilder equalsOrNull(var pValue) {
+  VerseModelFilterBuilder equalsOrNull(var pValue) {
     param.expression = '=';
-    versesFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, versesFB.parameters, param,
-            SqlSyntax.EQualsOrNull, versesFB._addedBlocks)
-        : setCriteria(pValue, versesFB.parameters, param,
-            SqlSyntax.NotEQualsOrNull, versesFB._addedBlocks);
+    versemodelFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, versemodelFB.parameters, param,
+            SqlSyntax.EQualsOrNull, versemodelFB._addedBlocks)
+        : setCriteria(pValue, versemodelFB.parameters, param,
+            SqlSyntax.NotEQualsOrNull, versemodelFB._addedBlocks);
     _waitingNot = '';
-    versesFB._addedBlocks.needEndBlock[versesFB._blockIndex] =
-        versesFB._addedBlocks.retVal;
-    return versesFB;
+    versemodelFB._addedBlocks.needEndBlock[versemodelFB._blockIndex] =
+        versemodelFB._addedBlocks.retVal;
+    return versemodelFB;
   }
 
-  VersesFilterBuilder isNull() {
-    versesFB._addedBlocks = setCriteria(
+  VerseModelFilterBuilder isNull() {
+    versemodelFB._addedBlocks = setCriteria(
         0,
-        versesFB.parameters,
+        versemodelFB.parameters,
         param,
         SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-        versesFB._addedBlocks);
+        versemodelFB._addedBlocks);
     _waitingNot = '';
-    versesFB._addedBlocks.needEndBlock[versesFB._blockIndex] =
-        versesFB._addedBlocks.retVal;
-    return versesFB;
+    versemodelFB._addedBlocks.needEndBlock[versemodelFB._blockIndex] =
+        versemodelFB._addedBlocks.retVal;
+    return versemodelFB;
   }
 
-  VersesFilterBuilder contains(dynamic pValue) {
+  VerseModelFilterBuilder contains(dynamic pValue) {
     if (pValue != null) {
-      versesFB._addedBlocks = setCriteria(
+      versemodelFB._addedBlocks = setCriteria(
           '%${pValue.toString()}%',
-          versesFB.parameters,
+          versemodelFB.parameters,
           param,
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-          versesFB._addedBlocks);
+          versemodelFB._addedBlocks);
       _waitingNot = '';
-      versesFB._addedBlocks.needEndBlock[versesFB._blockIndex] =
-          versesFB._addedBlocks.retVal;
+      versemodelFB._addedBlocks.needEndBlock[versemodelFB._blockIndex] =
+          versemodelFB._addedBlocks.retVal;
     }
-    return versesFB;
+    return versemodelFB;
   }
 
-  VersesFilterBuilder startsWith(dynamic pValue) {
+  VerseModelFilterBuilder startsWith(dynamic pValue) {
     if (pValue != null) {
-      versesFB._addedBlocks = setCriteria(
+      versemodelFB._addedBlocks = setCriteria(
           '${pValue.toString()}%',
-          versesFB.parameters,
+          versemodelFB.parameters,
           param,
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-          versesFB._addedBlocks);
+          versemodelFB._addedBlocks);
       _waitingNot = '';
-      versesFB._addedBlocks.needEndBlock[versesFB._blockIndex] =
-          versesFB._addedBlocks.retVal;
-      versesFB._addedBlocks.needEndBlock[versesFB._blockIndex] =
-          versesFB._addedBlocks.retVal;
+      versemodelFB._addedBlocks.needEndBlock[versemodelFB._blockIndex] =
+          versemodelFB._addedBlocks.retVal;
+      versemodelFB._addedBlocks.needEndBlock[versemodelFB._blockIndex] =
+          versemodelFB._addedBlocks.retVal;
     }
-    return versesFB;
+    return versemodelFB;
   }
 
-  VersesFilterBuilder endsWith(dynamic pValue) {
+  VerseModelFilterBuilder endsWith(dynamic pValue) {
     if (pValue != null) {
-      versesFB._addedBlocks = setCriteria(
+      versemodelFB._addedBlocks = setCriteria(
           '%${pValue.toString()}',
-          versesFB.parameters,
+          versemodelFB.parameters,
           param,
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-          versesFB._addedBlocks);
+          versemodelFB._addedBlocks);
       _waitingNot = '';
-      versesFB._addedBlocks.needEndBlock[versesFB._blockIndex] =
-          versesFB._addedBlocks.retVal;
+      versemodelFB._addedBlocks.needEndBlock[versemodelFB._blockIndex] =
+          versemodelFB._addedBlocks.retVal;
     }
-    return versesFB;
+    return versemodelFB;
   }
 
-  VersesFilterBuilder between(dynamic pFirst, dynamic pLast) {
+  VerseModelFilterBuilder between(dynamic pFirst, dynamic pLast) {
     if (pFirst != null && pLast != null) {
-      versesFB._addedBlocks = setCriteria(
+      versemodelFB._addedBlocks = setCriteria(
           pFirst,
-          versesFB.parameters,
+          versemodelFB.parameters,
           param,
           SqlSyntax.Between.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-          versesFB._addedBlocks,
+          versemodelFB._addedBlocks,
           pLast);
     } else if (pFirst != null) {
       if (_waitingNot != '') {
-        versesFB._addedBlocks = setCriteria(pFirst, versesFB.parameters, param,
-            SqlSyntax.LessThan, versesFB._addedBlocks);
+        versemodelFB._addedBlocks = setCriteria(pFirst, versemodelFB.parameters,
+            param, SqlSyntax.LessThan, versemodelFB._addedBlocks);
       } else {
-        versesFB._addedBlocks = setCriteria(pFirst, versesFB.parameters, param,
-            SqlSyntax.GreaterThanOrEquals, versesFB._addedBlocks);
+        versemodelFB._addedBlocks = setCriteria(pFirst, versemodelFB.parameters,
+            param, SqlSyntax.GreaterThanOrEquals, versemodelFB._addedBlocks);
       }
     } else if (pLast != null) {
       if (_waitingNot != '') {
-        versesFB._addedBlocks = setCriteria(pLast, versesFB.parameters, param,
-            SqlSyntax.GreaterThan, versesFB._addedBlocks);
+        versemodelFB._addedBlocks = setCriteria(pLast, versemodelFB.parameters,
+            param, SqlSyntax.GreaterThan, versemodelFB._addedBlocks);
       } else {
-        versesFB._addedBlocks = setCriteria(pLast, versesFB.parameters, param,
-            SqlSyntax.LessThanOrEquals, versesFB._addedBlocks);
+        versemodelFB._addedBlocks = setCriteria(pLast, versemodelFB.parameters,
+            param, SqlSyntax.LessThanOrEquals, versemodelFB._addedBlocks);
       }
     }
     _waitingNot = '';
-    versesFB._addedBlocks.needEndBlock[versesFB._blockIndex] =
-        versesFB._addedBlocks.retVal;
-    return versesFB;
+    versemodelFB._addedBlocks.needEndBlock[versemodelFB._blockIndex] =
+        versemodelFB._addedBlocks.retVal;
+    return versemodelFB;
   }
 
-  VersesFilterBuilder greaterThan(dynamic pValue) {
+  VerseModelFilterBuilder greaterThan(dynamic pValue) {
     param.expression = '>';
-    versesFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, versesFB.parameters, param, SqlSyntax.GreaterThan,
-            versesFB._addedBlocks)
-        : setCriteria(pValue, versesFB.parameters, param,
-            SqlSyntax.LessThanOrEquals, versesFB._addedBlocks);
+    versemodelFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, versemodelFB.parameters, param,
+            SqlSyntax.GreaterThan, versemodelFB._addedBlocks)
+        : setCriteria(pValue, versemodelFB.parameters, param,
+            SqlSyntax.LessThanOrEquals, versemodelFB._addedBlocks);
     _waitingNot = '';
-    versesFB._addedBlocks.needEndBlock[versesFB._blockIndex] =
-        versesFB._addedBlocks.retVal;
-    return versesFB;
+    versemodelFB._addedBlocks.needEndBlock[versemodelFB._blockIndex] =
+        versemodelFB._addedBlocks.retVal;
+    return versemodelFB;
   }
 
-  VersesFilterBuilder lessThan(dynamic pValue) {
+  VerseModelFilterBuilder lessThan(dynamic pValue) {
     param.expression = '<';
-    versesFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, versesFB.parameters, param, SqlSyntax.LessThan,
-            versesFB._addedBlocks)
-        : setCriteria(pValue, versesFB.parameters, param,
-            SqlSyntax.GreaterThanOrEquals, versesFB._addedBlocks);
+    versemodelFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, versemodelFB.parameters, param,
+            SqlSyntax.LessThan, versemodelFB._addedBlocks)
+        : setCriteria(pValue, versemodelFB.parameters, param,
+            SqlSyntax.GreaterThanOrEquals, versemodelFB._addedBlocks);
     _waitingNot = '';
-    versesFB._addedBlocks.needEndBlock[versesFB._blockIndex] =
-        versesFB._addedBlocks.retVal;
-    return versesFB;
+    versemodelFB._addedBlocks.needEndBlock[versemodelFB._blockIndex] =
+        versemodelFB._addedBlocks.retVal;
+    return versemodelFB;
   }
 
-  VersesFilterBuilder greaterThanOrEquals(dynamic pValue) {
+  VerseModelFilterBuilder greaterThanOrEquals(dynamic pValue) {
     param.expression = '>=';
-    versesFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, versesFB.parameters, param,
-            SqlSyntax.GreaterThanOrEquals, versesFB._addedBlocks)
-        : setCriteria(pValue, versesFB.parameters, param, SqlSyntax.LessThan,
-            versesFB._addedBlocks);
+    versemodelFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, versemodelFB.parameters, param,
+            SqlSyntax.GreaterThanOrEquals, versemodelFB._addedBlocks)
+        : setCriteria(pValue, versemodelFB.parameters, param,
+            SqlSyntax.LessThan, versemodelFB._addedBlocks);
     _waitingNot = '';
-    versesFB._addedBlocks.needEndBlock[versesFB._blockIndex] =
-        versesFB._addedBlocks.retVal;
-    return versesFB;
+    versemodelFB._addedBlocks.needEndBlock[versemodelFB._blockIndex] =
+        versemodelFB._addedBlocks.retVal;
+    return versemodelFB;
   }
 
-  VersesFilterBuilder lessThanOrEquals(dynamic pValue) {
+  VerseModelFilterBuilder lessThanOrEquals(dynamic pValue) {
     param.expression = '<=';
-    versesFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, versesFB.parameters, param,
-            SqlSyntax.LessThanOrEquals, versesFB._addedBlocks)
-        : setCriteria(pValue, versesFB.parameters, param, SqlSyntax.GreaterThan,
-            versesFB._addedBlocks);
+    versemodelFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, versemodelFB.parameters, param,
+            SqlSyntax.LessThanOrEquals, versemodelFB._addedBlocks)
+        : setCriteria(pValue, versemodelFB.parameters, param,
+            SqlSyntax.GreaterThan, versemodelFB._addedBlocks);
     _waitingNot = '';
-    versesFB._addedBlocks.needEndBlock[versesFB._blockIndex] =
-        versesFB._addedBlocks.retVal;
-    return versesFB;
+    versemodelFB._addedBlocks.needEndBlock[versemodelFB._blockIndex] =
+        versemodelFB._addedBlocks.retVal;
+    return versemodelFB;
   }
 
-  VersesFilterBuilder inValues(var pValue) {
-    versesFB._addedBlocks = setCriteria(
+  VerseModelFilterBuilder inValues(var pValue) {
+    versemodelFB._addedBlocks = setCriteria(
         pValue,
-        versesFB.parameters,
+        versemodelFB.parameters,
         param,
         SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-        versesFB._addedBlocks);
+        versemodelFB._addedBlocks);
     _waitingNot = '';
-    versesFB._addedBlocks.needEndBlock[versesFB._blockIndex] =
-        versesFB._addedBlocks.retVal;
-    return versesFB;
+    versemodelFB._addedBlocks.needEndBlock[versemodelFB._blockIndex] =
+        versemodelFB._addedBlocks.retVal;
+    return versemodelFB;
   }
 }
-// endregion VersesField
+// endregion VerseModelField
 
-// region VersesFilterBuilder
-class VersesFilterBuilder extends SearchCriteria {
-  VersesFilterBuilder(Verses obj) {
+// region VerseModelFilterBuilder
+class VerseModelFilterBuilder extends SearchCriteria {
+  VerseModelFilterBuilder(VerseModel obj) {
     whereString = '';
     qparams = QueryParams();
     parameters = List<DbParameter>();
@@ -1608,13 +1621,13 @@ class VersesFilterBuilder extends SearchCriteria {
   int _blockIndex = 0;
   List<DbParameter> parameters;
   List<String> orderByList;
-  Verses _obj;
+  VerseModel _obj;
   QueryParams qparams;
   int _pagesize;
   int _page;
 
   /// put the sql keyword 'AND'
-  VersesFilterBuilder get and {
+  VerseModelFilterBuilder get and {
     if (parameters.isNotEmpty) {
       parameters[parameters.length - 1].wOperator = ' AND ';
     }
@@ -1622,7 +1635,7 @@ class VersesFilterBuilder extends SearchCriteria {
   }
 
   /// put the sql keyword 'OR'
-  VersesFilterBuilder get or {
+  VerseModelFilterBuilder get or {
     if (parameters.isNotEmpty) {
       parameters[parameters.length - 1].wOperator = ' OR ';
     }
@@ -1630,7 +1643,7 @@ class VersesFilterBuilder extends SearchCriteria {
   }
 
   /// open parentheses
-  VersesFilterBuilder get startBlock {
+  VerseModelFilterBuilder get startBlock {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
@@ -1639,7 +1652,7 @@ class VersesFilterBuilder extends SearchCriteria {
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  VersesFilterBuilder where(String whereCriteria) {
+  VerseModelFilterBuilder where(String whereCriteria) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter();
       _addedBlocks =
@@ -1652,14 +1665,14 @@ class VersesFilterBuilder extends SearchCriteria {
   /// page = page number,
   ///
   /// pagesize = row(s) per page
-  VersesFilterBuilder page(int page, int pagesize) {
+  VerseModelFilterBuilder page(int page, int pagesize) {
     if (page > 0) _page = page;
     if (pagesize > 0) _pagesize = pagesize;
     return this;
   }
 
   /// int count = LIMIT
-  VersesFilterBuilder top(int count) {
+  VerseModelFilterBuilder top(int count) {
     if (count > 0) {
       _pagesize = count;
     }
@@ -1667,7 +1680,7 @@ class VersesFilterBuilder extends SearchCriteria {
   }
 
   /// close parentheses
-  VersesFilterBuilder get endBlock {
+  VerseModelFilterBuilder get endBlock {
     if (_addedBlocks.needEndBlock[_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
     }
@@ -1682,7 +1695,7 @@ class VersesFilterBuilder extends SearchCriteria {
   /// Example 1: argFields='name, date'
   ///
   /// Example 2: argFields = ['name', 'date']
-  VersesFilterBuilder orderBy(var argFields) {
+  VerseModelFilterBuilder orderBy(var argFields) {
     if (argFields != null) {
       if (argFields is String) {
         orderByList.add(argFields);
@@ -1700,7 +1713,7 @@ class VersesFilterBuilder extends SearchCriteria {
   /// Example 1: argFields='field1, field2'
   ///
   /// Example 2: argFields = ['field1', 'field2']
-  VersesFilterBuilder orderByDesc(var argFields) {
+  VerseModelFilterBuilder orderByDesc(var argFields) {
     if (argFields != null) {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
@@ -1718,7 +1731,7 @@ class VersesFilterBuilder extends SearchCriteria {
   /// Example 1: argFields='field1, field2'
   ///
   /// Example 2: argFields = ['field1', 'field2']
-  VersesFilterBuilder groupBy(var argFields) {
+  VerseModelFilterBuilder groupBy(var argFields) {
     if (argFields != null) {
       if (argFields is String) {
         groupByList.add(' $argFields ');
@@ -1731,36 +1744,37 @@ class VersesFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  VersesField setField(VersesField field, String colName, DbType dbtype) {
-    return VersesField(this)
+  VerseModelField setField(
+      VerseModelField field, String colName, DbType dbtype) {
+    return VerseModelField(this)
       ..param = DbParameter(
           dbType: dbtype,
           columnName: colName,
           wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
   }
 
-  VersesField _id;
-  VersesField get id {
+  VerseModelField _id;
+  VerseModelField get id {
     return _id = setField(_id, 'id', DbType.integer);
   }
 
-  VersesField _book;
-  VersesField get book {
+  VerseModelField _book;
+  VerseModelField get book {
     return _book = setField(_book, 'book', DbType.integer);
   }
 
-  VersesField _chapter;
-  VersesField get chapter {
+  VerseModelField _chapter;
+  VerseModelField get chapter {
     return _chapter = setField(_chapter, 'chapter', DbType.integer);
   }
 
-  VersesField _verse;
-  VersesField get verse {
+  VerseModelField _verse;
+  VerseModelField get verse {
     return _verse = setField(_verse, 'verse', DbType.integer);
   }
 
-  VersesField _text;
-  VersesField get text {
+  VerseModelField _text;
+  VerseModelField get text {
     return _text = setField(_text, 'text', DbType.text);
   }
 
@@ -1823,7 +1837,7 @@ class VersesFilterBuilder extends SearchCriteria {
         whereString += param.whereString;
       }
     }
-    if (Verses._softDeleteActivated) {
+    if (VerseModel._softDeleteActivated) {
       if (whereString != '') {
         whereString =
             '${!_getIsDeleted ? 'ifnull(isDeleted,0)=0 AND' : ''} ($whereString)';
@@ -1841,16 +1855,16 @@ class VersesFilterBuilder extends SearchCriteria {
       ..orderBy = orderByList.join(',');
   }
 
-  /// Deletes List<Verses> batch by query
+  /// Deletes List<VerseModel> batch by query
   ///
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
-    if (Verses._softDeleteActivated && !hardDelete) {
-      r = await _obj._mnVerses.updateBatch(qparams, {'isDeleted': 1});
+    if (VerseModel._softDeleteActivated && !hardDelete) {
+      r = await _obj._mnVerseModel.updateBatch(qparams, {'isDeleted': 1});
     } else {
-      r = await _obj._mnVerses.delete(qparams);
+      r = await _obj._mnVerseModel.delete(qparams);
     }
     return r;
   }
@@ -1866,24 +1880,24 @@ class VersesFilterBuilder extends SearchCriteria {
       qparams.whereString =
           'id IN (SELECT id from verses ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
     }
-    return _obj._mnVerses.updateBatch(qparams, values);
+    return _obj._mnVerseModel.updateBatch(qparams, values);
   }
 
-  /// This method always returns VersesObj if exist, otherwise returns null
-  /// <returns>List<Verses>
-  Future<Verses> toSingle([VoidCallback verses(Verses o)]) async {
+  /// This method always returns VerseModelObj if exist, otherwise returns null
+  /// <returns>List<VerseModel>
+  Future<VerseModel> toSingle([VoidCallback versemodel(VerseModel o)]) async {
     _pagesize = 1;
     _buildParameters();
-    final objFuture = _obj._mnVerses.toList(qparams);
+    final objFuture = _obj._mnVerseModel.toList(qparams);
     final data = await objFuture;
-    Verses retVal;
+    VerseModel retVal;
     if (data.isNotEmpty) {
-      retVal = Verses.fromMap(data[0] as Map<String, dynamic>);
+      retVal = VerseModel.fromMap(data[0] as Map<String, dynamic>);
     } else {
       retVal = null;
     }
-    if (verses != null) {
-      verses(retVal);
+    if (versemodel != null) {
+      versemodel(retVal);
     }
     return retVal;
   }
@@ -1891,24 +1905,25 @@ class VersesFilterBuilder extends SearchCriteria {
   /// This method always returns int.
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback versesCount(int c)]) async {
+  Future<int> toCount([VoidCallback versemodelCount(int c)]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final versesesFuture = await _obj._mnVerses.toList(qparams);
-    final int count = versesesFuture[0]['CNT'] as int;
-    if (versesCount != null) {
-      versesCount(count);
+    final versemodelsFuture = await _obj._mnVerseModel.toList(qparams);
+    final int count = versemodelsFuture[0]['CNT'] as int;
+    if (versemodelCount != null) {
+      versemodelCount(count);
     }
     return count;
   }
 
-  /// This method always returns List<Verses>.
-  /// <returns>List<Verses>
-  Future<List<Verses>> toList([VoidCallback versesList(List<Verses> o)]) async {
+  /// This method always returns List<VerseModel>.
+  /// <returns>List<VerseModel>
+  Future<List<VerseModel>> toList(
+      [VoidCallback versemodelList(List<VerseModel> o)]) async {
     final data = await toMapList();
-    final List<Verses> versesesData = Verses.fromMapList(data);
-    if (versesList != null) versesList(versesesData);
-    return versesesData;
+    final List<VerseModel> versemodelsData = VerseModel.fromMapList(data);
+    if (versemodelList != null) versemodelList(versemodelsData);
+    return versemodelsData;
   }
 
   /// This method always returns Json String
@@ -1936,27 +1951,27 @@ class VersesFilterBuilder extends SearchCriteria {
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
-    return await _obj._mnVerses.toList(qparams);
+    return await _obj._mnVerseModel.toList(qparams);
   }
 
-  /// Returns List<DropdownMenuItem<Verses>>
-  Future<List<DropdownMenuItem<Verses>>> toDropDownMenu(
+  /// Returns List<DropdownMenuItem<VerseModel>>
+  Future<List<DropdownMenuItem<VerseModel>>> toDropDownMenu(
       String displayTextColumn,
-      [VoidCallback dropDownMenu(List<DropdownMenuItem<Verses>> o)]) async {
+      [VoidCallback dropDownMenu(List<DropdownMenuItem<VerseModel>> o)]) async {
     _buildParameters();
-    final versesesFuture = _obj._mnVerses.toList(qparams);
+    final versemodelsFuture = _obj._mnVerseModel.toList(qparams);
 
-    final data = await versesesFuture;
+    final data = await versemodelsFuture;
     final int count = data.length;
-    final List<DropdownMenuItem<Verses>> items = List()
+    final List<DropdownMenuItem<VerseModel>> items = List()
       ..add(DropdownMenuItem(
-        value: Verses(),
-        child: Text('Select Verses'),
+        value: VerseModel(),
+        child: Text('Select VerseModel'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
         DropdownMenuItem(
-          value: Verses.fromMap(data[i] as Map<String, dynamic>),
+          value: VerseModel.fromMap(data[i] as Map<String, dynamic>),
           child: Text(data[i][displayTextColumn].toString()),
         ),
       );
@@ -1973,14 +1988,14 @@ class VersesFilterBuilder extends SearchCriteria {
       [VoidCallback dropDownMenu(List<DropdownMenuItem<int>> o)]) async {
     _buildParameters();
     qparams.selectColumns = ['id', displayTextColumn];
-    final versesesFuture = _obj._mnVerses.toList(qparams);
+    final versemodelsFuture = _obj._mnVerseModel.toList(qparams);
 
-    final data = await versesesFuture;
+    final data = await versemodelsFuture;
     final int count = data.length;
     final List<DropdownMenuItem<int>> items = List()
       ..add(DropdownMenuItem(
         value: 0,
-        child: Text('Select Verses'),
+        child: Text('Select VerseModel'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -2002,7 +2017,7 @@ class VersesFilterBuilder extends SearchCriteria {
     if (buildParameters) _buildParameters();
     final List<int> idData = List<int>();
     qparams.selectColumns = ['id'];
-    final idFuture = await _obj._mnVerses.toList(qparams);
+    final idFuture = await _obj._mnVerseModel.toList(qparams);
 
     final int count = idFuture.length;
     for (int i = 0; i < count; i++) {
@@ -2018,7 +2033,7 @@ class VersesFilterBuilder extends SearchCriteria {
       [VoidCallback listObject(List<dynamic> o)]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnVerses.toList(qparams);
+    final objectFuture = _obj._mnVerseModel.toList(qparams);
 
     final List<dynamic> objectsData = List<dynamic>();
     final data = await objectFuture;
@@ -2034,12 +2049,12 @@ class VersesFilterBuilder extends SearchCriteria {
 
   /// Returns List<String> for selected first column
   ///
-  /// Sample usage: await Verses.select(columnsToSelect: ['columnName']).toListString()
+  /// Sample usage: await VerseModel.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
       [VoidCallback listString(List<String> o)]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnVerses.toList(qparams);
+    final objectFuture = _obj._mnVerseModel.toList(qparams);
 
     final List<String> objectsData = List<String>();
     final data = await objectFuture;
@@ -2053,10 +2068,10 @@ class VersesFilterBuilder extends SearchCriteria {
     return objectsData;
   }
 }
-// endregion VersesFilterBuilder
+// endregion VerseModelFilterBuilder
 
-// region VersesFields
-class VersesFields {
+// region VerseModelFields
+class VerseModelFields {
   static TableField _fId;
   static TableField get id {
     return _fId = _fId ?? SqlSyntax.setField(_fId, 'id', DbType.integer);
@@ -2085,20 +2100,20 @@ class VersesFields {
     return _fText = _fText ?? SqlSyntax.setField(_fText, 'text', DbType.text);
   }
 }
-// endregion VersesFields
+// endregion VerseModelFields
 
-//region VersesManager
-class VersesManager extends SqfEntityProvider {
-  VersesManager()
+//region VerseModelManager
+class VerseModelManager extends SqfEntityProvider {
+  VerseModelManager()
       : super(BibleGameModel(), tableName: _tableName, colId: _colId);
   static String _tableName = 'verses';
   static String _colId = 'id';
 }
 
-//endregion VersesManager
-// region Game
-class Game {
-  Game(
+//endregion VerseModelManager
+// region GameModel
+class GameModel {
+  GameModel(
       {this.id,
       this.name,
       this.startBook,
@@ -2117,7 +2132,7 @@ class Game {
       this.isDeleted}) {
     setDefaultValues();
   }
-  Game.withFields(
+  GameModel.withFields(
       this.name,
       this.startBook,
       this.startChapter,
@@ -2135,7 +2150,7 @@ class Game {
       this.isDeleted) {
     setDefaultValues();
   }
-  Game.withId(
+  GameModel.withId(
       this.id,
       this.name,
       this.startBook,
@@ -2154,7 +2169,7 @@ class Game {
       this.isDeleted) {
     setDefaultValues();
   }
-  Game.fromMap(Map<String, dynamic> o) {
+  GameModel.fromMap(Map<String, dynamic> o) {
     id = o['id'] as int;
     name = o['name'] as String;
 
@@ -2186,7 +2201,7 @@ class Game {
 
     isDeleted = o['isDeleted'] != null ? o['isDeleted'] == 1 : null;
   }
-  // FIELDS (Game)
+  // FIELDS (GameModel)
   int id;
   String name;
   int startBook;
@@ -2205,13 +2220,13 @@ class Game {
   bool isDeleted;
 
   BoolResult saveResult;
-  // end FIELDS (Game)
+  // end FIELDS (GameModel)
 
   static const bool _softDeleteActivated = true;
-  GameManager __mnGame;
+  GameModelManager __mnGameModel;
 
-  GameManager get _mnGame {
-    return __mnGame = __mnGame ?? GameManager();
+  GameModelManager get _mnGameModel {
+    return __mnGameModel = __mnGameModel ?? GameModelManager();
   }
 
   // METHODS
@@ -2383,58 +2398,61 @@ class Game {
     ];
   }
 
-  static Future<List<Game>> fromWebUrl(String url) async {
+  static Future<List<GameModel>> fromWebUrl(String url) async {
     try {
       final response = await http.get(url);
       return await fromJson(response.body);
     } catch (e) {
-      print('SQFENTITY ERROR Game.fromWebUrl: ErrorMessage: ${e.toString()}');
+      print(
+          'SQFENTITY ERROR GameModel.fromWebUrl: ErrorMessage: ${e.toString()}');
       return null;
     }
   }
 
-  static Future<List<Game>> fromJson(String jsonBody) async {
+  static Future<List<GameModel>> fromJson(String jsonBody) async {
     final Iterable list = await json.decode(jsonBody) as Iterable;
-    var objList = List<Game>();
+    var objList = List<GameModel>();
     try {
       objList = list
-          .map((game) => Game.fromMap(game as Map<String, dynamic>))
+          .map((gamemodel) =>
+              GameModel.fromMap(gamemodel as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      print('SQFENTITY ERROR Game.fromJson: ErrorMessage: ${e.toString()}');
+      print(
+          'SQFENTITY ERROR GameModel.fromJson: ErrorMessage: ${e.toString()}');
     }
     return objList;
   }
 
-  static Future<List<Game>> fromObjectList(Future<List<dynamic>> o) async {
+  static Future<List<GameModel>> fromObjectList(Future<List<dynamic>> o) async {
     final data = await o;
-    return Game.fromMapList(data);
+    return GameModel.fromMapList(data);
   }
 
-  static List<Game> fromMapList(List<dynamic> data) {
-    final List<Game> objList = List<Game>();
+  static List<GameModel> fromMapList(List<dynamic> data) {
+    final List<GameModel> objList = List<GameModel>();
     for (final Map map in data as List<Map>) {
-      final obj = Game.fromMap(map as Map<String, dynamic>);
+      final obj = GameModel.fromMap(map as Map<String, dynamic>);
       objList.add(obj);
     }
     return objList;
   }
 
-  /// returns Game by ID if exist, otherwise returns null
+  /// returns GameModel by ID if exist, otherwise returns null
   /// <param name='id'>Primary Key Value</param>
-  /// <returns>returns Game if exist, otherwise returns null
-  Future<Game> getById(int id) async {
+  /// <returns>returns GameModel if exist, otherwise returns null
+  Future<GameModel> getById(int id) async {
     if (id == null) {
       return null;
     }
-    Game gameObj;
-    final data = await _mnGame.getById(id);
+    GameModel gamemodelObj;
+    final data = await _mnGameModel.getById(id);
     if (data.length != 0) {
-      gameObj = Game.fromMap(data[0] as Map<String, dynamic>);
+      gamemodelObj = GameModel.fromMap(data[0] as Map<String, dynamic>);
     } else {
-      gameObj = null;
+      gamemodelObj = null;
     }
-    return gameObj;
+    return gamemodelObj;
   }
 
   /// Saves the object. If the id field is null, saves as a new record and returns new id, if id is not null then updates record
@@ -2442,27 +2460,27 @@ class Game {
   /// <returns>Returns id
   Future<int> save() async {
     if (id == null || id == 0) {
-      id = await _mnGame.insert(this);
+      id = await _mnGameModel.insert(this);
     } else {
       id = await _upsert();
     }
     return id;
   }
 
-  /// saveAs Game. Returns a new Primary Key value of Game
+  /// saveAs GameModel. Returns a new Primary Key value of GameModel
 
-  /// <returns>Returns a new Primary Key value of Game
+  /// <returns>Returns a new Primary Key value of GameModel
   Future<int> saveAs() async {
     id = null;
     return save();
   }
 
-  /// saveAll method saves the sent List<Game> as a batch in one transaction
+  /// saveAll method saves the sent List<GameModel> as a batch in one transaction
   /// Returns a <List<BoolResult>>
-  Future<List<BoolResult>> saveAll(List<Game> games) async {
-    final results = _mnGame.saveAll(
+  Future<List<BoolResult>> saveAll(List<GameModel> gamemodels) async {
+    final results = _mnGameModel.saveAll(
         'INSERT OR REPLACE INTO games (id,  name, startBook, startChapter, startVerse, endBook, endChapter, endVerse, nextBook, nextChapter, nextVerse, money, bonuses, versesCount, resolvedVersesCount,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-        games);
+        gamemodels);
     return results;
   }
 
@@ -2471,7 +2489,7 @@ class Game {
   /// <returns>Returns id
   Future<int> _upsert() async {
     try {
-      id = await _mnGame.rawInsert(
+      id = await _mnGameModel.rawInsert(
           'INSERT OR REPLACE INTO games (id,  name, startBook, startChapter, startVerse, endBook, endChapter, endVerse, nextBook, nextChapter, nextVerse, money, bonuses, versesCount, resolvedVersesCount,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
           [
             id,
@@ -2492,12 +2510,13 @@ class Game {
             isDeleted
           ]);
       saveResult = BoolResult(
-          success: true, successMessage: 'Game id=$id updated successfuly');
+          success: true,
+          successMessage: 'GameModel id=$id updated successfuly');
       return id;
     } catch (e) {
       saveResult = BoolResult(
           success: false,
-          errorMessage: 'Game Save failed. Error: ${e.toString()}');
+          errorMessage: 'GameModel Save failed. Error: ${e.toString()}');
       return 0;
     }
   }
@@ -2505,50 +2524,51 @@ class Game {
   /// inserts or replaces the sent List<Todo> as a batch in one transaction.
   /// upsertAll() method is faster then saveAll() method. upsertAll() should be used when you are sure that the primary key is greater than zero
   /// Returns a <List<BoolResult>>
-  Future<List<BoolResult>> upsertAll(List<Game> games) async {
-    final results = await _mnGame.rawInsertAll(
+  Future<List<BoolResult>> upsertAll(List<GameModel> gamemodels) async {
+    final results = await _mnGameModel.rawInsertAll(
         'INSERT OR REPLACE INTO games (id,  name, startBook, startChapter, startVerse, endBook, endChapter, endVerse, nextBook, nextChapter, nextVerse, money, bonuses, versesCount, resolvedVersesCount,isDeleted)  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-        games);
+        gamemodels);
     return results;
   }
 
-  /// Deletes Game
+  /// Deletes GameModel
 
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
-    print('SQFENTITIY: delete Game invoked (id=$id)');
+    print('SQFENTITIY: delete GameModel invoked (id=$id)');
     if (!_softDeleteActivated || hardDelete || isDeleted) {
-      return _mnGame
+      return _mnGameModel
           .delete(QueryParams(whereString: 'id=?', whereArguments: [id]));
     } else {
-      return _mnGame.updateBatch(
+      return _mnGameModel.updateBatch(
           QueryParams(whereString: 'id=?', whereArguments: [id]),
           {'isDeleted': 1});
     }
   }
 
-  /// Recover Game>
+  /// Recover GameModel>
 
   /// <returns>BoolResult res.success=Recovered, not res.success=Can not recovered
   Future<BoolResult> recover([bool recoverChilds = true]) async {
-    print('SQFENTITIY: recover Game invoked (id=$id)');
+    print('SQFENTITIY: recover GameModel invoked (id=$id)');
     {
-      return _mnGame.updateBatch(
+      return _mnGameModel.updateBatch(
           QueryParams(whereString: 'id=?', whereArguments: [id]),
           {'isDeleted': 0});
     }
   }
 
-  //private GameFilterBuilder _Select;
-  GameFilterBuilder select({List<String> columnsToSelect, bool getIsDeleted}) {
-    return GameFilterBuilder(this)
+  //private GameModelFilterBuilder _Select;
+  GameModelFilterBuilder select(
+      {List<String> columnsToSelect, bool getIsDeleted}) {
+    return GameModelFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect;
   }
 
-  GameFilterBuilder distinct(
+  GameModelFilterBuilder distinct(
       {List<String> columnsToSelect, bool getIsDeleted}) {
-    return GameFilterBuilder(this)
+    return GameModelFilterBuilder(this)
       .._getIsDeleted = getIsDeleted == true
       ..qparams.selectColumns = columnsToSelect
       ..qparams.distinct = true;
@@ -2578,210 +2598,210 @@ class Game {
    */
   // END CUSTOM CODES
 }
-// endregion game
+// endregion gamemodel
 
-// region GameField
-class GameField extends SearchCriteria {
-  GameField(this.gameFB) {
+// region GameModelField
+class GameModelField extends SearchCriteria {
+  GameModelField(this.gamemodelFB) {
     param = DbParameter();
   }
   DbParameter param;
   String _waitingNot = '';
-  GameFilterBuilder gameFB;
+  GameModelFilterBuilder gamemodelFB;
 
-  GameField get not {
+  GameModelField get not {
     _waitingNot = ' NOT ';
     return this;
   }
 
-  GameFilterBuilder equals(var pValue) {
+  GameModelFilterBuilder equals(var pValue) {
     param.expression = '=';
-    gameFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, gameFB.parameters, param, SqlSyntax.EQuals,
-            gameFB._addedBlocks)
-        : setCriteria(pValue, gameFB.parameters, param, SqlSyntax.NotEQuals,
-            gameFB._addedBlocks);
+    gamemodelFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, gamemodelFB.parameters, param, SqlSyntax.EQuals,
+            gamemodelFB._addedBlocks)
+        : setCriteria(pValue, gamemodelFB.parameters, param,
+            SqlSyntax.NotEQuals, gamemodelFB._addedBlocks);
     _waitingNot = '';
-    gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
-        gameFB._addedBlocks.retVal;
-    return gameFB;
+    gamemodelFB._addedBlocks.needEndBlock[gamemodelFB._blockIndex] =
+        gamemodelFB._addedBlocks.retVal;
+    return gamemodelFB;
   }
 
-  GameFilterBuilder equalsOrNull(var pValue) {
+  GameModelFilterBuilder equalsOrNull(var pValue) {
     param.expression = '=';
-    gameFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, gameFB.parameters, param, SqlSyntax.EQualsOrNull,
-            gameFB._addedBlocks)
-        : setCriteria(pValue, gameFB.parameters, param,
-            SqlSyntax.NotEQualsOrNull, gameFB._addedBlocks);
+    gamemodelFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, gamemodelFB.parameters, param,
+            SqlSyntax.EQualsOrNull, gamemodelFB._addedBlocks)
+        : setCriteria(pValue, gamemodelFB.parameters, param,
+            SqlSyntax.NotEQualsOrNull, gamemodelFB._addedBlocks);
     _waitingNot = '';
-    gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
-        gameFB._addedBlocks.retVal;
-    return gameFB;
+    gamemodelFB._addedBlocks.needEndBlock[gamemodelFB._blockIndex] =
+        gamemodelFB._addedBlocks.retVal;
+    return gamemodelFB;
   }
 
-  GameFilterBuilder isNull() {
-    gameFB._addedBlocks = setCriteria(
+  GameModelFilterBuilder isNull() {
+    gamemodelFB._addedBlocks = setCriteria(
         0,
-        gameFB.parameters,
+        gamemodelFB.parameters,
         param,
         SqlSyntax.IsNULL.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-        gameFB._addedBlocks);
+        gamemodelFB._addedBlocks);
     _waitingNot = '';
-    gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
-        gameFB._addedBlocks.retVal;
-    return gameFB;
+    gamemodelFB._addedBlocks.needEndBlock[gamemodelFB._blockIndex] =
+        gamemodelFB._addedBlocks.retVal;
+    return gamemodelFB;
   }
 
-  GameFilterBuilder contains(dynamic pValue) {
+  GameModelFilterBuilder contains(dynamic pValue) {
     if (pValue != null) {
-      gameFB._addedBlocks = setCriteria(
+      gamemodelFB._addedBlocks = setCriteria(
           '%${pValue.toString()}%',
-          gameFB.parameters,
+          gamemodelFB.parameters,
           param,
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-          gameFB._addedBlocks);
+          gamemodelFB._addedBlocks);
       _waitingNot = '';
-      gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
-          gameFB._addedBlocks.retVal;
+      gamemodelFB._addedBlocks.needEndBlock[gamemodelFB._blockIndex] =
+          gamemodelFB._addedBlocks.retVal;
     }
-    return gameFB;
+    return gamemodelFB;
   }
 
-  GameFilterBuilder startsWith(dynamic pValue) {
+  GameModelFilterBuilder startsWith(dynamic pValue) {
     if (pValue != null) {
-      gameFB._addedBlocks = setCriteria(
+      gamemodelFB._addedBlocks = setCriteria(
           '${pValue.toString()}%',
-          gameFB.parameters,
+          gamemodelFB.parameters,
           param,
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-          gameFB._addedBlocks);
+          gamemodelFB._addedBlocks);
       _waitingNot = '';
-      gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
-          gameFB._addedBlocks.retVal;
-      gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
-          gameFB._addedBlocks.retVal;
+      gamemodelFB._addedBlocks.needEndBlock[gamemodelFB._blockIndex] =
+          gamemodelFB._addedBlocks.retVal;
+      gamemodelFB._addedBlocks.needEndBlock[gamemodelFB._blockIndex] =
+          gamemodelFB._addedBlocks.retVal;
     }
-    return gameFB;
+    return gamemodelFB;
   }
 
-  GameFilterBuilder endsWith(dynamic pValue) {
+  GameModelFilterBuilder endsWith(dynamic pValue) {
     if (pValue != null) {
-      gameFB._addedBlocks = setCriteria(
+      gamemodelFB._addedBlocks = setCriteria(
           '%${pValue.toString()}',
-          gameFB.parameters,
+          gamemodelFB.parameters,
           param,
           SqlSyntax.Contains.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-          gameFB._addedBlocks);
+          gamemodelFB._addedBlocks);
       _waitingNot = '';
-      gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
-          gameFB._addedBlocks.retVal;
+      gamemodelFB._addedBlocks.needEndBlock[gamemodelFB._blockIndex] =
+          gamemodelFB._addedBlocks.retVal;
     }
-    return gameFB;
+    return gamemodelFB;
   }
 
-  GameFilterBuilder between(dynamic pFirst, dynamic pLast) {
+  GameModelFilterBuilder between(dynamic pFirst, dynamic pLast) {
     if (pFirst != null && pLast != null) {
-      gameFB._addedBlocks = setCriteria(
+      gamemodelFB._addedBlocks = setCriteria(
           pFirst,
-          gameFB.parameters,
+          gamemodelFB.parameters,
           param,
           SqlSyntax.Between.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-          gameFB._addedBlocks,
+          gamemodelFB._addedBlocks,
           pLast);
     } else if (pFirst != null) {
       if (_waitingNot != '') {
-        gameFB._addedBlocks = setCriteria(pFirst, gameFB.parameters, param,
-            SqlSyntax.LessThan, gameFB._addedBlocks);
+        gamemodelFB._addedBlocks = setCriteria(pFirst, gamemodelFB.parameters,
+            param, SqlSyntax.LessThan, gamemodelFB._addedBlocks);
       } else {
-        gameFB._addedBlocks = setCriteria(pFirst, gameFB.parameters, param,
-            SqlSyntax.GreaterThanOrEquals, gameFB._addedBlocks);
+        gamemodelFB._addedBlocks = setCriteria(pFirst, gamemodelFB.parameters,
+            param, SqlSyntax.GreaterThanOrEquals, gamemodelFB._addedBlocks);
       }
     } else if (pLast != null) {
       if (_waitingNot != '') {
-        gameFB._addedBlocks = setCriteria(pLast, gameFB.parameters, param,
-            SqlSyntax.GreaterThan, gameFB._addedBlocks);
+        gamemodelFB._addedBlocks = setCriteria(pLast, gamemodelFB.parameters,
+            param, SqlSyntax.GreaterThan, gamemodelFB._addedBlocks);
       } else {
-        gameFB._addedBlocks = setCriteria(pLast, gameFB.parameters, param,
-            SqlSyntax.LessThanOrEquals, gameFB._addedBlocks);
+        gamemodelFB._addedBlocks = setCriteria(pLast, gamemodelFB.parameters,
+            param, SqlSyntax.LessThanOrEquals, gamemodelFB._addedBlocks);
       }
     }
     _waitingNot = '';
-    gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
-        gameFB._addedBlocks.retVal;
-    return gameFB;
+    gamemodelFB._addedBlocks.needEndBlock[gamemodelFB._blockIndex] =
+        gamemodelFB._addedBlocks.retVal;
+    return gamemodelFB;
   }
 
-  GameFilterBuilder greaterThan(dynamic pValue) {
+  GameModelFilterBuilder greaterThan(dynamic pValue) {
     param.expression = '>';
-    gameFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, gameFB.parameters, param, SqlSyntax.GreaterThan,
-            gameFB._addedBlocks)
-        : setCriteria(pValue, gameFB.parameters, param,
-            SqlSyntax.LessThanOrEquals, gameFB._addedBlocks);
+    gamemodelFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, gamemodelFB.parameters, param,
+            SqlSyntax.GreaterThan, gamemodelFB._addedBlocks)
+        : setCriteria(pValue, gamemodelFB.parameters, param,
+            SqlSyntax.LessThanOrEquals, gamemodelFB._addedBlocks);
     _waitingNot = '';
-    gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
-        gameFB._addedBlocks.retVal;
-    return gameFB;
+    gamemodelFB._addedBlocks.needEndBlock[gamemodelFB._blockIndex] =
+        gamemodelFB._addedBlocks.retVal;
+    return gamemodelFB;
   }
 
-  GameFilterBuilder lessThan(dynamic pValue) {
+  GameModelFilterBuilder lessThan(dynamic pValue) {
     param.expression = '<';
-    gameFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, gameFB.parameters, param, SqlSyntax.LessThan,
-            gameFB._addedBlocks)
-        : setCriteria(pValue, gameFB.parameters, param,
-            SqlSyntax.GreaterThanOrEquals, gameFB._addedBlocks);
+    gamemodelFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, gamemodelFB.parameters, param, SqlSyntax.LessThan,
+            gamemodelFB._addedBlocks)
+        : setCriteria(pValue, gamemodelFB.parameters, param,
+            SqlSyntax.GreaterThanOrEquals, gamemodelFB._addedBlocks);
     _waitingNot = '';
-    gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
-        gameFB._addedBlocks.retVal;
-    return gameFB;
+    gamemodelFB._addedBlocks.needEndBlock[gamemodelFB._blockIndex] =
+        gamemodelFB._addedBlocks.retVal;
+    return gamemodelFB;
   }
 
-  GameFilterBuilder greaterThanOrEquals(dynamic pValue) {
+  GameModelFilterBuilder greaterThanOrEquals(dynamic pValue) {
     param.expression = '>=';
-    gameFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, gameFB.parameters, param,
-            SqlSyntax.GreaterThanOrEquals, gameFB._addedBlocks)
-        : setCriteria(pValue, gameFB.parameters, param, SqlSyntax.LessThan,
-            gameFB._addedBlocks);
+    gamemodelFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, gamemodelFB.parameters, param,
+            SqlSyntax.GreaterThanOrEquals, gamemodelFB._addedBlocks)
+        : setCriteria(pValue, gamemodelFB.parameters, param, SqlSyntax.LessThan,
+            gamemodelFB._addedBlocks);
     _waitingNot = '';
-    gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
-        gameFB._addedBlocks.retVal;
-    return gameFB;
+    gamemodelFB._addedBlocks.needEndBlock[gamemodelFB._blockIndex] =
+        gamemodelFB._addedBlocks.retVal;
+    return gamemodelFB;
   }
 
-  GameFilterBuilder lessThanOrEquals(dynamic pValue) {
+  GameModelFilterBuilder lessThanOrEquals(dynamic pValue) {
     param.expression = '<=';
-    gameFB._addedBlocks = _waitingNot == ''
-        ? setCriteria(pValue, gameFB.parameters, param,
-            SqlSyntax.LessThanOrEquals, gameFB._addedBlocks)
-        : setCriteria(pValue, gameFB.parameters, param, SqlSyntax.GreaterThan,
-            gameFB._addedBlocks);
+    gamemodelFB._addedBlocks = _waitingNot == ''
+        ? setCriteria(pValue, gamemodelFB.parameters, param,
+            SqlSyntax.LessThanOrEquals, gamemodelFB._addedBlocks)
+        : setCriteria(pValue, gamemodelFB.parameters, param,
+            SqlSyntax.GreaterThan, gamemodelFB._addedBlocks);
     _waitingNot = '';
-    gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
-        gameFB._addedBlocks.retVal;
-    return gameFB;
+    gamemodelFB._addedBlocks.needEndBlock[gamemodelFB._blockIndex] =
+        gamemodelFB._addedBlocks.retVal;
+    return gamemodelFB;
   }
 
-  GameFilterBuilder inValues(var pValue) {
-    gameFB._addedBlocks = setCriteria(
+  GameModelFilterBuilder inValues(var pValue) {
+    gamemodelFB._addedBlocks = setCriteria(
         pValue,
-        gameFB.parameters,
+        gamemodelFB.parameters,
         param,
         SqlSyntax.IN.replaceAll(SqlSyntax.notKeyword, _waitingNot),
-        gameFB._addedBlocks);
+        gamemodelFB._addedBlocks);
     _waitingNot = '';
-    gameFB._addedBlocks.needEndBlock[gameFB._blockIndex] =
-        gameFB._addedBlocks.retVal;
-    return gameFB;
+    gamemodelFB._addedBlocks.needEndBlock[gamemodelFB._blockIndex] =
+        gamemodelFB._addedBlocks.retVal;
+    return gamemodelFB;
   }
 }
-// endregion GameField
+// endregion GameModelField
 
-// region GameFilterBuilder
-class GameFilterBuilder extends SearchCriteria {
-  GameFilterBuilder(Game obj) {
+// region GameModelFilterBuilder
+class GameModelFilterBuilder extends SearchCriteria {
+  GameModelFilterBuilder(GameModel obj) {
     whereString = '';
     qparams = QueryParams();
     parameters = List<DbParameter>();
@@ -2798,13 +2818,13 @@ class GameFilterBuilder extends SearchCriteria {
   int _blockIndex = 0;
   List<DbParameter> parameters;
   List<String> orderByList;
-  Game _obj;
+  GameModel _obj;
   QueryParams qparams;
   int _pagesize;
   int _page;
 
   /// put the sql keyword 'AND'
-  GameFilterBuilder get and {
+  GameModelFilterBuilder get and {
     if (parameters.isNotEmpty) {
       parameters[parameters.length - 1].wOperator = ' AND ';
     }
@@ -2812,7 +2832,7 @@ class GameFilterBuilder extends SearchCriteria {
   }
 
   /// put the sql keyword 'OR'
-  GameFilterBuilder get or {
+  GameModelFilterBuilder get or {
     if (parameters.isNotEmpty) {
       parameters[parameters.length - 1].wOperator = ' OR ';
     }
@@ -2820,7 +2840,7 @@ class GameFilterBuilder extends SearchCriteria {
   }
 
   /// open parentheses
-  GameFilterBuilder get startBlock {
+  GameModelFilterBuilder get startBlock {
     _addedBlocks.waitingStartBlock.add(true);
     _addedBlocks.needEndBlock.add(false);
     _blockIndex++;
@@ -2829,7 +2849,7 @@ class GameFilterBuilder extends SearchCriteria {
   }
 
   /// String whereCriteria, write raw query without 'where' keyword. Like this: 'field1 like 'test%' and field2 = 3'
-  GameFilterBuilder where(String whereCriteria) {
+  GameModelFilterBuilder where(String whereCriteria) {
     if (whereCriteria != null && whereCriteria != '') {
       final DbParameter param = DbParameter();
       _addedBlocks =
@@ -2842,14 +2862,14 @@ class GameFilterBuilder extends SearchCriteria {
   /// page = page number,
   ///
   /// pagesize = row(s) per page
-  GameFilterBuilder page(int page, int pagesize) {
+  GameModelFilterBuilder page(int page, int pagesize) {
     if (page > 0) _page = page;
     if (pagesize > 0) _pagesize = pagesize;
     return this;
   }
 
   /// int count = LIMIT
-  GameFilterBuilder top(int count) {
+  GameModelFilterBuilder top(int count) {
     if (count > 0) {
       _pagesize = count;
     }
@@ -2857,7 +2877,7 @@ class GameFilterBuilder extends SearchCriteria {
   }
 
   /// close parentheses
-  GameFilterBuilder get endBlock {
+  GameModelFilterBuilder get endBlock {
     if (_addedBlocks.needEndBlock[_blockIndex]) {
       parameters[parameters.length - 1].whereString += ' ) ';
     }
@@ -2872,7 +2892,7 @@ class GameFilterBuilder extends SearchCriteria {
   /// Example 1: argFields='name, date'
   ///
   /// Example 2: argFields = ['name', 'date']
-  GameFilterBuilder orderBy(var argFields) {
+  GameModelFilterBuilder orderBy(var argFields) {
     if (argFields != null) {
       if (argFields is String) {
         orderByList.add(argFields);
@@ -2890,7 +2910,7 @@ class GameFilterBuilder extends SearchCriteria {
   /// Example 1: argFields='field1, field2'
   ///
   /// Example 2: argFields = ['field1', 'field2']
-  GameFilterBuilder orderByDesc(var argFields) {
+  GameModelFilterBuilder orderByDesc(var argFields) {
     if (argFields != null) {
       if (argFields is String) {
         orderByList.add('$argFields desc ');
@@ -2908,7 +2928,7 @@ class GameFilterBuilder extends SearchCriteria {
   /// Example 1: argFields='field1, field2'
   ///
   /// Example 2: argFields = ['field1', 'field2']
-  GameFilterBuilder groupBy(var argFields) {
+  GameModelFilterBuilder groupBy(var argFields) {
     if (argFields != null) {
       if (argFields is String) {
         groupByList.add(' $argFields ');
@@ -2921,93 +2941,93 @@ class GameFilterBuilder extends SearchCriteria {
     return this;
   }
 
-  GameField setField(GameField field, String colName, DbType dbtype) {
-    return GameField(this)
+  GameModelField setField(GameModelField field, String colName, DbType dbtype) {
+    return GameModelField(this)
       ..param = DbParameter(
           dbType: dbtype,
           columnName: colName,
           wStartBlock: _addedBlocks.waitingStartBlock[_blockIndex]);
   }
 
-  GameField _id;
-  GameField get id {
+  GameModelField _id;
+  GameModelField get id {
     return _id = setField(_id, 'id', DbType.integer);
   }
 
-  GameField _name;
-  GameField get name {
+  GameModelField _name;
+  GameModelField get name {
     return _name = setField(_name, 'name', DbType.text);
   }
 
-  GameField _startBook;
-  GameField get startBook {
+  GameModelField _startBook;
+  GameModelField get startBook {
     return _startBook = setField(_startBook, 'startBook', DbType.integer);
   }
 
-  GameField _startChapter;
-  GameField get startChapter {
+  GameModelField _startChapter;
+  GameModelField get startChapter {
     return _startChapter =
         setField(_startChapter, 'startChapter', DbType.integer);
   }
 
-  GameField _startVerse;
-  GameField get startVerse {
+  GameModelField _startVerse;
+  GameModelField get startVerse {
     return _startVerse = setField(_startVerse, 'startVerse', DbType.integer);
   }
 
-  GameField _endBook;
-  GameField get endBook {
+  GameModelField _endBook;
+  GameModelField get endBook {
     return _endBook = setField(_endBook, 'endBook', DbType.integer);
   }
 
-  GameField _endChapter;
-  GameField get endChapter {
+  GameModelField _endChapter;
+  GameModelField get endChapter {
     return _endChapter = setField(_endChapter, 'endChapter', DbType.integer);
   }
 
-  GameField _endVerse;
-  GameField get endVerse {
+  GameModelField _endVerse;
+  GameModelField get endVerse {
     return _endVerse = setField(_endVerse, 'endVerse', DbType.integer);
   }
 
-  GameField _nextBook;
-  GameField get nextBook {
+  GameModelField _nextBook;
+  GameModelField get nextBook {
     return _nextBook = setField(_nextBook, 'nextBook', DbType.integer);
   }
 
-  GameField _nextChapter;
-  GameField get nextChapter {
+  GameModelField _nextChapter;
+  GameModelField get nextChapter {
     return _nextChapter = setField(_nextChapter, 'nextChapter', DbType.integer);
   }
 
-  GameField _nextVerse;
-  GameField get nextVerse {
+  GameModelField _nextVerse;
+  GameModelField get nextVerse {
     return _nextVerse = setField(_nextVerse, 'nextVerse', DbType.integer);
   }
 
-  GameField _money;
-  GameField get money {
+  GameModelField _money;
+  GameModelField get money {
     return _money = setField(_money, 'money', DbType.integer);
   }
 
-  GameField _bonuses;
-  GameField get bonuses {
+  GameModelField _bonuses;
+  GameModelField get bonuses {
     return _bonuses = setField(_bonuses, 'bonuses', DbType.text);
   }
 
-  GameField _versesCount;
-  GameField get versesCount {
+  GameModelField _versesCount;
+  GameModelField get versesCount {
     return _versesCount = setField(_versesCount, 'versesCount', DbType.text);
   }
 
-  GameField _resolvedVersesCount;
-  GameField get resolvedVersesCount {
+  GameModelField _resolvedVersesCount;
+  GameModelField get resolvedVersesCount {
     return _resolvedVersesCount =
         setField(_resolvedVersesCount, 'resolvedVersesCount', DbType.text);
   }
 
-  GameField _isDeleted;
-  GameField get isDeleted {
+  GameModelField _isDeleted;
+  GameModelField get isDeleted {
     return _isDeleted = setField(_isDeleted, 'isDeleted', DbType.bool);
   }
 
@@ -3070,7 +3090,7 @@ class GameFilterBuilder extends SearchCriteria {
         whereString += param.whereString;
       }
     }
-    if (Game._softDeleteActivated) {
+    if (GameModel._softDeleteActivated) {
       if (whereString != '') {
         whereString =
             '${!_getIsDeleted ? 'ifnull(isDeleted,0)=0 AND' : ''} ($whereString)';
@@ -3088,16 +3108,16 @@ class GameFilterBuilder extends SearchCriteria {
       ..orderBy = orderByList.join(',');
   }
 
-  /// Deletes List<Game> batch by query
+  /// Deletes List<GameModel> batch by query
   ///
   /// <returns>BoolResult res.success=Deleted, not res.success=Can not deleted
   Future<BoolResult> delete([bool hardDelete = false]) async {
     _buildParameters();
     var r = BoolResult();
-    if (Game._softDeleteActivated && !hardDelete) {
-      r = await _obj._mnGame.updateBatch(qparams, {'isDeleted': 1});
+    if (GameModel._softDeleteActivated && !hardDelete) {
+      r = await _obj._mnGameModel.updateBatch(qparams, {'isDeleted': 1});
     } else {
-      r = await _obj._mnGame.delete(qparams);
+      r = await _obj._mnGameModel.delete(qparams);
     }
     return r;
   }
@@ -3105,8 +3125,8 @@ class GameFilterBuilder extends SearchCriteria {
   Future<BoolResult> recover() async {
     _getIsDeleted = true;
     _buildParameters();
-    print('SQFENTITIY: recover Game batch invoked');
-    return _obj._mnGame.updateBatch(qparams, {'isDeleted': 0});
+    print('SQFENTITIY: recover GameModel batch invoked');
+    return _obj._mnGameModel.updateBatch(qparams, {'isDeleted': 0});
   }
 
   /// using:
@@ -3120,24 +3140,24 @@ class GameFilterBuilder extends SearchCriteria {
       qparams.whereString =
           'id IN (SELECT id from games ${qparams.whereString.isNotEmpty ? 'WHERE ${qparams.whereString}' : ''}${qparams.limit > 0 ? ' LIMIT ${qparams.limit}' : ''}${qparams.offset > 0 ? ' OFFSET ${qparams.offset}' : ''})';
     }
-    return _obj._mnGame.updateBatch(qparams, values);
+    return _obj._mnGameModel.updateBatch(qparams, values);
   }
 
-  /// This method always returns GameObj if exist, otherwise returns null
-  /// <returns>List<Game>
-  Future<Game> toSingle([VoidCallback game(Game o)]) async {
+  /// This method always returns GameModelObj if exist, otherwise returns null
+  /// <returns>List<GameModel>
+  Future<GameModel> toSingle([VoidCallback gamemodel(GameModel o)]) async {
     _pagesize = 1;
     _buildParameters();
-    final objFuture = _obj._mnGame.toList(qparams);
+    final objFuture = _obj._mnGameModel.toList(qparams);
     final data = await objFuture;
-    Game retVal;
+    GameModel retVal;
     if (data.isNotEmpty) {
-      retVal = Game.fromMap(data[0] as Map<String, dynamic>);
+      retVal = GameModel.fromMap(data[0] as Map<String, dynamic>);
     } else {
       retVal = null;
     }
-    if (game != null) {
-      game(retVal);
+    if (gamemodel != null) {
+      gamemodel(retVal);
     }
     return retVal;
   }
@@ -3145,24 +3165,25 @@ class GameFilterBuilder extends SearchCriteria {
   /// This method always returns int.
   ///
   /// <returns>int
-  Future<int> toCount([VoidCallback gameCount(int c)]) async {
+  Future<int> toCount([VoidCallback gamemodelCount(int c)]) async {
     _buildParameters();
     qparams.selectColumns = ['COUNT(1) AS CNT'];
-    final gamesFuture = await _obj._mnGame.toList(qparams);
-    final int count = gamesFuture[0]['CNT'] as int;
-    if (gameCount != null) {
-      gameCount(count);
+    final gamemodelsFuture = await _obj._mnGameModel.toList(qparams);
+    final int count = gamemodelsFuture[0]['CNT'] as int;
+    if (gamemodelCount != null) {
+      gamemodelCount(count);
     }
     return count;
   }
 
-  /// This method always returns List<Game>.
-  /// <returns>List<Game>
-  Future<List<Game>> toList([VoidCallback gameList(List<Game> o)]) async {
+  /// This method always returns List<GameModel>.
+  /// <returns>List<GameModel>
+  Future<List<GameModel>> toList(
+      [VoidCallback gamemodelList(List<GameModel> o)]) async {
     final data = await toMapList();
-    final List<Game> gamesData = Game.fromMapList(data);
-    if (gameList != null) gameList(gamesData);
-    return gamesData;
+    final List<GameModel> gamemodelsData = GameModel.fromMapList(data);
+    if (gamemodelList != null) gamemodelList(gamemodelsData);
+    return gamemodelsData;
   }
 
   /// This method always returns Json String
@@ -3190,26 +3211,27 @@ class GameFilterBuilder extends SearchCriteria {
   /// <returns>List<dynamic>
   Future<List<dynamic>> toMapList() async {
     _buildParameters();
-    return await _obj._mnGame.toList(qparams);
+    return await _obj._mnGameModel.toList(qparams);
   }
 
-  /// Returns List<DropdownMenuItem<Game>>
-  Future<List<DropdownMenuItem<Game>>> toDropDownMenu(String displayTextColumn,
-      [VoidCallback dropDownMenu(List<DropdownMenuItem<Game>> o)]) async {
+  /// Returns List<DropdownMenuItem<GameModel>>
+  Future<List<DropdownMenuItem<GameModel>>> toDropDownMenu(
+      String displayTextColumn,
+      [VoidCallback dropDownMenu(List<DropdownMenuItem<GameModel>> o)]) async {
     _buildParameters();
-    final gamesFuture = _obj._mnGame.toList(qparams);
+    final gamemodelsFuture = _obj._mnGameModel.toList(qparams);
 
-    final data = await gamesFuture;
+    final data = await gamemodelsFuture;
     final int count = data.length;
-    final List<DropdownMenuItem<Game>> items = List()
+    final List<DropdownMenuItem<GameModel>> items = List()
       ..add(DropdownMenuItem(
-        value: Game(),
-        child: Text('Select Game'),
+        value: GameModel(),
+        child: Text('Select GameModel'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
         DropdownMenuItem(
-          value: Game.fromMap(data[i] as Map<String, dynamic>),
+          value: GameModel.fromMap(data[i] as Map<String, dynamic>),
           child: Text(data[i][displayTextColumn].toString()),
         ),
       );
@@ -3226,14 +3248,14 @@ class GameFilterBuilder extends SearchCriteria {
       [VoidCallback dropDownMenu(List<DropdownMenuItem<int>> o)]) async {
     _buildParameters();
     qparams.selectColumns = ['id', displayTextColumn];
-    final gamesFuture = _obj._mnGame.toList(qparams);
+    final gamemodelsFuture = _obj._mnGameModel.toList(qparams);
 
-    final data = await gamesFuture;
+    final data = await gamemodelsFuture;
     final int count = data.length;
     final List<DropdownMenuItem<int>> items = List()
       ..add(DropdownMenuItem(
         value: 0,
-        child: Text('Select Game'),
+        child: Text('Select GameModel'),
       ));
     for (int i = 0; i < count; i++) {
       items.add(
@@ -3255,7 +3277,7 @@ class GameFilterBuilder extends SearchCriteria {
     if (buildParameters) _buildParameters();
     final List<int> idData = List<int>();
     qparams.selectColumns = ['id'];
-    final idFuture = await _obj._mnGame.toList(qparams);
+    final idFuture = await _obj._mnGameModel.toList(qparams);
 
     final int count = idFuture.length;
     for (int i = 0; i < count; i++) {
@@ -3271,7 +3293,7 @@ class GameFilterBuilder extends SearchCriteria {
       [VoidCallback listObject(List<dynamic> o)]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnGame.toList(qparams);
+    final objectFuture = _obj._mnGameModel.toList(qparams);
 
     final List<dynamic> objectsData = List<dynamic>();
     final data = await objectFuture;
@@ -3287,12 +3309,12 @@ class GameFilterBuilder extends SearchCriteria {
 
   /// Returns List<String> for selected first column
   ///
-  /// Sample usage: await Game.select(columnsToSelect: ['columnName']).toListString()
+  /// Sample usage: await GameModel.select(columnsToSelect: ['columnName']).toListString()
   Future<List<String>> toListString(
       [VoidCallback listString(List<String> o)]) async {
     _buildParameters();
 
-    final objectFuture = _obj._mnGame.toList(qparams);
+    final objectFuture = _obj._mnGameModel.toList(qparams);
 
     final List<String> objectsData = List<String>();
     final data = await objectFuture;
@@ -3306,10 +3328,10 @@ class GameFilterBuilder extends SearchCriteria {
     return objectsData;
   }
 }
-// endregion GameFilterBuilder
+// endregion GameModelFilterBuilder
 
-// region GameFields
-class GameFields {
+// region GameModelFields
+class GameModelFields {
   static TableField _fId;
   static TableField get id {
     return _fId = _fId ?? SqlSyntax.setField(_fId, 'id', DbType.integer);
@@ -3405,16 +3427,17 @@ class GameFields {
         SqlSyntax.setField(_fIsDeleted, 'isDeleted', DbType.integer);
   }
 }
-// endregion GameFields
+// endregion GameModelFields
 
-//region GameManager
-class GameManager extends SqfEntityProvider {
-  GameManager() : super(BibleGameModel(), tableName: _tableName, colId: _colId);
+//region GameModelManager
+class GameModelManager extends SqfEntityProvider {
+  GameModelManager()
+      : super(BibleGameModel(), tableName: _tableName, colId: _colId);
   static String _tableName = 'games';
   static String _colId = 'id';
 }
 
-//endregion GameManager
+//endregion GameModelManager
 /// Region SEQUENCE IdentitySequence
 class IdentitySequence {
   /// Assigns a new value when it is triggered and returns the new value

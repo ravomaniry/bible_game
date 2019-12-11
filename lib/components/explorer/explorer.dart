@@ -42,8 +42,8 @@ class Explorer extends StatelessWidget {
 }
 
 class BookListItem extends StatelessWidget {
-  final Books _book;
-  final Function(Books) _onPressed;
+  final BookModel _book;
+  final Function(BookModel) _onPressed;
 
   BookListItem(this._book, this._onPressed) : super(key: Key(_book.id.toString()));
 

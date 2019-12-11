@@ -12,7 +12,7 @@ const booksTable = SqfEntityTable(
   primaryKeyName: 'id',
   primaryKeyType: PrimaryKeyType.integer_unique,
   useSoftDeleting: false,
-  modelName: 'Books',
+  modelName: 'BookModel',
   fields: [
     SqfEntityField('name', DbType.text),
     SqfEntityField('chapters', DbType.integer),
@@ -24,7 +24,7 @@ const versesTable = SqfEntityTable(
   primaryKeyName: 'id',
   primaryKeyType: PrimaryKeyType.integer_auto_incremental,
   useSoftDeleting: false,
-  modelName: 'Verses',
+  modelName: 'VerseModel',
   fields: [
     SqfEntityFieldRelationship(
       parentTable: booksTable,
@@ -42,7 +42,7 @@ const gamesTable = SqfEntityTable(
   primaryKeyType: PrimaryKeyType.integer_auto_incremental,
   primaryKeyName: 'id',
   useSoftDeleting: true,
-  modelName: 'Game',
+  modelName: 'GameModel',
   fields: [
     SqfEntityField('name', DbType.text),
     SqfEntityField('startBook', DbType.integer),

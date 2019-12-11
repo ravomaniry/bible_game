@@ -10,10 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:redux/redux.dart';
 
 class ExplorerViewModel {
-  final List<Books> books;
-  final Books activeBook;
-  final List<Verses> verses;
-  final Function(Books) loadVerses;
+  final List<BookModel> books;
+  final BookModel activeBook;
+  final List<VerseModel> verses;
+  final Function(BookModel) loadVerses;
   final Function() goToBooksList;
 
   ExplorerViewModel({
@@ -29,12 +29,12 @@ class ExplorerViewModel {
       books: store.state.explorer.books,
       verses: store.state.explorer.verses,
       activeBook: store.state.explorer.activeBook,
-      loadVerses: (Books book) {
+      loadVerses: (BookModel book) {
         // store.dispatch(LoadVersesFor(book).thunk);
         // This is temporary code to redirect to the words in word section
         store.dispatch(UpdateWordsInWordState(
           WordsInWordState.emptyState().copyWith(
-            verse: BibleVerse.fromModel(Verses(id: 1, book: book.id, chapter: 1, verse: 1, text: ""), book.name),
+            verse: BibleVerse.fromModel(VerseModel(id: 1, book: book.id, chapter: 1, verse: 1, text: ""), book.name),
           ),
         ));
         store.dispatch(GoToAction(Routes.wordsInWord));

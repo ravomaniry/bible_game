@@ -21,7 +21,7 @@ class BibleVerse with EquatableMixin {
     @required this.text,
   });
 
-  factory BibleVerse.fromModel(Verses model, String bookName) {
+  factory BibleVerse.fromModel(VerseModel model, String bookName) {
     return BibleVerse.from(
       bookId: model.book,
       verse: model.verse,

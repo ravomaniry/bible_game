@@ -4,14 +4,14 @@ import 'package:mockito/mockito.dart';
 
 class ModelMock extends Mock implements BibleGameModel {}
 
-class BooksMock extends Mock implements Books {}
+class BooksMock extends Mock implements BookModel {}
 
-class VersesMock extends Mock implements Verses {}
+class VersesMock extends Mock implements VerseModel {}
 
 class DbAdapterMock extends Mock implements DbAdapter {
   BibleGameModel model;
-  Verses verses;
-  Books books;
+  VerseModel verses;
+  BookModel books;
 
   DbAdapterMock() {
     this.model = ModelMock();
@@ -45,22 +45,22 @@ class DbAdapterMock extends Mock implements DbAdapter {
     }
     if (methods.contains("getBooks")) {
       when(adapter.getBooks()).thenAnswer((_) => Future.value([
-            Books(id: 1, name: "Matio", chapters: 10),
-            Books(id: 2, name: "Marka", chapters: 20),
+            BookModel(id: 1, name: "Matio", chapters: 10),
+            BookModel(id: 2, name: "Marka", chapters: 20),
           ]));
     }
     if (methods.contains("getVerses")) {
       when(adapter.getVerses(1)).thenAnswer((_) async {
-        return [Verses(book: 1, id: 2, chapter: 3, verse: 4, text: "Ny filazana ny razan'i Jesosy Kristy")];
+        return [VerseModel(book: 1, id: 2, chapter: 3, verse: 4, text: "Ny filazana ny razan'i Jesosy Kristy")];
       });
     }
     if (methods.contains("getSingleVerse")) {
       when(adapter.getSingleVerse(any, any, any)).thenAnswer((_) async {
-        return Verses(book: 1, id: 2, chapter: 3, verse: 4, text: "Ny filazana ny razan'i Jesosy Kristy");
+        return VerseModel(book: 1, id: 2, chapter: 3, verse: 4, text: "Ny filazana ny razan'i Jesosy Kristy");
       });
     }
     if (methods.contains("getBookById")) {
-      when(adapter.getBookById(any)).thenAnswer((_) => Future.value(Books(id: 1, name: "Genesisy", chapters: 10)));
+      when(adapter.getBookById(any)).thenAnswer((_) => Future.value(BookModel(id: 1, name: "Genesisy", chapters: 10)));
     }
     if (methods.contains("verses.saveAll")) {
       when(adapter.verses.saveAll(any)).thenAnswer((_) => Future.value());

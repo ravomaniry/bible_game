@@ -35,7 +35,7 @@ Future checkAndUpdateBooks(DbAdapter dba, AssetBundle assetBundle, Function disp
       dispatch(ReceiveError(Errors.unknownDbError));
     } else if (count == 0) {
       final source = await retry<String>(() => assetBundle.loadString("assets/db/new_testament_books.json"));
-      final books = await Books.fromJson(source);
+      final books = await BookModel.fromJson(source);
       await retry(() => dba.books.saveAll(books));
     }
   } catch (e) {
@@ -51,7 +51,7 @@ Future checkAndUpdateVerses(DbAdapter dba, AssetBundle assetBundle, Function dis
       dispatch(ReceiveError(Errors.unknownDbError));
     } else if (count == 0) {
       final source = await retry<String>(() => assetBundle.loadString("assets/db/new_testament_verses.json"));
-      final verses = await Verses.fromJson(source);
+      final verses = await VerseModel.fromJson(source);
       await retry(() => dba.verses.saveAll(verses));
     }
   } catch (e) {

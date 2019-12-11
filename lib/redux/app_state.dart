@@ -45,8 +45,8 @@ class AppState {
       inventory: InventoryState.emptyState(),
       dba: DbAdapter(
         model: BibleGameModel(),
-        books: Books(),
-        verses: Verses(),
+        books: BookModel(),
+        verses: VerseModel(),
       ),
     );
   }
