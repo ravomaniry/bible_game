@@ -1,4 +1,5 @@
 import 'package:bible_game/components/dialogs/quit_single_game.dart';
+import 'package:bible_game/components/game_editor/editor.dart';
 import 'package:bible_game/components/inventory/inventory.dart';
 import 'package:bible_game/components/router.dart';
 import 'package:bible_game/redux/app_state.dart';
@@ -60,6 +61,7 @@ class _BibleGameState extends State<BibleGame> {
             Router(),
             Inventory(),
             QuitSingleGameDialog(),
+            GameEditor(),
           ],
         ),
       ),

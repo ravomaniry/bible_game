@@ -36,7 +36,7 @@ void main() {
 
   testWidgets("Db initialization success", (WidgetTester tester) async {
     final dba = DbAdapterMock();
-    DbAdapterMock.mockMethods(dba, ["games", "verses.saveAll", "books.saveAll"]);
+    DbAdapterMock.mockMethods(dba, ["games", "books", "verses.saveAll", "books.saveAll"]);
     final store = Store<AppState>(
       mainReducer,
       middleware: [thunkMiddleware],
@@ -81,5 +81,8 @@ void main() {
     await tester.pump(Duration(milliseconds: 10));
     expect(store.state.dbIsReady, true);
     expect(store.state.games.list.length, 1);
+    expect(store.state.games.books.length, 2);
+    expect(store.state.games.list[0].startBookName, "Matio");
+    expect(store.state.games.list[0].endBookName, "Matio");
   });
 }

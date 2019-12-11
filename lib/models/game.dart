@@ -15,6 +15,8 @@ class GameModelWrapper {
   final GameModel model;
   final InventoryState inventory;
   final int resolvedVersesCount;
+  final String startBookName;
+  final String endBookName;
   final int nextBook;
   final int nextChapter;
   final int nextVerse;
@@ -26,9 +28,30 @@ class GameModelWrapper {
     @required this.nextBook,
     @required this.nextChapter,
     @required this.nextVerse,
+    @required this.startBookName,
+    @required this.endBookName,
   });
 
-  factory GameModelWrapper.fromModel(GameModel model) {
+  GameModelWrapper copyWith({
+    int resolvedVersesCount,
+    int nextBook,
+    int nextChapter,
+    int nextVerse,
+    InventoryState inventory,
+  }) {
+    return GameModelWrapper(
+      model: this.model,
+      startBookName: this.startBookName,
+      endBookName: this.endBookName,
+      resolvedVersesCount: resolvedVersesCount ?? this.resolvedVersesCount,
+      nextBook: nextBook ?? this.nextBook,
+      nextChapter: nextChapter ?? this.nextChapter,
+      nextVerse: nextVerse ?? this.nextVerse,
+      inventory: inventory ?? this.inventory,
+    );
+  }
+
+  factory GameModelWrapper.fromModel(GameModel model, List<BookModel> books) {
     final Map<String, dynamic> bonuses = json.decode(model.bonuses);
     final int money = bonuses["$_moneyJsonEntry"] ?? 0;
     final int revealChar1 = _getRevealCharBonusNum(1, bonuses) ?? 0;
@@ -42,6 +65,8 @@ class GameModelWrapper {
       revealCharBonus5: revealChar5,
       revealCharBonus10: revealChar10,
     );
+    final startBookName = books.firstWhere((b) => b.id == model.startBook).name;
+    final endBookName = books.firstWhere((b) => b.id == model.endBook).name;
 
     return GameModelWrapper(
       model: model,
@@ -50,6 +75,8 @@ class GameModelWrapper {
       nextBook: model.nextBook,
       nextChapter: model.nextChapter,
       nextVerse: model.nextVerse,
+      startBookName: startBookName,
+      endBookName: endBookName,
     );
   }
 
@@ -60,23 +87,6 @@ class GameModelWrapper {
     map["${_revealCharBonusJsonEntry}5"] = inventory.revealCharBonus5;
     map["${_revealCharBonusJsonEntry}10"] = inventory.revealCharBonus10;
     return json.encode(map);
-  }
-
-  GameModelWrapper copyWith({
-    int resolvedVersesCount,
-    int nextBook,
-    int nextChapter,
-    int nextVerse,
-    InventoryState inventory,
-  }) {
-    return GameModelWrapper(
-      model: this.model,
-      resolvedVersesCount: resolvedVersesCount ?? this.resolvedVersesCount,
-      nextBook: nextBook ?? this.nextBook,
-      nextChapter: nextChapter ?? this.nextChapter,
-      nextVerse: nextVerse ?? this.nextVerse,
-      inventory: inventory ?? this.inventory,
-    );
   }
 
   GameModel toModelHelper() {

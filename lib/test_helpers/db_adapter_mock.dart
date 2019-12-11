@@ -27,6 +27,7 @@ class DbAdapterMock extends Mock implements DbAdapter {
     mockMethods(adapter, [
       "init",
       "games",
+      "books",
       "getBooksCount",
       "getVersesCount",
       "getBooks",
@@ -35,6 +36,7 @@ class DbAdapterMock extends Mock implements DbAdapter {
       "verses.saveAll",
       "books.saveAll",
       "getBookById",
+      "getBookVersesCount",
     ]);
   }
 
@@ -64,6 +66,11 @@ class DbAdapterMock extends Mock implements DbAdapter {
           ),
         ]),
       );
+    }
+    if (methods.contains("books")) {
+      when(adapter.books).thenAnswer((_) => Future.value([
+            BookModel(id: 1, name: "Matio", chapters: 10),
+          ]));
     }
     if (methods.contains("getBooksCount")) {
       when(adapter.booksCount).thenAnswer((_) => Future.value((10)));
@@ -95,6 +102,9 @@ class DbAdapterMock extends Mock implements DbAdapter {
     }
     if (methods.contains("books.saveAll")) {
       when(adapter.bookModel.saveAll(any)).thenAnswer((_) => Future.value());
+    }
+    if (methods.contains("getBookVersesCount")) {
+      when(adapter.getChapterVersesCount(any, any)).thenAnswer((_) => Future.value(1));
     }
   }
 
