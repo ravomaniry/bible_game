@@ -95,23 +95,43 @@ class RevealCharBonusDisplay extends StatelessWidget {
     return Opacity(
       opacity: _opacity,
       child: Container(
-        width: 40,
-        padding: EdgeInsets.all(0),
+        width: 44,
+        height: 40,
+        margin: EdgeInsets.only(right: 4),
+        decoration: BoxDecoration(
+          color: Color.fromARGB(100, 255, 255, 255),
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(
+            color: Color.fromARGB(255, 220, 220, 220),
+            width: 2,
+          ),
+        ),
+        padding: const EdgeInsets.only(left: 4, right: 4),
         child: FlatButton(
           padding: EdgeInsets.all(0),
           key: Key("revealCharBonusBtn_${_bonus.power}"),
           onPressed: _onPressed,
-          child: Badge(
-            badgeContent: Text("$_number"),
-            child: Container(
-              padding: EdgeInsets.all(6),
-              child: Image(
-                fit: BoxFit.fitWidth,
-                image: AssetImage("assets/images/wood_medal_${_bonus.power}.png"),
-              ),
-            ),
-          ),
+          child: _buildBadge(),
         ),
+      ),
+    );
+  }
+
+  Widget _buildBadge() {
+    if (_number > 0) {
+      return Badge(
+        badgeContent: Text("$_number"),
+        child: Image(
+          fit: BoxFit.fitWidth,
+          image: AssetImage("assets/images/wood_medal_${_bonus.power}.png"),
+        ),
+      );
+    }
+    return Container(
+      padding: EdgeInsets.all(6),
+      child: Image(
+        fit: BoxFit.fitWidth,
+        image: AssetImage("assets/images/wood_medal_${_bonus.power}.png"),
       ),
     );
   }

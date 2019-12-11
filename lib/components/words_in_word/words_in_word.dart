@@ -20,7 +20,6 @@ class WordsInWord extends StatelessWidget {
 
   Widget _builder(BuildContext context, WordsInWordViewModel viewModel) {
     return Scaffold(
-      appBar: AppBar(title: Header(viewModel)),
       body: _body(context, viewModel),
     );
   }
@@ -28,21 +27,24 @@ class WordsInWord extends StatelessWidget {
   Widget _body(BuildContext context, WordsInWordViewModel viewModel) {
     if (viewModel.wordsInWord.verse == null) {
       return Text("Loading...");
-    }
-    return Container(
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          fit: BoxFit.fill,
-          image: AssetImage("assets/images/grass.jpg"),
+    } else if (viewModel.wordsInWord.wordsToFind.isEmpty) {
+      return TempNextSection(viewModel);
+    } else {
+      return Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            fit: BoxFit.fill,
+            image: AssetImage("assets/images/grass.jpg"),
+          ),
         ),
-      ),
-      child: Column(
-        children: [
-          WordsInWordResult(viewModel),
-          WordsInWordControls(viewModel),
-          TempNextSection(viewModel),
-        ],
-      ),
-    );
+        child: Column(
+          children: [
+            Header(viewModel),
+            WordsInWordResult(viewModel),
+            WordsInWordControls(viewModel),
+          ],
+        ),
+      );
+    }
   }
 }

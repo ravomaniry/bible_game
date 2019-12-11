@@ -10,26 +10,47 @@ class TempNextSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = _viewModel.wordsInWord;
-
-    if (state.wordsToFind.isEmpty) {
-      return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(state.verse.text),
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          fit: BoxFit.fitWidth,
+          image: AssetImage("assets/images/forest.jpg"),
+        ),
+      ),
+      child: Column(
+        children: <Widget>[
+          Expanded(child: Divider()),
           Container(
-            alignment: Alignment.centerRight,
-            child: Text(
-              "${state.verse.book} ${state.verse.chapter}: ${state.verse.verse}",
-              style: TextStyle(fontStyle: FontStyle.italic),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: const Color.fromARGB(200, 255, 255, 255),
+            ),
+            margin: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  state.verse.text,
+                  style: const TextStyle(fontSize: 16),
+                ),
+                Container(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    "${state.verse.book} ${state.verse.chapter}: ${state.verse.verse}",
+                    style: const TextStyle(fontStyle: FontStyle.italic),
+                  ),
+                ),
+                RaisedButton(
+                  onPressed: _viewModel.tempNextVerseHandler,
+                  child: Text("Next"),
+                )
+              ],
             ),
           ),
-          MaterialButton(
-            onPressed: _viewModel.tempNextVerseHandler,
-            child: Text("Next"),
-          )
+          Expanded(child: Divider()),
         ],
-      );
-    }
-    return SizedBox.shrink();
+      ),
+    );
   }
 }

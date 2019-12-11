@@ -1,3 +1,4 @@
+import 'package:bible_game/components/game_editor/editor.dart';
 import 'package:bible_game/components/loader.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/home/view_model.dart';
@@ -21,33 +22,39 @@ class Home extends StatelessWidget {
         body: Container(
           decoration: const BoxDecoration(
             image: DecorationImage(
+              fit: BoxFit.fitWidth,
               image: AssetImage('assets/images/forest.jpg'),
             ),
           ),
-          child: Container(
-            decoration: const BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment.center,
-                colors: [Colors.transparent, Color.fromARGB(160, 0, 0, 0)],
-                radius: 0.8,
-                stops: [0.8, 1],
-              ),
-            ),
-            child: Column(
-              children: <Widget>[
-                Expanded(child: Text("Home")),
-                Expanded(
-                  child: Column(
-                    children: <Widget>[
-                      _buildDummyBtn("Explorer", "goToExplorer", viewModel.goToExplorer),
-                      _buildDummyBtn("Words in word", "goToWordsInWordBtn", viewModel.goToWordsInWord),
-                      _buildDummyBtn("Inventory", "inventoryBtn", viewModel.openInventory),
-                      _buildDummyBtn("Calculator", "goToCalculatorBtn", viewModel.goToCalculator),
-                    ],
+          child: Stack(
+            children: [
+              Container(
+                decoration: const BoxDecoration(
+                  gradient: RadialGradient(
+                    center: Alignment.center,
+                    colors: [Colors.transparent, Color.fromARGB(160, 0, 0, 0)],
+                    radius: 0.8,
+                    stops: [0.8, 1],
                   ),
-                )
-              ],
-            ),
+                ),
+                child: Column(
+                  children: <Widget>[
+                    Expanded(child: Text("Home")),
+                    Expanded(
+                      child: Column(
+                        children: <Widget>[
+                          _buildDummyBtn("Explorer", "goToExplorer", viewModel.goToExplorer),
+                          _buildDummyBtn("Words in word", "goToWordsInWordBtn", viewModel.goToWordsInWord),
+                          _buildDummyBtn("Inventory", "inventoryBtn", viewModel.openInventory),
+                          _buildDummyBtn("Calculator", "goToCalculatorBtn", viewModel.goToCalculator),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              GameEditor(),
+            ],
           ),
         ),
       );

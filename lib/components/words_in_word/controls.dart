@@ -15,24 +15,23 @@ class WordsInWordControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final state = _viewModel.wordsInWord;
-    return Expanded(
-      child: Container(
-        decoration: const BoxDecoration(
-          color: Color.fromARGB(100, 255, 255, 255),
-        ),
-        child: Column(
-          children: [
-            PropositionDisplay(state.proposition, _viewModel.propose),
-            ComboDisplay(_viewModel.inventory.combo, _viewModel.invalidateCombo),
-            SlotsDisplay(
-              state.slots,
-              _viewModel.slotClickHandler,
-              _viewModel.shuffleSlots,
-              state.slotsDisplayIndexes,
-            ),
-            BonusesDisplay(_viewModel),
-          ],
-        ),
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color.fromARGB(100, 255, 255, 255),
+      ),
+      child: Column(
+        children: [
+          PropositionDisplay(state.proposition, _viewModel.propose),
+          ComboDisplay(_viewModel.inventory.combo, _viewModel.invalidateCombo),
+          SlotsDisplay(
+            state.slots,
+            _viewModel.slotClickHandler,
+            _viewModel.shuffleSlots,
+            state.slotsDisplayIndexes,
+          ),
+          SizedBox(height: 15),
+          BonusesDisplay(_viewModel),
+        ],
       ),
     );
   }

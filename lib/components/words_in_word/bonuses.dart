@@ -20,6 +20,7 @@ class BonusesDisplay extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _RevealCharDisplayWrapper(_revealCharBonus1, inventory.revealCharBonus1, _viewModel.useBonus),
             _RevealCharDisplayWrapper(_revealCharBonus2, inventory.revealCharBonus2, _viewModel.useBonus),
@@ -27,7 +28,6 @@ class BonusesDisplay extends StatelessWidget {
             _RevealCharDisplayWrapper(_revealCharBonus10, inventory.revealCharBonus10, _viewModel.useBonus),
           ],
         ),
-        Text("${_viewModel.inventory.money} Ar.")
       ],
     );
   }
