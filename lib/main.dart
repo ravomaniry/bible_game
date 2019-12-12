@@ -53,7 +53,7 @@ class _BibleGameState extends State<BibleGame> {
     return StoreProvider<AppState>(
       store: _store,
       child: MaterialApp(
-        title: 'Flutter Calculator',
+        title: 'Bible game',
         theme: ThemeData(primarySwatch: Colors.blue),
         home: SafeArea(
           child: Stack(
