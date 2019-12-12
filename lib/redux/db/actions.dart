@@ -3,6 +3,7 @@ import 'package:bible_game/db/model.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/error/actions.dart';
 import 'package:bible_game/redux/games/actions.dart';
+import 'package:bible_game/redux/games/init.dart';
 import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/utils/retry.dart';
 import 'package:flutter/services.dart';
@@ -22,7 +23,7 @@ final ThunkAction<AppState> initDb = (Store<AppState> store) async {
     if (isReady) {
       await checkAndUpdateBooks(dba, store.state.assetBundle, store.dispatch);
       await checkAndUpdateVerses(dba, store.state.assetBundle, store.dispatch);
-      store.dispatch(initializeGames);
+      await initializeGames(dba, store.dispatch);
       store.dispatch(UpdateDbState(true));
     } else {
       store.dispatch(ReceiveError(Errors.dbNotReady));
@@ -42,6 +43,7 @@ Future checkAndUpdateBooks(DbAdapter dba, AssetBundle assetBundle, Function disp
     }
   } catch (e) {
     dispatch(ReceiveError(Errors.unknownDbError));
+    print("%%%%%%%%%%%% Error in checkAndUpdateBooks %%%%%%%%%%%%%");
     print(e);
   }
 }
@@ -58,6 +60,7 @@ Future checkAndUpdateVerses(DbAdapter dba, AssetBundle assetBundle, Function dis
     }
   } catch (e) {
     dispatch(ReceiveError(Errors.unknownDbError));
+    print("%%%%%%%%%%%% Error in checkAndUpdateVerses %%%%%%%%%%%%%");
     print(e);
   }
 }

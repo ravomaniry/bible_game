@@ -1,4 +1,6 @@
-import 'package:bible_game/components/game_editor/editor.dart';
+import 'package:bible_game/components/home/editor.dart';
+import 'package:bible_game/components/home/games_list.dart';
+import 'package:bible_game/components/home/header.dart';
 import 'package:bible_game/components/loader.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/home/view_model.dart';
@@ -27,31 +29,12 @@ class Home extends StatelessWidget {
             ),
           ),
           child: Stack(
-            children: [
-              Container(
-                decoration: const BoxDecoration(
-                  gradient: RadialGradient(
-                    center: Alignment.center,
-                    colors: [Colors.transparent, Color.fromARGB(160, 0, 0, 0)],
-                    radius: 0.8,
-                    stops: [0.8, 1],
-                  ),
-                ),
-                child: Column(
-                  children: <Widget>[
-                    Expanded(child: Text("Home")),
-                    Expanded(
-                      child: Column(
-                        children: <Widget>[
-                          _buildDummyBtn("Explorer", "goToExplorer", viewModel.goToExplorer),
-                          _buildDummyBtn("Words in word", "goToWordsInWordBtn", viewModel.goToWordsInWord),
-                          _buildDummyBtn("Inventory", "inventoryBtn", viewModel.openInventory),
-                          _buildDummyBtn("Calculator", "goToCalculatorBtn", viewModel.goToCalculator),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
+            children: <Widget>[
+              Column(
+                children: <Widget>[
+                  HomeHeader(viewModel),
+                  GamesList(),
+                ],
               ),
               GameEditor(),
             ],
@@ -60,30 +43,5 @@ class Home extends StatelessWidget {
       );
     }
     return Loader();
-  }
-
-  Widget _buildDummyBtn(String text, String key, Function() onPressed) {
-    return Container(
-      alignment: Alignment.center,
-      decoration: const BoxDecoration(
-        image: DecorationImage(
-          image: AssetImage("assets/images/wood_panel.png"),
-        ),
-      ),
-      child: FlatButton(
-        key: Key(key),
-        child: Text(
-          text,
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            shadows: [
-              BoxShadow(offset: Offset(1, 1), color: Colors.grey, blurRadius: 1),
-            ],
-          ),
-        ),
-        onPressed: onPressed,
-      ),
-    );
   }
 }
