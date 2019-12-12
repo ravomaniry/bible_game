@@ -1,3 +1,4 @@
+import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
@@ -14,6 +15,7 @@ import 'package:flutter/foundation.dart';
 import 'package:redux/redux.dart';
 
 class WordsInWordViewModel {
+  final BibleVerse verse;
   final InventoryState inventory;
   final WordsInWordState wordsInWord;
   final ConfigState config;
@@ -29,6 +31,7 @@ class WordsInWordViewModel {
   final Function(Bonus) useBonus;
 
   WordsInWordViewModel({
+    @required this.verse,
     @required this.inventory,
     @required this.wordsInWord,
     @required this.config,
@@ -47,6 +50,7 @@ class WordsInWordViewModel {
   static WordsInWordViewModel converter(Store<AppState> store) {
     return WordsInWordViewModel(
       config: store.state.config,
+      verse: store.state.games.verse,
       inventory: store.state.inventory,
       wordsInWord: store.state.wordsInWord,
       selectHandler: (Char char) => store.dispatch(SelectWordsInWordChar(char)),

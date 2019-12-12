@@ -8,6 +8,7 @@ import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/actions.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
+import 'package:bible_game/redux/games/actions.dart';
 import 'package:bible_game/redux/games/state.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/inventory/state.dart';
@@ -29,7 +30,7 @@ import 'package:redux_thunk/redux_thunk.dart';
 void main() {
   testWidgets("Words in word intial state", (WidgetTester tester) async {
     final state = AppState(
-      games: GamesListState.emptyState(),
+      games: GamesState.emptyState(),
       assetBundle: AssetBundleMock.withDefaultValue(),
       dba: DbAdapterMock.withDefaultValues(),
       explorer: ExplorerState(),
@@ -47,7 +48,7 @@ void main() {
     await tester.pump();
     await tester.pump(Duration(milliseconds: 10));
     expect(store.state.error == null, true);
-    expect(store.state.wordsInWord.verse, BibleVerse.fromModel(await state.dba.getSingleVerse(1, 2, 3), "Genesisy"));
+    expect(store.state.games.verse, BibleVerse.fromModel(await state.dba.getSingleVerse(1, 2, 3), "Genesisy"));
     expect(store.state.wordsInWord.resolvedWords, []);
     expect(
       store.state.wordsInWord.wordsToFind.map((w) => w.value),
@@ -61,7 +62,7 @@ void main() {
 
   test("Get next verse", () async {
     final state = AppState(
-      games: GamesListState.emptyState(),
+      games: GamesState.emptyState(),
       dba: DbAdapterMock(),
       assetBundle: AssetBundleMock.withDefaultValue(),
       explorer: ExplorerState(),
@@ -82,7 +83,7 @@ void main() {
     store.dispatch(goToWordsInWord);
     await Future.delayed(Duration(seconds: 1));
     var verse = BibleVerse.fromModel(VerseModel(id: 1, book: 1, chapter: 1, verse: 1, text: "TestA"), "Genesisy");
-    expect(store.state.wordsInWord.verse, verse);
+    expect(store.state.games.verse, verse);
     verify(store.state.dba.getSingleVerse(1, 1, 1)).called(1);
     verify(store.state.dba.getBookById(1)).called(1);
     // Next should not call get book anymore
@@ -90,7 +91,7 @@ void main() {
     await loadWordsInWordNextVerse(store);
     store.dispatch(initializeWordsInWordState);
     await Future.delayed(Duration(seconds: 1));
-    expect(store.state.wordsInWord.verse, verse);
+    expect(store.state.games.verse, verse);
     expect(store.state.wordsInWord.wordsToFind.map((w) => w.value), verse.words.map((w) => w.value));
     expect(store.state.wordsInWord.resolvedWords, []);
     verify(store.state.dba.getSingleVerse(1, 1, 2)).called(1);
@@ -99,7 +100,7 @@ void main() {
     await loadWordsInWordNextVerse(store);
     store.dispatch(initializeWordsInWordState);
     await Future.delayed(Duration(seconds: 1));
-    expect(store.state.wordsInWord.verse,
+    expect(store.state.games.verse,
         BibleVerse.fromModel(VerseModel(id: 1, book: 1, chapter: 2, verse: 1, text: "TestC."), "Genesisy"));
     verify(store.state.dba.getSingleVerse(1, 2, 1)).called(1);
     verifyNever(store.state.dba.getBookById(1));
@@ -110,7 +111,7 @@ void main() {
       mainReducer,
       middleware: [thunkMiddleware],
       initialState: AppState(
-        games: GamesListState.emptyState(),
+        games: GamesState.emptyState(),
         dba: DbAdapterMock.withDefaultValues(),
         assetBundle: AssetBundleMock.withDefaultValue(),
         explorer: ExplorerState(),
@@ -147,7 +148,7 @@ void main() {
   testWidgets("In game interractivity - Tap + propose", (WidgetTester tester) async {
     final verse = BibleVerse.from(bookId: 1, book: "Matio", chapter: 1, verse: 1, text: "Ny teny ny Azy");
     final initialState = AppState(
-      games: GamesListState.emptyState(),
+      games: GamesState.emptyState(),
       route: Routes.wordsInWord,
       dba: DbAdapterMock.withDefaultValues(),
       assetBundle: AssetBundleMock.withDefaultValue(),
@@ -157,7 +158,7 @@ void main() {
       inventory: InventoryState.emptyState(),
     );
     final store = Store<AppState>(mainReducer, middleware: [thunkMiddleware], initialState: initialState);
-    store.dispatch(receiveVerse(verse, store.state.wordsInWord));
+    store.dispatch(UpdateGameVerse(verse));
     store.dispatch(initializeWordsInWordState);
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
       slots: Word.from("NYTENY", 0, false).chars,
@@ -206,14 +207,14 @@ void main() {
     expect(listEquals(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars), false);
     expect(store.state.wordsInWord.wordsToFind.map((w) => w.value), ["teny", "Azy"]);
     expect(store.state.wordsInWord.resolvedWords, [Word.from("Ny", 0, false).copyWith(resolved: true)]);
-    expect(store.state.wordsInWord.verse.words.map((w) => w.value), ["Ny", " ", "teny", " ", "ny", " ", "Azy"]);
+    expect(store.state.games.verse.words.map((w) => w.value), ["Ny", " ", "teny", " ", "ny", " ", "Azy"]);
   });
 
   testWidgets("Score and combo", (WidgetTester tester) async {
     final verse = BibleVerse.from(bookId: 1, book: "Matio", chapter: 1, verse: 1, text: "abcd efghi jkl");
     final initialState = AppState(
       route: Routes.wordsInWord,
-      games: GamesListState.emptyState(),
+      games: GamesState.emptyState(),
       dba: DbAdapterMock.withDefaultValues(),
       assetBundle: AssetBundleMock.withDefaultValue(),
       explorer: ExplorerState(),
@@ -223,7 +224,7 @@ void main() {
     );
     final store = Store<AppState>(mainReducer, middleware: [thunkMiddleware], initialState: initialState);
     store
-      ..dispatch(receiveVerse(verse, store.state.wordsInWord))
+      ..dispatch(UpdateGameVerse(verse))
       ..dispatch(initializeWordsInWordState)
       ..dispatch(UpdateWordsInWordState(
         store.state.wordsInWord.copyWith(
@@ -279,7 +280,7 @@ void main() {
   testWidgets("Click on bonuses", (WidgetTester tester) async {
     final verse = BibleVerse.from(book: "", bookId: 1, chapter: 1, verse: 1, text: "ABCDEFGHIJKLMNOPQRST");
     final state = AppState(
-      games: GamesListState.emptyState(),
+      games: GamesState.emptyState().copyWith(verse: verse),
       dba: DbAdapterMock.withDefaultValues(),
       assetBundle: AssetBundleMock.withDefaultValue(),
       explorer: ExplorerState(),
@@ -294,7 +295,6 @@ void main() {
       ),
       route: Routes.wordsInWord,
       wordsInWord: WordsInWordState(
-        verse: verse,
         slots: verse.words[0].chars,
         slotsBackup: [],
         cells: [],
@@ -312,38 +312,38 @@ void main() {
     // 1 - tap and tap again when there is no sold
     await tester.tap(find.byKey(Key("revealCharBonusBtn_1")));
     await tester.pump();
-    expect(store.state.wordsInWord.verse.words[0].chars.where((c) => !c.resolved).length, 19);
+    expect(store.state.games.verse.words[0].chars.where((c) => !c.resolved).length, 19);
     expect(store.state.inventory.revealCharBonus1, 0);
     await tester.tap(find.byKey(Key("revealCharBonusBtn_1")));
     await tester.pump();
-    expect(store.state.wordsInWord.verse.words[0].chars.where((c) => !c.resolved).length, 19);
+    expect(store.state.games.verse.words[0].chars.where((c) => !c.resolved).length, 19);
     expect(store.state.inventory.revealCharBonus1, 0);
     // 2
     await tester.pumpWidget(BibleGame(store));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_2")));
     await tester.pump();
-    expect(store.state.wordsInWord.verse.words[0].chars.where((c) => !c.resolved).length, 17);
+    expect(store.state.games.verse.words[0].chars.where((c) => !c.resolved).length, 17);
     expect(store.state.inventory.revealCharBonus2, 1);
     // 5
     await tester.pumpWidget(BibleGame(store));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_5")));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_5")));
     await tester.pump();
-    expect(store.state.wordsInWord.verse.words[0].chars.where((c) => !c.resolved).length, 7);
+    expect(store.state.games.verse.words[0].chars.where((c) => !c.resolved).length, 7);
     expect(store.state.inventory.revealCharBonus5, 3);
     // 10 and only 6 is left and ignore the last tap as there is nothing to do
     await tester.pumpWidget(BibleGame(store));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_10")));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_10")));
     await tester.pump();
-    expect(store.state.wordsInWord.verse.words[0].chars.where((c) => !c.resolved).length, 1);
+    expect(store.state.games.verse.words[0].chars.where((c) => !c.resolved).length, 1);
     expect(store.state.inventory.revealCharBonus10, 9);
     // Tap buttons when there is nothing to do
     await tester.tap(find.byKey(Key("revealCharBonusBtn_2")));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_1")));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_5")));
     await tester.pump();
-    expect(store.state.wordsInWord.verse.words[0].chars.where((c) => !c.resolved).length, 1);
+    expect(store.state.games.verse.words[0].chars.where((c) => !c.resolved).length, 1);
     expect(store.state.inventory.revealCharBonus10, 9);
     expect(store.state.inventory.money, 100);
 
@@ -354,7 +354,7 @@ void main() {
       revealCharBonus5: 0,
       revealCharBonus10: 0,
     )));
-    store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(verse: verse)));
+    store.dispatch(UpdateGameVerse(verse));
     // Tap buttons when there is nothing to do
     await tester.pump();
     await tester.tap(find.byKey(Key("revealCharBonusBtn_1")));
@@ -362,7 +362,7 @@ void main() {
     await tester.tap(find.byKey(Key("revealCharBonusBtn_5")));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_10")));
     await tester.pump();
-    expect(store.state.wordsInWord.verse.words[0].chars.where((c) => !c.resolved).length, 20);
+    expect(store.state.games.verse.words[0].chars.where((c) => !c.resolved).length, 20);
     expect(store.state.inventory.revealCharBonus1, 0);
     expect(store.state.inventory.revealCharBonus2, 0);
     expect(store.state.inventory.revealCharBonus5, 0);
@@ -375,7 +375,7 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         assetBundle: null,
-        games: GamesListState.emptyState(),
+        games: GamesState.emptyState(),
         config: ConfigState(screenWidth: 100),
         dba: DbAdapterMock.withDefaultValues(),
         route: Routes.wordsInWord,
@@ -390,33 +390,32 @@ void main() {
       ),
     );
     final verse = BibleVerse.from(text: "ABCDE EFGHI HIJKL MNOPQ");
-    store.dispatch(receiveVerse(verse, store.state.wordsInWord));
+    store.dispatch(UpdateGameVerse(verse));
     store.dispatch(initializeWordsInWordState);
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
-      verse: verse,
       wordsToFind: [
         verse.words[0].copyWith(bonus: RevealCharBonus(1, 0)),
         verse.words[2].copyWith(bonus: RevealCharBonus(2, 0)),
         verse.words[4].copyWith(bonus: RevealCharBonus(5, 0)),
       ],
     )));
-    expect(countUnrevealedWord(store.state.wordsInWord.verse.words), 20);
+    expect(countUnrevealedWord(store.state.games.verse.words), 20);
     // A B C D E: bonus = 1
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
       proposition: verse.words[0].chars,
     )));
     store.dispatch(proposeWordsInWord);
-    expect(countUnrevealedWord(store.state.wordsInWord.verse.words), 14);
+    expect(countUnrevealedWord(store.state.games.verse.words), 14);
     // E F G H I: bonus = 3
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
       proposition: verse.words[2].chars,
     )));
-    final prevUnrevealedCount = countUnrevealedWord([store.state.wordsInWord.verse.words[2]]);
+    final prevUnrevealedCount = countUnrevealedWord([store.state.games.verse.words[2]]);
     store.dispatch(proposeWordsInWord);
     if (prevUnrevealedCount == 5) {
-      expect(countUnrevealedWord(store.state.wordsInWord.verse.words), 7);
+      expect(countUnrevealedWord(store.state.games.verse.words), 7);
     } else {
-      expect(countUnrevealedWord(store.state.wordsInWord.verse.words), 8);
+      expect(countUnrevealedWord(store.state.games.verse.words), 8);
     }
   });
 }

@@ -15,7 +15,7 @@ class UpdateWordsInWordCells {
 }
 
 ThunkAction<AppState> recomputeCells = (Store<AppState> store) {
-  final cells = computeCells(store.state.wordsInWord.verse.words, store.state.config.screenWidth);
+  final cells = computeCells(store.state.games.verse.words, store.state.config.screenWidth);
   store.dispatch(UpdateWordsInWordCells(cells));
 };
 
@@ -24,7 +24,7 @@ class ComputeCells extends ThunkContainer {
 
   ComputeCells(this.screenWidth) {
     this.thunk = (Store<AppState> store) {
-      final cells = computeCells(store.state.wordsInWord.verse.words, screenWidth);
+      final cells = computeCells(store.state.games.verse.words, screenWidth);
       store.dispatch(UpdateWordsInWordCells(cells));
     };
   }

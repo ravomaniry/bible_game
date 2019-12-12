@@ -18,7 +18,7 @@ void main() {
       mainReducer,
       middleware: [thunkMiddleware],
       initialState: AppState(
-        games: GamesListState.emptyState(),
+        games: GamesState.emptyState(),
         assetBundle: AssetBundleMock.withDefaultValue(),
         dba: DbAdapterMock.withDefaultValues(),
         config: ConfigState.initialState(),

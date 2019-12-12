@@ -61,6 +61,7 @@ class GameListItem extends StatelessWidget {
               Text(_percentage),
             ],
           ),
+          Bonuses(_game),
         ],
       ),
     );
@@ -69,5 +70,57 @@ class GameListItem extends StatelessWidget {
   String get _percentage {
     final value = _game.resolvedVersesCount / _game.model.versesCount;
     return "${(100 * value).round()} %";
+  }
+}
+
+class Bonuses extends StatelessWidget {
+  final GameModelWrapper _game;
+
+  Bonuses(this._game);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        BonusItem("assets/images/wood_medal_1.png", _game.inventory.revealCharBonus1),
+        BonusItem("assets/images/wood_medal_2.png", _game.inventory.revealCharBonus2),
+        BonusItem("assets/images/wood_medal_5.png", _game.inventory.revealCharBonus5),
+        BonusItem("assets/images/wood_medal_10.png", _game.inventory.revealCharBonus10),
+      ],
+    );
+  }
+}
+
+class BonusItem extends StatelessWidget {
+  final String _imagePath;
+  final int _number;
+
+  BonusItem(this._imagePath, this._number);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 26,
+      height: 20,
+      margin: EdgeInsets.only(right: 10),
+      child: Stack(
+        children: [
+          Container(
+            margin: EdgeInsets.only(top: 4),
+            child: Align(
+              alignment: Alignment.bottomRight,
+              child: Image(
+                fit: BoxFit.fitHeight,
+                image: AssetImage(_imagePath),
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.topLeft,
+            child: Text("$_number"),
+          )
+        ],
+      ),
+    );
   }
 }

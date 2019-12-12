@@ -24,7 +24,7 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         dba: dba,
-        games: GamesListState.emptyState(),
+        games: GamesState.emptyState(),
         explorer: ExplorerState(),
         assetBundle: AssetBundleMock.withDefaultValue(),
         config: ConfigState.initialState(),
@@ -54,7 +54,7 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         dba: dba,
-        games: GamesListState.emptyState(),
+        games: GamesState.emptyState(),
         explorer: ExplorerState(),
         assetBundle: AssetBundleMock.withDefaultValue(),
         config: ConfigState.initialState(),
@@ -86,7 +86,7 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         dba: DbAdapterMock.withDefaultValues(),
-        games: GamesListState.emptyState(),
+        games: GamesState.emptyState(),
         explorer: ExplorerState(),
         assetBundle: AssetBundleMock.withDefaultValue(),
         config: ConfigState.initialState(),

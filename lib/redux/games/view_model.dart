@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:redux/redux.dart';
 
 class GamesListViewModel {
-  final GamesListState state;
+  final GamesState state;
   final Function() toggleDialog;
 
   GamesListViewModel({

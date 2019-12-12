@@ -19,6 +19,7 @@ class HomeHeader extends StatelessWidget {
         ),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           HomeButton(
             Icons.remove_red_eye,

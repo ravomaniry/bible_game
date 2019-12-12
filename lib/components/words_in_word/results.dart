@@ -22,7 +22,7 @@ class WordsInWordResult extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     checkScreenWidth(context);
-    final verse = _viewModel.wordsInWord.verse;
+    final verse = _viewModel.verse;
     final cells = _viewModel.wordsInWord.cells;
 
     if (verse != null && cells != null) {
@@ -41,7 +41,7 @@ class WordsInWordResult extends StatelessWidget {
   }
 
   Widget _buildCell(Cell cell) {
-    final word = _viewModel.wordsInWord.verse.words[cell.wordIndex];
+    final word = _viewModel.verse.words[cell.wordIndex];
     return _CellDisplay(word, cell);
   }
 }

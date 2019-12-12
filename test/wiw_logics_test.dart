@@ -93,7 +93,9 @@ void main() {
     final store = Store<AppState>(mainReducer,
         middleware: [thunkMiddleware],
         initialState: AppState(
-          games: GamesListState.emptyState(),
+          games: GamesState.emptyState().copyWith(
+            verse: BibleVerse.from(text: "Aza menatra"),
+          ),
           assetBundle: null,
           config: ConfigState(screenWidth: 100),
           dba: null,
@@ -104,7 +106,6 @@ void main() {
             proposition: Word.from("DE", 0, false).chars,
             slots: slots,
             slotsBackup: Word.from("ADCDE", 0, false).chars,
-            verse: BibleVerse.from(text: "Aza menatra"),
             wordsToFind: [Word.from("Aza", 0, false), Word.from("menatra", 2, false)],
           ),
         ));
@@ -133,16 +134,17 @@ void main() {
       mainReducer,
       middleware: [thunkMiddleware],
       initialState: AppState(
-          assetBundle: null,
-          games: GamesListState.emptyState(),
-          config: ConfigState(screenWidth: 100),
-          dba: null,
-          route: Routes.wordsInWord,
-          explorer: null,
-          inventory: InventoryState.emptyState(),
-          wordsInWord: WordsInWordState.emptyState().copyWith(
-            verse: BibleVerse.from(text: "Jesosy no fiainana"),
-          )),
+        assetBundle: null,
+        games: GamesState.emptyState().copyWith(
+          verse: BibleVerse.from(text: "Jesosy no fiainana"),
+        ),
+        config: ConfigState(screenWidth: 100),
+        dba: null,
+        route: Routes.wordsInWord,
+        explorer: null,
+        inventory: InventoryState.emptyState(),
+        wordsInWord: WordsInWordState.emptyState(),
+      ),
     );
     final bonus = RevealCharBonus(3, 0);
     store.dispatch(UseBonus(bonus, false).thunk);
@@ -152,7 +154,7 @@ void main() {
         )
         .map((w) => w.chars)
         .reduce((a, b) => [...a, ...b]);
-    final charsAfter = store.state.wordsInWord.verse.words
+    final charsAfter = store.state.games.verse.words
         .where((w) => !w.isSeparator && !w.resolved)
         .map((w) => w.chars)
         .reduce((a, b) => [...a, ...b]);

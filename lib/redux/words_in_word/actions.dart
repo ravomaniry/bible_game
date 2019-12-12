@@ -5,6 +5,7 @@ import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/error/actions.dart';
+import 'package:bible_game/redux/games/actions.dart';
 import 'package:bible_game/redux/router/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/redux/words_in_word/cells_action.dart';
@@ -33,12 +34,7 @@ class SelectWordsInWordChar {
   SelectWordsInWordChar(this.payload);
 }
 
-UpdateWordsInWordState receiveVerse(BibleVerse verse, WordsInWordState state) {
-  return UpdateWordsInWordState(state.copyWith(verse: verse));
-}
-
 final resetWordsInWord = UpdateWordsInWordState(WordsInWordState(
-  verse: null,
   cells: [],
   slots: [],
   slotsBackup: [],
@@ -70,9 +66,9 @@ Future<void> loadWordsInWordNextVerse(Store<AppState> store) async {
   var verseNum = 0;
   String bookName = "";
   int currentBookId = 0;
-  final currentVerse = store.state.wordsInWord.verse;
+  final currentVerse = store.state.games.verse;
 
-  if (store.state.wordsInWord.verse != null) {
+  if (store.state.games.verse != null) {
     bookId = currentVerse.bookId;
     chaptersNum = currentVerse.chapter;
     verseNum = currentVerse.verse;
@@ -92,7 +88,7 @@ Future<void> loadWordsInWordNextVerse(Store<AppState> store) async {
       store.dispatch(ReceiveError(Errors.unknownDbError));
     } else {
       final bibleVerse = BibleVerse.fromModel(verse, bookName);
-      store.dispatch(receiveVerse(bibleVerse, store.state.wordsInWord));
+      store.dispatch(UpdateGameVerse(bibleVerse));
     }
   } catch (e) {
     print(e);

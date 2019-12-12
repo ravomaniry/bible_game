@@ -18,7 +18,7 @@ void main() {
     final store = Store<AppState>(
       mainReducer,
       initialState: AppState(
-        games: GamesListState.emptyState(),
+        games: GamesState.emptyState(),
         dba: DbAdapterMock.withDefaultValues(),
         assetBundle: AssetBundleMock.withDefaultValue(),
         explorer: ExplorerState(),

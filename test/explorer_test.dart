@@ -17,7 +17,7 @@ void main() {
   testWidgets("Explorer widget test", (WidgetTester tester) async {
     final state = AppState(
       route: Routes.home,
-      games: GamesListState.emptyState(),
+      games: GamesState.emptyState(),
       assetBundle: AssetBundleMock.withDefaultValue(),
       dba: DbAdapterMock.withDefaultValues(),
       explorer: ExplorerState(),

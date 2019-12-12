@@ -4,7 +4,6 @@ import 'package:bible_game/models/word.dart';
 import 'package:flutter/foundation.dart';
 
 class WordsInWordState {
-  final BibleVerse verse;
   final List<Word> resolvedWords;
   final List<Word> wordsToFind;
   final List<List<Cell>> cells;
@@ -14,7 +13,6 @@ class WordsInWordState {
   final List<List<int>> slotsDisplayIndexes;
 
   WordsInWordState({
-    @required this.verse,
     @required this.cells,
     @required this.slots,
     @required this.slotsBackup,
@@ -26,7 +24,6 @@ class WordsInWordState {
 
   factory WordsInWordState.emptyState() {
     return WordsInWordState(
-      verse: BibleVerse(book: "Matio", bookId: 1, chapter: 1, verse: 1, words: [], text: ""),
       wordsToFind: [],
       resolvedWords: [],
       proposition: [],
@@ -37,7 +34,6 @@ class WordsInWordState {
   }
 
   WordsInWordState copyWith({
-    BibleVerse verse,
     List<List<Cell>> cells,
     List<Char> slots,
     List<Char> slotsBackup,
@@ -47,7 +43,6 @@ class WordsInWordState {
     List<List<int>> slotsDisplayIndexes,
   }) {
     return WordsInWordState(
-      verse: verse ?? this.verse,
       cells: cells ?? this.cells,
       slots: slots ?? this.slots,
       slotsBackup: slotsBackup ?? this.slotsBackup,

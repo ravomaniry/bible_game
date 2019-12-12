@@ -9,7 +9,6 @@ class TempNextSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final state = _viewModel.wordsInWord;
     return Container(
       decoration: BoxDecoration(
         image: DecorationImage(
@@ -31,13 +30,13 @@ class TempNextSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  state.verse.text,
+                  _viewModel.verse.text,
                   style: const TextStyle(fontSize: 16),
                 ),
                 Container(
                   alignment: Alignment.centerRight,
                   child: Text(
-                    "${state.verse.book} ${state.verse.chapter}: ${state.verse.verse}",
+                    "${_viewModel.verse.book} ${_viewModel.verse.chapter}: ${_viewModel.verse.verse}",
                     style: const TextStyle(fontStyle: FontStyle.italic),
                   ),
                 ),

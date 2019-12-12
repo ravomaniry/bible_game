@@ -25,7 +25,7 @@ class WordsInWord extends StatelessWidget {
   }
 
   Widget _body(BuildContext context, WordsInWordViewModel viewModel) {
-    if (viewModel.wordsInWord.verse == null) {
+    if (viewModel.verse == null) {
       return Text("Loading...");
     } else if (viewModel.wordsInWord.wordsToFind.isEmpty) {
       return TempNextSection(viewModel);

@@ -22,7 +22,7 @@ void main() {
         config: ConfigState.initialState(),
         explorer: ExplorerState(),
         inventory: InventoryState.emptyState(),
-        games: GamesListState.emptyState(),
+        games: GamesState.emptyState(),
       ),
       middleware: [thunkMiddleware],
     );

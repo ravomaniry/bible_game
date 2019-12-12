@@ -8,11 +8,10 @@ class Header extends StatelessWidget {
   Header(this._viewModel);
 
   String get content {
-    final state = _viewModel.wordsInWord;
-    if (state.verse == null) {
+    if (_viewModel.verse == null) {
       return "Words in word";
     }
-    return "${state.verse.book} ${state.verse.chapter}: ${state.verse.verse}";
+    return "${_viewModel.verse.book} ${_viewModel.verse.chapter}: ${_viewModel.verse.verse}";
   }
 
   @override

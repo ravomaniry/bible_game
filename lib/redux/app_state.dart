@@ -11,11 +11,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 class AppState {
+  final GamesState games;
+  final InventoryState inventory;
   final Routes route;
-  final GamesListState games;
   final WordsInWordState wordsInWord;
   final bool quitSingleGameDialog;
-  final InventoryState inventory;
   final DbAdapter dba;
   final bool dbIsReady;
   final ErrorState error;
@@ -49,7 +49,7 @@ class AppState {
         verseModel: VerseModel(),
         gameModel: GameModel(),
       ),
-      games: GamesListState(
+      games: GamesState(
         list: [],
         books: [],
         dialogIsOpen: false,

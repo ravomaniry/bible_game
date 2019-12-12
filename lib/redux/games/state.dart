@@ -1,8 +1,10 @@
 import 'package:bible_game/db/model.dart';
+import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/game.dart';
 import 'package:flutter/foundation.dart';
 
-class GamesListState {
+class GamesState {
+  final BibleVerse verse;
   final List<BookModel> books;
   final int activeIndex;
   final bool dialogIsOpen;
@@ -14,8 +16,9 @@ class GamesListState {
   final int endChapter;
   final int endVerse;
 
-  GamesListState({
+  GamesState({
     @required this.books,
+    @required this.verse,
     @required this.activeIndex,
     @required this.dialogIsOpen,
     @required this.list,
@@ -27,14 +30,16 @@ class GamesListState {
     this.endVerse = -1,
   });
 
-  factory GamesListState.emptyState() => GamesListState(
+  factory GamesState.emptyState() => GamesState(
+        verse: null,
         books: [],
         activeIndex: null,
         dialogIsOpen: false,
         list: [],
       );
 
-  GamesListState copyWith({
+  GamesState copyWith({
+    final BibleVerse verse,
     final List<BookModel> books,
     final int activeIndex,
     final bool dialogIsOpen,
@@ -46,7 +51,8 @@ class GamesListState {
     final int endChapter,
     final int endVerse,
   }) {
-    return GamesListState(
+    return GamesState(
+      verse: verse ?? this.verse,
       books: books ?? this.books,
       activeIndex: activeIndex ?? this.activeIndex,
       dialogIsOpen: dialogIsOpen ?? this.dialogIsOpen,
@@ -60,12 +66,12 @@ class GamesListState {
     );
   }
 
-  GamesListState copyWithListItem(GameModelWrapper item, int index) {
+  GamesState copyWithListItem(GameModelWrapper item, int index) {
     final list = List<GameModelWrapper>.from(this.list);
     return copyWith(list: list);
   }
 
-  GamesListState resetForm() {
+  GamesState resetForm() {
     return copyWith(
       startBook: -1,
       startChapter: -1,

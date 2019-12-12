@@ -2,6 +2,7 @@ import 'package:bible_game/db/model.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/explorer/actions.dart';
+import 'package:bible_game/redux/games/actions.dart';
 import 'package:bible_game/redux/router/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
@@ -32,11 +33,8 @@ class ExplorerViewModel {
       loadVerses: (BookModel book) {
         // store.dispatch(LoadVersesFor(book).thunk);
         // This is temporary code to redirect to the words in word section
-        store.dispatch(UpdateWordsInWordState(
-          WordsInWordState.emptyState().copyWith(
-            verse: BibleVerse.fromModel(VerseModel(id: 1, book: book.id, chapter: 1, verse: 1, text: ""), book.name),
-          ),
-        ));
+        final verse = BibleVerse.fromModel(VerseModel(id: 1, book: book.id, chapter: 1, verse: 1, text: ""), book.name);
+        store.dispatch(UpdateGameVerse(verse));
         store.dispatch(GoToAction(Routes.wordsInWord));
         store.dispatch(tempWordsInWordNext);
       },
