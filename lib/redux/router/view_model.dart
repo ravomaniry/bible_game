@@ -6,13 +6,11 @@ import 'package:redux/redux.dart';
 
 class RouterViewModel {
   final Routes route;
-  final bool calculatorIsReady;
   final bool wordsInWordIsReady;
   final Function(Routes) goTo;
 
   RouterViewModel({
     @required this.route,
-    @required this.calculatorIsReady,
     @required this.wordsInWordIsReady,
     @required this.goTo,
   });
@@ -21,7 +19,6 @@ class RouterViewModel {
     return RouterViewModel(
       route: store.state.route,
       goTo: (Routes route) => store.dispatch(GoToAction(route)),
-      calculatorIsReady: store.state.calculator != null,
       wordsInWordIsReady: store.state.wordsInWord != null,
     );
   }

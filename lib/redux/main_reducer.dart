@@ -1,5 +1,4 @@
 import 'package:bible_game/redux/app_state.dart';
-import 'package:bible_game/redux/calculator/reducer.dart';
 import 'package:bible_game/redux/config/reducer.dart';
 import 'package:bible_game/redux/db/reducer.dart';
 import 'package:bible_game/redux/error/reducer.dart';
@@ -20,7 +19,6 @@ AppState mainReducer(AppState state, action) {
     dbIsReady: dbReducer(state.dbIsReady, action),
     games: gamesListStateReducer(state.games, action),
     explorer: explorerReducer(state.explorer, action),
-    calculator: calculatorReducer(state.calculator, action),
     wordsInWord: wordsInWordReducer(state.wordsInWord, action),
     quitSingleGameDialog: quitSingleGameDialogReducer(state.quitSingleGameDialog, action),
     inventory: inventoryReducer(state.inventory, action),

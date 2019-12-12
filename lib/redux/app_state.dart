@@ -1,6 +1,5 @@
 import 'package:bible_game/db/db_adapter.dart';
 import 'package:bible_game/db/model.dart';
-import 'package:bible_game/redux/calculator/state.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/error/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
@@ -14,7 +13,6 @@ import 'package:flutter/services.dart';
 class AppState {
   final Routes route;
   final GamesListState games;
-  final CalculatorState calculator;
   final WordsInWordState wordsInWord;
   final bool quitSingleGameDialog;
   final InventoryState inventory;
@@ -27,7 +25,6 @@ class AppState {
 
   AppState({
     this.route = Routes.home,
-    this.calculator,
     this.wordsInWord,
     this.quitSingleGameDialog = false,
     this.dbIsReady = false,
@@ -54,6 +51,7 @@ class AppState {
       ),
       games: GamesListState(
         list: [],
+        books: [],
         dialogIsOpen: false,
         activeIndex: null,
       ),

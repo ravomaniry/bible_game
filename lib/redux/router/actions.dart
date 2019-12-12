@@ -12,7 +12,6 @@ class GoToAction {
 }
 
 final goToHome = GoToAction(Routes.home);
-final goToCalculator = GoToAction(Routes.calculator);
 
 void handleBackBtnPress(Store<AppState> store) {
   final bool Function(bool) handler = (bool yes) {

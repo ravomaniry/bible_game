@@ -5,9 +5,7 @@ import 'package:bible_game/redux/games/actions.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/utils/retry.dart';
-import 'package:redux/redux.dart';
 import 'package:bible_game/models/game.dart';
-import 'package:bible_game/redux/app_state.dart';
 
 final defaultInventory = InventoryState.emptyState().copyWith(
   revealCharBonus1: 10,
