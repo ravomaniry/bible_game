@@ -4,17 +4,20 @@ import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/models/thunk_container.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
-import 'package:bible_game/redux/games/actions.dart';
+import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/inventory/use_bonus_action.dart';
+import 'package:bible_game/redux/router/actions.dart';
+import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
 import 'package:bible_game/redux/words_in_word/cells_action.dart';
+import 'package:bible_game/redux/words_in_word/state.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
 ThunkAction<AppState> initializeWordsInWordState = (Store<AppState> store) {
-  final state = store.state.wordsInWord;
-  final wordsToFind = extractWordsToFind(store.state.games.verse.words).map(addRandomBonusToWord).toList();
+  final state = store.state.wordsInWord ?? WordsInWordState.emptyState();
+  final wordsToFind = extractWordsToFind(store.state.game.verse.words).map(addRandomBonusToWord).toList();
   var slots = generateEmptySlots(wordsToFind);
   slots = fillSlots(slots, wordsToFind);
   store.dispatch(UpdateWordsInWordState(state.copyWith(
@@ -24,6 +27,8 @@ ThunkAction<AppState> initializeWordsInWordState = (Store<AppState> store) {
     resolvedWords: [],
   )));
   store.dispatch(recomputeSlotsIndexes);
+  store.dispatch(recomputeCells);
+  store.dispatch(GoToAction(Routes.wordsInWord));
 };
 
 List<Word> extractWordsToFind(List<Word> words) {
@@ -171,7 +176,7 @@ ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
   final resolvedWords = List<Word>.from(state.resolvedWords);
   final proposition = state.proposition;
   Word revealed;
-  var verse = store.state.games.verse;
+  var verse = store.state.game.verse;
   var slots = List<Char>.from(state.slots);
   var slotsBackup = List<Char>.from(state.slotsBackup);
   bool hasFoundMatch = false;
@@ -208,6 +213,7 @@ ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
   }
   if (wordsToFind.length == 0) {
     store.dispatch(InvalidateCombo());
+    store.dispatch(UpdateGameResolvedState(true));
   }
 };
 

@@ -5,7 +5,7 @@ import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/error/actions.dart';
-import 'package:bible_game/redux/games/actions.dart';
+import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/router/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/redux/words_in_word/cells_action.dart';
@@ -66,9 +66,9 @@ Future<void> loadWordsInWordNextVerse(Store<AppState> store) async {
   var verseNum = 0;
   String bookName = "";
   int currentBookId = 0;
-  final currentVerse = store.state.games.verse;
+  final currentVerse = store.state.game.verse;
 
-  if (store.state.games.verse != null) {
+  if (store.state.game.verse != null) {
     bookId = currentVerse.bookId;
     chaptersNum = currentVerse.chapter;
     verseNum = currentVerse.verse;

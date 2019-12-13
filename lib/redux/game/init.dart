@@ -1,7 +1,7 @@
 import 'package:bible_game/db/db_adapter.dart';
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/redux/error/actions.dart';
-import 'package:bible_game/redux/games/actions.dart';
+import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/utils/retry.dart';
@@ -39,7 +39,7 @@ final defaultGames = [
     ),
   ).toModelHelper(),
   GameModelWrapper(
-    nextBook: 1,
+    nextBook: 5,
     nextChapter: 1,
     nextVerse: 1,
     startBookName: "Asan'ny Apostoly",

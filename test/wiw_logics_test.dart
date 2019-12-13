@@ -3,8 +3,7 @@ import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
-import 'package:bible_game/redux/games/state.dart';
-import 'package:bible_game/redux/inventory/state.dart';
+import 'package:bible_game/redux/game/state.dart';
 import 'package:bible_game/redux/inventory/use_bonus_action.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/redux/router/routes.dart';
@@ -93,14 +92,13 @@ void main() {
     final store = Store<AppState>(mainReducer,
         middleware: [thunkMiddleware],
         initialState: AppState(
-          games: GamesState.emptyState().copyWith(
+          game: GameState.emptyState().copyWith(
             verse: BibleVerse.from(text: "Aza menatra"),
           ),
           assetBundle: null,
           config: ConfigState(screenWidth: 100),
           dba: null,
           explorer: null,
-          inventory: InventoryState.emptyState(),
           wordsInWord: WordsInWordState(
             cells: [],
             proposition: Word.from("DE", 0, false).chars,
@@ -135,14 +133,13 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         assetBundle: null,
-        games: GamesState.emptyState().copyWith(
+        game: GameState.emptyState().copyWith(
           verse: BibleVerse.from(text: "Jesosy no fiainana"),
         ),
         config: ConfigState(screenWidth: 100),
         dba: null,
         route: Routes.wordsInWord,
         explorer: null,
-        inventory: InventoryState.emptyState(),
         wordsInWord: WordsInWordState.emptyState(),
       ),
     );
@@ -154,7 +151,7 @@ void main() {
         )
         .map((w) => w.chars)
         .reduce((a, b) => [...a, ...b]);
-    final charsAfter = store.state.games.verse.words
+    final charsAfter = store.state.game.verse.words
         .where((w) => !w.isSeparator && !w.resolved)
         .map((w) => w.chars)
         .reduce((a, b) => [...a, ...b]);

@@ -2,8 +2,7 @@ import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
-import 'package:bible_game/redux/games/state.dart';
-import 'package:bible_game/redux/inventory/state.dart';
+import 'package:bible_game/redux/game/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
@@ -21,8 +20,7 @@ void main() {
         assetBundle: AssetBundleMock.withDefaultValue(),
         config: ConfigState.initialState(),
         explorer: ExplorerState(),
-        inventory: InventoryState.emptyState(),
-        games: GamesState.emptyState(),
+        game: GameState.emptyState(),
       ),
       middleware: [thunkMiddleware],
     );
@@ -30,11 +28,11 @@ void main() {
     await tester.pumpWidget(BibleGame(store));
     await tester.pump(Duration(milliseconds: 10));
     // Check if the data loading is fine
-    expect(store.state.games.list.length, 1);
-    expect(store.state.games.books.length, 2);
+    expect(store.state.game.list.length, 1);
+    expect(store.state.game.books.length, 2);
     // Tap on the + button and open dialog
     await tester.tap(find.byKey(Key("showEditorDialog")));
     await tester.pump(Duration(seconds: 10));
-    expect(store.state.games.dialogIsOpen, true);
+    expect(store.state.game.dialogIsOpen, true);
   });
 }

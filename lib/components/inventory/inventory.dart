@@ -32,7 +32,8 @@ class Inventory extends StatelessWidget {
           ),
         ),
       );
+    } else {
+      return SizedBox.shrink();
     }
-    return SizedBox.shrink();
   }
 }

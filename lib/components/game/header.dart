@@ -1,9 +1,9 @@
-import 'package:bible_game/redux/home/view_model.dart';
+import 'package:bible_game/redux/game/view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class HomeHeader extends StatelessWidget {
-  final HomeViewModel _viewModel;
+  final GameViewModel _viewModel;
 
   HomeHeader(this._viewModel);
 

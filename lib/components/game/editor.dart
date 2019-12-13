@@ -1,4 +1,4 @@
-import 'package:bible_game/redux/games/view_model.dart';
+import 'package:bible_game/redux/game/view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -7,12 +7,12 @@ class GameEditor extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector(
-      converter: GamesListViewModel.converter,
+      converter: GameViewModel.converter,
       builder: _builder,
     );
   }
 
-  Widget _builder(BuildContext context, GamesListViewModel viewModel) {
+  Widget _builder(BuildContext context, GameViewModel viewModel) {
     if (viewModel.state.dialogIsOpen) {
       return Container(
         decoration: const BoxDecoration(

@@ -4,7 +4,6 @@ import 'package:bible_game/db/model.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:flutter/cupertino.dart';
 
-final _moneyJsonEntry = "money";
 final _revealCharBonusJsonEntry = "rcb_";
 
 int _getRevealCharBonusNum(int power, Map<String, dynamic> bonuses) {
@@ -53,13 +52,12 @@ class GameModelWrapper {
 
   factory GameModelWrapper.fromModel(GameModel model, List<BookModel> books) {
     final Map<String, dynamic> bonuses = json.decode(model.bonuses);
-    final int money = bonuses["$_moneyJsonEntry"] ?? 0;
     final int revealChar1 = _getRevealCharBonusNum(1, bonuses) ?? 0;
     final int revealChar2 = _getRevealCharBonusNum(2, bonuses) ?? 0;
     final int revealChar5 = _getRevealCharBonusNum(5, bonuses) ?? 0;
     final int revealChar10 = _getRevealCharBonusNum(10, bonuses) ?? 0;
     final inventory = InventoryState.emptyState().copyWith(
-      money: money,
+      money: model.money,
       revealCharBonus1: revealChar1,
       revealCharBonus2: revealChar2,
       revealCharBonus5: revealChar5,

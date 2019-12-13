@@ -3,8 +3,7 @@ import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
-import 'package:bible_game/redux/games/state.dart';
-import 'package:bible_game/redux/inventory/state.dart';
+import 'package:bible_game/redux/game/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
@@ -18,12 +17,11 @@ void main() {
     final store = Store<AppState>(
       mainReducer,
       initialState: AppState(
-        games: GamesState.emptyState(),
+        game: GameState.emptyState(),
         dba: DbAdapterMock.withDefaultValues(),
         assetBundle: AssetBundleMock.withDefaultValue(),
         explorer: ExplorerState(),
         config: ConfigState.initialState(),
-        inventory: InventoryState.emptyState(),
       ),
       middleware: [thunkMiddleware],
     );

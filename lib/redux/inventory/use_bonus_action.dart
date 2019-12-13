@@ -1,9 +1,8 @@
 import 'dart:math';
 import 'package:bible_game/models/word.dart';
-import 'package:bible_game/redux/games/actions.dart';
+import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
-import 'package:bible_game/redux/words_in_word/actions.dart';
 import 'package:redux/redux.dart';
 import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/models/thunk_container.dart';
@@ -32,7 +31,7 @@ class UseBonus extends ThunkContainer {
 
 bool useBonusInWordsInWord(Bonus bonus, Store<AppState> store) {
   if (bonus is RevealCharBonus) {
-    var verse = store.state.games.verse;
+    var verse = store.state.game.verse;
     final random = Random();
     final charValidator = (Char char) => !char.resolved;
     final wordValidator = (Word word) {
@@ -51,7 +50,7 @@ bool useBonusInWordsInWord(Bonus bonus, Store<AppState> store) {
         verse = verse.copyWith(words: words);
       }
     }
-    if (verse != store.state.games.verse) {
+    if (verse != store.state.game.verse) {
       store.dispatch(UpdateGameVerse(verse));
       return true;
     }

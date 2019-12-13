@@ -21,3 +21,15 @@ class UpdateGameVerse {
 }
 
 class ToggleGamesEditorDialog {}
+
+class UpdateActiveGameId {
+  final int payload;
+
+  UpdateActiveGameId(this.payload);
+}
+
+class UpdateGameResolvedState {
+  final bool payload;
+
+  UpdateGameResolvedState(this.payload);
+}

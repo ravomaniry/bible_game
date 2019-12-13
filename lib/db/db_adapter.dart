@@ -20,6 +20,8 @@ class DbAdapter {
 
   Future<List<GameModel>> get games => gameModel?.select()?.toList();
 
+  Future<int> saveGame(GameModel game) => game.save();
+
   Future<int> get booksCount => bookModel?.select(columnsToSelect: [BookModelFields.name.count()])?.toCount();
 
   Future<int> get versesCount => verseModel?.select(columnsToSelect: [VerseModelFields.id.count()])?.toCount();

@@ -2,11 +2,10 @@ import 'package:bible_game/db/model.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/explorer/actions.dart';
-import 'package:bible_game/redux/games/actions.dart';
+import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/router/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
-import 'package:bible_game/redux/words_in_word/state.dart';
 import 'package:flutter/material.dart';
 import 'package:redux/redux.dart';
 

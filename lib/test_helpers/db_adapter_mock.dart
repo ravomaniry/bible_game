@@ -27,6 +27,7 @@ class DbAdapterMock extends Mock implements DbAdapter {
     mockMethods(adapter, [
       "init",
       "games",
+      "saveGame",
       "games.saveAll",
       "books",
       "getBooksCount",
@@ -67,6 +68,9 @@ class DbAdapterMock extends Mock implements DbAdapter {
           ),
         ]),
       );
+    }
+    if (methods.contains("saveGame")) {
+      when(adapter.saveGame(any)).thenAnswer((_) => Future.value(0));
     }
     if (methods.contains("games.saveAll")) {
       when(adapter.gameModel.saveAll(any)).thenAnswer((_) => Future.value([]));

@@ -4,6 +4,7 @@ import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/actions.dart';
 import 'package:bible_game/redux/config/state.dart';
+import 'package:bible_game/redux/game/next_verse.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/inventory/use_bonus_action.dart';
@@ -25,7 +26,7 @@ class WordsInWordViewModel {
   final Function(double) updateScreenWidth;
   final Function(int) slotClickHandler;
   final Function() propose;
-  final Function() tempNextVerseHandler;
+  final Function() nextHandler;
   final Function() shuffleSlots;
   final Function() invalidateCombo;
   final Function(Bonus) useBonus;
@@ -41,7 +42,7 @@ class WordsInWordViewModel {
     @required this.updateScreenWidth,
     @required this.slotClickHandler,
     @required this.propose,
-    @required this.tempNextVerseHandler,
+    @required this.nextHandler,
     @required this.shuffleSlots,
     @required this.invalidateCombo,
     @required this.useBonus,
@@ -50,8 +51,8 @@ class WordsInWordViewModel {
   static WordsInWordViewModel converter(Store<AppState> store) {
     return WordsInWordViewModel(
       config: store.state.config,
-      verse: store.state.games.verse,
-      inventory: store.state.inventory,
+      verse: store.state.game.verse,
+      inventory: store.state.game.inventory,
       wordsInWord: store.state.wordsInWord,
       selectHandler: (Char char) => store.dispatch(SelectWordsInWordChar(char)),
       submitHandler: () => store.dispatch(SubmitWordsInWordResponse()),
@@ -63,7 +64,7 @@ class WordsInWordViewModel {
       },
       slotClickHandler: (int index) => store.dispatch(SlotClickHandler(index).thunk),
       propose: () => store.dispatch(proposeWordsInWord),
-      tempNextVerseHandler: () => store.dispatch(tempWordsInWordNext),
+      nextHandler: () => store.dispatch(saveGameAndLoadNextVerse),
       shuffleSlots: () => store.dispatch(shuffleSlotsAction),
       invalidateCombo: () => store.dispatch(InvalidateCombo()),
       useBonus: (Bonus bonus) => store.dispatch(UseBonus(bonus, true).thunk),

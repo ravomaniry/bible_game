@@ -2,7 +2,7 @@ import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
-import 'package:bible_game/redux/games/state.dart';
+import 'package:bible_game/redux/game/state.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
@@ -18,12 +18,13 @@ void main() {
       mainReducer,
       middleware: [thunkMiddleware],
       initialState: AppState(
-        games: GamesState.emptyState(),
+        game: GameState.emptyState().copyWith(
+          inventory: InventoryState.emptyState().copyWith(money: 500),
+        ),
         assetBundle: AssetBundleMock.withDefaultValue(),
         dba: DbAdapterMock.withDefaultValues(),
         config: ConfigState.initialState(),
         explorer: ExplorerState(),
-        inventory: InventoryState.emptyState().copyWith(money: 500),
       ),
     );
 
@@ -40,8 +41,8 @@ void main() {
     await tester.tap(find.byKey(Key("revealCharBonusBtn_1")));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_1")));
     await tester.pump(Duration(milliseconds: 200));
-    expect(store.state.inventory.money, 490);
-    expect(store.state.inventory.revealCharBonus1, 2);
+    expect(store.state.game.inventory.money, 490);
+    expect(store.state.game.inventory.revealCharBonus1, 2);
 
     await tester.tap(find.byKey(Key("revealCharBonusBtn_2")));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_5")));
@@ -52,18 +53,18 @@ void main() {
     await tester.tap(find.byKey(Key("revealCharBonusBtn_10")));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_10")));
 
-    expect(store.state.inventory.money, 393);
-    expect(store.state.inventory.revealCharBonus1, 2);
-    expect(store.state.inventory.revealCharBonus2, 1);
-    expect(store.state.inventory.revealCharBonus5, 3);
-    expect(store.state.inventory.revealCharBonus10, 4);
+    expect(store.state.game.inventory.money, 393);
+    expect(store.state.game.inventory.revealCharBonus1, 2);
+    expect(store.state.game.inventory.revealCharBonus2, 1);
+    expect(store.state.game.inventory.revealCharBonus5, 3);
+    expect(store.state.game.inventory.revealCharBonus10, 4);
 
     // Tap bonus button too many times
     for (int i = 0; i < 10; i++) {
       await tester.tap(find.byKey(Key("solveOneTurnBonusBtn")));
     }
-    expect(store.state.inventory.money, 43);
-    expect(store.state.inventory.solveOneTurnBonus, 7);
+    expect(store.state.game.inventory.money, 43);
+    expect(store.state.game.inventory.solveOneTurnBonus, 7);
 
     // close the dialog
     await tester.tap(find.byKey(Key("inventoryOkButton")));

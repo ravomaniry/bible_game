@@ -40,7 +40,7 @@ class IncrementMoney extends ThunkContainer {
 
   IncrementMoney(this._revealedWord) {
     this.thunk = (Store<AppState> store) {
-      final state = store.state.inventory;
+      final state = store.state.game.inventory;
       final nextMoney = state.money + _revealedWord.chars.length * state.combo;
       int nextCombo = 1;
       if (state.combo > 1) {

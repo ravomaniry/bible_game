@@ -1,9 +1,9 @@
-import 'package:bible_game/components/home/editor.dart';
-import 'package:bible_game/components/home/games_list.dart';
-import 'package:bible_game/components/home/header.dart';
+import 'package:bible_game/components/game/editor.dart';
+import 'package:bible_game/components/game/games_list.dart';
+import 'package:bible_game/components/game/header.dart';
 import 'package:bible_game/components/loader.dart';
 import 'package:bible_game/redux/app_state.dart';
-import 'package:bible_game/redux/home/view_model.dart';
+import 'package:bible_game/redux/game/view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -11,14 +11,14 @@ import 'package:flutter_redux/flutter_redux.dart';
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, HomeViewModel>(
+    return StoreConnector<AppState, GameViewModel>(
       key: Key("home"),
       builder: _builder,
-      converter: HomeViewModel.converter,
+      converter: GameViewModel.converter,
     );
   }
 
-  Widget _builder(BuildContext context, HomeViewModel viewModel) {
+  Widget _builder(BuildContext context, GameViewModel viewModel) {
     if (viewModel.isReady) {
       return Scaffold(
         body: Container(

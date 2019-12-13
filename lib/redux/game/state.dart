@@ -1,12 +1,13 @@
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/game.dart';
+import 'package:bible_game/redux/inventory/state.dart';
 import 'package:flutter/foundation.dart';
 
-class GamesState {
+class GameState {
   final BibleVerse verse;
   final List<BookModel> books;
-  final int activeIndex;
+  final int activeId;
   final bool dialogIsOpen;
   final List<GameModelWrapper> list;
   final int startBook;
@@ -15,33 +16,40 @@ class GamesState {
   final int endBook;
   final int endChapter;
   final int endVerse;
+  final bool isResolved;
+  final InventoryState inventory;
 
-  GamesState({
+  GameState({
     @required this.books,
     @required this.verse,
-    @required this.activeIndex,
+    @required this.activeId,
     @required this.dialogIsOpen,
     @required this.list,
+    @required this.inventory,
     this.startBook = -1,
     this.startChapter = -1,
     this.startVerse = -1,
     this.endBook = -1,
     this.endChapter = -1,
     this.endVerse = -1,
+    this.isResolved = false,
   });
 
-  factory GamesState.emptyState() => GamesState(
+  factory GameState.emptyState() => GameState(
         verse: null,
         books: [],
-        activeIndex: null,
+        activeId: null,
         dialogIsOpen: false,
         list: [],
+        inventory: InventoryState.emptyState(),
       );
 
-  GamesState copyWith({
+  GameState copyWith({
+    final bool isResolved,
     final BibleVerse verse,
     final List<BookModel> books,
-    final int activeIndex,
+    final InventoryState inventory,
+    final int activeId,
     final bool dialogIsOpen,
     final List<GameModelWrapper> list,
     final int startBook,
@@ -51,10 +59,12 @@ class GamesState {
     final int endChapter,
     final int endVerse,
   }) {
-    return GamesState(
+    return GameState(
+      isResolved: isResolved ?? this.isResolved,
       verse: verse ?? this.verse,
       books: books ?? this.books,
-      activeIndex: activeIndex ?? this.activeIndex,
+      inventory: inventory ?? this.inventory,
+      activeId: activeId ?? this.activeId,
       dialogIsOpen: dialogIsOpen ?? this.dialogIsOpen,
       list: list ?? this.list,
       startBook: startBook ?? this.startBook,
@@ -66,12 +76,12 @@ class GamesState {
     );
   }
 
-  GamesState copyWithListItem(GameModelWrapper item, int index) {
+  GameState copyWithListItem(GameModelWrapper item, int index) {
     final list = List<GameModelWrapper>.from(this.list);
     return copyWith(list: list);
   }
 
-  GamesState resetForm() {
+  GameState resetForm() {
     return copyWith(
       startBook: -1,
       startChapter: -1,
@@ -80,5 +90,9 @@ class GamesState {
       endChapter: -1,
       endVerse: -1,
     );
+  }
+
+  GameState resolvedState() {
+    return copyWith(isResolved: true);
   }
 }

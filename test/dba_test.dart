@@ -3,9 +3,8 @@ import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
-import 'package:bible_game/redux/games/init.dart';
-import 'package:bible_game/redux/games/state.dart';
-import 'package:bible_game/redux/inventory/state.dart';
+import 'package:bible_game/redux/game/init.dart';
+import 'package:bible_game/redux/game/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
@@ -24,11 +23,10 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         dba: dba,
-        games: GamesState.emptyState(),
+        game: GameState.emptyState(),
         explorer: ExplorerState(),
         assetBundle: AssetBundleMock.withDefaultValue(),
         config: ConfigState.initialState(),
-        inventory: InventoryState.emptyState(),
       ),
     );
     when(dba.init()).thenAnswer((_) => Future.value(false));
@@ -54,11 +52,10 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         dba: dba,
-        games: GamesState.emptyState(),
+        game: GameState.emptyState(),
         explorer: ExplorerState(),
         assetBundle: AssetBundleMock.withDefaultValue(),
         config: ConfigState.initialState(),
-        inventory: InventoryState.emptyState(),
       ),
     );
     when(dba.init()).thenAnswer((_) => Future.value(true));
@@ -77,7 +74,7 @@ void main() {
     verify(dba.verseModel.saveAll(any)).called(1);
     verify(dba.gameModel.saveAll(any)).called(1);
     expect(store.state.dbIsReady, true);
-    expect(store.state.games.list.length, defaultGames.length);
+    expect(store.state.game.list.length, defaultGames.length);
   });
 
   testWidgets("Initial data loading", (WidgetTester tester) async {
@@ -86,11 +83,10 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         dba: DbAdapterMock.withDefaultValues(),
-        games: GamesState.emptyState(),
+        game: GameState.emptyState(),
         explorer: ExplorerState(),
         assetBundle: AssetBundleMock.withDefaultValue(),
         config: ConfigState.initialState(),
-        inventory: InventoryState.emptyState(),
       ),
     );
 
@@ -98,9 +94,9 @@ void main() {
     await tester.pumpWidget(BibleGame(store));
     await tester.pump(Duration(milliseconds: 10));
     expect(store.state.dbIsReady, true);
-    expect(store.state.games.list.length, 1);
-    expect(store.state.games.books.length, 2);
-    expect(store.state.games.list[0].startBookName, "Matio");
-    expect(store.state.games.list[0].endBookName, "Matio");
+    expect(store.state.game.list.length, 1);
+    expect(store.state.game.books.length, 2);
+    expect(store.state.game.list[0].startBookName, "Matio");
+    expect(store.state.game.list[0].endBookName, "Matio");
   });
 }
