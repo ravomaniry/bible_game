@@ -98,9 +98,13 @@ void main() {
 
     final game1Button = find.byKey(Key("game_1"));
     final game2Button = find.byKey(Key("game_2"));
+    final wordsInWord = find.byKey(Key("wordsInWord"));
+    final solutionScreen = find.byKey(Key("solutionScreen"));
+    final inventoryDialog = find.byKey(Key("inventoryDialog"));
+    final inventoryOkBtn = find.byKey(Key("inventoryOkButton"));
     expect(game1Button, findsOneWidget);
     expect(game2Button, findsOneWidget);
-
+    // select game 1
     await tester.tap(game1Button);
     await tester.pump(Duration(milliseconds: 10));
     // 1- game verse and game index is updated
@@ -134,9 +138,9 @@ void main() {
     await tester.pump();
     expect(store.state.wordsInWord.wordsToFind, []);
     expect(store.state.game.isResolved, true);
-    expect(store.state.game.list[0].model.money, store.state.game.inventory.money);
-    expect(find.byKey(Key("solutionScreen")), findsOneWidget);
-    expect(find.byKey(Key("wordsInWord")), findsNothing);
+    expect(store.state.game.inventory.money, 9);
+    expect(solutionScreen, findsOneWidget);
+    expect(wordsInWord, findsNothing);
 
     // => click on next
     when(dba.getSingleVerse(1, 1, 2)).thenAnswer(
@@ -150,12 +154,19 @@ void main() {
     );
     await tester.tap(find.byKey(Key("nextButton")));
     await tester.pump(Duration(milliseconds: 10));
-    // Increment and save everything
-    final model = store.state.game.list[0];
-    expect(model.resolvedVersesCount, 1);
+    // Increment and save everything => load next verse => save the game in db
+    final game = store.state.game.list[0];
+    expect(game.resolvedVersesCount, 1);
+    expect(game.model.money, 9);
     verify(dba.saveGame(any)).called(1);
+    expect(game.nextVerse, 2);
+    expect(store.state.game.verse.words[0].value, "ISIKA");
 
-    // complete a single game => load next verse
-    //                        => save the game in db
+    // show the bonus screen and save game in db when closing the dialog
+    expect(inventoryDialog, findsOneWidget);
+    await tester.tap(inventoryOkBtn);
+    await tester.pump();
+    expect(inventoryDialog, findsNothing);
+    expect(wordsInWord, findsOneWidget);
   });
 }

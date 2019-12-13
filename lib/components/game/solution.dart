@@ -27,48 +27,50 @@ class _SolutionBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     final verse = _viewModel.state.verse;
 
-    return Container(
-      key: Key("solutionScreen"),
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          fit: BoxFit.fitWidth,
-          image: AssetImage("assets/images/forest.jpg"),
-        ),
-      ),
-      child: Column(
-        children: <Widget>[
-          Expanded(child: Divider()),
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: const Color.fromARGB(200, 255, 255, 255),
-            ),
-            margin: const EdgeInsets.all(10),
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  verse.text,
-                  style: const TextStyle(fontSize: 16),
-                ),
-                Container(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    "${verse.book} ${verse.chapter}: ${verse.verse}",
-                    style: const TextStyle(fontStyle: FontStyle.italic),
-                  ),
-                ),
-                RaisedButton(
-                  key: Key("nextButton"),
-                  onPressed: _viewModel.nextHandler,
-                  child: Text("Next"),
-                )
-              ],
-            ),
+    return Scaffold(
+      body: Container(
+        key: Key("solutionScreen"),
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            fit: BoxFit.fitWidth,
+            image: AssetImage("assets/images/forest.jpg"),
           ),
-          Expanded(child: Divider()),
-        ],
+        ),
+        child: Column(
+          children: <Widget>[
+            Expanded(child: Divider()),
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: const Color.fromARGB(200, 255, 255, 255),
+              ),
+              margin: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    verse.text,
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                  Container(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      "${verse.book} ${verse.chapter}: ${verse.verse}",
+                      style: const TextStyle(fontStyle: FontStyle.italic),
+                    ),
+                  ),
+                  RaisedButton(
+                    key: Key("nextButton"),
+                    onPressed: _viewModel.nextHandler,
+                    child: Text("Next"),
+                  )
+                ],
+              ),
+            ),
+            Expanded(child: Divider()),
+          ],
+        ),
       ),
     );
   }

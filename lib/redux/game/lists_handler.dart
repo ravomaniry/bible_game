@@ -51,7 +51,6 @@ ThunkAction<AppState> saveActiveGame = (Store<AppState> store) async {
     final nextGame = GameModelWrapper.fromModel(model, state.books);
     final nextList = getUpdatedGamesList(nextGame, state.list, state.activeId);
     store.dispatch(ReceiveGamesList(nextList));
-    print("********** Game saved ${model.id}");
   } catch (e) {
     store.dispatch(Errors.unknownDbError);
     print("%%%%%%%%%%%%% error in saveActiveGame ");

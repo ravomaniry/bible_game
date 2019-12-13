@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/game/lists_handler.dart';
+import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:redux/redux.dart';
 import 'package:bible_game/db/db_adapter.dart';
@@ -10,6 +11,9 @@ import 'package:bible_game/redux/app_state.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
 ThunkAction<AppState> saveGameAndLoadNextVerse = (Store<AppState> store) async {
+  store.dispatch(UpdateGameResolvedState(false));
+  store.dispatch(OpenInventoryDialog(false));
+
   try {
     final game = store.state.game.list.firstWhere((g) => g.model.id == store.state.game.activeId);
     final nextVerse = await _getNextVerse(game.nextBook, game.nextChapter, game.nextVerse, store.state.dba);
@@ -18,6 +22,7 @@ ThunkAction<AppState> saveGameAndLoadNextVerse = (Store<AppState> store) async {
       nextBook: nextVerse.book,
       nextChapter: nextVerse.chapter,
       nextVerse: nextVerse.verse,
+      resolvedVersesCount: game.resolvedVersesCount + 1,
     );
     store.dispatch(UpdateGameVerse(BibleVerse.fromModel(nextVerse, nextBookName)));
     store.dispatch(initializeWordsInWordState);

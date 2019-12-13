@@ -98,7 +98,7 @@ class GameModelWrapper {
       endChapter: model.endChapter,
       endVerse: model.endVerse,
       versesCount: model.versesCount,
-      resolvedVersesCount: -resolvedVersesCount,
+      resolvedVersesCount: resolvedVersesCount,
       nextBook: nextBook,
       nextChapter: nextChapter,
       nextVerse: nextVerse,
