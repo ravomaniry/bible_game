@@ -52,11 +52,6 @@ final ThunkAction<AppState> goToWordsInWord = (Store<AppState> store) async {
   store.dispatch(initializeWordsInWordState);
 };
 
-final ThunkAction<AppState> tempWordsInWordNext = (Store<AppState> store) async {
-  await loadWordsInWordNextVerse(store);
-  store.dispatch(recomputeCells);
-  store.dispatch(initializeWordsInWordState);
-};
 
 Future<void> loadWordsInWordNextVerse(Store<AppState> store) async {
   store.dispatch(ResetWordsInWordVerse());
