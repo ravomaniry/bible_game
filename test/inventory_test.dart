@@ -1,3 +1,4 @@
+import 'package:bible_game/db/model.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
@@ -9,34 +10,68 @@ import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
 void main() {
   testWidgets("Invenrory - Basic flow", (WidgetTester tester) async {
+    final dba = DbAdapterMock.mockMethods(DbAdapterMock(), [
+      "init",
+      "saveGame",
+      "games.saveAll",
+      "books",
+      "getBooksCount",
+      "getVersesCount",
+      "getBooks",
+      "getVerses",
+      "getSingleVerse",
+      "verses.saveAll",
+      "books.saveAll",
+      "getBookById",
+      "getBookVersesCount",
+    ]);
     final store = Store<AppState>(
       mainReducer,
       middleware: [thunkMiddleware],
       initialState: AppState(
         game: GameState.emptyState().copyWith(
-          inventory: InventoryState.emptyState().copyWith(money: 500),
+          inventory: InventoryState.emptyState(),
         ),
         assetBundle: AssetBundleMock.withDefaultValue(),
-        dba: DbAdapterMock.withDefaultValues(),
+        dba: dba,
         config: ConfigState.initialState(),
         explorer: ExplorerState(),
       ),
     );
-
-    final inventoryFinder = find.byKey(Key("inventoryDialog"));
+    final game = GameModel(
+      id: 1,
+      name: "A",
+      money: 500,
+      bonuses: "{}",
+      resolvedVersesCount: 0,
+      versesCount: 10,
+      nextVerse: 1,
+      nextBook: 1,
+      nextChapter: 1,
+      endVerse: 10,
+      endChapter: 10,
+      endBook: 1,
+      startBook: 1,
+      startVerse: 1,
+      startChapter: 1,
+    );
+    when(dba.games).thenAnswer((_) => Future.value([game]));
 
     await tester.pumpWidget(BibleGame(store));
     await tester.pump(Duration(milliseconds: 100));
+    final inventoryFinder = find.byKey(Key("inventoryDialog"));
+
+    // Select the first game and to the shopping there
     expect(inventoryFinder, findsNothing);
-    await tester.tap(find.byKey(Key("inventoryBtn")));
+    await tester.tap(find.byKey(Key("game_1")));
     await tester.pump();
     expect(inventoryFinder, findsOneWidget);
-
     // buy bonuses
     await tester.tap(find.byKey(Key("revealCharBonusBtn_1")));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_1")));

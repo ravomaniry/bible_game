@@ -16,8 +16,7 @@ import 'package:redux_thunk/redux_thunk.dart';
 
 void main() {
   testWidgets("Db initialization failure", (WidgetTester tester) async {
-    final dba = DbAdapterMock();
-    DbAdapterMock.mockMethods(dba, ["verses.saveAll", "books.saveAll"]);
+    final dba = DbAdapterMock.mockMethods(DbAdapterMock(), ["verses.saveAll", "books.saveAll"]);
     final store = Store<AppState>(
       mainReducer,
       middleware: [thunkMiddleware],

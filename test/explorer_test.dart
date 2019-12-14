@@ -41,21 +41,21 @@ void main() {
     await tester.pump();
     expect(explorerFinder, findsOneWidget);
     expect(store.state.dbIsReady, true);
-    expect(store.state.explorer.books.length, 2);
+    expect(store.state.game.books.length, 2);
     expect(booksList, findsOneWidget);
     expect(verseDetails, findsNothing);
 
-//    await tester.tap(find.byKey(Key("1")));
-//    await tester.pump(Duration(seconds: 1));
-//    expect(store.state.explorer.activeBook.id, 1);
-//    expect(store.state.explorer.verses.length, 1);
-//    expect(booksList, findsNothing);
-//    expect(verseDetails, findsOneWidget);
-//
-//    await tester.tap(find.byKey(Key("verseDetailsBackBtn")));
-//    await tester.pump();
-//    expect(state.explorer.activeBook, null);
-//    expect(booksList, findsOneWidget);
-//    expect(verseDetails, findsNothing);
+    await tester.tap(find.byKey(Key("1")));
+    await tester.pump(Duration(seconds: 1));
+    expect(store.state.explorer.activeBook.id, 1);
+    expect(store.state.explorer.verses.length, 1);
+    expect(booksList, findsNothing);
+    expect(verseDetails, findsOneWidget);
+
+    await tester.tap(find.byKey(Key("verseDetailsBackBtn")));
+    await tester.pump();
+    expect(state.explorer.activeBook, null);
+    expect(booksList, findsOneWidget);
+    expect(verseDetails, findsNothing);
   });
 }
