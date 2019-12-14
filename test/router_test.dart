@@ -12,28 +12,6 @@ import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
 void main() {
-  testWidgets("Router basic go to Words in word", (WidgetTester tester) async {
-    final store = Store<AppState>(
-      mainReducer,
-      middleware: [thunkMiddleware],
-      initialState: AppState(
-        game: GameState.emptyState(),
-        dba: DbAdapterMock.withDefaultValues(),
-        assetBundle: AssetBundleMock(),
-        explorer: ExplorerState(),
-        config: ConfigState.initialState(),
-      ),
-    );
-    final wordsInWordFinder = find.byKey(Key("wordsInWord"));
-    final goToWordsInWordBtn = find.byKey(Key("goToWordsInWordBtn"));
-
-    await tester.pumpWidget(BibleGame(store));
-    await tester.pump(Duration(seconds: 1));
-    await tester.tap(goToWordsInWordBtn);
-    await tester.pump();
-    expect(wordsInWordFinder, findsOneWidget);
-  });
-
   testWidgets("Router basic go to Explorer", (WidgetTester tester) async {
     final store = Store<AppState>(
       mainReducer,

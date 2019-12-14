@@ -25,17 +25,7 @@ class HomeHeader extends StatelessWidget {
             Icons.remove_red_eye,
             "goToExplorer",
             _viewModel.goToExplorer,
-          ),
-          HomeButton(
-            Icons.add_shopping_cart,
-            "inventoryBtn",
-            _viewModel.openInventory,
-          ),
-          HomeButton(
-            Icons.videogame_asset,
-            "goToWordsInWordBtn",
-            _viewModel.goToWordsInWord,
-          ),
+          )
         ],
       ),
     );

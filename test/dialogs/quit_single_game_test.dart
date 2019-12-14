@@ -3,11 +3,13 @@ import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
+import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/game/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
 import 'package:flutter/material.dart';
+import 'package:mockito/mockito.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:redux_thunk/redux_thunk.dart';
@@ -26,7 +28,6 @@ void main() {
       middleware: [thunkMiddleware],
     );
     await tester.pumpWidget(BibleGame(store));
-    final wordsInWodBtn = find.byKey(Key("goToWordsInWordBtn"));
     final wordsInWordScreen = find.byKey(Key("wordsInWord"));
     final dialogScreen = find.byKey(Key("confirmQuitSingleGame"));
     final loaderScreen = find.byKey(Key("loader"));
@@ -34,22 +35,31 @@ void main() {
     final inventoryScreen = find.byKey(Key("inventoryDialog"));
     final yesBtn = find.byKey(Key("dialogYesBtn"));
     final noBtn = find.byKey(Key("dialogNoBtn"));
-    final inventoryBtn = find.byKey(Key("inventoryBtn"));
 
+    // On startup => splash screen is shown
     expect(loaderScreen, findsOneWidget);
     await tester.pump(Duration(seconds: 1));
     expect(homeScreen, findsOneWidget);
-    await tester.tap(wordsInWodBtn);
-    await tester.pump();
+    // Go to game 1 -- details are tested in navigation test
+    await tester.tap(find.byKey(Key("game_1")));
+    await tester.pump(Duration(milliseconds: 10));
     expect(homeScreen, findsNothing);
-    expect(wordsInWordScreen, findsOneWidget);
-    // Press back button twice
+    expect(inventoryScreen, findsOneWidget);
+
+    // Press back button on Inventory goes back to home
     await BackButtonInterceptor.popRoute();
     await tester.pump();
-    expect(dialogScreen, findsOneWidget);
-    await BackButtonInterceptor.popRoute();
-    await tester.pump();
+    expect(inventoryScreen, findsNothing);
+    expect(homeScreen, findsOneWidget);
     expect(dialogScreen, findsNothing);
+
+    // Open game again and close inventory
+    await tester.tap(find.byKey(Key("game_1")));
+    await tester.pump(Duration(milliseconds: 10));
+    expect(inventoryScreen, findsOneWidget);
+    await tester.tap(find.byKey(Key("inventoryOkButton")));
+    await tester.pump();
+
     // Open dialog and tap NO
     await BackButtonInterceptor.popRoute();
     await tester.pump();
@@ -63,12 +73,18 @@ void main() {
     await tester.pump();
     expect(homeScreen, findsOneWidget);
 
-    // Open inventory and press back btn and tap yes
-    await tester.tap(inventoryBtn);
-    await tester.pump();
-    expect(inventoryScreen, findsOneWidget);
+    // Go to game 1 => close dialog => resolve game => press back => should go to home
+    verify(store.state.dba.saveGame(any)).called(1);
+    await tester.tap(find.byKey(Key("game_1")));
+    await tester.pump(Duration(milliseconds: 10));
+    await tester.tap(find.byKey(Key("inventoryOkButton")));
+    await tester.pump(Duration(milliseconds: 10));
+    store.dispatch(UpdateGameResolvedState(true));
+    await tester.pump(Duration(milliseconds: 10));
+    expect(find.byKey(Key("solutionScreen")), findsOneWidget);
     await BackButtonInterceptor.popRoute();
     await tester.pump(Duration(milliseconds: 10));
-    expect(inventoryScreen, findsNothing);
+    expect(homeScreen, findsOneWidget);
+    verify(store.state.dba.saveGame(any)).called(2);
   });
 }

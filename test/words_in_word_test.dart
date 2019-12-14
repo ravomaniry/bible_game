@@ -1,4 +1,3 @@
-import 'package:bible_game/db/model.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/bonus.dart';
@@ -23,87 +22,10 @@ import 'package:bible_game/test_helpers/db_adapter_mock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
 void main() {
-  testWidgets("Words in word intial state", (WidgetTester tester) async {
-    final state = AppState(
-      game: GameState.emptyState(),
-      assetBundle: AssetBundleMock.withDefaultValue(),
-      dba: DbAdapterMock.withDefaultValues(),
-      explorer: ExplorerState(),
-      config: ConfigState.initialState(),
-    );
-    final store = Store<AppState>(
-      mainReducer,
-      initialState: state,
-      middleware: [thunkMiddleware],
-    );
-    await tester.pumpWidget(BibleGame(store));
-    await tester.pump(Duration(milliseconds: 10)); // let the event loop tick to resolve futures
-    await tester.tap(find.byKey(Key("goToWordsInWordBtn")));
-    await tester.pump();
-    await tester.pump(Duration(milliseconds: 10));
-    expect(store.state.error == null, true);
-    expect(store.state.game.verse, BibleVerse.fromModel(await state.dba.getSingleVerse(1, 2, 3), "Genesisy"));
-    expect(store.state.wordsInWord.resolvedWords, []);
-    expect(
-      store.state.wordsInWord.wordsToFind.map((w) => w.value),
-      ["Ny", "filazana", "razan", "i", "Jesosy", "Kristy"],
-    );
-    expect(store.state.wordsInWord.slots.length, 8);
-    expect(store.state.wordsInWord.slotsBackup.length, 8);
-    verify(store.state.dba.getSingleVerse(1, 1, 1)).called(1);
-    verify(store.state.dba.getBookById(1)).called(1);
-  });
-
-  test("Get next verse", () async {
-    final state = AppState(
-      game: GameState.emptyState(),
-      dba: DbAdapterMock(),
-      assetBundle: AssetBundleMock.withDefaultValue(),
-      explorer: ExplorerState(),
-      config: ConfigState.initialState(),
-    );
-    final store = Store<AppState>(mainReducer, initialState: state, middleware: [thunkMiddleware]);
-
-    when(state.dba.getBookById(1)).thenAnswer((_) => Future.value(BookModel(id: 1, name: "Genesisy", chapters: 10)));
-    when(state.dba.getSingleVerse(1, 1, 1))
-        .thenAnswer((_) => Future.value(VerseModel(id: 1, book: 1, chapter: 1, verse: 1, text: "TestA")));
-    when(state.dba.getSingleVerse(1, 1, 2))
-        .thenAnswer((_) => Future.value(VerseModel(id: 1, book: 1, chapter: 1, verse: 2, text: "TestB")));
-    when(state.dba.getSingleVerse(1, 1, 3)).thenAnswer((_) => Future.value(null));
-    when(state.dba.getSingleVerse(1, 2, 1))
-        .thenAnswer((_) => Future.value(VerseModel(id: 1, book: 1, chapter: 2, verse: 1, text: "TestC.")));
-
-    store.dispatch(goToWordsInWord);
-    await Future.delayed(Duration(seconds: 1));
-    var verse = BibleVerse.fromModel(VerseModel(id: 1, book: 1, chapter: 1, verse: 1, text: "TestA"), "Genesisy");
-    expect(store.state.game.verse, verse);
-    verify(store.state.dba.getSingleVerse(1, 1, 1)).called(1);
-    verify(store.state.dba.getBookById(1)).called(1);
-    // Next should not call get book anymore
-    verse = BibleVerse.fromModel(VerseModel(id: 1, book: 1, chapter: 1, verse: 2, text: "TestB"), "Genesisy");
-    await loadWordsInWordNextVerse(store);
-    store.dispatch(initializeWordsInWordState);
-    await Future.delayed(Duration(seconds: 1));
-    expect(store.state.game.verse, verse);
-    expect(store.state.wordsInWord.wordsToFind.map((w) => w.value), verse.words.map((w) => w.value));
-    expect(store.state.wordsInWord.resolvedWords, []);
-    verify(store.state.dba.getSingleVerse(1, 1, 2)).called(1);
-    verifyNever(store.state.dba.getBookById(1));
-    // Next should increment chapter
-    await loadWordsInWordNextVerse(store);
-    store.dispatch(initializeWordsInWordState);
-    await Future.delayed(Duration(seconds: 1));
-    expect(store.state.game.verse,
-        BibleVerse.fromModel(VerseModel(id: 1, book: 1, chapter: 2, verse: 1, text: "TestC."), "Genesisy"));
-    verify(store.state.dba.getSingleVerse(1, 2, 1)).called(1);
-    verifyNever(store.state.dba.getBookById(1));
-  });
-
   test("Compute cells and slots", () async {
     final store = Store<AppState>(
       mainReducer,
