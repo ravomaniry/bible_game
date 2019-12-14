@@ -1,11 +1,6 @@
 import 'package:bible_game/db/model.dart';
-import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/explorer/actions.dart';
-import 'package:bible_game/redux/game/actions.dart';
-import 'package:bible_game/redux/router/actions.dart';
-import 'package:bible_game/redux/router/routes.dart';
-import 'package:bible_game/redux/words_in_word/actions.dart';
 import 'package:flutter/material.dart';
 import 'package:redux/redux.dart';
 
@@ -26,17 +21,10 @@ class ExplorerViewModel {
 
   static ExplorerViewModel converter(Store<AppState> store) {
     return ExplorerViewModel(
-      books: store.state.explorer.books,
+      books: store.state.game.books,
       verses: store.state.explorer.verses,
       activeBook: store.state.explorer.activeBook,
-      loadVerses: (BookModel book) {
-        // store.dispatch(LoadVersesFor(book).thunk);
-        // This is temporary code to redirect to the words in word section
-        final verse = BibleVerse.fromModel(VerseModel(id: 1, book: book.id, chapter: 1, verse: 1, text: ""), book.name);
-        store.dispatch(UpdateGameVerse(verse));
-        store.dispatch(GoToAction(Routes.wordsInWord));
-        store.dispatch(tempWordsInWordNext);
-      },
+      loadVerses: (BookModel book) => store.dispatch(LoadVersesFor(book).thunk),
       goToBooksList: () => store.dispatch(ExplorerSetActiveBook(null)),
     );
   }
