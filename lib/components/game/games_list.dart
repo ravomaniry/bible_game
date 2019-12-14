@@ -31,9 +31,9 @@ class GameListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      key: Key("game_${_game.model.id}"),
       onTap: () => _selectHandler(_game),
       child: Container(
-        key: Key("game_${_game.model.id}"),
         decoration: BoxDecoration(
           color: const Color.fromARGB(200, 255, 255, 255),
           borderRadius: BorderRadius.circular(10),
