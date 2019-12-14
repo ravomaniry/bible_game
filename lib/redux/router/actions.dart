@@ -1,3 +1,4 @@
+import 'package:bible_game/redux/game/lists_handler.dart';
 import 'package:redux/redux.dart';
 import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/redux/app_state.dart';
@@ -17,6 +18,11 @@ void handleBackBtnPress(Store<AppState> store) {
   final bool Function(bool) handler = (bool yes) {
     if (store.state.game.inventory.isOpen) {
       store.dispatch(closeInventoryDialog);
+      store.dispatch(goToHome);
+      return true;
+    } else if (store.state.game.isResolved) {
+      store.dispatch(saveActiveGame);
+      store.dispatch(goToHome);
       return true;
     } else if (store.state.route == Routes.home) {
       return false;
