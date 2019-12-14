@@ -1,4 +1,5 @@
 import 'package:bible_game/components/explorer/explorer.dart';
+import 'package:bible_game/components/game/congratulation.dart';
 import 'package:bible_game/components/game/home.dart';
 import 'package:bible_game/components/game/solution.dart';
 import 'package:bible_game/components/loader.dart';
@@ -20,25 +21,36 @@ class Router extends StatelessWidget {
   }
 
   Widget _builder(BuildContext context, RouterViewModel viewModel) {
-    return _RouterBuilder(viewModel.route, viewModel.gameIsResolved);
+    return _RouterBuilder(
+      route: viewModel.route,
+      gameIsResolved: viewModel.gameIsResolved,
+      activeGameIsCompleted: viewModel.activeGameIsCompleted,
+    );
   }
 }
 
 class _RouterBuilder extends StatelessWidget {
-  final Routes _route;
-  final bool _gameIsResolved;
+  final Routes route;
+  final bool gameIsResolved;
+  final bool activeGameIsCompleted;
 
-  _RouterBuilder(this._route, this._gameIsResolved);
+  _RouterBuilder({
+    this.route,
+    this.gameIsResolved,
+    this.activeGameIsCompleted,
+  });
 
   Widget build(BuildContext context) {
-    if (_route == Routes.home) {
+    if (route == Routes.home) {
       return Home();
-    } else if (_route == Routes.explorer) {
+    } else if (route == Routes.explorer) {
       return Explorer();
     } else {
-      if (_gameIsResolved) {
+      if (activeGameIsCompleted) {
+        return Congratulations();
+      } else if (gameIsResolved) {
         return Solution();
-      } else if (_route == Routes.wordsInWord) {
+      } else if (route == Routes.wordsInWord) {
         return WordsInWord();
       }
     }
