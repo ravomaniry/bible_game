@@ -65,7 +65,7 @@ final defaultGames = [
 
 Future initializeGames(DbAdapter dba, Function dispatch) async {
   try {
-    final books = await dba.books;
+    final books = await retry(() => dba.books);
     List<GameModel> games = await retry(() => dba.games);
     if (games == null || books == null) {
       dispatch(ReceiveError(Errors.unknownDbError));

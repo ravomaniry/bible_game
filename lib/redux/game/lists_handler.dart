@@ -26,12 +26,14 @@ class SelectGame extends ThunkContainer {
           final bookName = store.state.game.books.firstWhere((b) => b.id == _game.nextBook).name;
           store.dispatch(UpdateGameVerse(BibleVerse.fromModel(verse, bookName)));
           store.dispatch(UpdateActiveGameId(_game.model.id));
+          store.dispatch(UpdateGameCompletedState(false));
           // for now, there is only wordsInWord as a game
           store.dispatch(initializeWordsInWordState);
           store.dispatch(UpdateInventory(_game.inventory));
           store.dispatch(OpenInventoryDialog(false));
         }
       } catch (e) {
+        print(model.name);
         store.dispatch(ReceiveError(Errors.unknownDbError));
         print("%%%%%%%% error at SelectGame.thunk");
         print(e);

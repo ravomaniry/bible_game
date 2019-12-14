@@ -1,9 +1,12 @@
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/main.dart';
+import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
+import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/game/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
@@ -18,14 +21,12 @@ import 'package:redux_thunk/redux_thunk.dart';
 
 void main() {
   testWidgets("Open a game + next verse and save flow", (WidgetTester tester) async {
-    final dba = DbAdapterMock();
-    DbAdapterMock.mockMethods(dba, [
+    final dba = DbAdapterMock.mockMethods(DbAdapterMock(), [
       "init",
       "saveGame",
       "games.saveAll",
       "getBooksCount",
       "getVersesCount",
-      "getBooks",
       "getVerses",
       "verses.saveAll",
       "books.saveAll",
@@ -44,7 +45,7 @@ void main() {
       ),
     );
 
-    final books = [BookModel(id: 1, name: "AAA", chapters: 10)];
+    final books = [1, 2, 3, 4, 5, 6].map((id) => BookModel(id: id, name: "$id", chapters: 10)).toList();
     when(dba.books).thenAnswer((_) => Future.value(books));
     when(dba.games).thenAnswer(
       (_) => Future.value([
@@ -85,13 +86,24 @@ void main() {
       ]),
     );
 
-    when(dba.getSingleVerse(1, 1, 1)).thenAnswer((_) => Future.value(VerseModel(
-          id: 1,
-          book: 1,
-          chapter: 1,
-          verse: 1,
-          text: "AOKA",
-        )));
+    final verse0 = VerseModel(
+      id: 1,
+      book: 1,
+      chapter: 1,
+      verse: 1,
+      text: "AOKA",
+    );
+    final verse1 = VerseModel(
+      id: 2,
+      book: 1,
+      chapter: 1,
+      verse: 2,
+      text: "ISIKA",
+    );
+    when(dba.getSingleVerse(1, 1, 1)).thenAnswer((_) => Future.value(verse0));
+    when(dba.books).thenAnswer((_) => Future.value(books));
+    when(dba.getSingleVerse(1, 1, 2)).thenAnswer((_) => Future.value(verse1));
+    when(dba.getSingleVerse(1, 2, 1)).thenAnswer((_) => Future.value(verse0));
 
     await tester.pumpWidget(BibleGame(store));
     await tester.pump();
@@ -143,15 +155,6 @@ void main() {
     expect(wordsInWord, findsNothing);
 
     // => click on next
-    when(dba.getSingleVerse(1, 1, 2)).thenAnswer(
-      (_) => Future.value(VerseModel(
-        id: 2,
-        book: 1,
-        chapter: 1,
-        verse: 2,
-        text: "ISIKA",
-      )),
-    );
     await tester.tap(find.byKey(Key("nextButton")));
     await tester.pump(Duration(milliseconds: 10));
     // Increment and save everything => load next verse => save the game in db
@@ -168,5 +171,144 @@ void main() {
     await tester.pump();
     expect(inventoryDialog, findsNothing);
     expect(wordsInWord, findsOneWidget);
+
+    // Navigate to the other game
+    BackButtonInterceptor.popRoute();
+    await tester.pump();
+    await tester.tap(find.byKey(Key("dialogYesBtn")));
+    await tester.pump();
+
+    expect(find.byKey(Key("home")), findsOneWidget);
+    await tester.tap(game2Button);
+    await tester.pump(Duration(milliseconds: 10));
+    verify(dba.getSingleVerse(1, 2, 1)).called(1);
+    expect(store.state.game.inventory.money, 20);
+  });
+
+  testWidgets("Load next verse", (WidgetTester tester) async {
+    final state = AppState(
+      game: GameState.emptyState(),
+      assetBundle: AssetBundleMock.withDefaultValue(),
+      explorer: ExplorerState(),
+      config: ConfigState.initialState(),
+      dba: DbAdapterMock.mockMethods(DbAdapterMock(), [
+        "init",
+        "saveGame",
+        "games.saveAll",
+        "getBooksCount",
+        "getVersesCount",
+        "getVerses",
+        "verses.saveAll",
+        "books.saveAll",
+        "getBookVersesCount",
+      ]),
+    );
+    final store = Store<AppState>(
+      mainReducer,
+      initialState: state,
+      middleware: [thunkMiddleware],
+    );
+    final games = [
+      GameModel(
+        id: 1,
+        name: "Filazantsara",
+        startBook: 1,
+        startChapter: 1,
+        startVerse: 1,
+        endBook: 2,
+        endChapter: 1,
+        endVerse: 1,
+        nextBook: 1,
+        nextVerse: 1,
+        nextChapter: 1,
+        versesCount: 10,
+        resolvedVersesCount: 0,
+        money: 0,
+        bonuses: "{}",
+      )
+    ];
+    final books = [
+      BookModel(id: 1, name: "A", chapters: 2),
+      BookModel(id: 2, name: "B", chapters: 2),
+    ];
+    final book1 = BookModel(id: 1, name: "Genesisy", chapters: 10);
+    final verseA11 = VerseModel(id: 1, book: 1, chapter: 1, verse: 1, text: "TestA");
+    final verseA12 = VerseModel(id: 2, book: 1, chapter: 1, verse: 2, text: "TestB");
+    final verseA21 = VerseModel(id: 3, book: 1, chapter: 2, verse: 1, text: "TestC.");
+    final verseB11 = VerseModel(id: 4, book: 2, chapter: 1, verse: 1, text: "TestD.");
+    when(state.dba.games).thenAnswer((_) => Future.value(games));
+    when(state.dba.books).thenAnswer((_) => Future.value(books));
+    when(state.dba.getBookById(1)).thenAnswer((_) => Future.value(book1));
+    // 111 -> 112 -> 121 -> 211
+    when(state.dba.getSingleVerse(1, 1, 1)).thenAnswer((_) => Future.value(verseA11));
+    when(state.dba.getSingleVerse(1, 1, 2)).thenAnswer((_) => Future.value(verseA12));
+    when(state.dba.getSingleVerse(1, 1, 3)).thenAnswer((_) => Future.value(null));
+    when(state.dba.getSingleVerse(1, 2, 1)).thenAnswer((_) => Future.value(verseA21));
+    when(state.dba.getSingleVerse(1, 2, 2)).thenAnswer((_) => Future.value(null));
+    when(state.dba.getSingleVerse(2, 1, 1)).thenAnswer((_) => Future.value(verseB11));
+
+    final nextBtn = find.byKey(Key("nextButton"));
+    final closeInventoryBtn = find.byKey(Key("inventoryOkButton"));
+
+    await tester.pumpWidget(BibleGame(store));
+    await tester.pump(Duration(milliseconds: 10));
+
+    // open game 1 and close inventory
+    await tester.tap(find.byKey(Key("game_1")));
+    await tester.pump(Duration(milliseconds: 10));
+    await tester.tap(closeInventoryBtn);
+    await tester.pump(Duration(milliseconds: 10));
+    expect(store.state.game.verse, BibleVerse.fromModel(verseA11, "A"));
+    verify(store.state.dba.getSingleVerse(1, 1, 1)).called(1);
+    // resolve game: call getBookById => load verse A12
+    store.dispatch(UpdateGameResolvedState(true));
+    await tester.pump(Duration(milliseconds: 10));
+    await tester.tap(nextBtn);
+    await tester.pump(Duration(milliseconds: 10));
+    expect(store.state.game.verse, BibleVerse.fromModel(verseA12, "A"));
+    expect(store.state.game.list[0].resolvedVersesCount, 1);
+
+    await tester.tap(closeInventoryBtn);
+    await tester.pump(Duration(milliseconds: 10));
+    // Now should go to verse A2:1
+    store.dispatch(UpdateGameResolvedState(true));
+    await tester.pump();
+    await tester.tap(nextBtn);
+    await tester.pump(Duration(milliseconds: 10));
+    expect(store.state.game.verse, BibleVerse.fromModel(verseA21, "A"));
+    expect(store.state.game.list[0].resolvedVersesCount, 2);
+
+    await tester.tap(closeInventoryBtn);
+    await tester.pump(Duration(milliseconds: 10));
+    // Now should go to verse 211 (this is the last verse)
+    store.dispatch(UpdateGameResolvedState(true));
+    await tester.pump();
+    await tester.tap(nextBtn);
+    await tester.pump(Duration(milliseconds: 10));
+    expect(store.state.game.verse, BibleVerse.fromModel(verseB11, "B"));
+    expect(store.state.game.list[0].resolvedVersesCount, 3);
+
+    await tester.tap(closeInventoryBtn);
+    await tester.pump(Duration(milliseconds: 10));
+    expect(closeInventoryBtn, findsNothing);
+    // Resolving the game now open the solution dialog + display congratulation message
+    store.dispatch(UpdateGameResolvedState(true));
+    await tester.pump(Duration(milliseconds: 100));
+    await tester.tap(nextBtn);
+    await tester.pump(Duration(milliseconds: 100));
+    expect(nextBtn, findsNothing);
+    expect(store.state.game.activeGameIsCompleted, true);
+    expect(closeInventoryBtn, findsNothing);
+    expect(find.byKey(Key("congratulations")), findsOneWidget);
+    expect(store.state.game.verse, BibleVerse.fromModel(verseB11, "B"));
+    expect(store.state.game.list[0].resolvedVersesCount, 4);
+    // Closing congratulation message redirect to home
+    await tester.tap(find.byKey(Key("congratulationsOkBtn")));
+    await tester.pump();
+    expect(find.byKey(Key("home")), findsOneWidget);
+
+    await tester.tap(find.byKey(Key("game_1")));
+    await tester.pump(Duration(milliseconds: 10));
+    expect(store.state.game.activeGameIsCompleted, false);
   });
 }

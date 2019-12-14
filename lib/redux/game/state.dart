@@ -17,6 +17,7 @@ class GameState {
   final int endChapter;
   final int endVerse;
   final bool isResolved;
+  final bool activeGameIsCompleted;
   final InventoryState inventory;
 
   GameState({
@@ -33,6 +34,7 @@ class GameState {
     this.endChapter = -1,
     this.endVerse = -1,
     this.isResolved = false,
+    this.activeGameIsCompleted = false,
   });
 
   factory GameState.emptyState() => GameState(
@@ -58,6 +60,7 @@ class GameState {
     final int endBook,
     final int endChapter,
     final int endVerse,
+    final bool activeGameIsCompleted,
   }) {
     return GameState(
       isResolved: isResolved ?? this.isResolved,
@@ -73,6 +76,7 @@ class GameState {
       endBook: endBook ?? this.endBook,
       endChapter: endChapter ?? this.endChapter,
       endVerse: endVerse ?? this.endVerse,
+      activeGameIsCompleted: activeGameIsCompleted ?? this.activeGameIsCompleted,
     );
   }
 

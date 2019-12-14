@@ -33,3 +33,9 @@ class UpdateGameResolvedState {
 
   UpdateGameResolvedState(this.payload);
 }
+
+class UpdateGameCompletedState {
+  final bool payload;
+
+  UpdateGameCompletedState(this.payload);
+}

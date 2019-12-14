@@ -16,6 +16,8 @@ GameState gamesListStateReducer(GameState state, action) {
     return state.copyWith(activeId: action.payload);
   } else if (action is UpdateGameResolvedState) {
     return state.copyWith(isResolved: action.payload);
+  } else if (action is UpdateGameCompletedState) {
+    return state.copyWith(activeGameIsCompleted: action.payload);
   } else if (action is UpdateInventory) {
     return state.copyWith(inventory: action.payload);
   } else if (action is OpenInventoryDialog) {

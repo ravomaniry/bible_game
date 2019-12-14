@@ -106,4 +106,8 @@ class GameModelWrapper {
       bonuses: _bonusesStringHelper,
     );
   }
+
+  bool get isCompleted {
+    return nextVerse == model.endVerse && nextChapter == model.endChapter && nextBook == model.endBook;
+  }
 }
