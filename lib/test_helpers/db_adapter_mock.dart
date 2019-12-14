@@ -23,7 +23,7 @@ class DbAdapterMock extends Mock implements DbAdapter {
     this.gameModel = GameModelMock();
   }
 
-  static mockMethodsWithDefaultValue(DbAdapterMock adapter) {
+  static DbAdapterMock mockMethodsWithDefaultValue(DbAdapterMock adapter) {
     mockMethods(adapter, [
       "init",
       "games",
@@ -40,9 +40,10 @@ class DbAdapterMock extends Mock implements DbAdapter {
       "getBookById",
       "getBookVersesCount",
     ]);
+    return adapter;
   }
 
-  static mockMethods(DbAdapterMock adapter, List<String> methods) {
+  static DbAdapterMock mockMethods(DbAdapterMock adapter, List<String> methods) {
     if (methods.contains("init")) {
       when(adapter.init()).thenAnswer((_) => Future.value(true));
     }
@@ -60,7 +61,7 @@ class DbAdapterMock extends Mock implements DbAdapter {
             endVerse: 10,
             nextBook: 1,
             nextChapter: 1,
-            nextVerse: 2,
+            nextVerse: 1,
             versesCount: 10,
             resolvedVersesCount: 0,
             money: 0,
@@ -114,11 +115,12 @@ class DbAdapterMock extends Mock implements DbAdapter {
     if (methods.contains("getBookVersesCount")) {
       when(adapter.getChapterVersesCount(any, any)).thenAnswer((_) => Future.value(1));
     }
+
+    return adapter;
   }
 
   factory DbAdapterMock.withDefaultValues() {
     final adapter = DbAdapterMock();
-    mockMethodsWithDefaultValue(adapter);
-    return adapter;
+    return mockMethodsWithDefaultValue(adapter);
   }
 }
