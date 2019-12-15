@@ -172,7 +172,7 @@ class SlotItem extends StatelessWidget {
 }
 
 class ComboDisplay extends StatelessWidget {
-  final int _combo;
+  final double _combo;
   final Function() _invalidateCombo;
 
   ComboDisplay(this._combo, this._invalidateCombo);

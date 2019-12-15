@@ -4,7 +4,7 @@ class InventoryState {
   final bool isOpen;
   final bool isInGame;
   final int money;
-  final int combo;
+  final double combo;
   final int revealCharBonus1;
   final int revealCharBonus2;
   final int revealCharBonus5;
@@ -41,7 +41,7 @@ class InventoryState {
     bool isOpen,
     bool isInGame,
     int money,
-    int combo,
+    double combo,
     int revealCharBonus1,
     int revealCharBonus2,
     int revealCharBonus5,

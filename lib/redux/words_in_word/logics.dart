@@ -177,6 +177,7 @@ ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
   final proposition = state.proposition;
   Word revealed;
   var verse = store.state.game.verse;
+  final prevVerse = verse;
   var slots = List<Char>.from(state.slots);
   var slotsBackup = List<Char>.from(state.slotsBackup);
   bool hasFoundMatch = false;
@@ -208,7 +209,7 @@ ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
   store.dispatch(UpdateGameVerse(verse));
   store.dispatch(recomputeSlotsIndexes);
   if (hasFoundMatch) {
-    store.dispatch(IncrementMoney(revealed).thunk);
+    store.dispatch(IncrementMoney(prevVerse, verse).thunk);
     store.dispatch(UseBonus(revealed.bonus, false).thunk);
   }
   if (wordsToFind.length == 0) {

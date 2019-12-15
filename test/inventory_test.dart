@@ -1,11 +1,19 @@
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/main.dart';
+import 'package:bible_game/models/bible_verse.dart';
+import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
+import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/game/state.dart';
+import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
+import 'package:bible_game/redux/router/routes.dart';
+import 'package:bible_game/redux/words_in_word/actions.dart';
+import 'package:bible_game/redux/words_in_word/logics.dart';
+import 'package:bible_game/redux/words_in_word/state.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
 import 'package:flutter/widgets.dart';
@@ -78,7 +86,7 @@ void main() {
     await tester.pump(Duration(milliseconds: 200));
     expect(store.state.game.inventory.money, 490);
     expect(store.state.game.inventory.revealCharBonus1, 2);
-
+    // Tap each key once
     await tester.tap(find.byKey(Key("revealCharBonusBtn_2")));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_5")));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_5")));
@@ -87,23 +95,92 @@ void main() {
     await tester.tap(find.byKey(Key("revealCharBonusBtn_10")));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_10")));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_10")));
-
     expect(store.state.game.inventory.money, 393);
     expect(store.state.game.inventory.revealCharBonus1, 2);
     expect(store.state.game.inventory.revealCharBonus2, 1);
     expect(store.state.game.inventory.revealCharBonus5, 3);
     expect(store.state.game.inventory.revealCharBonus10, 4);
-
     // Tap bonus button too many times
     for (int i = 0; i < 10; i++) {
       await tester.tap(find.byKey(Key("solveOneTurnBonusBtn")));
     }
     expect(store.state.game.inventory.money, 43);
     expect(store.state.game.inventory.solveOneTurnBonus, 7);
-
     // close the dialog
     await tester.tap(find.byKey(Key("inventoryOkButton")));
     await tester.pump();
     expect(inventoryFinder, findsNothing);
+  });
+
+  test("Score and combo - words in word mode", () {
+    BibleVerse verse = BibleVerse.from(text: "AB AB CDEF GHIJK LMNO PQRSTUVXYZ A");
+    verse = verse.copyWithWord(
+      4,
+      verse.words[4].copyWithChar(0, verse.words[4].chars[0].copyWith(resolved: true)),
+    );
+    final initialState = AppState(
+      route: Routes.wordsInWord,
+      game: GameState.emptyState().copyWith(
+        verse: verse,
+        inventory: InventoryState.emptyState().copyWith(money: 0),
+      ),
+      dba: DbAdapterMock.withDefaultValues(),
+      assetBundle: AssetBundleMock.withDefaultValue(),
+      explorer: ExplorerState(),
+      config: ConfigState.initialState(),
+      wordsInWord: WordsInWordState.emptyState().copyWith(
+        wordsToFind: verse.words.sublist(1).where((w) => !w.isSeparator).toList(),
+      ),
+    );
+    final store = Store<AppState>(mainReducer, middleware: [thunkMiddleware], initialState: initialState);
+    // Resolving AB should increment score by 4
+    store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
+      proposition: Word.from("AB", 0, false).chars,
+    )));
+    store.dispatch(proposeWordsInWord);
+    expect(store.state.game.inventory.money, 4);
+    expect(store.state.game.inventory.combo, 1);
+
+    // Resolving "C D E F" should increment money by 3 as C is already resolved in advance
+    // Resolving AB should increment score by 4
+    store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
+      proposition: Word.from("CDEF", 0, false).chars,
+    )));
+    store.dispatch(proposeWordsInWord);
+    expect(store.state.game.inventory.money, 7);
+    expect(store.state.game.inventory.combo, 1);
+
+    // Resolving G H I J K should increment combo by 0.5
+    store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
+      proposition: Word.from("GHIJK", 0, false).chars,
+    )));
+    store.dispatch(proposeWordsInWord);
+    expect(store.state.game.inventory.money, 12);
+    expect(store.state.game.inventory.combo, 1.5);
+
+    // Resolving L M N O should increment combo by 0.4 and increment money by 6
+    store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
+      proposition: Word.from("LMNO", 0, false).chars,
+    )));
+    store.dispatch(proposeWordsInWord);
+    expect(store.state.game.inventory.money, 18);
+    expect(store.state.game.inventory.combo, 1.9);
+
+    // Resolving 10 chars when combo is invalidated should increment combo by 1
+    store.dispatch(InvalidateCombo());
+    store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
+      proposition: Word.from("PQRSTUVXYZ", 0, false).chars,
+    )));
+    store.dispatch(proposeWordsInWord);
+    expect(store.state.game.inventory.money, 28);
+    expect(store.state.game.inventory.combo, 2);
+
+    // Last word invalidate combo
+    store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
+      proposition: Word.from("A", 0, false).chars,
+    )));
+    store.dispatch(proposeWordsInWord);
+    expect(store.state.game.inventory.money, 30);
+    expect(store.state.game.inventory.combo, 1);
   });
 }

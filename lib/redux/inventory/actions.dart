@@ -1,6 +1,6 @@
+import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/models/thunk_container.dart';
-import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:redux/redux.dart';
@@ -36,19 +36,35 @@ class DecrementBonus {
 }
 
 class IncrementMoney extends ThunkContainer {
-  final Word _revealedWord;
+  final BibleVerse _prev;
+  final BibleVerse _next;
 
-  IncrementMoney(this._revealedWord) {
+  IncrementMoney(this._prev, this._next) {
     this.thunk = (Store<AppState> store) {
       final state = store.state.game.inventory;
-      final nextMoney = state.money + _revealedWord.chars.length * state.combo;
-      int nextCombo = 1;
-      if (state.combo > 1) {
-        nextCombo = state.combo + (_revealedWord.chars.length / 2).floor();
-      } else {
-        nextCombo = _revealedWord.chars.length;
+      final deltaMoney = _getDeltaMoney();
+      final nextMoney = (state.money + deltaMoney * state.combo).floor();
+      double nextCombo = state.combo;
+      final deltaCombo = deltaMoney / 10;
+      if (nextCombo > 1 || (2 * deltaCombo) % 1 == 0) {
+        nextCombo += deltaCombo;
       }
-      store.dispatch(UpdateInventory(state.copyWith(money: nextMoney, combo: nextCombo)));
+      store.dispatch(UpdateInventory(
+        store.state.game.inventory.copyWith(
+          money: nextMoney,
+          combo: nextCombo,
+        ),
+      ));
     };
+  }
+
+  int _getDeltaMoney() {
+    int deltaMoney = 0;
+    for (var i = 0; i < _prev.words.length; i++) {
+      if (_next.words[i] != _prev.words[i]) {
+        deltaMoney += _next.words[i].chars.where((c) => !c.resolved).length;
+      }
+    }
+    return deltaMoney;
   }
 }
