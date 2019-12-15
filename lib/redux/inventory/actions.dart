@@ -43,10 +43,10 @@ class IncrementMoney extends ThunkContainer {
     this.thunk = (Store<AppState> store) {
       final state = store.state.game.inventory;
       final deltaMoney = _getDeltaMoney();
-      final nextMoney = (state.money + deltaMoney * state.combo).floor();
+      final nextMoney = (state.money + deltaMoney * state.combo).round();
       double nextCombo = state.combo;
       final deltaCombo = deltaMoney / 10;
-      if (nextCombo > 1 || (2 * deltaCombo) % 1 == 0) {
+      if (nextCombo > 1 || deltaCombo >= 0.5) {
         nextCombo += deltaCombo;
       }
       store.dispatch(UpdateInventory(

@@ -113,7 +113,7 @@ void main() {
   });
 
   test("Score and combo - words in word mode", () {
-    BibleVerse verse = BibleVerse.from(text: "AB AB CDEF GHIJK LMNO PQRSTUVXYZ A");
+    BibleVerse verse = BibleVerse.from(text: "AB AB CDEF GHIJK LMNO PQRSTUVX Y");
     verse = verse.copyWithWord(
       4,
       verse.words[4].copyWithChar(0, verse.words[4].chars[0].copyWith(resolved: true)),
@@ -166,21 +166,21 @@ void main() {
     expect(store.state.game.inventory.money, 18);
     expect(store.state.game.inventory.combo, 1.9);
 
-    // Resolving 10 chars when combo is invalidated should increment combo by 1
+    // Resolving 8 chars when combo is invalidated should increment combo by 0.8
     store.dispatch(InvalidateCombo());
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
-      proposition: Word.from("PQRSTUVXYZ", 0, false).chars,
+      proposition: Word.from("PQRSTUVX", 0, false).chars,
     )));
     store.dispatch(proposeWordsInWord);
-    expect(store.state.game.inventory.money, 28);
-    expect(store.state.game.inventory.combo, 2);
+    expect(store.state.game.inventory.money, 26);
+    expect(store.state.game.inventory.combo, 1.8);
 
     // Last word invalidate combo
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
-      proposition: Word.from("A", 0, false).chars,
+      proposition: Word.from("Y", 0, false).chars,
     )));
     store.dispatch(proposeWordsInWord);
-    expect(store.state.game.inventory.money, 30);
+    expect(store.state.game.inventory.money, 28);
     expect(store.state.game.inventory.combo, 1);
   });
 }
