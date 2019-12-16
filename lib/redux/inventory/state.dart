@@ -27,7 +27,7 @@ class InventoryState {
     return InventoryState(
       isOpen: false,
       isInGame: false,
-      money: 100,
+      money: 0,
       combo: 1,
       revealCharBonus1: 0,
       revealCharBonus2: 0,
