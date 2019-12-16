@@ -9,7 +9,6 @@ final List<Bonus> normalPricedBonuses = [
   RevealCharBonus2(),
   RevealCharBonus5(),
   RevealCharBonus10(),
-  SolveOneTurn(),
 ];
 
 final List<Bonus> doublePricedBonuses = normalPricedBonuses.map((b) => b.doublePriced()).toList();

@@ -33,25 +33,25 @@ class RevealCharBonus extends Bonus {
 }
 
 class RevealCharBonus1 extends RevealCharBonus {
-  RevealCharBonus1() : super(1, 5);
+  RevealCharBonus1() : super(1, 10);
 }
 
 class RevealCharBonus2 extends RevealCharBonus {
   static final defaultPrice = 7;
 
-  RevealCharBonus2() : super(2, 7);
+  RevealCharBonus2() : super(2, 15);
 }
 
 class RevealCharBonus5 extends RevealCharBonus {
   static final defaultPrice = 10;
 
-  RevealCharBonus5() : super(5, 10);
+  RevealCharBonus5() : super(5, 20);
 }
 
 class RevealCharBonus10 extends RevealCharBonus {
   static final defaultPrice = 15;
 
-  RevealCharBonus10() : super(10, 15);
+  RevealCharBonus10() : super(10, 30);
 }
 
 class SolveOneTurn extends Bonus {

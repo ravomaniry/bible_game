@@ -60,7 +60,7 @@ void main() {
           endBook: 1,
           endChapter: 1,
           endVerse: 10,
-          money: 10,
+          money: 15,
           name: "Game1",
           bonuses: '{ "rcb_1": 1, "rcb_2": 2, "rcb_5": 5, "rcb_10": 10 }',
           versesCount: 10,
@@ -123,7 +123,7 @@ void main() {
     expect(store.state.game.activeId, 1);
     expect(store.state.game.verse.text, "AOKA");
     // 2- inventory should be updated
-    expect(store.state.game.inventory.money, 10);
+    expect(store.state.game.inventory.money, 15);
     expect(store.state.game.inventory.revealCharBonus1, 1);
     expect(store.state.game.inventory.revealCharBonus2, 2);
     expect(store.state.game.inventory.revealCharBonus5, 5);
@@ -132,12 +132,13 @@ void main() {
     expect(store.state.wordsInWord.wordsToFind.map((w) => w.value), ["AOKA"]);
 
     // Before each game, the bonus shop should be open + when the dialog is closed, save the game
+    // Buy a bonus 1: 10Ar
     expect(find.byKey(Key("inventoryDialog")), findsOneWidget);
     await tester.tap(find.byKey(Key("revealCharBonusBtn_1")));
     await tester.tap(find.byKey(Key("inventoryOkButton")));
     await tester.pump(Duration(milliseconds: 10));
     expect(store.state.game.list[0].inventory.revealCharBonus1, 2);
-    expect(store.state.game.list[0].inventory.money, 5); // reminder price is 2 Ar.
+    expect(store.state.game.list[0].inventory.money, 5);
     verify(dba.saveGame(any)).called(1);
 
     // ********** Complete a game ***********

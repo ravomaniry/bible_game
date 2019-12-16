@@ -55,7 +55,7 @@ void main() {
     final game = GameModel(
       id: 1,
       name: "A",
-      money: 500,
+      money: 300,
       bonuses: "{}",
       resolvedVersesCount: 0,
       versesCount: 10,
@@ -84,9 +84,9 @@ void main() {
     await tester.tap(find.byKey(Key("revealCharBonusBtn_1")));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_1")));
     await tester.pump(Duration(milliseconds: 200));
-    expect(store.state.game.inventory.money, 490);
+    expect(store.state.game.inventory.money, 280);
     expect(store.state.game.inventory.revealCharBonus1, 2);
-    // Tap each key once
+    // 1 * 2 + 2 * 5 + 4 * 10
     await tester.tap(find.byKey(Key("revealCharBonusBtn_2")));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_5")));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_5")));
@@ -95,17 +95,19 @@ void main() {
     await tester.tap(find.byKey(Key("revealCharBonusBtn_10")));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_10")));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_10")));
-    expect(store.state.game.inventory.money, 393);
+    expect(store.state.game.inventory.money, 85);
     expect(store.state.game.inventory.revealCharBonus1, 2);
     expect(store.state.game.inventory.revealCharBonus2, 1);
     expect(store.state.game.inventory.revealCharBonus5, 3);
     expect(store.state.game.inventory.revealCharBonus10, 4);
-    // Tap bonus button too many times
-    for (int i = 0; i < 10; i++) {
-      await tester.tap(find.byKey(Key("solveOneTurnBonusBtn")));
+
+    // Exceed money
+    for (var i = 0; i < 10; i++) {
+      await tester.tap(find.byKey(Key("revealCharBonusBtn_10")));
     }
-    expect(store.state.game.inventory.money, 43);
-    expect(store.state.game.inventory.solveOneTurnBonus, 7);
+    expect(store.state.game.inventory.money, 25);
+    expect(store.state.game.inventory.revealCharBonus10, 6);
+
     // close the dialog
     await tester.tap(find.byKey(Key("inventoryOkButton")));
     await tester.pump();
