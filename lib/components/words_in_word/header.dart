@@ -18,7 +18,7 @@ class Header extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Color.fromARGB(200, 191, 118, 41),
+        color: Color.fromARGB(255, 224, 153, 60),
         boxShadow: [
           BoxShadow(
             color: Color.fromARGB(100, 0, 0, 0),
@@ -33,19 +33,48 @@ class Header extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Container(
-            child: Text(content),
-            padding: EdgeInsets.all(4),
+            padding: EdgeInsets.only(left: 2, right: 6, top: 4, bottom: 6),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(4),
+              color: const Color.fromARGB(255, 46, 17, 4),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.view_carousel,
+                  color: Color.fromARGB(255, 224, 153, 60),
+                  size: 22,
+                ),
+                Text(
+                  content,
+                  style: const TextStyle(color: Colors.white),
+                )
+              ],
             ),
           ),
           Container(
-            child: Text("${_viewModel.inventory.money} Ar."),
-            padding: EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(4),
+            child: Container(
+              padding: EdgeInsets.only(left: 16, top: 2, bottom: 2, right: 2),
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 46, 17, 4),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Text(
+                    "${_viewModel.inventory.money}",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Icon(
+                    Icons.monetization_on,
+                    color: Color.fromARGB(255, 224, 153, 60),
+                    size: 22,
+                  ),
+                ],
+              ),
             ),
           ),
         ],
