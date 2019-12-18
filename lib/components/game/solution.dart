@@ -32,8 +32,8 @@ class _SolutionBuilder extends StatelessWidget {
         key: Key("solutionScreen"),
         decoration: BoxDecoration(
           image: DecorationImage(
-            fit: BoxFit.fitWidth,
-            image: AssetImage("assets/images/forest.jpg"),
+            fit: BoxFit.fitHeight,
+            image: AssetImage("assets/images/hills.png"),
           ),
         ),
         child: Column(

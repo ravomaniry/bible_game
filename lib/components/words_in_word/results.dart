@@ -57,13 +57,13 @@ class _CellDisplay extends StatelessWidget {
       if (char.value == " ") {
         return Colors.transparent;
       }
-      return WordInWordsStyles.wordsSeparatorColor;
+      return const Color.fromARGB(140, 40, 40, 40);
     } else if (_word.resolved) {
-      return WordInWordsStyles.revealedWordColor;
+      return const Color.fromARGB(255, 0, 200, 0);
     } else if (char.resolved) {
-      return const Color.fromARGB(120, 50, 50, 50);
+      return const Color.fromARGB(220, 220, 220, 220);
     }
-    return const Color.fromARGB(120, 0, 0, 0);
+    return const Color.fromARGB(180, 220, 220, 220);
   }
 
   String getContentToDisplay(Char char) {
@@ -77,7 +77,7 @@ class _CellDisplay extends StatelessWidget {
 
   TextStyle getTextStyle(Char char) {
     if (_word.isSeparator) {
-      return WordInWordsStyles.separatorCharStyle;
+      return const TextStyle(color: Colors.white, fontWeight: FontWeight.bold);
     } else if (_word.resolved) {
       return WordInWordsStyles.revealedWordStyle;
     } else if (char.resolved) {
