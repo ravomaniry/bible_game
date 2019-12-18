@@ -33,8 +33,8 @@ class WordsInWord extends StatelessWidget {
       return Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            fit: BoxFit.fill,
-            image: AssetImage("assets/images/grass.jpg"),
+            fit: BoxFit.fitHeight,
+            image: AssetImage("assets/images/night.png"),
           ),
         ),
         child: Column(

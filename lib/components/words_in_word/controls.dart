@@ -16,8 +16,14 @@ class WordsInWordControls extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = _viewModel.wordsInWord;
     return Container(
-      decoration: const BoxDecoration(
-        color: Color.fromARGB(100, 255, 255, 255),
+      padding: EdgeInsets.only(top: 6),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: const [Color.fromARGB(90, 255, 255, 255), Colors.transparent],
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
+          stops: [0.96, 1],
+        ),
       ),
       child: Column(
         children: [
