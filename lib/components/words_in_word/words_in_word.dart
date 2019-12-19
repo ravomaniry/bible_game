@@ -1,6 +1,6 @@
 import 'package:bible_game/components/loader.dart';
 import 'package:bible_game/components/words_in_word/controls.dart';
-import 'package:bible_game/components/words_in_word/header.dart';
+import 'package:bible_game/components/game/in_game_header.dart';
 import 'package:bible_game/components/words_in_word/results.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/words_in_word/view_model.dart';
@@ -31,15 +31,15 @@ class WordsInWord extends StatelessWidget {
       return Loader();
     } else {
       return Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           image: DecorationImage(
             fit: BoxFit.fitHeight,
-            image: AssetImage("assets/images/night.png"),
+            image: AssetImage(viewModel.theme.background),
           ),
         ),
         child: Column(
           children: [
-            Header(viewModel),
+            InGameHeader(),
             WordsInWordResult(viewModel),
             WordsInWordControls(viewModel),
           ],
