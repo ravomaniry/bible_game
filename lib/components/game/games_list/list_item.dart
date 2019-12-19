@@ -1,12 +1,12 @@
 import 'package:bible_game/models/game.dart';
-import 'package:bible_game/redux/themes/default_theme.dart';
+import 'package:bible_game/redux/themes/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class GameListItem extends StatelessWidget {
   final GameModelWrapper _game;
   final Function(GameModelWrapper) _selectHandler;
-  final DefaultTheme _theme;
+  final AppColorTheme _theme;
 
   GameListItem(this._game, this._selectHandler, this._theme);
 
@@ -36,7 +36,7 @@ class GameListItem extends StatelessWidget {
 }
 
 class _GameListItemContainer extends StatelessWidget {
-  final DefaultTheme theme;
+  final AppColorTheme theme;
   final Widget child;
 
   _GameListItemContainer({@required this.theme, @required this.child});
@@ -63,7 +63,7 @@ class _GameListItemContainer extends StatelessWidget {
 }
 
 class _GameName extends StatelessWidget {
-  final DefaultTheme _theme;
+  final AppColorTheme _theme;
   final String _name;
 
   _GameName(this._name, this._theme);
@@ -83,7 +83,7 @@ class _GameName extends StatelessWidget {
 
 class _Money extends StatelessWidget {
   final int _value;
-  final DefaultTheme _theme;
+  final AppColorTheme _theme;
 
   _Money(this._value, this._theme);
 
@@ -105,7 +105,7 @@ class _Money extends StatelessWidget {
 
 class _Progress extends StatelessWidget {
   final GameModelWrapper _game;
-  final DefaultTheme _theme;
+  final AppColorTheme _theme;
 
   _Progress(this._game, this._theme);
 

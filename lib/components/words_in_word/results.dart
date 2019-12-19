@@ -1,6 +1,6 @@
 import 'package:bible_game/models/cell.dart';
 import 'package:bible_game/models/word.dart';
-import 'package:bible_game/redux/themes/default_theme.dart';
+import 'package:bible_game/redux/themes/themes.dart';
 import 'package:bible_game/redux/words_in_word/view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +49,7 @@ class WordsInWordResult extends StatelessWidget {
 class _CellDisplay extends StatelessWidget {
   final Word _word;
   final Cell _cell;
-  final DefaultTheme _theme;
+  final AppColorTheme _theme;
 
   _CellDisplay(this._word, this._cell, this._theme);
 

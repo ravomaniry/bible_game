@@ -1,7 +1,7 @@
 import 'package:animator/animator.dart';
 import 'package:bible_game/components/words_in_word/bonuses.dart';
 import 'package:bible_game/models/word.dart';
-import 'package:bible_game/redux/themes/default_theme.dart';
+import 'package:bible_game/redux/themes/themes.dart';
 import 'package:bible_game/redux/words_in_word/view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -49,7 +49,7 @@ class WordsInWordControls extends StatelessWidget {
 
 class _ControlsContainer extends StatelessWidget {
   final Widget child;
-  final DefaultTheme theme;
+  final AppColorTheme theme;
 
   _ControlsContainer({@required this.theme, @required this.child});
 
@@ -73,7 +73,7 @@ class _ControlsContainer extends StatelessWidget {
 class _PropositionDisplay extends StatelessWidget {
   final Function() propose;
   final List<Char> proposition;
-  final DefaultTheme theme;
+  final AppColorTheme theme;
 
   _PropositionDisplay({
     @required this.proposition,
@@ -100,7 +100,7 @@ class _PropositionDisplay extends StatelessWidget {
 
 class _PropositionContainer extends StatelessWidget {
   final String text;
-  final DefaultTheme theme;
+  final AppColorTheme theme;
   final Function clickHandler;
 
   _PropositionContainer({
@@ -152,7 +152,7 @@ class _SlotsDisplay extends StatelessWidget {
   final Function(int) onSlotClick;
   final Function() shuffle;
   final List<List<int>> indexes;
-  final DefaultTheme theme;
+  final AppColorTheme theme;
 
   _SlotsDisplay({
     @required this.slots,
@@ -197,7 +197,7 @@ class _SlotItem extends StatelessWidget {
   final Char slot;
   final int index;
   final Function(int) onClick;
-  final DefaultTheme theme;
+  final AppColorTheme theme;
 
   _SlotItem({
     @required this.slot,
@@ -235,7 +235,7 @@ class _SlotItem extends StatelessWidget {
 
 class _SlotItemContainer extends StatelessWidget {
   final bool isEmpty;
-  final DefaultTheme theme;
+  final AppColorTheme theme;
   final Widget child;
 
   _SlotItemContainer({
@@ -280,7 +280,7 @@ class _SlotItemContainer extends StatelessWidget {
 class _ComboDisplay extends StatelessWidget {
   final double combo;
   final Function() invalidateCombo;
-  final DefaultTheme theme;
+  final AppColorTheme theme;
 
   _ComboDisplay({
     @required this.combo,

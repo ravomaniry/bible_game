@@ -1,5 +1,5 @@
 import 'package:bible_game/redux/game/header_view_model.dart';
-import 'package:bible_game/redux/themes/default_theme.dart';
+import 'package:bible_game/redux/themes/themes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -46,7 +46,9 @@ class _HeaderBuilder extends StatelessWidget {
             ),
             Text(
               content,
-              style: TextStyle(color: _viewModel.theme.neutral),
+              style: TextStyle(
+                color: _viewModel.theme.neutral,
+              ),
             )
           ],
         ),
@@ -63,7 +65,7 @@ class _HeaderBuilder extends StatelessWidget {
             ),
             Icon(
               Icons.monetization_on,
-              color: _viewModel.theme.primaryLight,
+              color: _viewModel.theme.accentRight,
               size: 22,
             ),
           ],
@@ -75,7 +77,7 @@ class _HeaderBuilder extends StatelessWidget {
 
 class _HeaderContainer extends StatelessWidget {
   final List<Widget> children;
-  final DefaultTheme theme;
+  final AppColorTheme theme;
 
   _HeaderContainer({
     @required this.children,
@@ -107,7 +109,7 @@ class _HeaderContainer extends StatelessWidget {
 class _RoundedContainer extends StatelessWidget {
   final List<Widget> children;
   final String position;
-  final DefaultTheme theme;
+  final AppColorTheme theme;
 
   _RoundedContainer({
     @required this.children,

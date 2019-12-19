@@ -8,7 +8,7 @@ import 'package:bible_game/redux/game/next_verse.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/inventory/use_bonus_action.dart';
-import 'package:bible_game/redux/themes/default_theme.dart';
+import 'package:bible_game/redux/themes/themes.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
 import 'package:bible_game/redux/words_in_word/cells_action.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
@@ -31,7 +31,7 @@ class WordsInWordViewModel {
   final Function() shuffleSlots;
   final Function() invalidateCombo;
   final Function(Bonus) useBonus;
-  final DefaultTheme theme;
+  final AppColorTheme theme;
 
   WordsInWordViewModel({
     @required this.verse,

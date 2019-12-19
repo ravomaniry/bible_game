@@ -1,6 +1,6 @@
 import 'package:bible_game/components/inventory/shop.dart';
 import 'package:bible_game/models/bonus.dart';
-import 'package:bible_game/redux/themes/default_theme.dart';
+import 'package:bible_game/redux/themes/themes.dart';
 import 'package:bible_game/redux/words_in_word/view_model.dart';
 import 'package:flutter/widgets.dart';
 
@@ -58,7 +58,7 @@ class _RevealCharDisplayWrapper extends StatelessWidget {
   final RevealCharBonus bonus;
   final int number;
   final Function(Bonus) useBonus;
-  final DefaultTheme theme;
+  final AppColorTheme theme;
 
   _RevealCharDisplayWrapper({
     @required this.bonus,

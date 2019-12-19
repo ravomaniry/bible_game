@@ -6,7 +6,7 @@ import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/game/state.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/router/routes.dart';
-import 'package:bible_game/redux/themes/default_theme.dart';
+import 'package:bible_game/redux/themes/themes.dart';
 import 'package:bible_game/redux/words_in_word/state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -22,7 +22,7 @@ class AppState {
   final AssetBundle assetBundle;
   final ExplorerState explorer;
   final ConfigState config;
-  final DefaultTheme theme;
+  final AppColorTheme theme;
 
   AppState({
     this.route = Routes.home,
@@ -43,7 +43,7 @@ class AppState {
       assetBundle: assetBundle,
       explorer: ExplorerState(),
       config: ConfigState.initialState(),
-      theme: DefaultTheme(),
+      theme: AppColorTheme(),
       dba: DbAdapter(
         db: BibleGameModel(),
         bookModel: BookModel(),

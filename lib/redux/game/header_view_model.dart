@@ -1,14 +1,14 @@
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/inventory/state.dart';
-import 'package:bible_game/redux/themes/default_theme.dart';
+import 'package:bible_game/redux/themes/themes.dart';
 import 'package:flutter/widgets.dart';
 import 'package:redux/redux.dart';
 
 class GameHeaderViewModel {
   final BibleVerse verse;
   final InventoryState inventory;
-  final DefaultTheme theme;
+  final AppColorTheme theme;
 
   GameHeaderViewModel({
     @required this.verse,

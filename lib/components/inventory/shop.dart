@@ -1,7 +1,7 @@
 import 'package:badges/badges.dart';
 import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/redux/inventory/state.dart';
-import 'package:bible_game/redux/themes/default_theme.dart';
+import 'package:bible_game/redux/themes/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -17,7 +17,7 @@ final List<Bonus> doublePricedBonuses = normalPricedBonuses.map((b) => b.doubleP
 class Shop extends StatelessWidget {
   final InventoryState state;
   final Function(Bonus) buyBonus;
-  final DefaultTheme theme;
+  final AppColorTheme theme;
 
   Shop({
     @required this.state,
@@ -65,7 +65,7 @@ class _RevealCharDisplayWrapper extends StatelessWidget {
   final InventoryState state;
   final RevealCharBonus bonus;
   final Function(Bonus) buy;
-  final DefaultTheme theme;
+  final AppColorTheme theme;
 
   _RevealCharDisplayWrapper({
     this.state,
@@ -105,7 +105,7 @@ class RevealCharBonusDisplay extends StatelessWidget {
   final bool disabled;
   final RevealCharBonus bonus;
   final Function() onPressed;
-  final DefaultTheme theme;
+  final AppColorTheme theme;
 
   RevealCharBonusDisplay({
     @required this.bonus,

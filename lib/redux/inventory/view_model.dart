@@ -3,7 +3,7 @@ import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/game/lists_handler.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/inventory/state.dart';
-import 'package:bible_game/redux/themes/default_theme.dart';
+import 'package:bible_game/redux/themes/themes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:redux/redux.dart';
 
@@ -11,7 +11,7 @@ class InventoryViewModel {
   final InventoryState state;
   final Function(Bonus) buyBonus;
   final Function() closeDialog;
-  final DefaultTheme theme;
+  final AppColorTheme theme;
 
   InventoryViewModel({
     @required this.state,

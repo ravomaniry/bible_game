@@ -5,7 +5,7 @@ import 'package:bible_game/redux/game/lists_handler.dart';
 import 'package:bible_game/redux/game/next_verse.dart';
 import 'package:bible_game/redux/game/state.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
-import 'package:bible_game/redux/themes/default_theme.dart';
+import 'package:bible_game/redux/themes/themes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:redux/redux.dart';
 import 'package:bible_game/redux/explorer/actions.dart' as ExplorerActions;
@@ -18,7 +18,7 @@ class GameViewModel {
   final Function() openInventory;
   final Function(GameModelWrapper) selectHandler;
   final Function() nextHandler;
-  final DefaultTheme theme;
+  final AppColorTheme theme;
 
   GameViewModel({
     @required this.isReady,
