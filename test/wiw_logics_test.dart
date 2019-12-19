@@ -7,7 +7,7 @@ import 'package:bible_game/redux/game/state.dart';
 import 'package:bible_game/redux/inventory/use_bonus_action.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/redux/router/routes.dart';
-import 'package:bible_game/redux/themes/default_theme.dart';
+import 'package:bible_game/redux/themes/themes.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/redux/words_in_word/state.dart';
 import 'package:flutter/foundation.dart';
@@ -93,7 +93,7 @@ void main() {
     final store = Store<AppState>(mainReducer,
         middleware: [thunkMiddleware],
         initialState: AppState(
-          theme: DefaultTheme(),
+          theme: AppColorTheme(),
           game: GameState.emptyState().copyWith(
             verse: BibleVerse.from(text: "Aza menatra"),
           ),
@@ -135,7 +135,7 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         assetBundle: null,
-        theme: DefaultTheme(),
+        theme: AppColorTheme(),
         game: GameState.emptyState().copyWith(
           verse: BibleVerse.from(text: "Jesosy no fiainana"),
         ),

@@ -13,7 +13,7 @@ import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/redux/router/routes.dart';
-import 'package:bible_game/redux/themes/default_theme.dart';
+import 'package:bible_game/redux/themes/themes.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
 import 'package:bible_game/redux/words_in_word/cells_action.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
@@ -32,7 +32,7 @@ void main() {
       mainReducer,
       middleware: [thunkMiddleware],
       initialState: AppState(
-        theme: DefaultTheme(),
+        theme: AppColorTheme(),
         game: GameState.emptyState(),
         dba: DbAdapterMock.withDefaultValues(),
         assetBundle: AssetBundleMock.withDefaultValue(),
@@ -70,7 +70,7 @@ void main() {
     final verse = BibleVerse.from(bookId: 1, book: "Matio", chapter: 1, verse: 1, text: "Ny teny ny Azy");
     final initialState = AppState(
       game: GameState.emptyState(),
-      theme: DefaultTheme(),
+      theme: AppColorTheme(),
       route: Routes.wordsInWord,
       dba: DbAdapterMock.withDefaultValues(),
       assetBundle: AssetBundleMock.withDefaultValue(),
@@ -134,7 +134,7 @@ void main() {
   testWidgets("Click on bonuses", (WidgetTester tester) async {
     final verse = BibleVerse.from(book: "", bookId: 1, chapter: 1, verse: 1, text: "ABCDEFGHIJKLMNOPQRST");
     final state = AppState(
-      theme: DefaultTheme(),
+      theme: AppColorTheme(),
       game: GameState.emptyState().copyWith(
         verse: verse,
         inventory: InventoryState.emptyState().copyWith(
@@ -232,7 +232,7 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         assetBundle: null,
-        theme: DefaultTheme(),
+        theme: AppColorTheme(),
         game: GameState.emptyState().copyWith(
           inventory: InventoryState.emptyState().copyWith(
             revealCharBonus1: 10,

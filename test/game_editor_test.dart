@@ -4,7 +4,7 @@ import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/game/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
-import 'package:bible_game/redux/themes/default_theme.dart';
+import 'package:bible_game/redux/themes/themes.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
 import 'package:flutter/widgets.dart';
@@ -17,7 +17,7 @@ void main() {
     final store = Store<AppState>(
       mainReducer,
       initialState: AppState(
-        theme: DefaultTheme(),
+        theme: AppColorTheme(),
         dba: DbAdapterMock.withDefaultValues(),
         assetBundle: AssetBundleMock.withDefaultValue(),
         config: ConfigState.initialState(),
