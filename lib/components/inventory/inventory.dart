@@ -26,7 +26,11 @@ class Inventory extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Header(),
-              Shop(viewModel.state, viewModel.buyBonus),
+              Shop(
+                state: viewModel.state,
+                theme: viewModel.theme,
+                buyBonus: viewModel.buyBonus,
+              ),
               Footer(viewModel.closeDialog),
             ],
           ),

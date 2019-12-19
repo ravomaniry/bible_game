@@ -1,6 +1,7 @@
 import 'package:badges/badges.dart';
 import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/redux/inventory/state.dart';
+import 'package:bible_game/redux/themes/default_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -14,11 +15,15 @@ final List<Bonus> normalPricedBonuses = [
 final List<Bonus> doublePricedBonuses = normalPricedBonuses.map((b) => b.doublePriced()).toList();
 
 class Shop extends StatelessWidget {
-  final InventoryState _state;
+  final InventoryState state;
+  final Function(Bonus) buyBonus;
+  final DefaultTheme theme;
 
-  final Function(Bonus) _buyBonus;
-
-  Shop(this._state, this._buyBonus);
+  Shop({
+    @required this.state,
+    @required this.buyBonus,
+    @required this.theme,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,13 +34,13 @@ class Shop extends StatelessWidget {
           alignment: WrapAlignment.center,
           children: _bonusesList.map(_buildBonus).toList(),
         ),
-        _Balance(_state.money),
+        _Balance(state.money),
       ],
     );
   }
 
   List<Bonus> get _bonusesList {
-    if (_state.isInGame) {
+    if (state.isInGame) {
       return doublePricedBonuses;
     }
     return normalPricedBonuses;
@@ -43,50 +48,75 @@ class Shop extends StatelessWidget {
 
   Widget _buildBonus(Bonus bonus) {
     if (bonus is RevealCharBonus) {
-      return _RevealCharDisplayWrapper(_state, bonus, _buyBonus);
+      return _RevealCharDisplayWrapper(
+        state: state,
+        bonus: bonus,
+        buy: buyBonus,
+        theme: theme,
+      );
     } else if (bonus is SolveOneTurn) {
-      return _SolveOneTurnDisplay(_state, bonus, _buyBonus);
+      return _SolveOneTurnDisplay(state, bonus, buyBonus);
     }
     return SizedBox.shrink();
   }
 }
 
 class _RevealCharDisplayWrapper extends StatelessWidget {
-  final InventoryState _state;
-  final RevealCharBonus _bonus;
-  final Function(Bonus) _buy;
+  final InventoryState state;
+  final RevealCharBonus bonus;
+  final Function(Bonus) buy;
+  final DefaultTheme theme;
 
-  _RevealCharDisplayWrapper(this._state, this._bonus, this._buy, {Key key}) : super(key: key);
+  _RevealCharDisplayWrapper({
+    this.state,
+    this.bonus,
+    this.buy,
+    this.theme,
+    Key key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return RevealCharBonusDisplay(_bonus, _number, false, () => _buy(_bonus));
+    return RevealCharBonusDisplay(
+      bonus: bonus,
+      number: _number,
+      disabled: false,
+      theme: theme,
+      onPressed: () => buy(bonus),
+    );
   }
 
   int get _number {
-    if (_bonus is RevealCharBonus1) {
-      return _state.revealCharBonus1;
-    } else if (_bonus is RevealCharBonus2) {
-      return _state.revealCharBonus2;
-    } else if (_bonus is RevealCharBonus5) {
-      return _state.revealCharBonus5;
-    } else if (_bonus is RevealCharBonus10) {
-      return _state.revealCharBonus10;
+    if (bonus is RevealCharBonus1) {
+      return state.revealCharBonus1;
+    } else if (bonus is RevealCharBonus2) {
+      return state.revealCharBonus2;
+    } else if (bonus is RevealCharBonus5) {
+      return state.revealCharBonus5;
+    } else if (bonus is RevealCharBonus10) {
+      return state.revealCharBonus10;
     }
     return 0;
   }
 }
 
 class RevealCharBonusDisplay extends StatelessWidget {
-  final int _number;
-  final bool _disabled;
-  final RevealCharBonus _bonus;
-  final Function() _onPressed;
+  final int number;
+  final bool disabled;
+  final RevealCharBonus bonus;
+  final Function() onPressed;
+  final DefaultTheme theme;
 
-  RevealCharBonusDisplay(this._bonus, this._number, this._disabled, this._onPressed);
+  RevealCharBonusDisplay({
+    @required this.bonus,
+    @required this.number,
+    @required this.disabled,
+    @required this.onPressed,
+    @required this.theme,
+  });
 
   double get _opacity {
-    return _disabled ? 0.4 : 1;
+    return disabled ? 0.4 : 1;
   }
 
   @override
@@ -94,8 +124,8 @@ class RevealCharBonusDisplay extends StatelessWidget {
     return Opacity(
       opacity: _opacity,
       child: Container(
-        width: 44,
-        height: 40,
+        width: 38,
+        height: 32,
         margin: EdgeInsets.only(right: 4),
         decoration: BoxDecoration(
           color: Color.fromARGB(100, 255, 255, 255),
@@ -108,8 +138,8 @@ class RevealCharBonusDisplay extends StatelessWidget {
         padding: const EdgeInsets.only(left: 4, right: 4),
         child: FlatButton(
           padding: EdgeInsets.all(0),
-          key: Key("revealCharBonusBtn_${_bonus.power}"),
-          onPressed: _onPressed,
+          key: Key("revealCharBonusBtn_${bonus.power}"),
+          onPressed: onPressed,
           child: _buildBadge(),
         ),
       ),
@@ -117,12 +147,13 @@ class RevealCharBonusDisplay extends StatelessWidget {
   }
 
   Widget _buildBadge() {
-    if (_number > 0) {
+    if (number > 0) {
       return Badge(
-        badgeContent: Text("$_number"),
+        badgeContent: Text("$number"),
+        badgeColor: theme.primary,
         child: Image(
           fit: BoxFit.fitWidth,
-          image: AssetImage("assets/images/wood_medal_${_bonus.power}.png"),
+          image: AssetImage("assets/images/wood_medal_${bonus.power}.png"),
         ),
       );
     }
@@ -130,7 +161,7 @@ class RevealCharBonusDisplay extends StatelessWidget {
       padding: EdgeInsets.all(6),
       child: Image(
         fit: BoxFit.fitWidth,
-        image: AssetImage("assets/images/wood_medal_${_bonus.power}.png"),
+        image: AssetImage("assets/images/wood_medal_${bonus.power}.png"),
       ),
     );
   }

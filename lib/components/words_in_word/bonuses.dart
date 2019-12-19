@@ -1,5 +1,6 @@
 import 'package:bible_game/components/inventory/shop.dart';
 import 'package:bible_game/models/bonus.dart';
+import 'package:bible_game/redux/themes/default_theme.dart';
 import 'package:bible_game/redux/words_in_word/view_model.dart';
 import 'package:flutter/widgets.dart';
 
@@ -22,10 +23,30 @@ class BonusesDisplay extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _RevealCharDisplayWrapper(_revealCharBonus1, inventory.revealCharBonus1, _viewModel.useBonus),
-            _RevealCharDisplayWrapper(_revealCharBonus2, inventory.revealCharBonus2, _viewModel.useBonus),
-            _RevealCharDisplayWrapper(_revealCharBonus5, inventory.revealCharBonus5, _viewModel.useBonus),
-            _RevealCharDisplayWrapper(_revealCharBonus10, inventory.revealCharBonus10, _viewModel.useBonus),
+            _RevealCharDisplayWrapper(
+              bonus: _revealCharBonus1,
+              theme: _viewModel.theme,
+              number: inventory.revealCharBonus1,
+              useBonus: _viewModel.useBonus,
+            ),
+            _RevealCharDisplayWrapper(
+              bonus: _revealCharBonus2,
+              theme: _viewModel.theme,
+              number: inventory.revealCharBonus2,
+              useBonus: _viewModel.useBonus,
+            ),
+            _RevealCharDisplayWrapper(
+              bonus: _revealCharBonus5,
+              theme: _viewModel.theme,
+              number: inventory.revealCharBonus5,
+              useBonus: _viewModel.useBonus,
+            ),
+            _RevealCharDisplayWrapper(
+              bonus: _revealCharBonus10,
+              theme: _viewModel.theme,
+              number: inventory.revealCharBonus10,
+              useBonus: _viewModel.useBonus,
+            ),
           ],
         ),
       ],
@@ -34,21 +55,33 @@ class BonusesDisplay extends StatelessWidget {
 }
 
 class _RevealCharDisplayWrapper extends StatelessWidget {
-  final RevealCharBonus _bonus;
-  final int _number;
-  final Function(Bonus) _useBonus;
+  final RevealCharBonus bonus;
+  final int number;
+  final Function(Bonus) useBonus;
+  final DefaultTheme theme;
 
-  _RevealCharDisplayWrapper(this._bonus, this._number, this._useBonus);
+  _RevealCharDisplayWrapper({
+    @required this.bonus,
+    @required this.number,
+    @required this.useBonus,
+    @required this.theme,
+  });
 
   Function() get _onPressed {
-    if (_number > 0) {
-      return () => _useBonus(RevealCharBonus(_bonus.power, 0));
+    if (number > 0) {
+      return () => useBonus(RevealCharBonus(bonus.power, 0));
     }
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
-    return RevealCharBonusDisplay(_bonus, _number, _number == 0, _onPressed);
+    return RevealCharBonusDisplay(
+      bonus: bonus,
+      number: number,
+      disabled: number == 0,
+      onPressed: _onPressed,
+      theme: theme,
+    );
   }
 }
