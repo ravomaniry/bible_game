@@ -258,18 +258,20 @@ void main() {
     await tester.pump(Duration(milliseconds: 10));
 
     // open game 1 and close inventory
+    // words may have bonuses
     await tester.tap(find.byKey(Key("game_1")));
     await tester.pump(Duration(milliseconds: 10));
     await tester.tap(closeInventoryBtn);
     await tester.pump(Duration(milliseconds: 10));
-    expect(store.state.game.verse, BibleVerse.fromModel(verseA11, "A"));
+    expect(store.state.game.verse.words.map((x) => x.value), ["TestA"]);
     verify(store.state.dba.getSingleVerse(1, 1, 1)).called(1);
     // resolve game: call getBookById => load verse A12
     store.dispatch(UpdateGameResolvedState(true));
     await tester.pump(Duration(milliseconds: 10));
     await tester.tap(nextBtn);
     await tester.pump(Duration(milliseconds: 10));
-    expect(store.state.game.verse, BibleVerse.fromModel(verseA12, "A"));
+    expect(store.state.game.verse.words.map((x) => x.value),
+        BibleVerse.fromModel(verseA12, "A").words.map((x) => x.value));
     expect(store.state.game.list[0].resolvedVersesCount, 1);
 
     await tester.tap(closeInventoryBtn);
@@ -279,7 +281,8 @@ void main() {
     await tester.pump();
     await tester.tap(nextBtn);
     await tester.pump(Duration(milliseconds: 10));
-    expect(store.state.game.verse, BibleVerse.fromModel(verseA21, "A"));
+    expect(store.state.game.verse.words.map((x) => x.value),
+        BibleVerse.fromModel(verseA21, "A").words.map((x) => x.value));
     expect(store.state.game.list[0].resolvedVersesCount, 2);
 
     await tester.tap(closeInventoryBtn);
@@ -289,7 +292,8 @@ void main() {
     await tester.pump();
     await tester.tap(nextBtn);
     await tester.pump(Duration(milliseconds: 10));
-    expect(store.state.game.verse, BibleVerse.fromModel(verseB11, "B"));
+    expect(store.state.game.verse.words.map((x) => x.value),
+        BibleVerse.fromModel(verseB11, "B").words.map((x) => x.value));
     expect(store.state.game.list[0].resolvedVersesCount, 3);
 
     await tester.tap(closeInventoryBtn);
@@ -304,7 +308,8 @@ void main() {
     expect(store.state.game.activeGameIsCompleted, true);
     expect(closeInventoryBtn, findsNothing);
     expect(find.byKey(Key("congratulations")), findsOneWidget);
-    expect(store.state.game.verse, BibleVerse.fromModel(verseB11, "B"));
+    expect(store.state.game.verse.words.map((x) => x.value),
+        BibleVerse.fromModel(verseB11, "B").words.map((x) => x.value));
     expect(store.state.game.list[0].resolvedVersesCount, 4);
     // Closing congratulation message redirect to home
     await tester.tap(find.byKey(Key("congratulationsOkBtn")));

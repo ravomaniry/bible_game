@@ -17,9 +17,14 @@ import 'package:redux_thunk/redux_thunk.dart';
 
 ThunkAction<AppState> initializeWordsInWordState = (Store<AppState> store) {
   final state = store.state.wordsInWord ?? WordsInWordState.emptyState();
-  final wordsToFind = extractWordsToFind(store.state.game.verse.words).map(addRandomBonusToWord).toList();
+  final verse = store.state.game.verse;
+  final verseWithBonus = verse.copyWith(
+    words: verse.words.map(addRandomBonusToWord).toList(),
+  );
+  final wordsToFind = extractWordsToFind(verseWithBonus.words);
   var slots = generateEmptySlots(wordsToFind);
   slots = fillSlots(slots, wordsToFind);
+  store.dispatch(UpdateGameVerse(verseWithBonus));
   store.dispatch(UpdateWordsInWordState(state.copyWith(
     wordsToFind: wordsToFind,
     slots: slots,
@@ -42,6 +47,9 @@ List<Word> extractWordsToFind(List<Word> words) {
 }
 
 Word addRandomBonusToWord(Word word) {
+  if (word.isSeparator) {
+    return word;
+  }
   final random = Random();
   int power = 1;
   if (word.chars.length > 1) {
