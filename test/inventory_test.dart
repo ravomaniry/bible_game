@@ -5,12 +5,12 @@ import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
-import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/game/state.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/redux/router/routes.dart';
+import 'package:bible_game/redux/themes/default_theme.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/redux/words_in_word/state.dart';
@@ -43,6 +43,7 @@ void main() {
       mainReducer,
       middleware: [thunkMiddleware],
       initialState: AppState(
+        theme: DefaultTheme(),
         game: GameState.emptyState().copyWith(
           inventory: InventoryState.emptyState(),
         ),
@@ -121,6 +122,7 @@ void main() {
       verse.words[4].copyWithChar(0, verse.words[4].chars[0].copyWith(resolved: true)),
     );
     final initialState = AppState(
+      theme: DefaultTheme(),
       route: Routes.wordsInWord,
       game: GameState.emptyState().copyWith(
         verse: verse,

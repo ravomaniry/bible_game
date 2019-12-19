@@ -5,6 +5,7 @@ import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/game/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/redux/router/routes.dart';
+import 'package:bible_game/redux/themes/default_theme.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ void main() {
   testWidgets("Explorer widget test", (WidgetTester tester) async {
     final state = AppState(
       route: Routes.home,
+      theme: DefaultTheme(),
       game: GameState.emptyState(),
       assetBundle: AssetBundleMock.withDefaultValue(),
       dba: DbAdapterMock.withDefaultValues(),

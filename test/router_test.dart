@@ -1,6 +1,7 @@
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/game/state.dart';
+import 'package:bible_game/redux/themes/default_theme.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
@@ -17,6 +18,7 @@ void main() {
       mainReducer,
       middleware: [thunkMiddleware],
       initialState: AppState(
+        theme: DefaultTheme(),
         game: GameState.emptyState(),
         dba: DbAdapterMock.withDefaultValues(),
         assetBundle: AssetBundleMock(),

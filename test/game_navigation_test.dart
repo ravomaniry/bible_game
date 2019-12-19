@@ -9,6 +9,7 @@ import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/game/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
+import 'package:bible_game/redux/themes/default_theme.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
@@ -37,6 +38,7 @@ void main() {
       mainReducer,
       middleware: [thunkMiddleware],
       initialState: AppState(
+        theme: DefaultTheme(),
         game: GameState.emptyState(),
         dba: dba,
         assetBundle: AssetBundleMock.withDefaultValue(),
@@ -188,6 +190,7 @@ void main() {
 
   testWidgets("Load next verse", (WidgetTester tester) async {
     final state = AppState(
+      theme: DefaultTheme(),
       game: GameState.emptyState(),
       assetBundle: AssetBundleMock.withDefaultValue(),
       explorer: ExplorerState(),
