@@ -10,22 +10,15 @@ class HomeHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 10),
       padding: EdgeInsets.all(0),
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          fit: BoxFit.fitWidth,
-          image: AssetImage("assets/images/wood_panel.png"),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      child: Column(
         children: [
           HomeButton(
-            Icons.remove_red_eye,
+            Icons.view_carousel,
             "goToExplorer",
             _viewModel.goToExplorer,
-          )
+            _viewModel.theme.accentLeft,
+          ),
         ],
       ),
     );
@@ -36,8 +29,9 @@ class HomeButton extends StatelessWidget {
   final IconData _iconData;
   final String _key;
   final Function() _onPressed;
+  final Color _color;
 
-  HomeButton(this._iconData, this._key, this._onPressed);
+  HomeButton(this._iconData, this._key, this._onPressed, this._color);
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +39,8 @@ class HomeButton extends StatelessWidget {
       key: Key(_key),
       onPressed: _onPressed,
       icon: Icon(_iconData),
+      color: _color,
+      iconSize: 40,
     );
   }
 }

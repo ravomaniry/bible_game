@@ -1,5 +1,5 @@
 import 'package:bible_game/components/game/editor.dart';
-import 'package:bible_game/components/game/games_list.dart';
+import 'package:bible_game/components/game/games_list/index.dart';
 import 'package:bible_game/components/game/header.dart';
 import 'package:bible_game/components/loader.dart';
 import 'package:bible_game/redux/app_state.dart';
@@ -22,11 +22,9 @@ class Home extends StatelessWidget {
     if (viewModel.isReady) {
       return Scaffold(
         body: Container(
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              fit: BoxFit.fitWidth,
-              image: AssetImage('assets/images/forest.jpg'),
-            ),
+          padding: EdgeInsets.only(top: 6),
+          decoration: BoxDecoration(
+            color: viewModel.theme.primaryDark,
           ),
           child: Stack(
             children: <Widget>[
