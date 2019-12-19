@@ -69,19 +69,19 @@ ThunkAction<AppState> recomputeSlotsIndexes = (Store<AppState> store) {
   final state = store.state.wordsInWord;
   final screenWidth = store.state.config.screenWidth;
   final List<List<int>> indexes = [[]];
-  final slotWidth = SlotItem.width + SlotItem.margin;
+  final outerSlotWidth = slotWidth + slotMargin;
   int rowIndex = 0;
   double currentX = 0;
 
   if (screenWidth > 0) {
     for (int i = 0; i < state.slots.length; i++) {
-      if (currentX + slotWidth > screenWidth * 0.9) {
+      if (currentX + outerSlotWidth > screenWidth * 0.9) {
         rowIndex++;
         indexes.add([]);
         currentX = 0;
       }
       indexes[rowIndex].add(i);
-      currentX += slotWidth;
+      currentX += outerSlotWidth;
     }
     store.dispatch(UpdateWordsInWordState(state.copyWith(slotsDisplayIndexes: indexes)));
   }

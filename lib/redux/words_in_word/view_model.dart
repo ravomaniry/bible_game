@@ -8,6 +8,7 @@ import 'package:bible_game/redux/game/next_verse.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/inventory/use_bonus_action.dart';
+import 'package:bible_game/redux/themes/default_theme.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
 import 'package:bible_game/redux/words_in_word/cells_action.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
@@ -30,6 +31,7 @@ class WordsInWordViewModel {
   final Function() shuffleSlots;
   final Function() invalidateCombo;
   final Function(Bonus) useBonus;
+  final DefaultTheme theme;
 
   WordsInWordViewModel({
     @required this.verse,
@@ -46,6 +48,7 @@ class WordsInWordViewModel {
     @required this.shuffleSlots,
     @required this.invalidateCombo,
     @required this.useBonus,
+    @required this.theme,
   });
 
   static WordsInWordViewModel converter(Store<AppState> store) {
@@ -54,6 +57,7 @@ class WordsInWordViewModel {
       verse: store.state.game.verse,
       inventory: store.state.game.inventory,
       wordsInWord: store.state.wordsInWord,
+      theme: store.state.theme,
       selectHandler: (Char char) => store.dispatch(SelectWordsInWordChar(char)),
       submitHandler: () => store.dispatch(SubmitWordsInWordResponse()),
       cancelHandler: () => store.dispatch(CancelWordsInWordResponse()),
