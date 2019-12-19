@@ -122,7 +122,7 @@ class _Progress extends StatelessWidget {
           child: LinearProgressIndicator(
             backgroundColor: Color.fromARGB(255, 150, 150, 150),
             valueColor: AlwaysStoppedAnimation<Color>(_theme.accentLeft),
-            value: 1000 * _game.resolvedVersesCount / _game.model.versesCount,
+            value: _game.resolvedVersesCount / _game.model.versesCount,
           ),
         ),
         SizedBox(width: 10),
