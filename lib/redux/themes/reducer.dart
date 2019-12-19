@@ -1,5 +1,5 @@
-import 'package:bible_game/redux/themes/default_theme.dart';
+import 'package:bible_game/redux/themes/themes.dart';
 
-DefaultTheme themeReducer(DefaultTheme state) {
+AppColorTheme themeReducer(AppColorTheme state) {
   return state;
 }
