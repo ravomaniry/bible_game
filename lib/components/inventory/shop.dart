@@ -149,8 +149,11 @@ class RevealCharBonusDisplay extends StatelessWidget {
   Widget _buildBadge() {
     if (number > 0) {
       return Badge(
-        badgeContent: Text("$number"),
-        badgeColor: theme.primary,
+        badgeContent: Text(
+          "$number",
+          style: TextStyle(color: theme.neutral),
+        ),
+        badgeColor: theme.primaryDark,
         child: Image(
           fit: BoxFit.fitWidth,
           image: AssetImage("assets/images/wood_medal_${bonus.power}.png"),

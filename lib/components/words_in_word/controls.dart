@@ -59,7 +59,7 @@ class _ControlsContainer extends StatelessWidget {
       padding: EdgeInsets.only(top: 6),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [theme.primary.withAlpha(40), Colors.transparent],
+          colors: [theme.primary.withAlpha(80), Colors.transparent],
           begin: Alignment.bottomCenter,
           end: Alignment.topCenter,
           stops: [0.75, 1],
@@ -120,7 +120,7 @@ class _PropositionContainer extends StatelessWidget {
             minWidth: 200,
           ),
           decoration: BoxDecoration(
-            color: theme.neutral.withAlpha(180),
+            color: theme.neutral.withAlpha(240),
             border: Border.all(
               color: theme.neutral,
               width: 4,
@@ -253,7 +253,7 @@ class _SlotItemContainer extends StatelessWidget {
   }
 
   int get _alpha {
-    return isEmpty ? 120 : 160;
+    return isEmpty ? 120 : 230;
   }
 
   @override
@@ -264,7 +264,7 @@ class _SlotItemContainer extends StatelessWidget {
       decoration: BoxDecoration(
         color: theme.neutral.withAlpha(_alpha),
         border: Border.all(
-          color: theme.neutral.withAlpha(80),
+          color: theme.neutral.withAlpha(_alpha),
           width: 4,
         ),
         borderRadius: BorderRadius.circular(4),

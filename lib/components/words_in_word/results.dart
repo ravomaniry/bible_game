@@ -64,7 +64,7 @@ class _CellDisplay extends StatelessWidget {
     } else if (_word.bonus != null) {
       return _theme.accentLeft.withAlpha(150);
     }
-    return _theme.neutral.withAlpha(200);
+    return _theme.neutral.withAlpha(240);
   }
 
   String getContentToDisplay(Char char) {
