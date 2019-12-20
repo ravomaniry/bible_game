@@ -1,11 +1,12 @@
 import 'package:bible_game/db/db_adapter.dart';
 import 'package:bible_game/db/model.dart';
+import 'package:bible_game/models/game.dart';
 import 'package:bible_game/redux/error/actions.dart';
 import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/inventory/state.dart';
+import 'package:bible_game/redux/themes/actions.dart';
 import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/utils/retry.dart';
-import 'package:bible_game/models/game.dart';
 
 final defaultInventory = InventoryState.emptyState().copyWith(
   revealCharBonus1: 10,
@@ -77,6 +78,7 @@ Future initializeGames(DbAdapter dba, Function dispatch) async {
       final gamesList = games.map((model) => GameModelWrapper.fromModel(model, books)).toList();
       dispatch(ReceiveBooksList(books));
       dispatch(ReceiveGamesList(gamesList));
+      dispatch(randomizeTheme);
     }
   } catch (e) {
     dispatch(ReceiveError(Errors.unknownDbError));

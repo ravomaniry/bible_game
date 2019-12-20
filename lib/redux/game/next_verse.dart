@@ -1,17 +1,19 @@
 import 'dart:async';
+
+import 'package:bible_game/db/db_adapter.dart';
+import 'package:bible_game/db/model.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/game.dart';
+import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/error/actions.dart';
 import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/game/lists_handler.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
+import 'package:bible_game/redux/themes/actions.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/utils/retry.dart';
 import 'package:redux/redux.dart';
-import 'package:bible_game/db/db_adapter.dart';
-import 'package:bible_game/db/model.dart';
-import 'package:bible_game/redux/app_state.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
 ThunkAction<AppState> saveGameAndLoadNextVerse = (Store<AppState> store) async {
@@ -33,6 +35,7 @@ ThunkAction<AppState> saveGameAndLoadNextVerse = (Store<AppState> store) async {
       store.dispatch(initializeWordsInWordState);
       store.dispatch(ReceiveGamesList(nextList));
       store.dispatch(saveActiveGame);
+      store.dispatch(randomizeTheme);
     }
   } catch (e) {
     print("%%%%%%%%%% error in saveGameAndLoadNextVerse");

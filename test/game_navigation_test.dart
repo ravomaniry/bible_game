@@ -15,9 +15,9 @@ import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:redux/redux.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
 void main() {
@@ -160,7 +160,7 @@ void main() {
     // => click on next
     await tester.tap(find.byKey(Key("nextButton")));
     await tester.pump(Duration(milliseconds: 10));
-    // Increment and save everything => load next verse => save the game in db
+    // Increment and save everything => load next verse => save the game in db => change theme
     final game = store.state.game.list[0];
     expect(game.resolvedVersesCount, 1);
     expect(game.model.money, 9);
@@ -267,12 +267,14 @@ void main() {
     verify(store.state.dba.getSingleVerse(1, 1, 1)).called(1);
     // resolve game: call getBookById => load verse A12
     store.dispatch(UpdateGameResolvedState(true));
+    final prevTheme = store.state.theme.name;
     await tester.pump(Duration(milliseconds: 10));
     await tester.tap(nextBtn);
     await tester.pump(Duration(milliseconds: 10));
     expect(store.state.game.verse.words.map((x) => x.value),
         BibleVerse.fromModel(verseA12, "A").words.map((x) => x.value));
     expect(store.state.game.list[0].resolvedVersesCount, 1);
+    expect(store.state.theme.name == prevTheme, false);
 
     await tester.tap(closeInventoryBtn);
     await tester.pump(Duration(milliseconds: 10));

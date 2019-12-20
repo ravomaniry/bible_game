@@ -120,12 +120,13 @@ class _PropositionContainer extends StatelessWidget {
             minWidth: 200,
           ),
           decoration: BoxDecoration(
-            color: theme.neutral.withAlpha(240),
+            color: theme.neutral.withAlpha(180),
             border: Border.all(
               color: theme.neutral,
               width: 4,
             ),
             borderRadius: BorderRadius.circular(18),
+            boxShadow: [BoxShadow(color: Colors.black, blurRadius: 2)],
           ),
           child: FlatButton(
             key: Key("proposeBtn"),
@@ -299,7 +300,7 @@ class _ComboDisplay extends StatelessWidget {
       builder: (Animation anim) => Container(
         width: MediaQuery.of(context).size.width * (1 - anim.value),
         height: 4,
-        decoration: BoxDecoration(color: theme.primaryDark),
+        decoration: BoxDecoration(color: theme.accentRight),
       ),
     );
   }

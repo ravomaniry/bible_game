@@ -38,7 +38,7 @@ class _GameListContainer extends StatelessWidget {
       margin: const EdgeInsets.only(left: 10, right: 10, bottom: 6),
       padding: const EdgeInsets.only(top: 10),
       decoration: BoxDecoration(
-        color: _viewModel.theme.primary,
+        color: _viewModel.theme.primary.withAlpha(245),
         borderRadius: BorderRadius.circular(16),
       ),
       child: child,
