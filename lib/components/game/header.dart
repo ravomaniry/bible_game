@@ -14,10 +14,9 @@ class HomeHeader extends StatelessWidget {
       child: Column(
         children: [
           HomeButton(
-            Icons.view_carousel,
             "goToExplorer",
             _viewModel.goToExplorer,
-            _viewModel.theme.accentLeft,
+            _viewModel.theme.primaryDark,
           ),
         ],
       ),
@@ -26,21 +25,21 @@ class HomeHeader extends StatelessWidget {
 }
 
 class HomeButton extends StatelessWidget {
-  final IconData _iconData;
   final String _key;
   final Function() _onPressed;
   final Color _color;
 
-  HomeButton(this._iconData, this._key, this._onPressed, this._color);
+  HomeButton(this._key, this._onPressed, this._color);
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
+    return FlatButton(
       key: Key(_key),
       onPressed: _onPressed,
-      icon: Icon(_iconData),
-      color: _color,
-      iconSize: 40,
+      child: Image(
+        color: _color,
+        image: AssetImage("assets/images/bible.png"),
+      ),
     );
   }
 }
