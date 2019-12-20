@@ -11,9 +11,12 @@ class UpdateTheme {
   UpdateTheme(this.payload);
 }
 
+final random = Random();
+
 final allThemes = [
   AppColorTheme(),
   BlueGrayTheme(),
+  GreenTheme(),
 ];
 
 ThunkAction<AppState> randomizeTheme = (Store<AppState> store) {
@@ -22,7 +25,6 @@ ThunkAction<AppState> randomizeTheme = (Store<AppState> store) {
 };
 
 AppColorTheme getRandomTheme(String activeThemeName) {
-  final random = Random();
   final eligibleThemes = allThemes.where((t) => t.name != activeThemeName).toList();
   return eligibleThemes[random.nextInt(eligibleThemes.length)];
 }
