@@ -28,13 +28,21 @@ class Shop extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Wrap(
-          alignment: WrapAlignment.center,
-          children: _bonusesList.map(_buildBonus).toList(),
+        _BonusesRow(
+          theme: theme,
+          children: <Widget>[
+            _buildBonus(_bonusesList[0]),
+            _buildBonus(_bonusesList[1]),
+          ],
         ),
-        _Balance(state.money),
+        _BonusesRow(
+          theme: theme,
+          children: <Widget>[
+            _buildBonus(_bonusesList[2]),
+            _buildBonus(_bonusesList[3]),
+          ],
+        ),
       ],
     );
   }
@@ -61,6 +69,24 @@ class Shop extends StatelessWidget {
   }
 }
 
+class _BonusesRow extends StatelessWidget {
+  final AppColorTheme theme;
+  final List<Widget> children;
+
+  _BonusesRow({
+    @required this.theme,
+    @required this.children,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: children,
+    );
+  }
+}
+
 class _RevealCharDisplayWrapper extends StatelessWidget {
   final InventoryState state;
   final RevealCharBonus bonus;
@@ -77,12 +103,15 @@ class _RevealCharDisplayWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RevealCharBonusDisplay(
-      bonus: bonus,
-      number: _number,
-      disabled: false,
-      theme: theme,
-      onPressed: () => buy(bonus),
+    return Container(
+      margin: EdgeInsets.only(bottom: 10, right: 10),
+      child: RevealCharBonusDisplay(
+        bonus: bonus,
+        number: _number,
+        disabled: false,
+        theme: theme,
+        onPressed: () => buy(bonus),
+      ),
     );
   }
 
@@ -193,20 +222,6 @@ class _SolveOneTurnDisplay extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class _Balance extends StatelessWidget {
-  final int _money;
-
-  _Balance(this._money);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      child: Text("$_money Ar."),
     );
   }
 }
