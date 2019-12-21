@@ -48,16 +48,25 @@ class _HomeContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        padding: EdgeInsets.only(top: 6),
         decoration: BoxDecoration(
           image: DecorationImage(
             image: AssetImage(theme.background),
             fit: BoxFit.fill,
           ),
-          color: theme.primaryDark,
         ),
-        child: Stack(
-          children: children,
+        child: Container(
+          padding: EdgeInsets.only(top: 6),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [theme.neutral, Colors.transparent],
+              stops: [0.05, 1],
+            ),
+          ),
+          child: Stack(
+            children: children,
+          ),
         ),
       ),
     );
