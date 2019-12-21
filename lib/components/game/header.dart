@@ -10,7 +10,7 @@ class HomeHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(0),
+      padding: EdgeInsets.only(top: 6),
       child: Column(
         children: [
           HomeButton(
