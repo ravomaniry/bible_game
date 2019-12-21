@@ -61,19 +61,19 @@ class _CellDisplay extends StatelessWidget {
       return _theme.primaryDark.withAlpha(100);
     } else if (_word.resolved) {
       return _theme.accentRight;
-    } else if (_word.bonus != null) {
-      return _theme.accentLeft.withAlpha(150);
     }
     return _theme.neutral.withAlpha(240);
   }
 
-  String getContentToDisplay(Char char) {
+  String getContentToDisplay(Char char, int index) {
     if (_word.isSeparator) {
       return char.value;
-    } else if (_word.resolved) {
+    } else if (_word.resolved || char.resolved) {
       return char.value;
+    } else if (_word.bonus != null && index == 0) {
+      return String.fromCharCode(0x2B50);
     }
-    return char.resolved ? char.value : "";
+    return "";
   }
 
   TextStyle getTextStyle(Char char) {
@@ -81,12 +81,10 @@ class _CellDisplay extends StatelessWidget {
       return const TextStyle(color: Colors.white, fontWeight: FontWeight.bold);
     } else if (_word.resolved) {
       return TextStyle(color: _theme.neutral, fontWeight: FontWeight.bold);
-    } else if (char.resolved && _word.bonus == null) {
-      return TextStyle(color: _theme.accentLeft);
     } else if (char.resolved) {
-      return TextStyle(color: _theme.neutral);
+      return TextStyle(color: _theme.accentLeft);
     }
-    return null;
+    return TextStyle(color: _theme.primary.withAlpha(160));
   }
 
   @override
@@ -97,7 +95,7 @@ class _CellDisplay extends StatelessWidget {
       key: Key("${_cell.wordIndex}_${_cell.charIndex}"),
       child: Center(
         child: Text(
-          getContentToDisplay(char),
+          getContentToDisplay(char, _cell.charIndex),
           style: getTextStyle(char),
         ),
       ),
