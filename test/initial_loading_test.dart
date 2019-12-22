@@ -2,6 +2,7 @@ import 'package:bible_game/db/model.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
+import 'package:bible_game/redux/editor/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/game/init.dart';
 import 'package:bible_game/redux/game/state.dart';
@@ -23,6 +24,7 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         dba: dba,
+        editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState(),
         explorer: ExplorerState(),
@@ -53,6 +55,7 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         dba: dba,
+        editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState(),
         explorer: ExplorerState(),
@@ -84,6 +87,7 @@ void main() {
       mainReducer,
       middleware: [thunkMiddleware],
       initialState: AppState(
+        editor: EditorState(),
         theme: AppColorTheme(),
         dba: DbAdapterMock.withDefaultValues(),
         game: GameState.emptyState(),

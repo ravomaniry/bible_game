@@ -1,7 +1,7 @@
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/game.dart';
-import 'package:bible_game/redux/game/editor_form_data.dart';
+import 'package:bible_game/redux/editor/state.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:flutter/foundation.dart';
 
@@ -20,7 +20,6 @@ class GameState {
   final bool isResolved;
   final bool activeGameIsCompleted;
   final InventoryState inventory;
-  final EditorFormData formData;
 
   GameState({
     @required this.books,
@@ -29,7 +28,6 @@ class GameState {
     @required this.dialogIsOpen,
     @required this.list,
     @required this.inventory,
-    @required this.formData,
     this.startBook = -1,
     this.startChapter = -1,
     this.startVerse = -1,
@@ -47,7 +45,6 @@ class GameState {
         dialogIsOpen: false,
         list: [],
         inventory: InventoryState.emptyState(),
-        formData: EditorFormData(),
       );
 
   GameState copyWith({
@@ -58,7 +55,7 @@ class GameState {
     final int activeId,
     final bool dialogIsOpen,
     final List<GameModelWrapper> list,
-    final EditorFormData formData,
+    final EditorState formData,
     final int startBook,
     final int startChapter,
     final int startVerse,
@@ -75,7 +72,6 @@ class GameState {
       activeId: activeId ?? this.activeId,
       dialogIsOpen: dialogIsOpen ?? this.dialogIsOpen,
       list: list ?? this.list,
-      formData: formData ?? this.formData,
       startBook: startBook ?? this.startBook,
       startChapter: startChapter ?? this.startChapter,
       startVerse: startVerse ?? this.startVerse,

@@ -5,6 +5,7 @@ import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
+import 'package:bible_game/redux/editor/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/game/state.dart';
@@ -38,6 +39,7 @@ void main() {
       mainReducer,
       middleware: [thunkMiddleware],
       initialState: AppState(
+        editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState(),
         dba: dba,
@@ -190,6 +192,7 @@ void main() {
 
   testWidgets("Load next verse", (WidgetTester tester) async {
     final state = AppState(
+      editor: EditorState(),
       theme: AppColorTheme(),
       game: GameState.emptyState(),
       assetBundle: AssetBundleMock.withDefaultValue(),

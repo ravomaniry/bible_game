@@ -2,6 +2,7 @@ import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
+import 'package:bible_game/redux/editor/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/game/state.dart';
@@ -10,9 +11,9 @@ import 'package:bible_game/redux/themes/themes.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:redux/redux.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
 void main() {
@@ -20,6 +21,7 @@ void main() {
     final store = Store<AppState>(
       mainReducer,
       initialState: AppState(
+        editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState(),
         dba: DbAdapterMock.withDefaultValues(),

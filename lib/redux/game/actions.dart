@@ -1,7 +1,6 @@
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/game.dart';
-import 'package:bible_game/redux/game/editor_form_data.dart';
 
 class ReceiveGamesList {
   final List<GameModelWrapper> payload;
@@ -39,10 +38,4 @@ class UpdateGameCompletedState {
   final bool payload;
 
   UpdateGameCompletedState(this.payload);
-}
-
-class UpdateEditorFormData {
-  final EditorFormData payload;
-
-  UpdateEditorFormData(this.payload);
 }

@@ -1,3 +1,4 @@
+import 'package:bible_game/components/editor/editor.dart';
 import 'package:bible_game/components/explorer/explorer.dart';
 import 'package:bible_game/components/game/congratulation.dart';
 import 'package:bible_game/components/game/home.dart';
@@ -45,6 +46,8 @@ class _RouterBuilder extends StatelessWidget {
       return Home();
     } else if (route == Routes.explorer) {
       return Explorer();
+    } else if (route == Routes.gameEditor) {
+      return GameEditor();
     } else {
       if (activeGameIsCompleted) {
         return Congratulations();

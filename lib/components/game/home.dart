@@ -1,4 +1,3 @@
-import 'package:bible_game/components/game/editor/editor.dart';
 import 'package:bible_game/components/game/games_list/index.dart';
 import 'package:bible_game/components/game/header.dart';
 import 'package:bible_game/components/loader.dart';
@@ -23,15 +22,12 @@ class Home extends StatelessWidget {
     if (viewModel.isReady) {
       return _HomeContainer(
         theme: viewModel.theme,
-        children: <Widget>[
-          Column(
-            children: <Widget>[
-              HomeHeader(viewModel),
-              GamesList(),
-            ],
-          ),
-          GameEditor(),
-        ],
+        child: Column(
+          children: <Widget>[
+            HomeHeader(viewModel),
+            GamesList(),
+          ],
+        ),
       );
     }
     return Loader();
@@ -39,10 +35,11 @@ class Home extends StatelessWidget {
 }
 
 class _HomeContainer extends StatelessWidget {
-  final List<Widget> children;
+  final Widget child;
+
   final AppColorTheme theme;
 
-  _HomeContainer({@required this.children, @required this.theme});
+  _HomeContainer({@required this.child, @required this.theme});
 
   @override
   Widget build(BuildContext context) {
@@ -63,9 +60,7 @@ class _HomeContainer extends StatelessWidget {
               stops: [0.05, 1],
             ),
           ),
-          child: Stack(
-            children: children,
-          ),
+          child: child,
         ),
       ),
     );

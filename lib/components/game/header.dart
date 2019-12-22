@@ -11,11 +11,17 @@ class HomeHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(top: 6),
-      child: Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          HomeButton(
+          _HomeButton(
             "goToExplorer",
             _viewModel.goToExplorer,
+            _viewModel.theme.primaryDark,
+          ),
+          _GoToEditorBtn(
+            _viewModel.goToEditor,
             _viewModel.theme.primaryDark,
           ),
         ],
@@ -24,12 +30,12 @@ class HomeHeader extends StatelessWidget {
   }
 }
 
-class HomeButton extends StatelessWidget {
+class _HomeButton extends StatelessWidget {
   final String _key;
   final Function() _onPressed;
   final Color _color;
 
-  HomeButton(this._key, this._onPressed, this._color);
+  _HomeButton(this._key, this._onPressed, this._color);
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +45,28 @@ class HomeButton extends StatelessWidget {
       child: Image(
         color: _color,
         image: AssetImage("assets/images/bible.png"),
+      ),
+    );
+  }
+}
+
+class _GoToEditorBtn extends StatelessWidget {
+  final Function() _onPressed;
+  final Color _color;
+
+  _GoToEditorBtn(this._onPressed, this._color);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: FlatButton(
+        onPressed: _onPressed,
+        key: Key("goToEditor"),
+        child: Icon(
+          Icons.add_circle_outline,
+          color: _color,
+          size: 48,
+        ),
       ),
     );
   }

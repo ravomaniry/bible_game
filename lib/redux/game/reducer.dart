@@ -30,8 +30,6 @@ GameState gamesListStateReducer(GameState state, action) {
     return state.copyWith(inventory: decrementBonusReducerUtil(state.inventory, action.payload));
   } else if (action is InvalidateCombo) {
     return state.copyWith(inventory: state.inventory.copyWith(combo: 1));
-  } else if (action is UpdateEditorFormData) {
-    return state.copyWith(formData: action.payload);
   }
   return state;
 }

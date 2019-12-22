@@ -1,5 +1,7 @@
 import 'package:bible_game/models/game.dart';
 import 'package:bible_game/redux/app_state.dart';
+import 'package:bible_game/redux/editor/actions.dart' as EditorActions;
+import 'package:bible_game/redux/explorer/actions.dart' as ExplorerActions;
 import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/game/lists_handler.dart';
 import 'package:bible_game/redux/game/next_verse.dart';
@@ -8,13 +10,13 @@ import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/themes/themes.dart';
 import 'package:flutter/foundation.dart';
 import 'package:redux/redux.dart';
-import 'package:bible_game/redux/explorer/actions.dart' as ExplorerActions;
 
 class GameViewModel {
   final bool isReady;
   final GameState state;
   final Function() toggleDialog;
   final Function() goToExplorer;
+  final Function() goToEditor;
   final Function() openInventory;
   final Function(GameModelWrapper) selectHandler;
   final Function() nextHandler;
@@ -29,6 +31,7 @@ class GameViewModel {
     @required this.goToExplorer,
     @required this.nextHandler,
     @required this.theme,
+    @required this.goToEditor,
   });
 
   static GameViewModel converter(Store<AppState> store) {
@@ -41,6 +44,7 @@ class GameViewModel {
       openInventory: () => store.dispatch(OpenInventoryDialog(false)),
       selectHandler: (GameModelWrapper game) => store.dispatch(SelectGame(game).thunk),
       nextHandler: () => store.dispatch(saveGameAndLoadNextVerse),
+      goToEditor: () => store.dispatch(EditorActions.goToEditor),
     );
   }
 }

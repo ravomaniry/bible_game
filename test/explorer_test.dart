@@ -1,6 +1,7 @@
 import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
+import 'package:bible_game/redux/editor/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/game/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
@@ -16,6 +17,7 @@ import 'package:redux_thunk/redux_thunk.dart';
 void main() {
   testWidgets("Explorer widget test", (WidgetTester tester) async {
     final state = AppState(
+      editor: EditorState(),
       route: Routes.home,
       theme: AppColorTheme(),
       game: GameState.emptyState(),

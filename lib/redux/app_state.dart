@@ -1,9 +1,9 @@
 import 'package:bible_game/db/db_adapter.dart';
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/redux/config/state.dart';
+import 'package:bible_game/redux/editor/state.dart';
 import 'package:bible_game/redux/error/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
-import 'package:bible_game/redux/game/editor_form_data.dart';
 import 'package:bible_game/redux/game/state.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/router/routes.dart';
@@ -22,6 +22,7 @@ class AppState {
   final ErrorState error;
   final AssetBundle assetBundle;
   final ExplorerState explorer;
+  final EditorState editor;
   final ConfigState config;
   final AppColorTheme theme;
 
@@ -37,6 +38,7 @@ class AppState {
     @required this.explorer,
     @required this.config,
     @required this.theme,
+    @required this.editor,
   });
 
   factory AppState.initialState(AssetBundle assetBundle) {
@@ -45,6 +47,7 @@ class AppState {
       explorer: ExplorerState(),
       config: ConfigState.initialState(),
       theme: AppColorTheme(),
+      editor: EditorState(),
       dba: DbAdapter(
         db: BibleGameModel(),
         bookModel: BookModel(),
@@ -57,7 +60,6 @@ class AppState {
         books: [],
         dialogIsOpen: false,
         activeId: null,
-        formData: EditorFormData(),
         inventory: InventoryState.emptyState(),
       ),
     );

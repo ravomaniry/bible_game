@@ -6,6 +6,7 @@ import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/actions.dart';
 import 'package:bible_game/redux/config/state.dart';
+import 'package:bible_game/redux/editor/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/game/state.dart';
@@ -32,6 +33,7 @@ void main() {
       mainReducer,
       middleware: [thunkMiddleware],
       initialState: AppState(
+        editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState(),
         dba: DbAdapterMock.withDefaultValues(),
@@ -69,6 +71,7 @@ void main() {
   testWidgets("In game interractivity - Tap + propose", (WidgetTester tester) async {
     final verse = BibleVerse.from(bookId: 1, book: "Matio", chapter: 1, verse: 1, text: "Ny teny ny Azy");
     final initialState = AppState(
+      editor: EditorState(),
       game: GameState.emptyState(),
       theme: AppColorTheme(),
       route: Routes.wordsInWord,
@@ -142,6 +145,7 @@ void main() {
   testWidgets("Click on bonuses", (WidgetTester tester) async {
     final verse = BibleVerse.from(book: "", bookId: 1, chapter: 1, verse: 1, text: "ABCDEFGHIJKLMNOPQRST");
     final state = AppState(
+      editor: EditorState(),
       theme: AppColorTheme(),
       game: GameState.emptyState().copyWith(
         verse: verse,
@@ -240,6 +244,7 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         assetBundle: null,
+        editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState().copyWith(
           inventory: InventoryState.emptyState().copyWith(

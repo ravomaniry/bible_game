@@ -4,9 +4,18 @@ class VersesNumRef {
   final int versesNum;
 
   VersesNumRef(this.bookId, this.chapter, this.versesNum);
+
+  bool isSameRef(int bookId, int chapter) {
+    return this.bookId == bookId && this.chapter == chapter;
+  }
+
+  @override
+  String toString() {
+    return "$bookId:$chapter $versesNum";
+  }
 }
 
-class EditorFormData {
+class EditorState {
   final String name;
   final int startBook;
   final int startChapter;
@@ -16,7 +25,7 @@ class EditorFormData {
   final int endVerse;
   final List<VersesNumRef> versesNumRefs;
 
-  EditorFormData({
+  EditorState({
     this.name = "",
     this.startBook = 1,
     this.startChapter = 1,
@@ -27,16 +36,17 @@ class EditorFormData {
     this.versesNumRefs = const [],
   });
 
-  EditorFormData copyWith({
+  EditorState copyWith({
     final String name,
     final int startBook,
     final int startChapter,
+    final int startVerse,
     final int endBook,
     final int endChapter,
     final int endVerse,
     final List<VersesNumRef> versesNumRefs,
   }) {
-    return EditorFormData(
+    return EditorState(
       name: name ?? this.name,
       startBook: startBook ?? this.startBook,
       startChapter: startChapter ?? this.startChapter,
@@ -48,12 +58,9 @@ class EditorFormData {
     );
   }
 
-  EditorFormData appendVersesNum(VersesNumRef versesNumRef) {
-    final next = this
-        .versesNumRefs
-        .where((v) => v.bookId != versesNumRef.bookId && v.chapter != versesNumRef.chapter)
-        .toList()
-          ..add(versesNumRef);
+  EditorState appendVersesNum(VersesNumRef versesNumRef) {
+    final next = this.versesNumRefs.where((v) => !v.isSameRef(versesNumRef.bookId, versesNumRef.chapter)).toList()
+      ..add(versesNumRef);
     return copyWith(versesNumRefs: next);
   }
 }

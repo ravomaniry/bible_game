@@ -3,6 +3,7 @@ import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
+import 'package:bible_game/redux/editor/state.dart';
 import 'package:bible_game/redux/game/state.dart';
 import 'package:bible_game/redux/inventory/use_bonus_action.dart';
 import 'package:bible_game/redux/main_reducer.dart';
@@ -102,6 +103,7 @@ void main() {
     final store = Store<AppState>(mainReducer,
         middleware: [thunkMiddleware],
         initialState: AppState(
+          editor: EditorState(),
           theme: AppColorTheme(),
           game: GameState.emptyState().copyWith(
             verse: BibleVerse.from(text: "Aza menatra"),
@@ -144,6 +146,7 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         assetBundle: null,
+        editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState().copyWith(
           verse: BibleVerse.from(text: "Jesosy no fiainana"),
