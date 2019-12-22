@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/models/thunk_container.dart';
@@ -68,7 +69,7 @@ List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
   final wordsCopy = List<Word>.from(words);
   final List<List<Char>> eligibleAdditionalChars = [];
   List<List<Char>> otherAdditionalChars = [];
-  var shortestAdditionalChars = slots.length;
+  var shortestAdditionalChars = prevSlots.length;
 
   for (int index = 0; index < wordsCopy.length; index++) {
     final additional = getAdditionalChars(words[index], slots);

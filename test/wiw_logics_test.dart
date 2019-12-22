@@ -73,6 +73,15 @@ void main() {
     filled.sort((a, b) => a.value.codeUnitAt(0) - b.value.codeUnitAt(0));
     expect(filled, Word.from("AAINY", 0, false).chars);
 
+    // Not enough space - Long word - nothing in common
+    slots = [null, ...Word.from("AAIZZ", 0, false).chars];
+    words = [
+      Word.from("jesosy", 0, false),
+    ];
+    filled = fillSlots(slots, words);
+    filled.sort((a, b) => a.value.codeUnitAt(0) - b.value.codeUnitAt(0));
+    expect(filled, Word.from("EJOSSY", 0, false).chars);
+
     // Take the shortest additional word
     slots = [null, null, null, null, null];
     words = [
