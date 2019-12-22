@@ -1,4 +1,4 @@
-import 'package:bible_game/components/game/editor.dart';
+import 'package:bible_game/components/game/editor/editor.dart';
 import 'package:bible_game/components/game/games_list/index.dart';
 import 'package:bible_game/components/game/header.dart';
 import 'package:bible_game/components/loader.dart';
@@ -55,7 +55,6 @@ class _HomeContainer extends StatelessWidget {
           ),
         ),
         child: Container(
-          padding: EdgeInsets.only(top: 6),
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,

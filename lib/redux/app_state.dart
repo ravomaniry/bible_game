@@ -3,6 +3,7 @@ import 'package:bible_game/db/model.dart';
 import 'package:bible_game/redux/config/state.dart';
 import 'package:bible_game/redux/error/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
+import 'package:bible_game/redux/game/editor_form_data.dart';
 import 'package:bible_game/redux/game/state.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/router/routes.dart';
@@ -56,6 +57,7 @@ class AppState {
         books: [],
         dialogIsOpen: false,
         activeId: null,
+        formData: EditorFormData(),
         inventory: InventoryState.emptyState(),
       ),
     );
