@@ -1,15 +1,24 @@
+import 'dart:math';
+
 import 'package:bible_game/models/bible_verse.dart';
+import 'package:bible_game/models/game.dart';
+import 'package:bible_game/models/game_mode.dart';
+import 'package:bible_game/models/thunk_container.dart';
+import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/error/actions.dart';
 import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
+import 'package:bible_game/redux/router/actions.dart';
+import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/utils/retry.dart';
 import 'package:redux/redux.dart';
-import 'package:bible_game/models/game.dart';
-import 'package:bible_game/models/thunk_container.dart';
-import 'package:bible_game/redux/app_state.dart';
 import 'package:redux_thunk/redux_thunk.dart';
+
+final gameModes = [
+  GameMode(Routes.wordsInWord, initializeWordsInWordState),
+];
 
 class SelectGame extends ThunkContainer {
   final GameModelWrapper _game;
@@ -27,10 +36,9 @@ class SelectGame extends ThunkContainer {
           store.dispatch(UpdateGameVerse(BibleVerse.fromModel(verse, bookName)));
           store.dispatch(UpdateActiveGameId(_game.model.id));
           store.dispatch(UpdateGameCompletedState(false));
-          // for now, there is only wordsInWord as a game
-          store.dispatch(initializeWordsInWordState);
           store.dispatch(UpdateInventory(_game.inventory));
           store.dispatch(OpenInventoryDialog(false));
+          store.dispatch(initializeRandomGame);
         }
       } catch (e) {
         print(model.name);
@@ -41,6 +49,13 @@ class SelectGame extends ThunkContainer {
     };
   }
 }
+
+ThunkAction<AppState> initializeRandomGame = (Store<AppState> store) {
+  final random = Random();
+  final game = gameModes[random.nextInt(gameModes.length)];
+  store.dispatch(game.initAction);
+  store.dispatch(GoToAction(game.route));
+};
 
 ThunkAction<AppState> saveActiveGame = (Store<AppState> store) async {
   try {
