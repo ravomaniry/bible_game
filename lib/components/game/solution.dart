@@ -76,7 +76,7 @@ class _SolutionContainer extends StatelessWidget {
         child: Column(
           children: <Widget>[
             InGameHeader(),
-            Expanded(child: Divider()),
+            Expanded(child: Container()),
             Container(
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
@@ -86,7 +86,7 @@ class _SolutionContainer extends StatelessWidget {
               padding: const EdgeInsets.all(15),
               child: child,
             ),
-            Expanded(child: Divider()),
+            Expanded(child: Container()),
           ],
         ),
       ),
