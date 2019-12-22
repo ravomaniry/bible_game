@@ -50,4 +50,11 @@ void main() {
       ),
     );
   });
+
+  test("Word fist unrevealed index", () {
+    var word = Word.from("ABCD", 0, false);
+    expect(word.firstUnrevealedIndex, 0);
+    word.chars[0] = word.chars[0].copyWith(resolved: true);
+    expect(word.firstUnrevealedIndex, 1);
+  });
 }

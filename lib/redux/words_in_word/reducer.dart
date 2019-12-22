@@ -7,6 +7,8 @@ WordsInWordState wordsInWordReducer(WordsInWordState state, action) {
     return action.payload;
   } else if (action is UpdateWordsInWordCells) {
     return state.copyWith(cells: action.payload);
+  } else if (action is UpdatePropositionAnimation) {
+    return state.copyWith(propositionAnimation: action.payload);
   }
   return state;
 }

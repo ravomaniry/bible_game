@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:bible_game/db/db_adapter.dart';
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/models/bible_verse.dart';
@@ -34,6 +35,16 @@ class SelectWordsInWordChar {
   SelectWordsInWordChar(this.payload);
 }
 
+class UpdatePropositionAnimation {
+  final PropositionAnimations payload;
+
+  UpdatePropositionAnimation(this.payload);
+}
+
+final triggerPropositionSuccessAnimation = UpdatePropositionAnimation(PropositionAnimations.success);
+final triggerPropositionFailureAnimation = UpdatePropositionAnimation(PropositionAnimations.failure);
+final stopPropositionAnimation = UpdatePropositionAnimation(PropositionAnimations.none);
+
 final resetWordsInWord = UpdateWordsInWordState(WordsInWordState(
   cells: [],
   slots: [],
@@ -51,7 +62,6 @@ final ThunkAction<AppState> goToWordsInWord = (Store<AppState> store) async {
   // maybe let the event loop ticks here if the app drops frames
   store.dispatch(initializeWordsInWordState);
 };
-
 
 Future<void> loadWordsInWordNextVerse(Store<AppState> store) async {
   store.dispatch(ResetWordsInWordVerse());

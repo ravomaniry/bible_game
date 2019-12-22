@@ -72,6 +72,15 @@ class Word with EquatableMixin {
     return false;
   }
 
+  int get firstUnrevealedIndex {
+    for (var i = 0; i < chars.length; i++) {
+      if (!chars[i].resolved) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
   @override
   String toString() {
     return "\n$value: isSeparator=$isSeparator resolved=$resolved, bonus=$bonus  \n\t[${chars.join(",\n\t")}]";

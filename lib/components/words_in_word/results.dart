@@ -70,7 +70,7 @@ class _CellDisplay extends StatelessWidget {
       return char.value;
     } else if (_word.resolved || char.resolved) {
       return char.value;
-    } else if (_word.bonus != null && index == 0) {
+    } else if (_word.bonus != null && index == _word.firstUnrevealedIndex) {
       return String.fromCharCode(0x2B50);
     }
     return "";
