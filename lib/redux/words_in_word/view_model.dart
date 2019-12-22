@@ -21,6 +21,7 @@ class WordsInWordViewModel {
   final InventoryState inventory;
   final WordsInWordState wordsInWord;
   final ConfigState config;
+  final AppColorTheme theme;
   final Function(Char) selectHandler;
   final Function() submitHandler;
   final Function() cancelHandler;
@@ -31,7 +32,7 @@ class WordsInWordViewModel {
   final Function() shuffleSlots;
   final Function() invalidateCombo;
   final Function(Bonus) useBonus;
-  final AppColorTheme theme;
+  final Function() stopPropositionAnimationHandler;
 
   WordsInWordViewModel({
     @required this.verse,
@@ -49,6 +50,7 @@ class WordsInWordViewModel {
     @required this.invalidateCombo,
     @required this.useBonus,
     @required this.theme,
+    @required this.stopPropositionAnimationHandler,
   });
 
   static WordsInWordViewModel converter(Store<AppState> store) {
@@ -72,6 +74,7 @@ class WordsInWordViewModel {
       shuffleSlots: () => store.dispatch(shuffleSlotsAction),
       invalidateCombo: () => store.dispatch(InvalidateCombo()),
       useBonus: (Bonus bonus) => store.dispatch(UseBonus(bonus, true).thunk),
+      stopPropositionAnimationHandler: () => store.dispatch(stopPropositionAnimation),
     );
   }
 }

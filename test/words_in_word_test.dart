@@ -94,7 +94,8 @@ void main() {
     expect(store.state.wordsInWord.slots, Word.from("NYTENY", 0, false).chars);
     expect(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars);
     expect(store.state.wordsInWord.wordsToFind.map((w) => w.value), ["Ny", "teny", "Azy"]);
-
+    // Tap on slot 0(N) and 2(E) => Update proposition => Empty slots 0, 2
+    // Propose => Wrong => trigger Failure animation
     await tester.tap(find.byKey(Key("slot_0")));
     await tester.tap(find.byKey(Key("slot_3")));
     await tester.pump(Duration(milliseconds: 10));
@@ -108,7 +109,6 @@ void main() {
       null,
       ...Word.from("NY", 0, false).chars,
     ]);
-
     await tester.tap(find.byKey(Key("proposeBtn")));
     await tester.pump(Duration(milliseconds: 10));
     expect(store.state.wordsInWord.proposition, []);
@@ -116,7 +116,11 @@ void main() {
     expect(listEquals(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars), true);
     expect(store.state.wordsInWord.wordsToFind.length, 3);
     expect(store.state.wordsInWord.resolvedWords, []);
+    expect(store.state.wordsInWord.propositionAnimation, PropositionAnimations.failure);
 
+    // Tap on slot 4(N), 1(Y) => NY and Propose
+    // => "Ny" is removed from words to find
+    // => Success animation triggered
     await tester.tap(find.byKey(Key("slot_4")));
     await tester.pump(Duration(milliseconds: 10));
     await tester.tap(find.byKey(Key("slot_1")));
@@ -129,6 +133,10 @@ void main() {
     expect(store.state.wordsInWord.wordsToFind.map((w) => w.value), ["teny", "Azy"]);
     expect(store.state.wordsInWord.resolvedWords, [Word.from("Ny", 0, false).copyWith(resolved: true)]);
     expect(store.state.game.verse.words.map((w) => w.value), ["Ny", " ", "teny", " ", "ny", " ", "Azy"]);
+    expect(store.state.wordsInWord.propositionAnimation, PropositionAnimations.success);
+    // Animation is removed automatically after 0.5s
+    await tester.pump(Duration(seconds: 1));
+    expect(store.state.wordsInWord.propositionAnimation, PropositionAnimations.none);
   });
 
   testWidgets("Click on bonuses", (WidgetTester tester) async {

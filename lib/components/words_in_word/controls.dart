@@ -2,6 +2,7 @@ import 'package:animator/animator.dart';
 import 'package:bible_game/components/words_in_word/bonuses.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/themes/themes.dart';
+import 'package:bible_game/redux/words_in_word/state.dart';
 import 'package:bible_game/redux/words_in_word/view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,8 @@ class WordsInWordControls extends StatelessWidget {
             theme: _viewModel.theme,
             proposition: state.proposition,
             propose: _viewModel.propose,
+            animation: _viewModel.wordsInWord.propositionAnimation,
+            stopAnimationHandler: _viewModel.stopPropositionAnimationHandler,
           ),
           _ComboDisplay(
             combo: _viewModel.inventory.combo,
@@ -74,11 +77,15 @@ class _PropositionDisplay extends StatelessWidget {
   final Function() propose;
   final List<Char> proposition;
   final AppColorTheme theme;
+  final PropositionAnimations animation;
+  final Function() stopAnimationHandler;
 
   _PropositionDisplay({
+    @required this.animation,
     @required this.proposition,
     @required this.propose,
     @required this.theme,
+    @required this.stopAnimationHandler,
   });
 
   Function get clickHandler {
@@ -88,25 +95,43 @@ class _PropositionDisplay extends StatelessWidget {
     return null;
   }
 
+  String get _text {
+    return proposition.map((x) => x.value).join("");
+  }
+
   @override
   Widget build(BuildContext context) {
     return _PropositionContainer(
       theme: theme,
       clickHandler: clickHandler,
-      text: proposition.map((x) => x.value).join(""),
+      animationWidget: _PropositionAnimation(
+        theme: theme,
+        animation: animation,
+        stopAnimationHandler: stopAnimationHandler,
+      ),
+      child: Text(
+        _text,
+        style: TextStyle(
+          color: theme.primaryDark,
+          fontWeight: FontWeight.bold,
+          letterSpacing: 2,
+        ),
+      ),
     );
   }
 }
 
 class _PropositionContainer extends StatelessWidget {
-  final String text;
+  final Widget child;
   final AppColorTheme theme;
   final Function clickHandler;
+  final Widget animationWidget;
 
   _PropositionContainer({
     @required this.clickHandler,
-    @required this.text,
+    @required this.child,
     @required this.theme,
+    @required this.animationWidget,
   });
 
   @override
@@ -128,22 +153,71 @@ class _PropositionContainer extends StatelessWidget {
             borderRadius: BorderRadius.circular(18),
             boxShadow: [BoxShadow(color: Colors.black, blurRadius: 2)],
           ),
-          child: FlatButton(
-            key: Key("proposeBtn"),
-            splashColor: Colors.white,
-            padding: EdgeInsets.only(top: 0, bottom: 0, left: 30, right: 30),
-            onPressed: clickHandler,
-            child: Text(
-              text,
-              style: TextStyle(
-                color: theme.primaryDark,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 2,
+          child: Stack(
+            fit: StackFit.passthrough,
+            alignment: Alignment.center,
+            children: [
+              FlatButton(
+                key: Key("proposeBtn"),
+                splashColor: Colors.white,
+                padding: EdgeInsets.only(top: 0, bottom: 0, left: 30, right: 30),
+                onPressed: clickHandler,
+                child: child,
               ),
-            ),
+              animationWidget
+            ],
           ),
         )
       ],
+    );
+  }
+}
+
+class _PropositionAnimation extends StatelessWidget {
+  final PropositionAnimations animation;
+  final Function() stopAnimationHandler;
+  final AppColorTheme theme;
+
+  _PropositionAnimation({
+    @required this.theme,
+    @required this.animation,
+    @required this.stopAnimationHandler,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (animation == PropositionAnimations.none) {
+      return SizedBox.shrink();
+    } else {
+      return Animator(
+        endAnimationListener: (_) => stopAnimationHandler(),
+        duration: Duration(milliseconds: 200),
+        builder: _builder,
+      );
+    }
+  }
+
+  Widget Function(Animation<dynamic>) get _builder {
+    return animation == PropositionAnimations.failure ? _failureBuilder : _successBuilder;
+  }
+
+  Widget _successBuilder(Animation anim) {
+    return Align(
+      alignment: Alignment(anim.value * 2 - 1, 0.0),
+      child: Icon(
+        Icons.thumb_up,
+        color: theme.accentRight,
+      ),
+    );
+  }
+
+  Widget _failureBuilder(Animation anim) {
+    return Align(
+      alignment: Alignment(1 - anim.value * 2, 0.0),
+      child: Icon(
+        Icons.thumb_down,
+        color: theme.accentLeft,
+      ),
     );
   }
 }

@@ -63,6 +63,7 @@ Word addRandomBonusToWord(Word word) {
 }
 
 List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
+  final random = Random();
   final targetLength = prevSlots.length;
   final slots = prevSlots.where((char) => char != null).toList();
   final remainingSlots = targetLength - slots.length;
@@ -98,7 +99,7 @@ List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
   }
 
   while (eligibleAdditionalChars.length > 0 && slots.length < targetLength) {
-    final randomIndex = Random().nextInt(eligibleAdditionalChars.length);
+    final randomIndex = (random.nextDouble() * random.nextInt(eligibleAdditionalChars.length)).floor();
     final additionalChars = eligibleAdditionalChars[randomIndex];
     eligibleAdditionalChars.removeAt(randomIndex);
     for (final char in additionalChars) {
@@ -220,10 +221,15 @@ ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
   if (hasFoundMatch) {
     store.dispatch(IncrementMoney(prevVerse, verse).thunk);
     store.dispatch(UseBonus(revealed.bonus, false).thunk);
+    store.dispatch(triggerPropositionSuccessAnimation);
+  } else {
+    store.dispatch(triggerPropositionFailureAnimation);
   }
+  // wordsToFind.length == 0 this means that the game is completed
   if (wordsToFind.length == 0) {
     store.dispatch(InvalidateCombo());
     store.dispatch(UpdateGameResolvedState(true));
+    store.dispatch(stopPropositionAnimation);
   }
 };
 

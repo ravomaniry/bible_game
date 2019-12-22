@@ -2,6 +2,12 @@ import 'package:bible_game/models/cell.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:flutter/foundation.dart';
 
+enum PropositionAnimations {
+  success,
+  failure,
+  none,
+}
+
 class WordsInWordState {
   final List<Word> resolvedWords;
   final List<Word> wordsToFind;
@@ -10,6 +16,7 @@ class WordsInWordState {
   final List<Char> slotsBackup;
   final List<Char> proposition;
   final List<List<int>> slotsDisplayIndexes;
+  final PropositionAnimations propositionAnimation;
 
   WordsInWordState({
     @required this.cells,
@@ -19,6 +26,7 @@ class WordsInWordState {
     @required this.wordsToFind,
     this.resolvedWords = const [],
     this.slotsDisplayIndexes = const [],
+    this.propositionAnimation = PropositionAnimations.none,
   });
 
   factory WordsInWordState.emptyState() {
@@ -40,6 +48,7 @@ class WordsInWordState {
     List<Word> wordsToFind,
     List<Word> resolvedWords,
     List<List<int>> slotsDisplayIndexes,
+    final PropositionAnimations propositionAnimation,
   }) {
     return WordsInWordState(
       cells: cells ?? this.cells,
@@ -49,6 +58,7 @@ class WordsInWordState {
       wordsToFind: wordsToFind ?? this.wordsToFind,
       resolvedWords: resolvedWords ?? this.resolvedWords,
       slotsDisplayIndexes: slotsDisplayIndexes ?? this.slotsDisplayIndexes,
+      propositionAnimation: propositionAnimation ?? this.propositionAnimation,
     );
   }
 }
