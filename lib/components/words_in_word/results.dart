@@ -24,7 +24,6 @@ class WordsInWordResult extends StatelessWidget {
     checkScreenWidth(context);
     final verse = _viewModel.verse;
     final cells = _viewModel.wordsInWord.cells;
-
     if (verse != null && cells != null) {
       final List<Widget> rowWidgets = cells.map(_buildRow).toList();
       return Expanded(
@@ -37,12 +36,20 @@ class WordsInWordResult extends StatelessWidget {
   }
 
   Widget _buildRow(List<Cell> _row) {
-    return Wrap(children: _row.map(_buildCell).toList());
+    return Wrap(
+      key: Key(_row[0].wordIndex.toString()),
+      children: _row.map(_buildCell).toList(),
+    );
   }
 
   Widget _buildCell(Cell cell) {
     final word = _viewModel.verse.words[cell.wordIndex];
-    return _CellDisplay(word, cell, _viewModel.theme);
+    return _CellDisplay(
+      word,
+      cell,
+      _viewModel.theme,
+      key: Key("${cell.wordIndex}_${cell.charIndex}"),
+    );
   }
 }
 
@@ -51,7 +58,7 @@ class _CellDisplay extends StatelessWidget {
   final Cell _cell;
   final AppColorTheme _theme;
 
-  _CellDisplay(this._word, this._cell, this._theme);
+  _CellDisplay(this._word, this._cell, this._theme, {Key key}) : super(key: key);
 
   Color getBackgroundColor(Char char) {
     if (_word.isSeparator) {
