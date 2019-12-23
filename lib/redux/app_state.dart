@@ -9,10 +9,12 @@ import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/redux/themes/themes.dart';
 import 'package:bible_game/redux/words_in_word/state.dart';
+import 'package:bible_game/sfx/sfx.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
 class AppState {
+  final Sfx sfx;
   final GameState game;
   final Routes route;
   final WordsInWordState wordsInWord;
@@ -32,6 +34,7 @@ class AppState {
     this.quitSingleGameDialog = false,
     this.dbIsReady = false,
     this.error,
+    @required this.sfx,
     @required this.game,
     @required this.dba,
     @required this.assetBundle,
@@ -45,6 +48,7 @@ class AppState {
     return AppState(
       assetBundle: assetBundle,
       explorer: ExplorerState(),
+      sfx: Sfx(),
       config: ConfigState.initialState(),
       theme: AppColorTheme(),
       editor: EditorState(),
