@@ -10,6 +10,7 @@ import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/inventory/use_bonus_action.dart';
 import 'package:bible_game/redux/router/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
+import 'package:bible_game/redux/sfx/actions.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
 import 'package:bible_game/redux/words_in_word/cells_action.dart';
 import 'package:bible_game/redux/words_in_word/state.dart';
@@ -222,6 +223,7 @@ ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
     store.dispatch(IncrementMoney(prevVerse, verse).thunk);
     store.dispatch(UseBonus(revealed.bonus, false).thunk);
     store.dispatch(triggerPropositionSuccessAnimation);
+    store.dispatch(playSuccessSfx(wordsToFind.length == 0));
   } else {
     store.dispatch(triggerPropositionFailureAnimation);
   }

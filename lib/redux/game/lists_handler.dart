@@ -10,6 +10,7 @@ import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/router/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
+import 'package:bible_game/redux/sfx/actions.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/utils/retry.dart';
@@ -39,6 +40,7 @@ class SelectGame extends ThunkContainer {
           store.dispatch(UpdateInventory(_game.inventory));
           store.dispatch(OpenInventoryDialog(false));
           store.dispatch(initializeRandomGame);
+          store.dispatch(playGreetingSfx);
         }
       } catch (e) {
         print(model.name);

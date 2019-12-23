@@ -1,12 +1,14 @@
 import 'dart:math';
+
+import 'package:bible_game/models/bonus.dart';
+import 'package:bible_game/models/thunk_container.dart';
 import 'package:bible_game/models/word.dart';
+import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
+import 'package:bible_game/redux/sfx/actions.dart';
 import 'package:redux/redux.dart';
-import 'package:bible_game/models/bonus.dart';
-import 'package:bible_game/models/thunk_container.dart';
-import 'package:bible_game/redux/app_state.dart';
 
 class UseBonus extends ThunkContainer {
   final Bonus _bonus;
@@ -17,6 +19,9 @@ class UseBonus extends ThunkContainer {
       final isUsed = useBonus(store);
       if (_triggeredByUser && isUsed) {
         store.dispatch(DecrementBonus(_bonus));
+      }
+      if (isUsed) {
+        store.dispatch(playBonusSfx);
       }
     };
   }

@@ -4,6 +4,7 @@ import 'package:bible_game/models/thunk_container.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:redux/redux.dart';
+import 'package:redux_thunk/redux_thunk.dart';
 
 class OpenInventoryDialog {
   final bool isInGame;
@@ -27,6 +28,16 @@ class BuyBonus {
   final Bonus payload;
 
   BuyBonus(this.payload);
+}
+
+ThunkAction<AppState> buyBonus(Bonus bonus) {
+  return (Store<AppState> store) {
+    final prevMoney = store.state.game.inventory.money;
+    store.dispatch(BuyBonus(bonus));
+    if (prevMoney != store.state.game.inventory.money) {
+      store.state.sfx.playBonus();
+    }
+  };
 }
 
 class DecrementBonus {
