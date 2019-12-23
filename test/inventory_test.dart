@@ -17,6 +17,7 @@ import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/redux/words_in_word/state.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
+import 'package:bible_game/test_helpers/sfx_mock.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -44,6 +45,7 @@ void main() {
       mainReducer,
       middleware: [thunkMiddleware],
       initialState: AppState(
+        sfx: SfxMock(),
         editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState().copyWith(
@@ -83,12 +85,13 @@ void main() {
     await tester.tap(find.byKey(Key("game_1")));
     await tester.pump();
     expect(inventoryFinder, findsOneWidget);
-    // buy bonuses
+    // buy bonuses (play sfx)
     await tester.tap(find.byKey(Key("revealCharBonusBtn_1")));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_1")));
     await tester.pump(Duration(milliseconds: 200));
     expect(store.state.game.inventory.money, 280);
     expect(store.state.game.inventory.revealCharBonus1, 2);
+    verify(store.state.sfx.playBonus()).called(2);
     // 1 * 2 + 2 * 5 + 4 * 10
     await tester.tap(find.byKey(Key("revealCharBonusBtn_2")));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_5")));
@@ -103,13 +106,15 @@ void main() {
     expect(store.state.game.inventory.revealCharBonus2, 1);
     expect(store.state.game.inventory.revealCharBonus5, 3);
     expect(store.state.game.inventory.revealCharBonus10, 4);
+    verify(store.state.sfx.playBonus()).called(8);
 
-    // Exceed money
+    // Exceed money (only 2 is accepted)
     for (var i = 0; i < 10; i++) {
       await tester.tap(find.byKey(Key("revealCharBonusBtn_10")));
     }
     expect(store.state.game.inventory.money, 25);
     expect(store.state.game.inventory.revealCharBonus10, 6);
+    verify(store.state.sfx.playBonus()).called(2);
 
     // close the dialog
     await tester.tap(find.byKey(Key("inventoryOkButton")));
@@ -124,6 +129,7 @@ void main() {
       verse.words[4].copyWithChar(0, verse.words[4].chars[0].copyWith(resolved: true)),
     );
     final initialState = AppState(
+      sfx: SfxMock(),
       editor: EditorState(),
       theme: AppColorTheme(),
       route: Routes.wordsInWord,

@@ -13,6 +13,7 @@ import 'package:bible_game/redux/game/state.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/main_reducer.dart';
+import 'package:bible_game/redux/router/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/redux/themes/themes.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
@@ -21,9 +22,11 @@ import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/redux/words_in_word/state.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
+import 'package:bible_game/test_helpers/sfx_mock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
@@ -33,6 +36,7 @@ void main() {
       mainReducer,
       middleware: [thunkMiddleware],
       initialState: AppState(
+        sfx: SfxMock(),
         editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState(),
@@ -44,7 +48,17 @@ void main() {
     );
     // reminder: cellWidth = 24 | screenWidth -= 10
     store.dispatch(UpdateScreenWidth(205));
-    store.dispatch(goToWordsInWord);
+    store.dispatch(UpdateGameVerse(
+      BibleVerse.from(
+        book: "",
+        bookId: 1,
+        chapter: 1,
+        verse: 1,
+        text: "Ny filazana ny razan'i Jesosy Kristy",
+      ),
+    ));
+    store.dispatch(GoToAction(Routes.wordsInWord));
+    store.dispatch(initializeWordsInWordState);
     expect(store.state.config.screenWidth, 205);
     await Future.delayed(Duration(milliseconds: 10));
     final expectedCells = [
@@ -72,6 +86,7 @@ void main() {
     final verse = BibleVerse.from(bookId: 1, book: "Matio", chapter: 1, verse: 1, text: "Ny teny ny Azy");
     final initialState = AppState(
       editor: EditorState(),
+      sfx: SfxMock(),
       game: GameState.emptyState(),
       theme: AppColorTheme(),
       route: Routes.wordsInWord,
@@ -91,14 +106,15 @@ void main() {
         [0, 1, 2, 3, 4, 5]
       ],
     )));
-
+    // Greeting sound effect is played when game is initialized
     await tester.pumpWidget(BibleGame(store));
     expect(find.byKey(Key("wordsInWord")), findsOneWidget);
     expect(store.state.wordsInWord.slots, Word.from("NYTENY", 0, false).chars);
     expect(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars);
     expect(store.state.wordsInWord.wordsToFind.map((w) => w.value), ["Ny", "teny", "Azy"]);
+
     // Tap on slot 0(N) and 2(E) => Update proposition => Empty slots 0, 2
-    // Propose => Wrong => trigger Failure animation
+    // Propose => Wrong => trigger Failure animation => play wrong sfx
     await tester.tap(find.byKey(Key("slot_0")));
     await tester.tap(find.byKey(Key("slot_3")));
     await tester.pump(Duration(milliseconds: 10));
@@ -124,6 +140,7 @@ void main() {
     // Tap on slot 4(N), 1(Y) => NY and Propose
     // => "Ny" is removed from words to find
     // => Success animation triggered
+    // => Short Success sfx played
     await tester.tap(find.byKey(Key("slot_4")));
     await tester.pump(Duration(milliseconds: 10));
     await tester.tap(find.byKey(Key("slot_1")));
@@ -137,6 +154,7 @@ void main() {
     expect(store.state.wordsInWord.resolvedWords, [Word.from("Ny", 0, false).copyWith(resolved: true)]);
     expect(store.state.game.verse.words.map((w) => w.value), ["Ny", " ", "teny", " ", "ny", " ", "Azy"]);
     expect(store.state.wordsInWord.propositionAnimation, PropositionAnimations.success);
+    verify(store.state.sfx.playShortSuccess()).called(1);
     // Animation is removed automatically after 0.5s
     await tester.pump(Duration(seconds: 1));
     expect(store.state.wordsInWord.propositionAnimation, PropositionAnimations.none);
@@ -145,6 +163,7 @@ void main() {
   testWidgets("Click on bonuses", (WidgetTester tester) async {
     final verse = BibleVerse.from(book: "", bookId: 1, chapter: 1, verse: 1, text: "ABCDEFGHIJKLMNOPQRST");
     final state = AppState(
+      sfx: SfxMock(),
       editor: EditorState(),
       theme: AppColorTheme(),
       game: GameState.emptyState().copyWith(
@@ -179,6 +198,7 @@ void main() {
     await tester.pumpWidget(BibleGame(store));
 
     // 1 - tap and tap again when there is no sold
+    // play bonus sound effect
     await tester.tap(find.byKey(Key("revealCharBonusBtn_1")));
     await tester.pump();
     expect(store.state.game.verse.words[0].chars.where((c) => !c.resolved).length, 19);
@@ -187,6 +207,7 @@ void main() {
     await tester.pump();
     expect(store.state.game.verse.words[0].chars.where((c) => !c.resolved).length, 19);
     expect(store.state.game.inventory.revealCharBonus1, 0);
+    verify(store.state.sfx.playBonus()).called(1);
     // 2
     await tester.pumpWidget(BibleGame(store));
     await tester.tap(find.byKey(Key("revealCharBonusBtn_2")));
@@ -216,7 +237,7 @@ void main() {
     expect(store.state.game.inventory.revealCharBonus10, 9);
     expect(store.state.game.inventory.money, 100);
 
-    // No sold
+    // No balance
     store.dispatch(UpdateInventory(InventoryState.emptyState().copyWith(
       revealCharBonus1: 0,
       revealCharBonus2: 0,
@@ -244,6 +265,7 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         assetBundle: null,
+        sfx: SfxMock(),
         editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState().copyWith(
@@ -273,12 +295,14 @@ void main() {
     )));
     expect(countUnrevealedWord(store.state.game.verse.words), 20);
     // A B C D E: bonus = 1
+    // This play bonus sfx
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
       proposition: verse.words[0].chars,
     )));
     store.dispatch(proposeWordsInWord);
     expect(countUnrevealedWord(store.state.game.verse.words), 14);
-    // E F G H I: bonus = 3
+    verify(store.state.sfx.playBonus()).called(1);
+    // E F G H I: bonus = 3 (play bonus sfx again)
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
       proposition: verse.words[2].chars,
     )));
@@ -289,6 +313,7 @@ void main() {
     } else {
       expect(countUnrevealedWord(store.state.game.verse.words), 8);
     }
+    verify(store.state.sfx.playBonus()).called(1);
   });
 }
 

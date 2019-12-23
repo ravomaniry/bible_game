@@ -10,6 +10,7 @@ import 'package:bible_game/redux/main_reducer.dart';
 import 'package:bible_game/redux/themes/themes.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
+import 'package:bible_game/test_helpers/sfx_mock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -21,6 +22,7 @@ void main() {
     final store = Store<AppState>(
       mainReducer,
       initialState: AppState(
+        sfx: SfxMock(),
         editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState(),

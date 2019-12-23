@@ -11,6 +11,7 @@ import 'package:bible_game/redux/themes/themes.dart';
 import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
+import 'package:bible_game/test_helpers/sfx_mock.dart';
 import 'package:mockito/mockito.dart';
 import 'package:redux/redux.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,6 +25,7 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         dba: dba,
+        sfx: SfxMock(),
         editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState(),
@@ -55,6 +57,7 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         dba: dba,
+        sfx: SfxMock(),
         editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState(),
@@ -87,6 +90,7 @@ void main() {
       mainReducer,
       middleware: [thunkMiddleware],
       initialState: AppState(
+        sfx: SfxMock(),
         editor: EditorState(),
         theme: AppColorTheme(),
         dba: DbAdapterMock.withDefaultValues(),

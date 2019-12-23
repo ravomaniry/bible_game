@@ -11,6 +11,7 @@ import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/redux/themes/themes.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/redux/words_in_word/state.dart';
+import 'package:bible_game/test_helpers/sfx_mock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:redux/redux.dart';
@@ -103,6 +104,7 @@ void main() {
     final store = Store<AppState>(mainReducer,
         middleware: [thunkMiddleware],
         initialState: AppState(
+          sfx: SfxMock(),
           editor: EditorState(),
           theme: AppColorTheme(),
           game: GameState.emptyState().copyWith(
@@ -146,6 +148,7 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         assetBundle: null,
+        sfx: SfxMock(),
         editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState().copyWith(

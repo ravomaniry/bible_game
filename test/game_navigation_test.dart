@@ -15,6 +15,7 @@ import 'package:bible_game/redux/words_in_word/actions.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
+import 'package:bible_game/test_helpers/sfx_mock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -22,7 +23,7 @@ import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
 void main() {
-  testWidgets("Open a game + next verse and save flow", (WidgetTester tester) async {
+  testWidgets("Open a game + next verse and save flow + SFX", (WidgetTester tester) async {
     final dba = DbAdapterMock.mockMethods(DbAdapterMock(), [
       "init",
       "saveGame",
@@ -39,6 +40,7 @@ void main() {
       mainReducer,
       middleware: [thunkMiddleware],
       initialState: AppState(
+        sfx: SfxMock(),
         editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState(),
@@ -134,6 +136,8 @@ void main() {
     expect(store.state.game.inventory.revealCharBonus10, 10);
     // 3- words in word is initialized (or any other game if applicable)
     expect(store.state.wordsInWord.wordsToFind.map((w) => w.value), ["AOKA"]);
+    // 4- Greeting sfx played
+    verify(store.state.sfx.playGreeting()).called(1);
 
     // Before each game, the bonus shop should be open + when the dialog is closed, save the game
     // Buy a bonus 1: 10Ar
@@ -144,9 +148,11 @@ void main() {
     expect(store.state.game.list[0].inventory.revealCharBonus1, 2);
     expect(store.state.game.list[0].inventory.money, 5);
     verify(dba.saveGame(any)).called(1);
+    verify(store.state.sfx.playBonus()).called(1);
 
     // ********** Complete a game ***********
     // => show solution screen
+    // => Play long success sfx
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
       slots: Word.from("AOKA", 0, false).chars,
       proposition: Word.from("AOKA", 0, false).chars,
@@ -158,6 +164,7 @@ void main() {
     expect(store.state.game.inventory.money, 9);
     expect(solutionScreen, findsOneWidget);
     expect(wordsInWord, findsNothing);
+    verify(store.state.sfx.playLongSuccess()).called(1);
 
     // => click on next
     await tester.tap(find.byKey(Key("nextButton")));
@@ -192,6 +199,7 @@ void main() {
 
   testWidgets("Load next verse", (WidgetTester tester) async {
     final state = AppState(
+      sfx: SfxMock(),
       editor: EditorState(),
       theme: AppColorTheme(),
       game: GameState.emptyState(),
