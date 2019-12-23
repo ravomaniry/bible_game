@@ -13,6 +13,7 @@ import 'package:bible_game/redux/words_in_word/reducer.dart';
 AppState mainReducer(AppState state, action) {
   return AppState(
     dba: state.dba,
+    sfx: state.sfx,
     editor: editorReducer(state.editor, action),
     theme: themeReducer(state.theme, action),
     assetBundle: state.assetBundle,
