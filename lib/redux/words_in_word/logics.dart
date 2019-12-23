@@ -32,6 +32,7 @@ ThunkAction<AppState> initializeWordsInWordState = (Store<AppState> store) {
     slots: slots,
     slotsBackup: slots,
     resolvedWords: [],
+    proposition: [],
   )));
   store.dispatch(recomputeSlotsIndexes);
   store.dispatch(recomputeCells);

@@ -97,6 +97,10 @@ void main() {
       wordsInWord: WordsInWordState.emptyState(),
     );
     final store = Store<AppState>(mainReducer, middleware: [thunkMiddleware], initialState: initialState);
+    // This is to simulate previous game session
+    store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
+      proposition: Word.from("AA", 0, false).chars,
+    )));
     store.dispatch(UpdateGameVerse(verse));
     store.dispatch(initializeWordsInWordState);
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
@@ -107,12 +111,13 @@ void main() {
       ],
     )));
     // Greeting sound effect is played when game is initialized
+    // => proposition is reset
     await tester.pumpWidget(BibleGame(store));
     expect(find.byKey(Key("wordsInWord")), findsOneWidget);
     expect(store.state.wordsInWord.slots, Word.from("NYTENY", 0, false).chars);
     expect(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars);
     expect(store.state.wordsInWord.wordsToFind.map((w) => w.value), ["Ny", "teny", "Azy"]);
-
+    expect(store.state.wordsInWord.proposition, []);
     // Tap on slot 0(N) and 2(E) => Update proposition => Empty slots 0, 2
     // Propose => Wrong => trigger Failure animation => play wrong sfx
     await tester.tap(find.byKey(Key("slot_0")));
