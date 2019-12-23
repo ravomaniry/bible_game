@@ -65,6 +65,7 @@ void main() {
     expect(inventoryScreen, findsOneWidget);
     await tester.tap(find.byKey(Key("inventoryOkButton")));
     await tester.pump();
+    verify(store.state.dba.saveGame(any)).called(1);
 
     // Open dialog and tap NO
     await BackButtonInterceptor.popRoute();
@@ -80,7 +81,6 @@ void main() {
     expect(homeScreen, findsOneWidget);
 
     // Go to game 1 => close dialog => resolve game => press back => should go to home
-    verify(store.state.dba.saveGame(any)).called(1);
     await tester.tap(find.byKey(Key("game_1")));
     await tester.pump(Duration(milliseconds: 10));
     await tester.tap(find.byKey(Key("inventoryOkButton")));

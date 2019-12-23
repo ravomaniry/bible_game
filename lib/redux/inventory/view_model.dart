@@ -1,6 +1,5 @@
 import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/redux/app_state.dart';
-import 'package:bible_game/redux/game/lists_handler.dart';
 import 'package:bible_game/redux/inventory/actions.dart' as actions;
 import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/themes/themes.dart';
@@ -25,10 +24,7 @@ class InventoryViewModel {
       theme: store.state.theme,
       state: store.state.game.inventory,
       buyBonus: (Bonus bonus) => store.dispatch(actions.buyBonus(bonus)),
-      closeDialog: () {
-        store.dispatch(actions.closeInventoryDialog);
-        store.dispatch(saveActiveGame);
-      },
+      closeDialog: () => store.dispatch(actions.inventoryNextHandler),
     );
   }
 }

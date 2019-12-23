@@ -42,7 +42,7 @@ class GameViewModel {
       toggleDialog: () => store.dispatch(ToggleGamesEditorDialog()),
       goToExplorer: () => store.dispatch(ExplorerActions.goToExplorer),
       openInventory: () => store.dispatch(OpenInventoryDialog(false)),
-      selectHandler: (GameModelWrapper game) => store.dispatch(SelectGame(game).thunk),
+      selectHandler: (GameModelWrapper game) => store.dispatch(selectGameHandler(game)),
       nextHandler: () => store.dispatch(saveGameAndLoadNextVerse),
       goToEditor: () => store.dispatch(EditorActions.goToEditor),
     );

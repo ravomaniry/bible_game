@@ -137,7 +137,7 @@ void main() {
     // 3- words in word is initialized (or any other game if applicable)
     expect(store.state.wordsInWord.wordsToFind.map((w) => w.value), ["AOKA"]);
     // 4- Greeting sfx played
-    verify(store.state.sfx.playGreeting()).called(1);
+    verifyNever(store.state.sfx.playGreeting());
 
     // Before each game, the bonus shop should be open + when the dialog is closed, save the game
     // Buy a bonus 1: 10Ar
@@ -149,6 +149,7 @@ void main() {
     expect(store.state.game.list[0].inventory.money, 5);
     verify(dba.saveGame(any)).called(1);
     verify(store.state.sfx.playBonus()).called(1);
+    verify(store.state.sfx.playGreeting()).called(1);
 
     // ********** Complete a game ***********
     // => show solution screen

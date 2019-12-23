@@ -3,63 +3,55 @@ import 'dart:math';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/game.dart';
 import 'package:bible_game/models/game_mode.dart';
-import 'package:bible_game/models/thunk_container.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/error/actions.dart';
 import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/router/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
-import 'package:bible_game/redux/sfx/actions.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/utils/retry.dart';
-import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
 final gameModes = [
   GameMode(Routes.wordsInWord, initializeWordsInWordState),
 ];
 
-class SelectGame extends ThunkContainer {
-  final GameModelWrapper _game;
-
-  SelectGame(this._game) {
-    this.thunk = (Store<AppState> store) async {
-      final model = _game.model;
-      try {
-        final verse =
-            await retry(() => store.state.dba.getSingleVerse(model.nextBook, model.nextChapter, model.nextVerse));
-        if (verse == null) {
-          store.dispatch(ReceiveError(Errors.unknownDbError));
-        } else {
-          final bookName = store.state.game.books.firstWhere((b) => b.id == _game.nextBook).name;
-          store.dispatch(UpdateGameVerse(BibleVerse.fromModel(verse, bookName)));
-          store.dispatch(UpdateActiveGameId(_game.model.id));
-          store.dispatch(UpdateGameCompletedState(false));
-          store.dispatch(UpdateInventory(_game.inventory));
-          store.dispatch(OpenInventoryDialog(false));
-          store.dispatch(initializeRandomGame);
-          store.dispatch(playGreetingSfx);
-        }
-      } catch (e) {
-        print(model.name);
+ThunkAction<AppState> selectGameHandler(GameModelWrapper _game) {
+  return (store) async {
+    final model = _game.model;
+    try {
+      final verse =
+          await retry(() => store.state.dba.getSingleVerse(model.nextBook, model.nextChapter, model.nextVerse));
+      if (verse == null) {
         store.dispatch(ReceiveError(Errors.unknownDbError));
-        print("%%%%%%%% error at SelectGame.thunk");
-        print(e);
+      } else {
+        final bookName = store.state.game.books.firstWhere((b) => b.id == _game.nextBook).name;
+        store.dispatch(UpdateGameVerse(BibleVerse.fromModel(verse, bookName)));
+        store.dispatch(UpdateActiveGameId(_game.model.id));
+        store.dispatch(UpdateGameCompletedState(false));
+        store.dispatch(UpdateInventory(_game.inventory));
+        store.dispatch(OpenInventoryDialog(false));
+        store.dispatch(initializeRandomGame);
       }
-    };
-  }
+    } catch (e) {
+      print(model.name);
+      store.dispatch(ReceiveError(Errors.unknownDbError));
+      print("%%%%%%%% error at SelectGame.thunk");
+      print(e);
+    }
+  };
 }
 
-ThunkAction<AppState> initializeRandomGame = (Store<AppState> store) {
+final ThunkAction<AppState> initializeRandomGame = (store) {
   final random = Random();
   final game = gameModes[random.nextInt(gameModes.length)];
   store.dispatch(game.initAction);
   store.dispatch(GoToAction(game.route));
 };
 
-ThunkAction<AppState> saveActiveGame = (Store<AppState> store) async {
+final ThunkAction<AppState> saveActiveGame = (store) async {
   try {
     final state = store.state.game;
     final model = state.list

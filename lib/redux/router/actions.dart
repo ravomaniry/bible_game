@@ -17,7 +17,7 @@ final goToHome = GoToAction(Routes.home);
 void handleBackBtnPress(Store<AppState> store) {
   final bool Function(bool) handler = (bool yes) {
     if (store.state.game.inventory.isOpen) {
-      store.dispatch(closeInventoryDialog);
+      store.dispatch(CloseInventoryDialog());
       store.dispatch(goToHome);
       return true;
     } else if (store.state.game.isResolved) {

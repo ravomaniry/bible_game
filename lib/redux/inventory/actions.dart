@@ -2,7 +2,9 @@ import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/models/thunk_container.dart';
 import 'package:bible_game/redux/app_state.dart';
+import 'package:bible_game/redux/game/lists_handler.dart';
 import 'package:bible_game/redux/inventory/state.dart';
+import 'package:bible_game/redux/sfx/actions.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
@@ -14,7 +16,11 @@ class OpenInventoryDialog {
 
 class CloseInventoryDialog {}
 
-final closeInventoryDialog = CloseInventoryDialog();
+final ThunkAction<AppState> inventoryNextHandler = (store) {
+  store.dispatch(CloseInventoryDialog());
+  store.dispatch(saveActiveGame);
+  store.dispatch(playGreetingSfx);
+};
 
 class UpdateInventory {
   final InventoryState payload;
@@ -31,7 +37,7 @@ class BuyBonus {
 }
 
 ThunkAction<AppState> buyBonus(Bonus bonus) {
-  return (Store<AppState> store) {
+  return (store) {
     final prevMoney = store.state.game.inventory.money;
     store.dispatch(BuyBonus(bonus));
     if (prevMoney != store.state.game.inventory.money) {
