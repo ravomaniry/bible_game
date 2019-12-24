@@ -66,4 +66,25 @@ class DbAdapter {
   Future<BookModel> getBookById(int bookId) async {
     return this.bookModel?.getById(bookId);
   }
+
+  Future<int> getVersesNumBetween({
+    @required startBook,
+    @required startChapter,
+    @required startVerse,
+    @required endBook,
+    @required endChapter,
+    @required endVerse,
+  }) async {
+    final query = "SELECT COUNT(*) as count FROM ${TableVerseModel.getInstance.tableName} "
+        "WHERE "
+        " book >= $startBook AND book <= $endBook"
+        "   AND NOT ("
+        "     (book = $startBook AND chapter < $startChapter) OR (book = $endBook AND chapter > $endChapter)"
+        "   ) AND NOT ("
+        "     (book = $startBook AND chapter = $startChapter AND verse < $startVerse) OR "
+        "     (book = $endBook AND chapter = $endChapter AND verse > $endVerse)"
+        "   )";
+    final result = await db.execDataTable(query);
+    return result[0]["count"];
+  }
 }

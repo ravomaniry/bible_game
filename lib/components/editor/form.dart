@@ -1,5 +1,6 @@
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/redux/editor/view_model.dart';
+import 'package:bible_game/redux/themes/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -13,42 +14,216 @@ class EditorForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        _BookPicker(
-          keyValue: "startBook",
+        _Section(
+          label: "Start",
+          mode: "start",
+          theme: _viewModel.theme,
           books: _viewModel.books,
-          value: _viewModel.state.startBook,
-          selectHandler: _viewModel.startBookChangeHandler,
+          book: _viewModel.state.startBook,
+          bookChangeHandler: _viewModel.startBookChangeHandler,
+          chapter: _viewModel.state.startChapter,
+          maxChapter: _getMaxChapter(_viewModel.state.startBook),
+          chapterChangeHandler: _viewModel.startChapterChangeHandler,
+          verse: _viewModel.state.startVerse,
+          maxVerse: _getMaxVerse(_viewModel.state.startBook, _viewModel.state.startChapter),
+          verseChangeHandler: _viewModel.startVerseChangeHandler,
         ),
-        _NumberPicker(
-          keyValue: "startChapter",
-          label: "Toko",
-          value: _viewModel.state.startChapter,
-          min: 1,
-          max: _getMaxStartChapter(_viewModel.state.startBook),
-          selectHandler: _viewModel.startChapterChangeHandler,
-        ),
-        _NumberPicker(
-          keyValue: "startVerse",
-          label: "Andininy",
-          value: _viewModel.state.startVerse,
-          min: 1,
-          max: _getMaxStartVerse(_viewModel.state.startBook, _viewModel.state.startChapter),
-          selectHandler: _viewModel.startVerseChangeHandler,
+        _Section(
+          label: "End",
+          mode: "end",
+          theme: _viewModel.theme,
+          books: _endBooks,
+          book: _viewModel.state.endBook,
+          bookChangeHandler: _viewModel.endBookChangeHandler,
+          chapter: _viewModel.state.endChapter,
+          minChapter: _minEndChapter,
+          maxChapter: _getMaxChapter(_viewModel.state.endBook),
+          chapterChangeHandler: _viewModel.endChapterChangeHandler,
+          verse: _viewModel.state.endVerse,
+          minVerse: _minEndVerse,
+          maxVerse: _getMaxVerse(_viewModel.state.endBook, _viewModel.state.endChapter),
+          verseChangeHandler: _viewModel.endVerseChangeHandler,
         ),
       ],
     );
   }
 
-  int _getMaxStartChapter(int bookId) {
+  int _getMaxChapter(int bookId) {
     return _viewModel.books.firstWhere((b) => b.id == bookId).chapters;
   }
 
-  int _getMaxStartVerse(int bookId, int chapter) {
+  int _getMaxVerse(int bookId, int chapter) {
     final numMatch = _viewModel.state.versesNumRefs.where((v) => v.isSameRef(bookId, chapter)).toList();
     if (numMatch.length > 0) {
       return numMatch[0].versesNum;
     }
     return 1;
+  }
+
+  int get _minEndChapter {
+    if (_viewModel.state.endBook > _viewModel.state.startBook) {
+      return 1;
+    }
+    return _viewModel.state.startChapter;
+  }
+
+  int get _minEndVerse {
+    if (_viewModel.state.endBook == _viewModel.state.startBook &&
+        _viewModel.state.endChapter == _viewModel.state.startChapter) {
+      return _viewModel.state.startVerse;
+    }
+    return 1;
+  }
+
+  List<BookModel> get _endBooks {
+    return _viewModel.books.where((b) => b.id >= _viewModel.state.startBook).toList();
+  }
+}
+
+class _Section extends StatelessWidget {
+  final String label;
+  final String mode;
+  final List<BookModel> books;
+  final int book;
+  final Function(int) bookChangeHandler;
+  final int chapter;
+  final int minChapter;
+  final int maxChapter;
+  final Function(int) chapterChangeHandler;
+  final int verse;
+  final int minVerse;
+  final int maxVerse;
+  final Function(int) verseChangeHandler;
+  final AppColorTheme theme;
+
+  _Section({
+    @required this.label,
+    @required this.mode,
+    @required this.books,
+    @required this.book,
+    @required this.bookChangeHandler,
+    @required this.chapter,
+    this.minChapter = 1,
+    @required this.maxChapter,
+    @required this.chapterChangeHandler,
+    @required this.verse,
+    this.minVerse = 1,
+    @required this.maxVerse,
+    @required this.verseChangeHandler,
+    @required this.theme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return _SectionContainer(
+      label: label,
+      theme: theme,
+      children: [
+        _SectionText(
+          value: label,
+          theme: theme,
+        ),
+        Table(
+          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+          children: [
+            TableRow(
+              children: [
+                Text("Boky"),
+                _BookPicker(
+                  keyValue: "${mode}Book",
+                  books: books,
+                  value: book,
+                  selectHandler: bookChangeHandler,
+                ),
+              ],
+            ),
+            TableRow(
+              children: [
+                Text("Toko"),
+                _NumberPicker(
+                  keyValue: "${mode}Chapter",
+                  label: "Toko",
+                  value: chapter,
+                  min: minChapter,
+                  max: maxChapter,
+                  selectHandler: chapterChangeHandler,
+                )
+              ],
+            ),
+            TableRow(
+              children: [
+                Text("Andininy"),
+                _NumberPicker(
+                  keyValue: "${mode}Verse",
+                  label: "Andininy",
+                  value: verse,
+                  min: minVerse,
+                  max: maxVerse,
+                  selectHandler: verseChangeHandler,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _SectionText extends StatelessWidget {
+  final String value;
+  final AppColorTheme theme;
+
+  _SectionText({
+    @required this.value,
+    @required this.theme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      value,
+      style: TextStyle(
+        color: theme.primary,
+        fontWeight: FontWeight.bold,
+        fontSize: 16,
+      ),
+    );
+  }
+}
+
+class _SectionContainer extends StatelessWidget {
+  final List<Widget> children;
+  final String label;
+  final AppColorTheme theme;
+
+  _SectionContainer({
+    @required this.children,
+    @required this.label,
+    @required this.theme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(5),
+      margin: EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        color: theme.neutral,
+        borderRadius: BorderRadius.circular(5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.green,
+            blurRadius: 2,
+          )
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
+      ),
+    );
   }
 }
 
@@ -76,7 +251,7 @@ class _BookPicker extends StatelessWidget {
       value: value,
       list: books,
       keyValue: keyValue,
-      selectHandler: selectHandler,
+      changeHandler: selectHandler,
       valueAccessor: valueAccessor,
       textAccessor: textAccessor,
     );
@@ -113,7 +288,7 @@ class _NumberPicker extends StatelessWidget {
       keyValue: keyValue,
       valueAccessor: valueAccessor,
       textAccessor: textAccessor,
-      selectHandler: selectHandler,
+      changeHandler: selectHandler,
     );
   }
 
@@ -131,7 +306,7 @@ class _GenericDropdown<ItemType> extends StatelessWidget {
   final int value;
   final String keyValue;
   final List<ItemType> list;
-  final Function(int) selectHandler;
+  final Function(int) changeHandler;
   final int Function(ItemType item) valueAccessor;
   final String Function(ItemType item) textAccessor;
 
@@ -139,21 +314,20 @@ class _GenericDropdown<ItemType> extends StatelessWidget {
     @required this.label,
     @required this.list,
     @required this.value,
-    @required this.selectHandler,
+    @required this.changeHandler,
     @required this.valueAccessor,
     @required this.textAccessor,
     @required this.keyValue,
-  });
+  }) : super(key: Key("generic_$keyValue"));
 
   @override
   Widget build(BuildContext context) {
     return Container(
       child: Row(
         children: <Widget>[
-          Text(label),
           DropdownButton<int>(
             value: value,
-            onChanged: selectHandler,
+            onChanged: changeHandler,
             items: _buildItems(),
           ),
         ],

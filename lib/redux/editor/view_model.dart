@@ -14,6 +14,9 @@ class EditorViewModel {
   final Function(int) startBookChangeHandler;
   final Function(int) startChapterChangeHandler;
   final Function(int) startVerseChangeHandler;
+  final Function(int) endBookChangeHandler;
+  final Function(int) endChapterChangeHandler;
+  final Function(int) endVerseChangeHandler;
 
   EditorViewModel({
     @required this.state,
@@ -23,6 +26,9 @@ class EditorViewModel {
     @required this.startBookChangeHandler,
     @required this.startChapterChangeHandler,
     @required this.startVerseChangeHandler,
+    @required this.endBookChangeHandler,
+    @required this.endChapterChangeHandler,
+    @required this.endVerseChangeHandler,
   });
 
   static EditorViewModel converter(Store<AppState> store) {
@@ -34,6 +40,9 @@ class EditorViewModel {
       startBookChangeHandler: (int bookId) => store.dispatch(actions.startBookChangeHandler(bookId)),
       startChapterChangeHandler: (int chapter) => store.dispatch(actions.startChapterChangeHandler(chapter)),
       startVerseChangeHandler: (int startVerse) => store.dispatch(actions.startVerseChangeHandler(startVerse)),
+      endBookChangeHandler: (int bookId) => store.dispatch(actions.endBookChangeHandler(bookId)),
+      endChapterChangeHandler: (int chapter) => store.dispatch(actions.endChapterChangeHandler(chapter)),
+      endVerseChangeHandler: (int endVerse) => store.dispatch(actions.endVerseChangeHandler(endVerse)),
     );
   }
 }
