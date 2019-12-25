@@ -67,8 +67,22 @@ final defaultGames = [
 Future initializeGames(DbAdapter dba, Function dispatch) async {
   try {
     final books = await retry(() => dba.books);
+    if (books == null) {
+      dispatch(ReceiveError(Errors.unknownDbError));
+    } else {
+      await initializeGamesList(dba, books, dispatch);
+    }
+  } catch (e) {
+    print("%%%%%%%%%%%%% error on initializeGames %%%%%%%%%%%%%");
+    print(e);
+    dispatch(ReceiveError(Errors.unknownDbError));
+  }
+}
+
+Future initializeGamesList(DbAdapter dba, List<BookModel> books, Function dispatch) async {
+  try {
     List<GameModel> games = await retry(() => dba.games);
-    if (games == null || books == null) {
+    if (games == null) {
       dispatch(ReceiveError(Errors.unknownDbError));
     } else {
       if (games.isEmpty) {
@@ -81,8 +95,8 @@ Future initializeGames(DbAdapter dba, Function dispatch) async {
       dispatch(randomizeTheme);
     }
   } catch (e) {
-    dispatch(ReceiveError(Errors.unknownDbError));
-    print("%%%%%%%%%%%%% error on initializeGames %%%%%%%%%%%%%");
+    print("%%%%%%%%%%%%% error in initializeGamesList %%%%%%%%%");
     print(e);
+    dispatch(ReceiveError(Errors.unknownDbError));
   }
 }

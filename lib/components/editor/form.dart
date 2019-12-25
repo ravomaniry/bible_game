@@ -4,6 +4,35 @@ import 'package:bible_game/redux/themes/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+final intValueAccessor = (int i) => i;
+final intTextAccessor = (int i) => i.toString();
+final bookValueAccessor = (BookModel book) => book.id;
+final bookTextAccessor = (BookModel book) => book.name;
+
+List<int> rangeToIntList(int min, int max) {
+  return List<int>.generate(max - min + 1, (i) => min + i);
+}
+
+List<DropdownMenuItem<int>> bookItemBuilder(List<BookModel> books, String keyPrefix) {
+  return books
+      .map((book) => DropdownMenuItem(
+            value: book.id,
+            key: Key("${keyPrefix}_${book.id}"),
+            child: Text(book.name),
+          ))
+      .toList();
+}
+
+List<DropdownMenuItem<int>> numberItemBuilder(List<int> list, String keyPrefix) {
+  return list
+      .map((i) => DropdownMenuItem(
+            value: i,
+            key: Key("${keyPrefix}_$i"),
+            child: Text("$i"),
+          ))
+      .toList();
+}
+
 class EditorForm extends StatelessWidget {
   final EditorViewModel _viewModel;
 
@@ -14,7 +43,8 @@ class EditorForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        _Section(
+        Section(
+          key: Key("startSection"),
           label: "Start",
           mode: "start",
           theme: _viewModel.theme,
@@ -28,9 +58,10 @@ class EditorForm extends StatelessWidget {
           maxVerse: _getMaxVerse(_viewModel.state.startBook, _viewModel.state.startChapter),
           verseChangeHandler: _viewModel.startVerseChangeHandler,
         ),
-        _Section(
+        Section(
           label: "End",
           mode: "end",
+          key: Key("endSection"),
           theme: _viewModel.theme,
           books: _endBooks,
           book: _viewModel.state.endBook,
@@ -80,7 +111,7 @@ class EditorForm extends StatelessWidget {
   }
 }
 
-class _Section extends StatelessWidget {
+class Section extends StatelessWidget {
   final String label;
   final String mode;
   final List<BookModel> books;
@@ -95,8 +126,9 @@ class _Section extends StatelessWidget {
   final int maxVerse;
   final Function(int) verseChangeHandler;
   final AppColorTheme theme;
+  final Key key;
 
-  _Section({
+  Section({
     @required this.label,
     @required this.mode,
     @required this.books,
@@ -111,7 +143,24 @@ class _Section extends StatelessWidget {
     @required this.maxVerse,
     @required this.verseChangeHandler,
     @required this.theme,
-  });
+    @required this.key,
+  }) : super(key: key);
+
+  List<int> get _versesList {
+    return List<int>.generate(maxVerse - minVerse + 1, (i) => minVerse + i);
+  }
+
+  List<int> get _chaptersList {
+    return List<int>.generate(maxChapter - minChapter + 1, (i) => minChapter + i);
+  }
+
+  int _numberValueAccessor(int i) {
+    return i;
+  }
+
+  String _numberTextAccessor(int i) {
+    return i.toString();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -140,26 +189,26 @@ class _Section extends StatelessWidget {
             TableRow(
               children: [
                 Text("Toko"),
-                _NumberPicker(
+                _GenericDropdown(
                   keyValue: "${mode}Chapter",
-                  label: "Toko",
                   value: chapter,
-                  min: minChapter,
-                  max: maxChapter,
-                  selectHandler: chapterChangeHandler,
-                )
+                  list: _chaptersList,
+                  valueAccessor: _numberValueAccessor,
+                  textAccessor: _numberTextAccessor,
+                  changeHandler: chapterChangeHandler,
+                ),
               ],
             ),
             TableRow(
               children: [
                 Text("Andininy"),
-                _NumberPicker(
+                _GenericDropdown(
                   keyValue: "${mode}Verse",
-                  label: "Andininy",
                   value: verse,
-                  min: minVerse,
-                  max: maxVerse,
-                  selectHandler: verseChangeHandler,
+                  list: _versesList,
+                  valueAccessor: _numberValueAccessor,
+                  textAccessor: _numberTextAccessor,
+                  changeHandler: verseChangeHandler,
                 ),
               ],
             ),
@@ -247,7 +296,6 @@ class _BookPicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return _GenericDropdown<BookModel>(
-      label: "Boky",
       value: value,
       list: books,
       keyValue: keyValue,
@@ -258,51 +306,7 @@ class _BookPicker extends StatelessWidget {
   }
 }
 
-class _NumberPicker extends StatelessWidget {
-  final String label;
-  final int min;
-  final int max;
-  final int value;
-  final String keyValue;
-  final Function(int) selectHandler;
-
-  _NumberPicker({
-    @required this.keyValue,
-    @required this.label,
-    @required this.min,
-    @required this.max,
-    @required this.value,
-    @required this.selectHandler,
-  }) : super(key: Key(keyValue));
-
-  int valueAccessor(int value) => value;
-
-  String textAccessor(int value) => value.toString();
-
-  @override
-  Widget build(BuildContext context) {
-    return _GenericDropdown(
-      list: _list,
-      label: label,
-      value: value,
-      keyValue: keyValue,
-      valueAccessor: valueAccessor,
-      textAccessor: textAccessor,
-      changeHandler: selectHandler,
-    );
-  }
-
-  List<int> get _list {
-    final intsList = List<int>(max - min + 1);
-    for (var i = 0; i < intsList.length; i++) {
-      intsList[i] = min + i;
-    }
-    return intsList;
-  }
-}
-
 class _GenericDropdown<ItemType> extends StatelessWidget {
-  final String label;
   final int value;
   final String keyValue;
   final List<ItemType> list;
@@ -311,7 +315,6 @@ class _GenericDropdown<ItemType> extends StatelessWidget {
   final String Function(ItemType item) textAccessor;
 
   _GenericDropdown({
-    @required this.label,
     @required this.list,
     @required this.value,
     @required this.changeHandler,
@@ -326,6 +329,7 @@ class _GenericDropdown<ItemType> extends StatelessWidget {
       child: Row(
         children: <Widget>[
           DropdownButton<int>(
+            key: Key("_$keyValue"),
             value: value,
             onChanged: changeHandler,
             items: _buildItems(),

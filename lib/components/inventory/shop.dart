@@ -5,14 +5,12 @@ import 'package:bible_game/redux/themes/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-final List<Bonus> normalPricedBonuses = [
+final List<Bonus> _bonusesList = [
   RevealCharBonus1(),
   RevealCharBonus2(),
   RevealCharBonus5(),
   RevealCharBonus10(),
 ];
-
-final List<Bonus> doublePricedBonuses = normalPricedBonuses.map((b) => b.doublePriced()).toList();
 
 class Shop extends StatelessWidget {
   final InventoryState state;
@@ -45,13 +43,6 @@ class Shop extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  List<Bonus> get _bonusesList {
-    if (state.isInGame) {
-      return doublePricedBonuses;
-    }
-    return normalPricedBonuses;
   }
 
   Widget _buildBonus(Bonus bonus) {

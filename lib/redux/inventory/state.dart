@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 
 class InventoryState {
   final bool isOpen;
-  final bool isInGame;
   final int money;
   final double combo;
   final int revealCharBonus1;
@@ -13,7 +12,6 @@ class InventoryState {
 
   InventoryState({
     @required this.isOpen,
-    @required this.isInGame,
     @required this.money,
     @required this.combo,
     @required this.revealCharBonus1,
@@ -26,7 +24,6 @@ class InventoryState {
   factory InventoryState.emptyState() {
     return InventoryState(
       isOpen: false,
-      isInGame: false,
       money: 0,
       combo: 1,
       revealCharBonus1: 0,
@@ -50,7 +47,6 @@ class InventoryState {
   }) {
     return InventoryState(
       isOpen: isOpen ?? this.isOpen,
-      isInGame: isInGame ?? this.isInGame,
       money: money ?? this.money,
       combo: combo ?? this.combo,
       revealCharBonus1: revealCharBonus1 ?? this.revealCharBonus1,

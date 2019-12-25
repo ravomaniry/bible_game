@@ -1,6 +1,10 @@
+import 'package:bible_game/db/model.dart';
+import 'package:bible_game/models/game.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/editor/state.dart';
 import 'package:bible_game/redux/error/actions.dart';
+import 'package:bible_game/redux/game/init.dart';
+import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/router/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/statics/texts.dart';
@@ -126,12 +130,58 @@ final ThunkAction<AppState> autoSelectEndVerse = (store) {
 ThunkAction<AppState> closeEditor = (Store<AppState> store) async {
   store.dispatch(goToHome);
   final state = store.state.editor;
-  final versesCount = await store.state.dba.getVersesNumBetween(
-    startBook: state.startBook,
-    startChapter: state.startChapter,
-    startVerse: state.startVerse,
-    endBook: state.endBook,
-    endChapter: state.endChapter,
-    endVerse: state.endVerse,
-  );
+  try {
+    final versesCount = await store.state.dba.getVersesNumBetween(
+      startBook: state.startBook,
+      startChapter: state.startChapter,
+      startVerse: state.startVerse,
+      endBook: state.endBook,
+      endChapter: state.endChapter,
+      endVerse: state.endVerse,
+    );
+    if (versesCount == null) {
+      store.dispatch(Errors.unknownDbError);
+    } else {
+      final books = store.state.game.books;
+      final startBookName = books.firstWhere((b) => b.id == state.startBook).name;
+      final endBookName = books.firstWhere((b) => b.id == state.endBook).name;
+      final name = "$startBookName ${state.startChapter}:${state.startVerse} - "
+          "$endBookName ${state.endChapter}:${state.endVerse}";
+      final model = GameModelWrapper(
+        nextBook: state.startBook,
+        nextChapter: state.startChapter,
+        nextVerse: state.startVerse,
+        resolvedVersesCount: 0,
+        startBookName: startBookName,
+        endBookName: endBookName,
+        inventory: InventoryState(
+          money: 0,
+          combo: 1,
+          isOpen: false,
+          revealCharBonus1: 10,
+          revealCharBonus2: 10,
+          revealCharBonus5: 5,
+          revealCharBonus10: 5,
+          solveOneTurnBonus: 0,
+        ),
+        model: GameModel(
+          name: name,
+          startBook: state.startBook,
+          startChapter: state.startChapter,
+          startVerse: state.startVerse,
+          endBook: state.endBook,
+          endChapter: state.endChapter,
+          endVerse: state.endVerse,
+          versesCount: versesCount,
+          bonuses: "{}",
+        ),
+      ).toModelHelper();
+      await store.state.dba.saveGame(model);
+      await initializeGamesList(store.state.dba, books, store.dispatch);
+    }
+  } catch (e) {
+    print("%%%%%%%%%% error in closeEditor %%%%%%%%%%");
+    print(e);
+    store.dispatch(Errors.unknownDbError);
+  }
 };
