@@ -70,12 +70,17 @@ class _GameName extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      _name,
-      style: TextStyle(
-        color: _theme.primaryDark,
-        fontSize: 15,
-        fontWeight: FontWeight.bold,
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: MediaQuery.of(context).size.width - 100,
+      ),
+      child: Text(
+        _name,
+        style: TextStyle(
+          color: _theme.primaryDark,
+          fontSize: 15,
+          fontWeight: FontWeight.bold,
+        ),
       ),
     );
   }
