@@ -3,12 +3,12 @@ import 'package:bible_game/models/word.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test("Should split words", () {
+  test("Should split words with all its rules", () {
     final verse = BibleVerse.from(
       book: "Matio",
       chapter: 4,
       verse: 10,
-      text: "Azà menatra. (menatra=...) Mijorôa [Gr. teny]",
+      text: "Azà menatra. (jer 1.30) Mijorôa [Gr. teny]",
     );
     final List<Word> words = [
       Word(
