@@ -127,8 +127,7 @@ class _CellContainer extends StatelessWidget {
       key: key,
       width: WordsInWordResult.cellWidth,
       height: WordsInWordResult.cellHeight,
-      child: AnimatedContainer(
-        duration: Duration(milliseconds: 220),
+      child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(4),
           color: background,
