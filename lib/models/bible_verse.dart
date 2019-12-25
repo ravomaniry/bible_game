@@ -21,21 +21,13 @@ class BibleVerse with EquatableMixin {
     @required this.text,
   });
 
-  factory BibleVerse.fromModel(VerseModel model, String bookName) {
-    return BibleVerse.from(
-      bookId: model.book,
-      verse: model.verse,
-      book: bookName,
-      chapter: model.chapter,
-      text: model.text,
-    );
-  }
-
   factory BibleVerse.from({String book, int bookId, int verse, int chapter, String text}) {
     final List<Word> words = [];
     var index = 0;
     var wordValue = "";
     var separatorMode = false;
+    var isBetweenBraces = false;
+    var isBetweenParenthesis = false;
 
     void appendWord(bool isLastWord) {
       if (wordValue.length > 0) {
@@ -49,8 +41,14 @@ class BibleVerse with EquatableMixin {
     }
 
     for (var i = 0; i < text.length; i++) {
-      if (text[i] == "[") {
-        break;
+      if (text[i] == "[" || text[i] == "]") {
+        isBetweenBraces = !isBetweenBraces;
+        continue;
+      } else if (text[i] == "(" || text[i] == ")") {
+        isBetweenParenthesis = !isBetweenParenthesis;
+        continue;
+      } else if (isBetweenBraces || isBetweenParenthesis) {
+        continue;
       } else if (separatorRegex.hasMatch(text[i])) {
         if (!separatorMode) {
           appendWord(false);
@@ -61,7 +59,9 @@ class BibleVerse with EquatableMixin {
           appendWord(false);
         }
       }
-      wordValue += text[i];
+      if (!(separatorMode && wordValue.endsWith(" ") && text[i] == " ")) {
+        wordValue += text[i];
+      }
     }
     appendWord(true);
 
@@ -72,6 +72,16 @@ class BibleVerse with EquatableMixin {
       words: words,
       bookId: bookId,
       text: text,
+    );
+  }
+
+  factory BibleVerse.fromModel(VerseModel model, String bookName) {
+    return BibleVerse.from(
+      bookId: model.book,
+      verse: model.verse,
+      book: bookName,
+      chapter: model.chapter,
+      text: model.text,
     );
   }
 

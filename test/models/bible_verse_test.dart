@@ -8,7 +8,7 @@ void main() {
       book: "Matio",
       chapter: 4,
       verse: 10,
-      text: "Azà menatra. Mijorôa [Gr. teny]",
+      text: "Azà menatra. (menatra=...) Mijorôa [Gr. teny]",
     );
     final List<Word> words = [
       Word(
@@ -128,13 +128,7 @@ void main() {
     );
     expect(
       verse.copyWith(chapter: 1, verse: 2, words: words),
-      BibleVerse(
-          book: "Marka",
-          bookId: 1,
-          chapter: 1,
-          verse: 2,
-          words: words,
-          text: "Aza ."),
+      BibleVerse(book: "Marka", bookId: 1, chapter: 1, verse: 2, words: words, text: "Aza ."),
     );
     expect(
       verse.copyWith(book: "Matio", chapter: 1, verse: 2, words: words),
