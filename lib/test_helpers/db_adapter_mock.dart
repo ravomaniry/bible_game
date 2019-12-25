@@ -118,12 +118,12 @@ class DbAdapterMock extends Mock implements DbAdapter {
     }
     if (methods.contains("getVersesNumBetween")) {
       when(adapter.getVersesNumBetween(
-        startBook: any,
-        startChapter: any,
-        startVerse: any,
-        endBook: any,
-        endChapter: any,
-        endVerse: any,
+        startBook: anyNamed("startBook"),
+        startChapter: anyNamed("startChapter"),
+        startVerse: anyNamed("startVerse"),
+        endBook: anyNamed("endBook"),
+        endChapter: anyNamed("endChapter"),
+        endVerse: anyNamed("endVerse"),
       )).thenAnswer((_) => Future.value(10));
     }
     return adapter;

@@ -82,6 +82,14 @@ void main() {
     ]);
   });
 
+  test("Compute cells bug on Matio 4:10", () {
+    final text = "Fa hoy Jesosy taminy: Mandehana ianao, ry Satana: fa voasoratra hoe; "
+        "Jehovah Andriamanitrao no hiankohofanao, ary Izy irery ihany no hotompoinao (Deo. 6. 13).";
+    final words = BibleVerse.from(bookId: 1, book: "", chapter: 4, verse: 10, text: text).words;
+    final cells = computeCells(words, 320);
+    expect(cells.where((c) => c.length == 0).length, 0);
+  });
+
   testWidgets("In game interractivity - Tap + propose", (WidgetTester tester) async {
     final verse = BibleVerse.from(bookId: 1, book: "Matio", chapter: 1, verse: 1, text: "Ny teny ny Azy");
     final initialState = AppState(

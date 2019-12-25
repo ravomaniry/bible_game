@@ -62,7 +62,8 @@ List<List<Cell>> computeCells(List<Word> words, double screenWidth) {
       }
     }
   }
-  return cells;
+  // **NOTE** A that should contain only one space is empty
+  return cells.where((row) => row.length > 0).toList();
 }
 
 ThunkAction<AppState> recomputeSlotsIndexes = (Store<AppState> store) {
