@@ -2,6 +2,7 @@ import 'package:bible_game/db/model.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
+import 'package:bible_game/redux/editor/actions.dart';
 import 'package:bible_game/redux/editor/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/game/state.dart';
@@ -195,5 +196,59 @@ void main() {
     expect(savedGame.resolvedVersesCount, 0);
     expect(savedGame.money, 0);
     expect(savedGame.bonuses, '{"rcb_1":10,"rcb_2":10,"rcb_5":5,"rcb_10":5}');
+  });
+
+  testWidgets("Auto populate end chapter and end verse", (WidgetTester tester) async {
+    final dba = DbAdapterMock.mockMethods(DbAdapterMock(), [
+      "init",
+      "games",
+      "saveGame",
+      "games.saveAll",
+      "books",
+      "getBooksCount",
+      "getVersesCount",
+      "getBooks",
+      "getVerses",
+      "getSingleVerse",
+      "verses.saveAll",
+      "books.saveAll",
+      "getBookById",
+      "getVersesNumBetween",
+    ]);
+    final store = Store<AppState>(
+      mainReducer,
+      initialState: AppState(
+        theme: AppColorTheme(),
+        explorer: ExplorerState(),
+        config: ConfigState.initialState(),
+        assetBundle: AssetBundleMock.withDefaultValue(),
+        dba: dba,
+        sfx: SfxMock(),
+        editor: EditorState(),
+        game: GameState.emptyState(),
+      ),
+      middleware: [thunkMiddleware],
+    );
+
+    when(dba.getChapterVersesCount(any, any)).thenAnswer((_) => Future.value(10));
+
+    await tester.pumpWidget(BibleGame(store));
+    await tester.pump(Duration(milliseconds: 10));
+    await tester.tap(find.byKey(Key("goToEditor")));
+    await tester.pump(Duration(milliseconds: 10));
+
+    // Auto-populate end chapter and end verse
+    await selectDdItem(tester, "startChapter_2");
+    expect(store.state.editor.startChapter, 2);
+    expect(store.state.editor.endChapter, 2);
+    expect(store.state.editor.endVerse, 10);
+    // Auto-populate end verse
+    store.dispatch(endVerseChangeHandler(5));
+    expect(store.state.editor.endVerse, 5);
+    await tester.pump();
+    await selectDdItem(tester, "startVerse_6");
+    expect(store.state.editor.startChapter, 2);
+    expect(store.state.editor.startVerse, 6);
+    expect(store.state.editor.endVerse, 10);
   });
 }

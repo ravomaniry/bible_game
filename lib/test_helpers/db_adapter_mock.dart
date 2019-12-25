@@ -38,7 +38,7 @@ class DbAdapterMock extends Mock implements DbAdapter {
       "verses.saveAll",
       "books.saveAll",
       "getBookById",
-      "getBookVersesCount",
+      "getChapterVersesCount",
       "getVersesNumBetween",
     ]);
     return adapter;
@@ -113,7 +113,7 @@ class DbAdapterMock extends Mock implements DbAdapter {
     if (methods.contains("books.saveAll")) {
       when(adapter.bookModel.saveAll(any)).thenAnswer((_) => Future.value());
     }
-    if (methods.contains("getBookVersesCount")) {
+    if (methods.contains("getChapterVersesCount")) {
       when(adapter.getChapterVersesCount(any, any)).thenAnswer((_) => Future.value(1));
     }
     if (methods.contains("getVersesNumBetween")) {
@@ -124,7 +124,10 @@ class DbAdapterMock extends Mock implements DbAdapter {
         endBook: anyNamed("endBook"),
         endChapter: anyNamed("endChapter"),
         endVerse: anyNamed("endVerse"),
-      )).thenAnswer((_) => Future.value(10));
+      )).thenAnswer((_) async {
+        print(_.namedArguments);
+        return 10;
+      });
     }
     return adapter;
   }

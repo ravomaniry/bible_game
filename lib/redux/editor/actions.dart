@@ -33,9 +33,17 @@ ThunkAction<AppState> startBookChangeHandler(int bookId) {
 ThunkAction<AppState> startChapterChangeHandler(int chapter) {
   return (store) async {
     final state = store.state.editor;
+    var endChapter = state.endChapter;
+    var endVerse = state.endVerse;
+    if (state.startBook == state.endBook && endChapter < chapter) {
+      endChapter = chapter;
+      endVerse = 1;
+    }
     store.dispatch(UpdateEditorState(state.copyWith(
       startChapter: chapter,
       startVerse: 1,
+      endChapter: endChapter,
+      endVerse: endVerse,
     )));
     await loadVersesNum(state.startBook, chapter, store);
     store.dispatch(autoPopulateEndFields);
@@ -75,7 +83,6 @@ ThunkAction<AppState> endChapterChangeHandler(int chapter) {
 ThunkAction<AppState> endVerseChangeHandler(int endVerse) {
   return (store) {
     store.dispatch(UpdateEditorState(store.state.editor.copyWith(endVerse: endVerse)));
-    print(store.state.editor.startVerse);
   };
 }
 
@@ -112,7 +119,7 @@ final ThunkAction<AppState> autoPopulateEndFields = (store) {
 
   if (startBook > endBook || (startBook == endBook && startChapter < endChapter)) {
     store.dispatch(endBookChangeHandler(startBook));
-  } else if (endBook == startBook && endChapter == startChapter && endVerse <= startVerse) {
+  } else if (endBook == startBook && endChapter <= startChapter && endVerse <= startVerse) {
     store.dispatch(endChapterChangeHandler(startChapter));
   }
 };

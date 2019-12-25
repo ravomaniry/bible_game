@@ -4,35 +4,6 @@ import 'package:bible_game/redux/themes/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-final intValueAccessor = (int i) => i;
-final intTextAccessor = (int i) => i.toString();
-final bookValueAccessor = (BookModel book) => book.id;
-final bookTextAccessor = (BookModel book) => book.name;
-
-List<int> rangeToIntList(int min, int max) {
-  return List<int>.generate(max - min + 1, (i) => min + i);
-}
-
-List<DropdownMenuItem<int>> bookItemBuilder(List<BookModel> books, String keyPrefix) {
-  return books
-      .map((book) => DropdownMenuItem(
-            value: book.id,
-            key: Key("${keyPrefix}_${book.id}"),
-            child: Text(book.name),
-          ))
-      .toList();
-}
-
-List<DropdownMenuItem<int>> numberItemBuilder(List<int> list, String keyPrefix) {
-  return list
-      .map((i) => DropdownMenuItem(
-            value: i,
-            key: Key("${keyPrefix}_$i"),
-            child: Text("$i"),
-          ))
-      .toList();
-}
-
 class EditorForm extends StatelessWidget {
   final EditorViewModel _viewModel;
 
@@ -43,7 +14,7 @@ class EditorForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Section(
+        VersePickerSection(
           key: Key("startSection"),
           label: "Start",
           mode: "start",
@@ -58,7 +29,7 @@ class EditorForm extends StatelessWidget {
           maxVerse: _getMaxVerse(_viewModel.state.startBook, _viewModel.state.startChapter),
           verseChangeHandler: _viewModel.startVerseChangeHandler,
         ),
-        Section(
+        VersePickerSection(
           label: "End",
           mode: "end",
           key: Key("endSection"),
@@ -111,7 +82,7 @@ class EditorForm extends StatelessWidget {
   }
 }
 
-class Section extends StatelessWidget {
+class VersePickerSection extends StatelessWidget {
   final String label;
   final String mode;
   final List<BookModel> books;
@@ -128,7 +99,7 @@ class Section extends StatelessWidget {
   final AppColorTheme theme;
   final Key key;
 
-  Section({
+  VersePickerSection({
     @required this.label,
     @required this.mode,
     @required this.books,
@@ -182,14 +153,14 @@ class Section extends StatelessWidget {
                   keyValue: "${mode}Book",
                   books: books,
                   value: book,
-                  selectHandler: bookChangeHandler,
+                  changeHandler: bookChangeHandler,
                 ),
               ],
             ),
             TableRow(
               children: [
                 Text("Toko"),
-                _GenericDropdown(
+                GenericDropdown(
                   keyValue: "${mode}Chapter",
                   value: chapter,
                   list: _chaptersList,
@@ -202,7 +173,7 @@ class Section extends StatelessWidget {
             TableRow(
               children: [
                 Text("Andininy"),
-                _GenericDropdown(
+                GenericDropdown(
                   keyValue: "${mode}Verse",
                   value: verse,
                   list: _versesList,
@@ -280,13 +251,13 @@ class _BookPicker extends StatelessWidget {
   final List<BookModel> books;
   final int value;
   final String keyValue;
-  final Function(int) selectHandler;
+  final Function(int) changeHandler;
 
   _BookPicker({
     @required this.keyValue,
     @required this.books,
     @required this.value,
-    @required this.selectHandler,
+    @required this.changeHandler,
   }) : super(key: Key(keyValue));
 
   int valueAccessor(BookModel book) => book.id;
@@ -295,18 +266,18 @@ class _BookPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _GenericDropdown<BookModel>(
+    return GenericDropdown<BookModel>(
       value: value,
       list: books,
       keyValue: keyValue,
-      changeHandler: selectHandler,
+      changeHandler: changeHandler,
       valueAccessor: valueAccessor,
       textAccessor: textAccessor,
     );
   }
 }
 
-class _GenericDropdown<ItemType> extends StatelessWidget {
+class GenericDropdown<ItemType> extends StatelessWidget {
   final int value;
   final String keyValue;
   final List<ItemType> list;
@@ -314,7 +285,7 @@ class _GenericDropdown<ItemType> extends StatelessWidget {
   final int Function(ItemType item) valueAccessor;
   final String Function(ItemType item) textAccessor;
 
-  _GenericDropdown({
+  GenericDropdown({
     @required this.list,
     @required this.value,
     @required this.changeHandler,
