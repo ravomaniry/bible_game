@@ -95,7 +95,11 @@ class DbAdapterMock extends Mock implements DbAdapter {
           ]));
     }
     if (methods.contains("getVerses")) {
-      when(adapter.getVerses(1)).thenAnswer((_) async {
+      when(adapter.getVerses(
+        any,
+        chapter: anyNamed("chapter"),
+        verse: anyNamed("verse"),
+      )).thenAnswer((_) async {
         return [VerseModel(book: 1, id: 2, chapter: 3, verse: 4, text: "Ny filazana ny razan'i Jesosy Kristy")];
       });
     }
@@ -114,7 +118,7 @@ class DbAdapterMock extends Mock implements DbAdapter {
       when(adapter.bookModel.saveAll(any)).thenAnswer((_) => Future.value());
     }
     if (methods.contains("getChapterVersesCount")) {
-      when(adapter.getChapterVersesCount(any, any)).thenAnswer((_) => Future.value(1));
+      when(adapter.getChapterVersesCount(any, any)).thenAnswer((_) => Future.value(10));
     }
     if (methods.contains("getVersesNumBetween")) {
       when(adapter.getVersesNumBetween(

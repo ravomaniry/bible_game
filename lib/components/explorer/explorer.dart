@@ -1,3 +1,5 @@
+import 'package:bible_game/components/editor/editor.dart';
+import 'package:bible_game/components/editor/form.dart';
 import 'package:bible_game/components/loader.dart';
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/redux/app_state.dart';
@@ -20,7 +22,6 @@ class Explorer extends StatelessWidget {
     if (viewModel.books == null) {
       return Loader();
     }
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Explorer"),
@@ -30,82 +31,85 @@ class Explorer extends StatelessWidget {
   }
 
   Widget _body(ExplorerViewModel viewModel) {
-    if (viewModel.activeBook == null) {
-      return ListView(
-        key: Key("booksList"),
-        children: viewModel.books.map((book) => BookListItem(book, viewModel.loadVerses)).toList(),
-      );
+    if (viewModel.state.submitted) {
+      return _VerseDisplay(viewModel);
     } else {
-      return VerseDetails(viewModel);
+      return _Form(viewModel);
     }
   }
 }
 
-class BookListItem extends StatelessWidget {
-  final BookModel _book;
-  final Function(BookModel) _onPressed;
-
-  BookListItem(this._book, this._onPressed) : super(key: Key(_book.id.toString()));
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(vertical: 10),
-      child: MaterialButton(
-        onPressed: () => _onPressed(_book),
-        child: Row(
-          children: <Widget>[
-            Text(
-              "${_book.id} ",
-              style: TextStyle(color: Theme.of(context).accentColor),
-            ),
-            Text(_book.name),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class VerseDetails extends StatelessWidget {
+class _Form extends StatelessWidget {
   final ExplorerViewModel _viewModel;
 
-  VerseDetails(this._viewModel);
+  _Form(this._viewModel);
 
   @override
   Widget build(BuildContext context) {
-    if (_viewModel.verses == null) {
-      return Loader();
-    }
-    return Scaffold(
-      key: Key("verseDetails"),
-      appBar: AppBar(
-        title: Row(
-          children: <Widget>[
-            Expanded(child: Text(_viewModel.activeBook.name)),
-            RaisedButton(
-              key: Key("verseDetailsBackBtn"),
-              child: Text("Back"),
-              onPressed: _viewModel.goToBooksList,
-            ),
-          ],
+    return Column(
+      key: Key("explorerForm"),
+      children: <Widget>[
+        VersePickerSection(
+          theme: _viewModel.theme,
+          label: "",
+          key: Key("explorerVersePicker"),
+          mode: "explorer",
+          books: _viewModel.books,
+          book: _viewModel.state.activeBook,
+          bookChangeHandler: _viewModel.bookChangeHandler,
+          chapter: _viewModel.state.activeChapter,
+          minChapter: 1,
+          maxChapter: _maxChapter,
+          chapterChangeHandler: _viewModel.chapterChangeHandler,
+          minVerse: 1,
+          maxVerse: _maxVerse,
+          verse: _viewModel.state.activeVerse,
+          verseChangeHandler: _viewModel.verseChangeHandler,
         ),
-      ),
-      body: ListView(
-        children: _viewModel.verses
-            .map((verse) => Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      "${verse.chapter}: ${verse.verse}",
-                      style: TextStyle(color: Colors.blue),
-                    ),
-                    Text(verse.text),
-                  ],
-                ))
-            .toList(),
-      ),
+        OkButton(
+          theme: _viewModel.theme,
+          onClick: _viewModel.submitHandler,
+        ),
+      ],
+    );
+  }
+
+  int get _maxChapter {
+    return _viewModel.books.firstWhere((b) => b.id == _viewModel.state.activeBook).chapters;
+  }
+
+  int get _maxVerse {
+    final state = _viewModel.state;
+    final match = _viewModel.versesNumRef.where((n) => n.isSameRef(state.activeBook, state.activeChapter)).toList();
+    return match.isEmpty ? 1 : match.first.versesNum;
+  }
+}
+
+class _VerseDisplay extends StatelessWidget {
+  final ExplorerViewModel _viewModel;
+
+  _VerseDisplay(this._viewModel);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      key: Key("explorerVersesDisplay"),
+      children: _viewModel.state.verses.map(_itemBuilder).toList(),
+    );
+  }
+
+  Widget _itemBuilder(VerseModel verse) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          "${verse.verse}",
+          style: TextStyle(
+            color: _viewModel.theme.primary,
+          ),
+        ),
+        Text(verse.text),
+      ],
     );
   }
 }

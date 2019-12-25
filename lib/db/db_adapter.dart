@@ -28,11 +28,24 @@ class DbAdapter {
 
   Future<List<BookModel>> get books => bookModel?.select()?.toList();
 
-  Future<List<VerseModel>> getVerses(int bookId) async {
+  Future<List<VerseModel>> getVerses(int bookId, {int chapter, int verse}) async {
     if (verseModel == null) {
       return null;
+    } else if (chapter == null) {
+      return verseModel.select().book.equals(bookId).toList();
+    } else {
+      return verseModel
+          .select()
+          .book
+          .equals(bookId)
+          .and
+          .chapter
+          .equals(chapter)
+          .and
+          .verse
+          .greaterThanOrEquals(verse ?? 1)
+          .toList();
     }
-    return verseModel.select().book.equals(bookId).toList();
   }
 
   Future<int> getChapterVersesCount(int bookId, int chapter) {

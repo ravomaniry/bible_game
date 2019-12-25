@@ -1,3 +1,4 @@
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/config/state.dart';
@@ -12,8 +13,11 @@ import 'package:bible_game/test_helpers/db_adapter_mock.dart';
 import 'package:bible_game/test_helpers/sfx_mock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
+
+import 'game_editor_test.dart';
 
 void main() {
   testWidgets("Explorer widget test", (WidgetTester tester) async {
@@ -36,8 +40,8 @@ void main() {
     final loaderFinder = find.byKey(Key("loader"));
     final explorerFinder = find.byKey(Key("explorer"));
     final explorerBtn = find.byKey(Key("goToExplorer"));
-    final booksList = find.byKey(Key("booksList"));
-    final verseDetails = find.byKey(Key("verseDetailsBackBtn"));
+    final versesDisplay = find.byKey(Key("explorerVersesDisplay"));
+    final form = find.byKey(Key("explorerForm"));
 
     await tester.pumpWidget(BibleGame(store));
     expect(loaderFinder, findsOneWidget);
@@ -46,22 +50,34 @@ void main() {
     await tester.tap(explorerBtn);
     await tester.pump();
     expect(explorerFinder, findsOneWidget);
+    expect(form, findsOneWidget);
+    expect(versesDisplay, findsNothing);
     expect(store.state.dbIsReady, true);
     expect(store.state.game.books.length, 2);
-    expect(booksList, findsOneWidget);
-    expect(verseDetails, findsNothing);
 
-    await tester.tap(find.byKey(Key("1")));
-    await tester.pump(Duration(seconds: 1));
-    expect(store.state.explorer.activeBook.id, 1);
+    /// select verse and load: book 2: 3: 4
+    await selectDdItem(tester, "explorerBook_2");
+    await selectDdItem(tester, "explorerChapter_3");
+    await selectDdItem(tester, "explorerVerse_4");
+    expect(store.state.explorer.activeBook, 2);
+    expect(store.state.explorer.activeChapter, 3);
+    expect(store.state.explorer.activeVerse, 4);
+
+    /// Submit and expect dba to be called with the correct arguments
+    await tester.tap(find.byKey(Key("editorOkBtn")));
+    await tester.pump(Duration(milliseconds: 10));
+    verify(store.state.dba.getVerses(2, chapter: 3, verse: 4)).called(1);
+    expect(versesDisplay, findsOneWidget);
     expect(store.state.explorer.verses.length, 1);
-    expect(booksList, findsNothing);
-    expect(verseDetails, findsOneWidget);
 
-    await tester.tap(find.byKey(Key("verseDetailsBackBtn")));
-    await tester.pump();
-    expect(state.explorer.activeBook, null);
-    expect(booksList, findsOneWidget);
-    expect(verseDetails, findsNothing);
+    /// Now pressing back buttons should => show form => go to home
+    BackButtonInterceptor.popRoute();
+    await tester.pump(Duration(milliseconds: 10));
+    expect(versesDisplay, findsNothing);
+    expect(form, findsOneWidget);
+    BackButtonInterceptor.popRoute();
+    await tester.pump(Duration(milliseconds: 10));
+    expect(explorerFinder, findsNothing);
+    expect(find.byKey(Key("home")), findsOneWidget);
   });
 }
