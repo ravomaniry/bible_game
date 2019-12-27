@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:bible_game/main.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/bonus.dart';
@@ -273,6 +275,12 @@ void main() {
   });
 
   testWidgets("useBonus", (WidgetTester tester) async {
+    int countUnrevealedWord(List<Word> words) {
+      final wordLengths =
+          words.where((w) => !w.isSeparator && !w.resolved).map((w) => w.chars.where((c) => !c.resolved).length);
+      return wordLengths.isEmpty ? 0 : wordLengths.reduce((a, b) => a + b);
+    }
+
     final store = Store<AppState>(
       mainReducer,
       middleware: [thunkMiddleware],
@@ -328,10 +336,73 @@ void main() {
     }
     verify(store.state.sfx.playBonus()).called(1);
   });
-}
 
-int countUnrevealedWord(List<Word> words) {
-  final wordLengths =
-      words.where((w) => !w.isSeparator && !w.resolved).map((w) => w.chars.where((c) => !c.resolved).length);
-  return wordLengths.isEmpty ? 0 : wordLengths.reduce((a, b) => a + b);
+  test("Play the same game 500 times", () async {
+    final random = Random();
+    final store = Store<AppState>(
+      mainReducer,
+      initialState: AppState(
+        assetBundle: null,
+        sfx: SfxMock(),
+        editor: EditorState(),
+        theme: AppColorTheme(),
+        game: GameState.emptyState().copyWith(
+          inventory: InventoryState.emptyState().copyWith(
+            revealCharBonus1: 10,
+            revealCharBonus2: 20,
+            revealCharBonus5: 50,
+            revealCharBonus10: 100,
+          ),
+        ),
+        config: ConfigState(screenWidth: 100),
+        dba: DbAdapterMock.withDefaultValues(),
+        route: Routes.wordsInWord,
+        explorer: null,
+        wordsInWord: WordsInWordState.emptyState().copyWith(),
+      ),
+      middleware: [thunkMiddleware],
+    );
+
+    List<Word> getEligibleWords() {
+      final state = store.state.wordsInWord;
+      return state.wordsToFind.where((w) => getAdditionalChars(w, state.slots).isEmpty).toList();
+    }
+
+    void tapOnSlots(List<Word> words) {
+      final chars = words[random.nextInt(words.length)].chars;
+      for (final char in chars) {
+        final slotValues = store.state.wordsInWord.slots.map((c) => c?.comparisonValue).toList();
+        final index = slotValues.indexOf(char.comparisonValue);
+        store.dispatch(slotClickHandler(index));
+      }
+    }
+
+    playOneTurn() {
+      final eligibleWords = getEligibleWords();
+      if (eligibleWords.isEmpty) {
+        throw ("No eligible words found");
+      } else {
+        tapOnSlots(eligibleWords);
+        store.dispatch(proposeWordsInWord);
+      }
+    }
+
+    void playOneGame() {
+      while (store.state.wordsInWord.wordsToFind.isNotEmpty) {
+        playOneTurn();
+      }
+    }
+
+    Future initializeGame() async {
+      final dummyVerse = await store.state.dba.getSingleVerse(1, 1, 1);
+      store.dispatch(UpdateGameVerse(BibleVerse.fromModel(dummyVerse, "Matio")));
+      store.dispatch(GoToAction(Routes.wordsInWord));
+      store.dispatch(initializeWordsInWordState);
+    }
+
+    for (var i = 0; i < 500; i++) {
+      await initializeGame();
+      playOneGame();
+    }
+  });
 }

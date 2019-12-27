@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/bonus.dart';
-import 'package:bible_game/models/thunk_container.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/game/actions.dart';
@@ -68,16 +67,19 @@ List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
   final random = Random();
   final targetLength = prevSlots.length;
   final slots = prevSlots.where((char) => char != null).toList();
-  final remainingSlots = targetLength - slots.length;
+  final freeSlots = targetLength - slots.length;
   final wordsCopy = List<Word>.from(words);
   final List<List<Char>> eligibleAdditionalChars = [];
-  List<List<Char>> otherAdditionalChars = [];
+  final List<List<Char>> otherAdditionalChars = [];
   var shortestAdditionalChars = prevSlots.length;
+  var stillContainValidWord = false;
 
   for (int index = 0; index < wordsCopy.length; index++) {
     final additional = getAdditionalChars(words[index], slots);
-    if (additional.length > 0) {
-      if (additional.length <= remainingSlots) {
+    if (additional.length == 0) {
+      stillContainValidWord = true;
+    } else {
+      if (additional.length <= freeSlots) {
         eligibleAdditionalChars.add(additional);
       } else {
         otherAdditionalChars.add(additional);
@@ -88,7 +90,7 @@ List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
     }
   }
 
-  if (eligibleAdditionalChars.length == 0 && otherAdditionalChars.length > 0) {
+  if (!stillContainValidWord && eligibleAdditionalChars.length == 0 && otherAdditionalChars.length > 0) {
     while ((targetLength - slots.length) < shortestAdditionalChars) {
       slots.removeLast();
     }
@@ -164,22 +166,18 @@ List<Char> getAdditionalChars(Word word, List<Char> slots) {
   return missingChars;
 }
 
-class SlotClickHandler extends ThunkContainer {
-  final int _index;
-
-  SlotClickHandler(this._index) {
-    thunk = (Store<AppState> store) {
-      final state = store.state.wordsInWord;
-      final slots = List<Char>.from(state.slots);
-      final proposition = List<Char>.from(state.proposition);
-      proposition.add(slots[_index]);
-      slots[_index] = null;
-      store.dispatch(UpdateWordsInWordState(state.copyWith(
-        slots: slots,
-        proposition: proposition,
-      )));
-    };
-  }
+ThunkAction<AppState> slotClickHandler(int index) {
+  return (store) {
+    final state = store.state.wordsInWord;
+    final slots = List<Char>.from(state.slots);
+    final proposition = List<Char>.from(state.proposition);
+    proposition.add(slots[index]);
+    slots[index] = null;
+    store.dispatch(UpdateWordsInWordState(state.copyWith(
+      slots: slots,
+      proposition: proposition,
+    )));
+  };
 }
 
 ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {

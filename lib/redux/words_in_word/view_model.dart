@@ -11,7 +11,7 @@ import 'package:bible_game/redux/inventory/use_bonus_action.dart';
 import 'package:bible_game/redux/themes/themes.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
 import 'package:bible_game/redux/words_in_word/cells_action.dart';
-import 'package:bible_game/redux/words_in_word/logics.dart';
+import 'package:bible_game/redux/words_in_word/logics.dart' as logic;
 import 'package:bible_game/redux/words_in_word/state.dart';
 import 'package:flutter/foundation.dart';
 import 'package:redux/redux.dart';
@@ -68,10 +68,10 @@ class WordsInWordViewModel {
         store.dispatch(ComputeCells(screenWidth).thunk);
         store.dispatch(recomputeSlotsIndexes);
       },
-      slotClickHandler: (int index) => store.dispatch(SlotClickHandler(index).thunk),
-      propose: () => store.dispatch(proposeWordsInWord),
+      slotClickHandler: (int index) => store.dispatch(logic.slotClickHandler(index)),
+      propose: () => store.dispatch(logic.proposeWordsInWord),
       nextHandler: () => store.dispatch(saveGameAndLoadNextVerse),
-      shuffleSlots: () => store.dispatch(shuffleSlotsAction),
+      shuffleSlots: () => store.dispatch(logic.shuffleSlotsAction),
       invalidateCombo: () => store.dispatch(InvalidateCombo()),
       useBonus: (Bonus bonus) => store.dispatch(UseBonus(bonus, true).thunk),
       stopPropositionAnimationHandler: () => store.dispatch(stopPropositionAnimation),
