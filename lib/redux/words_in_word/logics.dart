@@ -7,8 +7,6 @@ import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/inventory/use_bonus_action.dart';
-import 'package:bible_game/redux/router/actions.dart';
-import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/redux/sfx/actions.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
 import 'package:bible_game/redux/words_in_word/cells_action.dart';
@@ -21,7 +19,6 @@ ThunkAction<AppState> initializeWordsInWord() {
     store.dispatch(addBonusesToVerse());
     store.dispatch(initializeState());
     store.dispatch(_fillEmptySlots());
-    store.dispatch(GoToAction(Routes.wordsInWord));
   };
 }
 
@@ -81,7 +78,7 @@ ThunkAction<AppState> _fillEmptySlots() {
 List<Word> _extractWordsToFind(List<Word> words) {
   final List<Word> wordsToFind = [];
   for (final word in words) {
-    if (!word.isSeparator && wordsToFind.where((w) => w.sameAsChars(word.chars)).length == 0) {
+    if (!word.isSeparator && !word.resolved && wordsToFind.where((w) => w.sameAsChars(word.chars)).length == 0) {
       wordsToFind.add(word);
     }
   }
@@ -157,7 +154,7 @@ List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
         final additional = getAdditionalChars(word, slots);
         for (final char in additional) {
           if (slots.length < targetLength) {
-            slots.add(Char(value: char.comparisonValue.toUpperCase(), comparisonValue: char.comparisonValue));
+            slots.add(char.toSlotChar());
           } else {
             break;
           }

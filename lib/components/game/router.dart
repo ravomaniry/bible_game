@@ -1,3 +1,4 @@
+import 'package:bible_game/components/anagram/anagram.dart';
 import 'package:bible_game/components/editor/editor.dart';
 import 'package:bible_game/components/explorer/explorer.dart';
 import 'package:bible_game/components/game/congratulation.dart';
@@ -55,6 +56,8 @@ class _RouterBuilder extends StatelessWidget {
         return Solution();
       } else if (route == Routes.wordsInWord) {
         return WordsInWord();
+      } else if (route == Routes.anagram) {
+        return Anagram();
       }
     }
     return Loader();

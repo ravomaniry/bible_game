@@ -10,6 +10,7 @@ import 'package:bible_game/redux/inventory/state.dart';
 import 'package:bible_game/redux/inventory/use_bonus_action.dart' as bonusActions;
 import 'package:bible_game/redux/themes/themes.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
+import 'package:bible_game/redux/words_in_word/anagram_logics.dart';
 import 'package:bible_game/redux/words_in_word/cells_action.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart' as logic;
 import 'package:bible_game/redux/words_in_word/state.dart';
@@ -54,8 +55,8 @@ class AnagramViewModel implements WordsInWordViewModel {
     @required this.stopPropositionAnimationHandler,
   });
 
-  static WordsInWordViewModel converter(Store<AppState> store) {
-    return WordsInWordViewModel(
+  static AnagramViewModel converter(Store<AppState> store) {
+    return AnagramViewModel(
       config: store.state.config,
       verse: store.state.game.verse,
       inventory: store.state.game.inventory,
@@ -70,7 +71,7 @@ class AnagramViewModel implements WordsInWordViewModel {
         store.dispatch(recomputeSlotsIndexes());
       },
       slotClickHandler: (int index) => store.dispatch(logic.slotClickHandler(index)),
-      propose: () => store.dispatch(logic.proposeWordsInWord()),
+      propose: () => store.dispatch(proposeAnagram()),
       nextHandler: () => store.dispatch(saveGameAndLoadNextVerse()),
       shuffleSlots: () => store.dispatch(logic.shuffleSlotsAction()),
       invalidateCombo: () => store.dispatch(InvalidateCombo()),
