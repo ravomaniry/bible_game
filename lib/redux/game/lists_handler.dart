@@ -51,7 +51,19 @@ ThunkAction<AppState> selectGameHandler(GameModelWrapper _game) {
 ThunkAction<AppState> initializeRandomGame() {
   return (store) {
     final random = Random();
-    final game = gameModes[random.nextInt(gameModes.length)];
+    final sameGameProbability = 0.2;
+    final shouldKeepSameGame = random.nextDouble() < sameGameProbability;
+    GameMode game;
+    if (shouldKeepSameGame) {
+      final activeGames = gameModes.where((g) => g.route == store.state.route).toList();
+      if (activeGames.isNotEmpty) {
+        game = activeGames.first;
+      }
+    }
+    if (game == null) {
+      final availableGames = gameModes.where((g) => g.route != store.state.route).toList();
+      game = availableGames[random.nextInt(availableGames.length)];
+    }
     store.dispatch(initializeGame(game));
   };
 }

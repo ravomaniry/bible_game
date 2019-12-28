@@ -395,7 +395,6 @@ void main() {
     await tester.pump(Duration(milliseconds: 10));
 
     for (var i = 0; i < maxAttempts && unvisitedGames.isNotEmpty; i++) {
-      print("$i: ${store.state.route}");
       await tester.tap(inventoryOkBtn);
       await tester.pump();
 
