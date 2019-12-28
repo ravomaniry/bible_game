@@ -34,13 +34,13 @@ void main() {
       middleware: [thunkMiddleware],
     );
     await tester.pumpWidget(BibleGame(store));
-    final wordsInWordScreen = find.byKey(Key("wordsInWord"));
     final dialogScreen = find.byKey(Key("confirmQuitSingleGame"));
     final loaderScreen = find.byKey(Key("loader"));
     final homeScreen = find.byKey(Key("home"));
     final inventoryScreen = find.byKey(Key("inventoryDialog"));
     final yesBtn = find.byKey(Key("dialogYesBtn"));
     final noBtn = find.byKey(Key("dialogNoBtn"));
+    final gameScreen = find.byKey(Key("gameScreen"));
 
     // On startup => splash screen is shown
     expect(loaderScreen, findsOneWidget);
@@ -72,7 +72,7 @@ void main() {
     await tester.pump();
     await tester.tap(noBtn);
     await tester.pump();
-    expect(wordsInWordScreen, findsOneWidget);
+    expect(gameScreen, findsOneWidget);
     // Open dialog and tap YES
     await BackButtonInterceptor.popRoute();
     await tester.pump();

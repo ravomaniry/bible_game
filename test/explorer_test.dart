@@ -1,42 +1,15 @@
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:bible_game/main.dart';
-import 'package:bible_game/redux/app_state.dart';
-import 'package:bible_game/redux/config/state.dart';
-import 'package:bible_game/redux/editor/state.dart';
-import 'package:bible_game/redux/explorer/state.dart';
-import 'package:bible_game/redux/game/state.dart';
-import 'package:bible_game/redux/main_reducer.dart';
-import 'package:bible_game/redux/router/routes.dart';
-import 'package:bible_game/redux/themes/themes.dart';
-import 'package:bible_game/test_helpers/asset_bundle.dart';
-import 'package:bible_game/test_helpers/db_adapter_mock.dart';
-import 'package:bible_game/test_helpers/sfx_mock.dart';
+import 'package:bible_game/test_helpers/store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:redux/redux.dart';
-import 'package:redux_thunk/redux_thunk.dart';
 
 import 'game_editor_test.dart';
 
 void main() {
   testWidgets("Explorer widget test", (WidgetTester tester) async {
-    final state = AppState(
-      editor: EditorState(),
-      route: Routes.home,
-      sfx: SfxMock(),
-      theme: AppColorTheme(),
-      game: GameState.emptyState(),
-      assetBundle: AssetBundleMock.withDefaultValue(),
-      dba: DbAdapterMock.withDefaultValues(),
-      explorer: ExplorerState(),
-      config: ConfigState.initialState(),
-    );
-    final store = Store<AppState>(
-      mainReducer,
-      initialState: state,
-      middleware: [thunkMiddleware],
-    );
+    final store = newMockedStore();
     final loaderFinder = find.byKey(Key("loader"));
     final explorerFinder = find.byKey(Key("explorer"));
     final explorerBtn = find.byKey(Key("goToExplorer"));

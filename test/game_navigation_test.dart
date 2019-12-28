@@ -9,13 +9,17 @@ import 'package:bible_game/redux/editor/state.dart';
 import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/game/state.dart';
+import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/main_reducer.dart';
+import 'package:bible_game/redux/router/actions.dart';
+import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/redux/themes/themes.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
 import 'package:bible_game/test_helpers/sfx_mock.dart';
+import 'package:bible_game/test_helpers/store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -125,6 +129,8 @@ void main() {
     // select game 1
     await tester.tap(game1Button);
     await tester.pump(Duration(milliseconds: 10));
+    simulateWorInWordAsRandomGame(store);
+    await tester.pump(Duration(milliseconds: 10));
     // 1- game verse and game index is updated
     expect(store.state.game.activeId, 1);
     expect(store.state.game.verse.text, "AOKA");
@@ -183,7 +189,6 @@ void main() {
     await tester.tap(inventoryOkBtn);
     await tester.pump();
     expect(inventoryDialog, findsNothing);
-    expect(wordsInWord, findsOneWidget);
 
     // Navigate to the other game
     BackButtonInterceptor.popRoute();
@@ -199,6 +204,8 @@ void main() {
   });
 
   testWidgets("Load next verse", (WidgetTester tester) async {
+    /// Note: the game is selected randomly at this stage so no test related to a particular game
+    /// Only high level test of loading next verse, inventory dialog ...
     final state = AppState(
       sfx: SfxMock(),
       editor: EditorState(),
@@ -279,14 +286,12 @@ void main() {
     verify(store.state.dba.getSingleVerse(1, 1, 1)).called(1);
     // resolve game: call getBookById => load verse A12
     store.dispatch(UpdateGameResolvedState(true));
-    final prevTheme = store.state.theme.name;
     await tester.pump(Duration(milliseconds: 10));
     await tester.tap(nextBtn);
     await tester.pump(Duration(milliseconds: 10));
     expect(store.state.game.verse.words.map((x) => x.value),
         BibleVerse.fromModel(verseA12, "A").words.map((x) => x.value));
     expect(store.state.game.list[0].resolvedVersesCount, 1);
-    expect(store.state.theme.name == prevTheme, false);
 
     await tester.tap(closeInventoryBtn);
     await tester.pump(Duration(milliseconds: 10));
@@ -333,5 +338,94 @@ void main() {
     await tester.tap(find.byKey(Key("game_1")));
     await tester.pump(Duration(milliseconds: 10));
     expect(store.state.game.activeGameIsCompleted, false);
+  });
+
+  testWidgets("Random Game mode - Select game from home screen - 200 attempts max", (WidgetTester tester) async {
+    final store = newMockedStore();
+    final maxAttempts = 100;
+    final unvisitedGames = <Routes>[Routes.anagram, Routes.wordsInWord];
+
+    await tester.pumpWidget(BibleGame(store));
+    await tester.pump(Duration(milliseconds: 10));
+
+    // Select game1 => Go to home => Select game1 ...
+    for (var i = 0; i < maxAttempts && unvisitedGames.isNotEmpty; i++) {
+      expect(find.byKey(Key("home")), findsOneWidget);
+      await tester.tap(find.byKey(Key("game_1")));
+      await tester.pump(Duration(milliseconds: 10));
+
+      if (unvisitedGames.contains(store.state.route)) {
+        unvisitedGames.remove(store.state.route);
+        // check theme: wiw = blue gray && anagram = green
+        switch (store.state.route) {
+          case Routes.wordsInWord:
+            expect(store.state.theme is BlueGrayTheme, true);
+            break;
+          case Routes.anagram:
+            expect(store.state.theme is GreenTheme, true);
+            break;
+          default:
+            break;
+        }
+      }
+
+      if (unvisitedGames.isEmpty) {
+        print("֎ From games list: Visited all game modes in ${i + 1} attempts.");
+        return;
+      }
+
+      store.dispatch(CloseInventoryDialog());
+      await tester.pump();
+      store.dispatch(goToHome());
+      await tester.pump();
+    }
+    throw ("Some game were not loaded!");
+  });
+
+  testWidgets("Random games - next handler", (WidgetTester tester) async {
+    final maxAttempts = 100;
+    final store = newMockedStore();
+    final unvisitedGames = <Routes>[Routes.anagram, Routes.wordsInWord];
+    final inventoryOkBtn = find.byKey(Key("inventoryOkButton"));
+    final nextBtn = find.byKey(Key("nextButton"));
+
+    await tester.pumpWidget(BibleGame(store));
+    await tester.pump(Duration(milliseconds: 10));
+    await tester.tap(find.byKey(Key("game_1")));
+    await tester.pump(Duration(milliseconds: 10));
+
+    for (var i = 0; i < maxAttempts && unvisitedGames.isNotEmpty; i++) {
+      print("$i: ${store.state.route}");
+      await tester.tap(inventoryOkBtn);
+      await tester.pump();
+
+      if (unvisitedGames.contains(store.state.route)) {
+        unvisitedGames.remove(store.state.route);
+        // check the theme: wiw = blue gray && anagram = green
+        switch (store.state.route) {
+          case Routes.wordsInWord:
+            expect(store.state.theme is BlueGrayTheme, true);
+            break;
+          case Routes.anagram:
+            expect(store.state.theme is GreenTheme, true);
+            break;
+          default:
+            break;
+        }
+      }
+
+      if (unvisitedGames.isEmpty) {
+        print("֎ From Next verse: visited all game modes in ${i + 1} attempts.");
+        return;
+      }
+
+      // complete the game and tap on next
+      store.dispatch(UpdateGameResolvedState(true));
+      await tester.pump();
+      await tester.tap(nextBtn);
+      await tester.pump(Duration(milliseconds: 10));
+    }
+
+    throw ("Some game were not loaded!");
   });
 }
