@@ -22,9 +22,12 @@ ThunkAction<AppState> initializeAnagram() {
 
 ThunkAction<AppState> proposeAnagram() {
   return (Store<AppState> store) {
-    final hasFoundMatch = propose(store);
-    if (hasFoundMatch) {
-      store.dispatch(_generateSlots());
+    final state = store.state.wordsInWord;
+    if (state.slots.length == state.proposition.length) {
+      final hasFoundMatch = propose(store);
+      if (hasFoundMatch) {
+        store.dispatch(_generateSlots());
+      }
     }
   };
 }

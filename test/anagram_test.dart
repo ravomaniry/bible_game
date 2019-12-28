@@ -54,7 +54,7 @@ void main() {
       expect(slotValues, containsAll(["d", "e", "f", "g"]));
     }
 
-    /// click on slots and propose (fail)
+    /// click on slots
     final prevSlots = store.state.wordsInWord.slots;
     await tester.tap(find.byKey(Key("slot_1")));
     await tester.pump();
@@ -70,16 +70,18 @@ void main() {
     expect(state.proposition[0].comparisonValue, prevSlots[1].comparisonValue);
     expect(state.proposition[1].comparisonValue, prevSlots[2].comparisonValue);
 
+    /// This is not allowed to be proposed as one or two slots are not clicked
     await tester.tap(proposeBtn);
     await tester.pump(Duration(milliseconds: 10));
     state = store.state.wordsInWord;
-    expect(state.propositionAnimation, PropositionAnimations.failure);
-    expect(state.slots.where((x) => x == null).length, 0);
-    expect(state.proposition, []);
+    expect(state.propositionAnimation, PropositionAnimations.none);
+    expect(state.slots.where((x) => x == null).length, 2);
+    expect(state.proposition.length, 2);
 
-    /// Propose with true response (current slots state is not important in this mode)
+    /// Propose with true response (propose is allowed when all the slots are empty)
     store.dispatch(UpdateWordsInWordState(state.copyWith(
       proposition: Word.from("DEFG", 2, false).chars,
+      slots: [null, null, null, null],
     )));
     await tester.pump(Duration(milliseconds: 10));
     await tester.tap(proposeBtn);
