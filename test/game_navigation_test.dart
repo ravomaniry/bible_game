@@ -158,7 +158,7 @@ void main() {
       slots: Word.from("AOKA", 0, false).chars,
       proposition: Word.from("AOKA", 0, false).chars,
     )));
-    store.dispatch(proposeWordsInWord);
+    store.dispatch(proposeWordsInWord());
     await tester.pump();
     expect(store.state.wordsInWord.wordsToFind, []);
     expect(store.state.game.isResolved, true);

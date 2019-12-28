@@ -1,7 +1,6 @@
 import 'package:bible_game/components/words_in_word/controls.dart';
 import 'package:bible_game/components/words_in_word/results.dart';
 import 'package:bible_game/models/cell.dart';
-import 'package:bible_game/models/thunk_container.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/words_in_word/actions.dart';
@@ -14,20 +13,18 @@ class UpdateWordsInWordCells {
   UpdateWordsInWordCells(this.payload);
 }
 
-ThunkAction<AppState> recomputeCells = (Store<AppState> store) {
-  final cells = computeCells(store.state.game.verse.words, store.state.config.screenWidth);
-  store.dispatch(UpdateWordsInWordCells(cells));
-};
+ThunkAction<AppState> recomputeCells() {
+  return (Store<AppState> store) {
+    final cells = computeCells(store.state.game.verse.words, store.state.config.screenWidth);
+    store.dispatch(UpdateWordsInWordCells(cells));
+  };
+}
 
-class ComputeCells extends ThunkContainer {
-  final double screenWidth;
-
-  ComputeCells(this.screenWidth) {
-    this.thunk = (Store<AppState> store) {
-      final cells = computeCells(store.state.game.verse.words, screenWidth);
-      store.dispatch(UpdateWordsInWordCells(cells));
-    };
-  }
+ThunkAction<AppState> computeCellsAction(double screenWidth) {
+  return (store) {
+    final cells = computeCells(store.state.game.verse.words, screenWidth);
+    store.dispatch(UpdateWordsInWordCells(cells));
+  };
 }
 
 List<List<Cell>> computeCells(List<Word> words, double screenWidth) {
@@ -66,24 +63,26 @@ List<List<Cell>> computeCells(List<Word> words, double screenWidth) {
   return cells.where((row) => row.length > 0).toList();
 }
 
-ThunkAction<AppState> recomputeSlotsIndexes = (Store<AppState> store) {
-  final state = store.state.wordsInWord;
-  final screenWidth = store.state.config.screenWidth;
-  final List<List<int>> indexes = [[]];
-  final outerSlotWidth = slotWidth + slotMargin;
-  int rowIndex = 0;
-  double currentX = 0;
+ThunkAction<AppState> recomputeSlotsIndexes() {
+  return (Store<AppState> store) {
+    final state = store.state.wordsInWord;
+    final screenWidth = store.state.config.screenWidth;
+    final List<List<int>> indexes = [[]];
+    final outerSlotWidth = slotWidth + slotMargin;
+    int rowIndex = 0;
+    double currentX = 0;
 
-  if (screenWidth > 0) {
-    for (int i = 0; i < state.slots.length; i++) {
-      if (currentX + outerSlotWidth > screenWidth * 0.9) {
-        rowIndex++;
-        indexes.add([]);
-        currentX = 0;
+    if (screenWidth > 0) {
+      for (int i = 0; i < state.slots.length; i++) {
+        if (currentX + outerSlotWidth > screenWidth * 0.9) {
+          rowIndex++;
+          indexes.add([]);
+          currentX = 0;
+        }
+        indexes[rowIndex].add(i);
+        currentX += outerSlotWidth;
       }
-      indexes[rowIndex].add(i);
-      currentX += outerSlotWidth;
+      store.dispatch(UpdateWordsInWordState(state.copyWith(slotsDisplayIndexes: indexes)));
     }
-    store.dispatch(UpdateWordsInWordState(state.copyWith(slotsDisplayIndexes: indexes)));
-  }
-};
+  };
+}

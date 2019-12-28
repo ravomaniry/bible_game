@@ -2,9 +2,9 @@ import 'package:bible_game/redux/app_state.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
-ThunkAction<AppState> playGreetingSfx = (Store<AppState> store) {
-  store.state.sfx.playGreeting();
-};
+ThunkAction<AppState> playGreetingSfx() => (store) => store.state.sfx.playGreeting();
+
+ThunkAction<AppState> playBonusSfx() => (store) => store.state.sfx.playBonus();
 
 ThunkAction<AppState> playSuccessSfx(bool longMode) {
   return (Store<AppState> store) {
@@ -15,7 +15,3 @@ ThunkAction<AppState> playSuccessSfx(bool longMode) {
     }
   };
 }
-
-ThunkAction<AppState> playBonusSfx = (Store<AppState> store) {
-  store.state.sfx.playBonus();
-};

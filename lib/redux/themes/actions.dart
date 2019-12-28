@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/themes/themes.dart';
-import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
 class UpdateTheme {
@@ -17,10 +16,12 @@ final allThemes = [
   GreenTheme(),
 ];
 
-ThunkAction<AppState> randomizeTheme = (Store<AppState> store) {
-  final next = getRandomTheme(store.state.theme.name);
-  store.dispatch(UpdateTheme(next));
-};
+ThunkAction<AppState> randomizeTheme() {
+  return (store) {
+    final next = getRandomTheme(store.state.theme.name);
+    store.dispatch(UpdateTheme(next));
+  };
+}
 
 AppColorTheme getRandomTheme(String activeThemeName) {
   final random = Random();

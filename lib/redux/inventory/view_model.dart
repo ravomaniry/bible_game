@@ -24,7 +24,7 @@ class InventoryViewModel {
       theme: store.state.theme,
       state: store.state.game.inventory,
       buyBonus: (Bonus bonus) => store.dispatch(actions.buyBonus(bonus)),
-      closeDialog: () => store.dispatch(actions.inventoryNextHandler),
+      closeDialog: () => store.dispatch(actions.inventoryNextHandler()),
     );
   }
 }

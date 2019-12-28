@@ -25,9 +25,17 @@ class UpdatePropositionAnimation {
   UpdatePropositionAnimation(this.payload);
 }
 
-final triggerPropositionSuccessAnimation = UpdatePropositionAnimation(PropositionAnimations.success);
-final triggerPropositionFailureAnimation = UpdatePropositionAnimation(PropositionAnimations.failure);
-final stopPropositionAnimation = UpdatePropositionAnimation(PropositionAnimations.none);
+UpdatePropositionAnimation triggerPropositionSuccessAnimation() {
+  return UpdatePropositionAnimation(PropositionAnimations.success);
+}
+
+UpdatePropositionAnimation triggerPropositionFailureAnimation() {
+  return UpdatePropositionAnimation(PropositionAnimations.failure);
+}
+
+UpdatePropositionAnimation stopPropositionAnimation() {
+  return UpdatePropositionAnimation(PropositionAnimations.none);
+}
 
 final resetWordsInWord = UpdateWordsInWordState(WordsInWordState(
   cells: [],

@@ -2,7 +2,8 @@ import 'package:bible_game/redux/error/state.dart';
 
 class Errors {
   static final dbNotReady = ErrorState("Tsy vonona ny 'Base de données'", "Avereno sokafana ny application azafady!");
-  static final unknownDbError = ErrorState("Foana ny 'Base de données'", "Avereno sokafana ny application azafady!");
+
+  static unknownDbError() => ErrorState("Foana ny 'Base de données'", "Avereno sokafana ny application azafady!");
 }
 
 class TextValues {

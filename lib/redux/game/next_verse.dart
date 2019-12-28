@@ -10,45 +10,48 @@ import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/game/lists_handler.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/themes/actions.dart';
-import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/utils/retry.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
-ThunkAction<AppState> saveGameAndLoadNextVerse = (Store<AppState> store) async {
-  try {
-    final game = store.state.game.list.firstWhere((g) => g.model.id == store.state.game.activeId);
-    final nextVerse = await _getNextVerse(game, store.state.game.books, store.state.dba, store.dispatch);
-    if (nextVerse != null) {
-      final nextBookName = store.state.game.books.firstWhere((b) => b.id == nextVerse.book).name;
-      final nextGame = game.copyWith(
-        nextBook: nextVerse.book,
-        nextChapter: nextVerse.chapter,
-        nextVerse: nextVerse.verse,
-        resolvedVersesCount: game.resolvedVersesCount + 1,
-      );
-      final nextList = getUpdatedGamesList(nextGame, store.state.game.list, store.state.game.activeId);
-      store.dispatch(OpenInventoryDialog(false));
-      store.dispatch(UpdateGameResolvedState(false));
-      store.dispatch(UpdateGameVerse(BibleVerse.fromModel(nextVerse, nextBookName)));
-      store.dispatch(initializeWordsInWordState);
-      store.dispatch(ReceiveGamesList(nextList));
-      store.dispatch(saveActiveGame);
-      store.dispatch(randomizeTheme);
+ThunkAction<AppState> saveGameAndLoadNextVerse() {
+  return (Store<AppState> store) async {
+    try {
+      final game = store.state.game.list.firstWhere((g) => g.model.id == store.state.game.activeId);
+      final nextVerse = await _getNextVerse(game, store.state.game.books, store.state.dba, store.dispatch);
+      if (nextVerse != null) {
+        final nextBookName = store.state.game.books.firstWhere((b) => b.id == nextVerse.book).name;
+        final nextGame = game.copyWith(
+          nextBook: nextVerse.book,
+          nextChapter: nextVerse.chapter,
+          nextVerse: nextVerse.verse,
+          resolvedVersesCount: game.resolvedVersesCount + 1,
+        );
+        final nextList = getUpdatedGamesList(nextGame, store.state.game.list, store.state.game.activeId);
+        store.dispatch(OpenInventoryDialog(false));
+        store.dispatch(UpdateGameResolvedState(false));
+        store.dispatch(UpdateGameVerse(BibleVerse.fromModel(nextVerse, nextBookName)));
+        store.dispatch(initializeRandomGame());
+        store.dispatch(ReceiveGamesList(nextList));
+        store.dispatch(saveActiveGame());
+        store.dispatch(randomizeTheme());
+      }
+    } catch (e) {
+      print("%%%%%%%%%% error in saveGameAndLoadNextVerse");
+      print(e);
     }
-  } catch (e) {
-    print("%%%%%%%%%% error in saveGameAndLoadNextVerse");
-    print(e);
-  }
-};
+  };
+}
 
-ThunkAction<AppState> incrementResolvedVersesNum = (Store<AppState> store) {
-  final game = store.state.game.list.firstWhere((g) => g.model.id == store.state.game.activeId);
-  final nextGame = game.copyWith(resolvedVersesCount: game.resolvedVersesCount + 1);
-  final nextList = getUpdatedGamesList(nextGame, store.state.game.list, store.state.game.activeId);
-  store.dispatch(ReceiveGamesList(nextList));
-};
+ThunkAction<AppState> _incrementResolvedVersesNum() {
+  return (Store<AppState> store) {
+    final game = store.state.game.list.firstWhere((g) => g.model.id == store.state.game.activeId);
+    final nextGame = game.copyWith(resolvedVersesCount: game.resolvedVersesCount + 1);
+    final nextList = getUpdatedGamesList(nextGame, store.state.game.list, store.state.game.activeId);
+    store.dispatch(ReceiveGamesList(nextList));
+  };
+}
 
 Future<VerseModel> _getNextVerse(
   GameModelWrapper game,
@@ -61,7 +64,7 @@ Future<VerseModel> _getNextVerse(
 
   if (game.isCompleted) {
     dispatch(UpdateGameCompletedState(true));
-    dispatch(incrementResolvedVersesNum);
+    dispatch(_incrementResolvedVersesNum());
     return null;
   } else {
     try {
@@ -74,7 +77,7 @@ Future<VerseModel> _getNextVerse(
         return await retry(() => dba.getSingleVerse(bookId + 1, 1, 1));
       }
     } catch (e) {
-      dispatch(ReceiveError(Errors.unknownDbError));
+      dispatch(ReceiveError(Errors.unknownDbError()));
       print("%%%%%%%%%% error in _getNextVerse");
       print(e);
     }

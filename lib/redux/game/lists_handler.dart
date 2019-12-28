@@ -15,7 +15,7 @@ import 'package:bible_game/utils/retry.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
 final gameModes = [
-  GameMode(Routes.wordsInWord, initializeWordsInWordState),
+  GameMode(Routes.wordsInWord, initializeWordsInWord),
 ];
 
 ThunkAction<AppState> selectGameHandler(GameModelWrapper _game) {
@@ -25,7 +25,7 @@ ThunkAction<AppState> selectGameHandler(GameModelWrapper _game) {
       final verse =
           await retry(() => store.state.dba.getSingleVerse(model.nextBook, model.nextChapter, model.nextVerse));
       if (verse == null) {
-        store.dispatch(ReceiveError(Errors.unknownDbError));
+        store.dispatch(ReceiveError(Errors.unknownDbError()));
       } else {
         final bookName = store.state.game.books.firstWhere((b) => b.id == _game.nextBook).name;
         store.dispatch(UpdateGameVerse(BibleVerse.fromModel(verse, bookName)));
@@ -33,41 +33,45 @@ ThunkAction<AppState> selectGameHandler(GameModelWrapper _game) {
         store.dispatch(UpdateGameCompletedState(false));
         store.dispatch(UpdateInventory(_game.inventory));
         store.dispatch(OpenInventoryDialog(false));
-        store.dispatch(initializeRandomGame);
+        store.dispatch(initializeRandomGame());
       }
     } catch (e) {
       print(model.name);
-      store.dispatch(ReceiveError(Errors.unknownDbError));
+      store.dispatch(ReceiveError(Errors.unknownDbError()));
       print("%%%%%%%% error at SelectGame.thunk");
       print(e);
     }
   };
 }
 
-final ThunkAction<AppState> initializeRandomGame = (store) {
-  final random = Random();
-  final game = gameModes[random.nextInt(gameModes.length)];
-  store.dispatch(game.initAction);
-  store.dispatch(GoToAction(game.route));
-};
+ThunkAction<AppState> initializeRandomGame() {
+  return (store) {
+    final random = Random();
+    final game = gameModes[random.nextInt(gameModes.length)];
+    store.dispatch(game.initAction());
+    store.dispatch(GoToAction(game.route));
+  };
+}
 
-final ThunkAction<AppState> saveActiveGame = (store) async {
-  try {
-    final state = store.state.game;
-    final model = state.list
-        .firstWhere((g) => g.model.id == state.activeId)
-        .copyWith(inventory: store.state.game.inventory)
-        .toModelHelper();
-    await retry(() => store.state.dba.saveGame(model));
-    final nextGame = GameModelWrapper.fromModel(model, state.books);
-    final nextList = getUpdatedGamesList(nextGame, state.list, state.activeId);
-    store.dispatch(ReceiveGamesList(nextList));
-  } catch (e) {
-    store.dispatch(Errors.unknownDbError);
-    print("%%%%%%%%%%%%% error in saveActiveGame ");
-    print(e);
-  }
-};
+ThunkAction<AppState> saveActiveGame() {
+  return (store) async {
+    try {
+      final state = store.state.game;
+      final model = state.list
+          .firstWhere((g) => g.model.id == state.activeId)
+          .copyWith(inventory: store.state.game.inventory)
+          .toModelHelper();
+      await retry(() => store.state.dba.saveGame(model));
+      final nextGame = GameModelWrapper.fromModel(model, state.books);
+      final nextList = getUpdatedGamesList(nextGame, state.list, state.activeId);
+      store.dispatch(ReceiveGamesList(nextList));
+    } catch (e) {
+      store.dispatch(Errors.unknownDbError());
+      print("%%%%%%%%%%%%% error in saveActiveGame ");
+      print(e);
+    }
+  };
+}
 
 List<GameModelWrapper> getUpdatedGamesList(GameModelWrapper nextGame, List<GameModelWrapper> list, int activeId) {
   return [nextGame]..addAll(list.where((g) => g.model.id != activeId));

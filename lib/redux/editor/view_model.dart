@@ -36,7 +36,7 @@ class EditorViewModel {
       state: store.state.editor,
       theme: store.state.theme,
       books: store.state.game.books,
-      closeHandler: () => store.dispatch(actions.closeEditor),
+      closeHandler: () => store.dispatch(actions.closeEditor()),
       startBookChangeHandler: (int bookId) => store.dispatch(actions.startBookChangeHandler(bookId)),
       startChapterChangeHandler: (int chapter) => store.dispatch(actions.startChapterChangeHandler(chapter)),
       startVerseChangeHandler: (int startVerse) => store.dispatch(actions.startVerseChangeHandler(startVerse)),

@@ -40,7 +40,7 @@ class _BibleGameState extends State<BibleGame> {
   void initState() {
     super.initState();
     handleBackBtnPress(_store);
-    _store.dispatch(initDb);
+    _store.dispatch(initDb());
   }
 
   @override

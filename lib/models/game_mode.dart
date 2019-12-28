@@ -4,7 +4,7 @@ import 'package:redux_thunk/redux_thunk.dart';
 
 class GameMode {
   final Routes route;
-  final ThunkAction<AppState> initAction;
+  final ThunkAction<AppState> Function() initAction;
 
   GameMode(this.route, this.initAction);
 }

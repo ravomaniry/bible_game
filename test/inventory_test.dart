@@ -150,7 +150,7 @@ void main() {
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
       proposition: Word.from("AB", 0, false).chars,
     )));
-    store.dispatch(proposeWordsInWord);
+    store.dispatch(proposeWordsInWord());
     expect(store.state.game.inventory.money, 4);
     expect(store.state.game.inventory.combo, 1);
 
@@ -159,7 +159,7 @@ void main() {
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
       proposition: Word.from("CDEF", 0, false).chars,
     )));
-    store.dispatch(proposeWordsInWord);
+    store.dispatch(proposeWordsInWord());
     expect(store.state.game.inventory.money, 7);
     expect(store.state.game.inventory.combo, 1);
 
@@ -167,7 +167,7 @@ void main() {
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
       proposition: Word.from("GHIJK", 0, false).chars,
     )));
-    store.dispatch(proposeWordsInWord);
+    store.dispatch(proposeWordsInWord());
     expect(store.state.game.inventory.money, 12);
     expect(store.state.game.inventory.combo, 1.5);
 
@@ -175,7 +175,7 @@ void main() {
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
       proposition: Word.from("LMNO", 0, false).chars,
     )));
-    store.dispatch(proposeWordsInWord);
+    store.dispatch(proposeWordsInWord());
     expect(store.state.game.inventory.money, 18);
     expect(store.state.game.inventory.combo, 1.9);
 
@@ -184,7 +184,7 @@ void main() {
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
       proposition: Word.from("PQRSTUVX", 0, false).chars,
     )));
-    store.dispatch(proposeWordsInWord);
+    store.dispatch(proposeWordsInWord());
     expect(store.state.game.inventory.money, 26);
     expect(store.state.game.inventory.combo, 1.8);
 
@@ -192,7 +192,7 @@ void main() {
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
       proposition: Word.from("Y", 0, false).chars,
     )));
-    store.dispatch(proposeWordsInWord);
+    store.dispatch(proposeWordsInWord());
     expect(store.state.game.inventory.money, 28);
     expect(store.state.game.inventory.combo, 1);
   });

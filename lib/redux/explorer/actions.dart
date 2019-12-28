@@ -16,10 +16,12 @@ class UpdateExplorerState {
   UpdateExplorerState(this.payload);
 }
 
-ThunkAction<AppState> goToExplorer = (Store<AppState> store) async {
-  store.dispatch(GoToAction(Routes.explorer));
-  loadVersesNum(1, 1, store);
-};
+ThunkAction<AppState> goToExplorer() {
+  return (Store<AppState> store) async {
+    store.dispatch(GoToAction(Routes.explorer));
+    loadVersesNum(1, 1, store);
+  };
+}
 
 ThunkAction<AppState> resetExplorer() {
   return (store) {
@@ -77,14 +79,14 @@ ThunkAction<AppState> submitHandler() {
         ),
       );
       if (verses == null) {
-        store.dispatch(ReceiveError(Errors.unknownDbError));
+        store.dispatch(ReceiveError(Errors.unknownDbError()));
       } else {
         store.dispatch(UpdateExplorerState(store.state.explorer.copyWith(verses: verses)));
       }
     } catch (e) {
       print("%%%%%%%%%%%% error in submitHandler %%%%%%%%%%");
       print(e);
-      store.dispatch(ReceiveError(Errors.unknownDbError));
+      store.dispatch(ReceiveError(Errors.unknownDbError()));
     }
   };
 }

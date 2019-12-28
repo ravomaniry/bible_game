@@ -122,11 +122,11 @@ void main() {
             wordsToFind: [Word.from("Aza", 0, false), Word.from("menatra", 2, false)],
           ),
         ));
-    store.dispatch(shuffleSlotsAction);
+    store.dispatch(shuffleSlotsAction());
     expect(store.state.wordsInWord.slots == slots, false);
     expect(store.state.wordsInWord.slotsBackup, containsAll(Word.from("ADCDE", 0, false).chars));
     expect(store.state.wordsInWord.slots, containsAll(Word.from("ADC", 0, false).chars));
-    store.dispatch(proposeWordsInWord);
+    store.dispatch(proposeWordsInWord());
     expect(store.state.wordsInWord.slotsBackup, containsAll(Word.from("ADCDE", 0, false).chars));
     expect(store.state.wordsInWord.slots, containsAll(Word.from("ADCDE", 0, false).chars));
     expect(store.state.wordsInWord.proposition, []);
@@ -162,7 +162,7 @@ void main() {
       ),
     );
     final bonus = RevealCharBonus(3, 0);
-    store.dispatch(UseBonus(bonus, false).thunk);
+    store.dispatch(useBonus(bonus, false));
     final charsBefore = verse.words
         .where(
           (w) => !w.isSeparator && !w.resolved,

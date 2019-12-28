@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:bible_game/models/bonus.dart';
-import 'package:bible_game/models/thunk_container.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/redux/app_state.dart';
 import 'package:bible_game/redux/game/actions.dart';
@@ -9,29 +8,25 @@ import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
 import 'package:bible_game/redux/sfx/actions.dart';
 import 'package:redux/redux.dart';
+import 'package:redux_thunk/redux_thunk.dart';
 
-class UseBonus extends ThunkContainer {
-  final Bonus _bonus;
-  final bool _triggeredByUser;
-
-  UseBonus(this._bonus, this._triggeredByUser) {
-    this.thunk = (Store<AppState> store) {
-      final isUsed = useBonus(store);
-      if (_triggeredByUser && isUsed) {
-        store.dispatch(DecrementBonus(_bonus));
-      }
-      if (isUsed) {
-        store.dispatch(playBonusSfx);
-      }
-    };
-  }
-
-  bool useBonus(Store<AppState> store) {
-    if (store.state.route == Routes.wordsInWord) {
-      return useBonusInWordsInWord(_bonus, store);
+ThunkAction<AppState> useBonus(Bonus bonus, bool isTriggeredByUser) {
+  return (store) {
+    final isUsed = _useBonusInActiveGame(bonus, store);
+    if (isTriggeredByUser && isUsed) {
+      store.dispatch(DecrementBonus(bonus));
     }
-    return false;
+    if (isUsed) {
+      store.dispatch(playBonusSfx());
+    }
+  };
+}
+
+bool _useBonusInActiveGame(Bonus _bonus, Store<AppState> store) {
+  if (store.state.route == Routes.wordsInWord) {
+    return useBonusInWordsInWord(_bonus, store);
   }
+  return false;
 }
 
 bool useBonusInWordsInWord(Bonus bonus, Store<AppState> store) {

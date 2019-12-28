@@ -40,11 +40,11 @@ class GameViewModel {
       theme: store.state.theme,
       isReady: store.state.dbIsReady,
       toggleDialog: () => store.dispatch(ToggleGamesEditorDialog()),
-      goToExplorer: () => store.dispatch(ExplorerActions.goToExplorer),
+      goToExplorer: () => store.dispatch(ExplorerActions.goToExplorer()),
       openInventory: () => store.dispatch(OpenInventoryDialog(false)),
       selectHandler: (GameModelWrapper game) => store.dispatch(selectGameHandler(game)),
-      nextHandler: () => store.dispatch(saveGameAndLoadNextVerse),
-      goToEditor: () => store.dispatch(EditorActions.goToEditor),
+      nextHandler: () => store.dispatch(saveGameAndLoadNextVerse()),
+      goToEditor: () => store.dispatch(EditorActions.goToEditor()),
     );
   }
 }

@@ -60,7 +60,7 @@ void main() {
       ),
     ));
     store.dispatch(GoToAction(Routes.wordsInWord));
-    store.dispatch(initializeWordsInWordState);
+    store.dispatch(initializeWordsInWord());
     expect(store.state.config.screenWidth, 205);
     await Future.delayed(Duration(milliseconds: 10));
     final expectedCells = [
@@ -77,7 +77,7 @@ void main() {
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
       slots: Word.from("ABCDEFG", 0, false).chars,
     )));
-    store.dispatch(recomputeSlotsIndexes);
+    store.dispatch(recomputeSlotsIndexes());
     expect(store.state.wordsInWord.slotsDisplayIndexes, [
       [0, 1, 2, 3, 4],
       [5, 6],
@@ -112,7 +112,7 @@ void main() {
       proposition: Word.from("AA", 0, false).chars,
     )));
     store.dispatch(UpdateGameVerse(verse));
-    store.dispatch(initializeWordsInWordState);
+    store.dispatch(initializeWordsInWord());
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
       slots: Word.from("NYTENY", 0, false).chars,
       slotsBackup: Word.from("NYTENY", 0, false).chars,
@@ -306,7 +306,7 @@ void main() {
     );
     final verse = BibleVerse.from(text: "ABCDE EFGHI HIJKL MNOPQ");
     store.dispatch(UpdateGameVerse(verse));
-    store.dispatch(initializeWordsInWordState);
+    store.dispatch(initializeWordsInWord());
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
       wordsToFind: [
         verse.words[0].copyWith(bonus: RevealCharBonus(1, 0)),
@@ -320,7 +320,7 @@ void main() {
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
       proposition: verse.words[0].chars,
     )));
-    store.dispatch(proposeWordsInWord);
+    store.dispatch(proposeWordsInWord());
     expect(countUnrevealedWord(store.state.game.verse.words), 14);
     verify(store.state.sfx.playBonus()).called(1);
     // E F G H I: bonus = 3 (play bonus sfx again)
@@ -328,7 +328,7 @@ void main() {
       proposition: verse.words[2].chars,
     )));
     final prevUnrevealedCount = countUnrevealedWord([store.state.game.verse.words[2]]);
-    store.dispatch(proposeWordsInWord);
+    store.dispatch(proposeWordsInWord());
     if (prevUnrevealedCount == 5) {
       expect(countUnrevealedWord(store.state.game.verse.words), 7);
     } else {
@@ -383,7 +383,7 @@ void main() {
         throw ("No eligible words found");
       } else {
         tapOnSlots(eligibleWords);
-        store.dispatch(proposeWordsInWord);
+        store.dispatch(proposeWordsInWord());
       }
     }
 
@@ -397,7 +397,7 @@ void main() {
       final dummyVerse = await store.state.dba.getSingleVerse(1, 1, 1);
       store.dispatch(UpdateGameVerse(BibleVerse.fromModel(dummyVerse, "Matio")));
       store.dispatch(GoToAction(Routes.wordsInWord));
-      store.dispatch(initializeWordsInWordState);
+      store.dispatch(initializeWordsInWord());
     }
 
     for (var i = 0; i < 500; i++) {

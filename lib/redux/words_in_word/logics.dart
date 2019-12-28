@@ -16,39 +16,42 @@ import 'package:bible_game/redux/words_in_word/state.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
-ThunkAction<AppState> initializeWordsInWordState = (Store<AppState> store) {
-  final state = store.state.wordsInWord ?? WordsInWordState.emptyState();
-  final verse = store.state.game.verse;
-  final verseWithBonus = verse.copyWith(
-    words: verse.words.map(addRandomBonusToWord).toList(),
-  );
-  final wordsToFind = extractWordsToFind(verseWithBonus.words);
-  var slots = generateEmptySlots(wordsToFind);
-  slots = fillSlots(slots, wordsToFind);
-  store.dispatch(UpdateGameVerse(verseWithBonus));
-  store.dispatch(UpdateWordsInWordState(state.copyWith(
-    wordsToFind: wordsToFind,
-    slots: slots,
-    slotsBackup: slots,
-    resolvedWords: [],
-    proposition: [],
-  )));
-  store.dispatch(recomputeSlotsIndexes);
-  store.dispatch(recomputeCells);
-  store.dispatch(GoToAction(Routes.wordsInWord));
-};
-
-List<Word> extractWordsToFind(List<Word> words) {
-  final List<Word> wordsToFind = [];
-  for (final word in words) {
-    if (!word.isSeparator && wordsToFind.where((w) => w.sameAsChars(word.chars)).length == 0) {
-      wordsToFind.add(word);
-    }
-  }
-  return wordsToFind;
+ThunkAction<AppState> initializeWordsInWord() {
+  return (store) {
+    store.dispatch(addBonusesToVerse());
+    store.dispatch(initializeState());
+    store.dispatch(_fillEmptySlots());
+    store.dispatch(GoToAction(Routes.wordsInWord));
+  };
 }
 
-Word addRandomBonusToWord(Word word) {
+ThunkAction<AppState> initializeState() {
+  return (store) {
+    final state = store.state.wordsInWord ?? WordsInWordState.emptyState();
+    final wordsToFind = _extractWordsToFind(store.state.game.verse.words);
+    var slots = _generateEmptySlots(wordsToFind);
+    store.dispatch(UpdateWordsInWordState(state.copyWith(
+      wordsToFind: wordsToFind,
+      slots: slots,
+      slotsBackup: slots,
+      resolvedWords: [],
+      proposition: [],
+    )));
+    store.dispatch(recomputeCells());
+  };
+}
+
+ThunkAction<AppState> addBonusesToVerse() {
+  return (store) {
+    final verse = store.state.game.verse;
+    final verseWithBonus = verse.copyWith(
+      words: verse.words.map(_addRandomBonusToWord).toList(),
+    );
+    store.dispatch(UpdateGameVerse(verseWithBonus));
+  };
+}
+
+Word _addRandomBonusToWord(Word word) {
   if (word.isSeparator) {
     return word;
   }
@@ -61,6 +64,28 @@ Word addRandomBonusToWord(Word word) {
     return word.copyWith(bonus: RevealCharBonus(power, 0));
   }
   return word;
+}
+
+ThunkAction<AppState> _fillEmptySlots() {
+  return (store) {
+    final state = store.state.wordsInWord;
+    final slots = fillSlots(state.slots, state.wordsToFind);
+    store.dispatch(UpdateWordsInWordState(state.copyWith(
+      slots: slots,
+      slotsBackup: slots,
+    )));
+    store.dispatch(recomputeSlotsIndexes());
+  };
+}
+
+List<Word> _extractWordsToFind(List<Word> words) {
+  final List<Word> wordsToFind = [];
+  for (final word in words) {
+    if (!word.isSeparator && wordsToFind.where((w) => w.sameAsChars(word.chars)).length == 0) {
+      wordsToFind.add(word);
+    }
+  }
+  return wordsToFind;
 }
 
 List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
@@ -146,7 +171,7 @@ List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
   return slots;
 }
 
-List<Char> generateEmptySlots(List<Word> words) {
+List<Char> _generateEmptySlots(List<Word> words) {
   final num = max(6, words.map((w) => w.chars.length).reduce((a, b) => max(a, b)));
   return List<Char>(num);
 }
@@ -180,7 +205,16 @@ ThunkAction<AppState> slotClickHandler(int index) {
   };
 }
 
-ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
+ThunkAction<AppState> proposeWordsInWord() {
+  return (Store<AppState> store) {
+    final hasFoundMatch = propose(store);
+    if (hasFoundMatch) {
+      store.dispatch(_fillEmptySlots());
+    }
+  };
+}
+
+bool propose(Store<AppState> store) {
   final state = store.state.wordsInWord;
   final wordsToFind = List<Word>.from(state.wordsToFind);
   final resolvedWords = List<Word>.from(state.resolvedWords);
@@ -188,8 +222,7 @@ ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
   Word revealed;
   var verse = store.state.game.verse;
   final prevVerse = verse;
-  var slots = List<Char>.from(state.slots);
-  var slotsBackup = List<Char>.from(state.slotsBackup);
+  var slots = state.slots;
   bool hasFoundMatch = false;
 
   for (final word in state.wordsToFind) {
@@ -202,39 +235,38 @@ ThunkAction<AppState> proposeWordsInWord = (Store<AppState> store) {
   }
 
   if (hasFoundMatch) {
-    slots = fillSlots(slots, wordsToFind);
-    slotsBackup = slots;
-    verse = updateVerseResolvedWords(proposition, verse);
+    verse = _updateVerseResolvedWords(proposition, verse);
   } else {
-    slots = slotsBackup;
+    slots = state.slotsBackup;
   }
 
   store.dispatch(UpdateWordsInWordState(state.copyWith(
     slots: slots,
     proposition: [],
-    slotsBackup: slotsBackup,
     resolvedWords: resolvedWords,
     wordsToFind: wordsToFind,
   )));
   store.dispatch(UpdateGameVerse(verse));
-  store.dispatch(recomputeSlotsIndexes);
+
   if (hasFoundMatch) {
-    store.dispatch(IncrementMoney(prevVerse, verse).thunk);
-    store.dispatch(UseBonus(revealed.bonus, false).thunk);
-    store.dispatch(triggerPropositionSuccessAnimation);
+    store.dispatch(incrementMoney(prevVerse, verse));
+    store.dispatch(useBonus(revealed.bonus, false));
+    store.dispatch(triggerPropositionSuccessAnimation());
     store.dispatch(playSuccessSfx(wordsToFind.length == 0));
   } else {
-    store.dispatch(triggerPropositionFailureAnimation);
+    store.dispatch(triggerPropositionFailureAnimation());
   }
   // wordsToFind.length == 0 this means that the game is completed
   if (wordsToFind.length == 0) {
     store.dispatch(InvalidateCombo());
     store.dispatch(UpdateGameResolvedState(true));
-    store.dispatch(stopPropositionAnimation);
+    store.dispatch(stopPropositionAnimation());
   }
-};
 
-BibleVerse updateVerseResolvedWords(List<Char> proposition, BibleVerse verse) {
+  return hasFoundMatch;
+}
+
+BibleVerse _updateVerseResolvedWords(List<Char> proposition, BibleVerse verse) {
   final words = List<Word>.from(verse.words);
   for (int i = 0; i < words.length; i++) {
     final word = words[i];
@@ -245,23 +277,24 @@ BibleVerse updateVerseResolvedWords(List<Char> proposition, BibleVerse verse) {
   return verse.copyWith(words: words);
 }
 
-ThunkAction<AppState> shuffleSlotsAction = (Store<AppState> store) {
-  final state = store.state.wordsInWord;
-  final slotsBackup = List<Char>.from(state.slotsBackup)..shuffle();
-  final slots = List<Char>.from(slotsBackup);
-  final proposition = state.proposition;
+ThunkAction<AppState> shuffleSlotsAction() {
+  return (Store<AppState> store) {
+    final state = store.state.wordsInWord;
+    final slotsBackup = List<Char>.from(state.slotsBackup)..shuffle();
+    final slots = List<Char>.from(slotsBackup);
+    final proposition = state.proposition;
 
-  for (final char in proposition) {
-    for (int slotIndex = 0; slotIndex < slotsBackup.length; slotIndex++) {
-      if (char.comparisonValue == slots[slotIndex]?.comparisonValue) {
-        slots[slotIndex] = null;
-        break;
+    for (final char in proposition) {
+      for (int slotIndex = 0; slotIndex < slotsBackup.length; slotIndex++) {
+        if (char.comparisonValue == slots[slotIndex]?.comparisonValue) {
+          slots[slotIndex] = null;
+          break;
+        }
       }
     }
-  }
-
-  store.dispatch(UpdateWordsInWordState(state.copyWith(
-    slots: slots,
-    slotsBackup: slotsBackup,
-  )));
-};
+    store.dispatch(UpdateWordsInWordState(state.copyWith(
+      slots: slots,
+      slotsBackup: slotsBackup,
+    )));
+  };
+}

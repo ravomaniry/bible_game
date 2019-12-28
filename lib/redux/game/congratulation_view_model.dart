@@ -10,7 +10,7 @@ class CongratulationsViewModel {
 
   static CongratulationsViewModel converter(Store<AppState> store) {
     return CongratulationsViewModel(
-      closeHandler: () => store.dispatch(goToHome),
+      closeHandler: () => store.dispatch(goToHome()),
     );
   }
 }

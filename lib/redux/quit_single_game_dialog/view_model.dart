@@ -20,7 +20,7 @@ class QuitSingleGameViewModel {
       isOpen: store.state.quitSingleGameDialog,
       cancelHandler: () => store.dispatch(CloseQuitSingleGameDialog()),
       confirmHandler: () {
-        store.dispatch(goToHome);
+        store.dispatch(goToHome());
         store.dispatch(CloseQuitSingleGameDialog());
       },
     );
