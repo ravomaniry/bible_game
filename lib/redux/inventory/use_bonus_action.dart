@@ -23,7 +23,7 @@ ThunkAction<AppState> useBonus(Bonus bonus, bool isTriggeredByUser) {
 }
 
 bool _useBonusInActiveGame(Bonus _bonus, Store<AppState> store) {
-  if (store.state.route == Routes.wordsInWord) {
+  if (store.state.route == Routes.wordsInWord || store.state.route == Routes.anagram) {
     return useBonusInWordsInWord(_bonus, store);
   }
   return false;

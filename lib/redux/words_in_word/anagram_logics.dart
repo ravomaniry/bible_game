@@ -47,12 +47,14 @@ ThunkAction<AppState> _generateSlots() {
     final random = Random();
     final state = store.state.wordsInWord;
     final wordsToFind = state.wordsToFind;
-    final word = wordsToFind[random.nextInt(wordsToFind.length)];
-    final slots = (List<Char>.from(word.chars)..shuffle()).map((c) => c.toSlotChar()).toList();
-    store.dispatch(UpdateWordsInWordState(state.copyWith(
-      slots: slots,
-      slotsBackup: slots,
-    )));
-    store.dispatch(recomputeSlotsIndexes());
+    if (wordsToFind.isNotEmpty) {
+      final word = wordsToFind[random.nextInt(wordsToFind.length)];
+      final slots = (List<Char>.from(word.chars)..shuffle()).map((c) => c.toSlotChar()).toList();
+      store.dispatch(UpdateWordsInWordState(state.copyWith(
+        slots: slots,
+        slotsBackup: slots,
+      )));
+      store.dispatch(recomputeSlotsIndexes());
+    }
   };
 }

@@ -60,6 +60,17 @@ class Word with EquatableMixin {
     return copyWith(chars: chars);
   }
 
+  Word removeBonus() {
+    return Word(
+      index: index,
+      bonus: null,
+      value: value,
+      resolved: resolved,
+      chars: chars,
+      isSeparator: isSeparator,
+    );
+  }
+
   bool sameAsChars(List<Char> chars) {
     if (chars.length == this.chars.length) {
       for (int i = 0; i < chars.length; i++) {
