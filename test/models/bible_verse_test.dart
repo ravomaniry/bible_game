@@ -8,7 +8,7 @@ void main() {
       book: "Matio",
       chapter: 4,
       verse: 10,
-      text: "Azà menatra. (jer 1.30) Mijorôa [Gr. teny]",
+      text: "Azà menatra. (jer 1.30) Mijòrôa [Gr. teny]",
     );
     final List<Word> words = [
       Word(
@@ -60,12 +60,12 @@ void main() {
         index: 4,
         resolved: false,
         bonus: null,
-        value: "Mijorôa",
+        value: "Mijòrôa",
         chars: [
           Char(value: "M", comparisonValue: "m"),
           Char(value: "i", comparisonValue: "i"),
           Char(value: "j", comparisonValue: "j"),
-          Char(value: "o", comparisonValue: "o"),
+          Char(value: "ò", comparisonValue: "o"),
           Char(value: "r", comparisonValue: "r"),
           Char(value: "ô", comparisonValue: "o"),
           Char(value: "a", comparisonValue: "a"),
@@ -80,7 +80,7 @@ void main() {
         chapter: 4,
         verse: 10,
         words: words,
-        text: "Azà menatra. Mijorôa [Gr. teny]",
+        text: "Azà menatra. Mijòrôa [Gr. teny]",
       ),
     );
     expect(verse, verse.copyWith());

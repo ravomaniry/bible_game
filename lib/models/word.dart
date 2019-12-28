@@ -117,12 +117,15 @@ class Char with EquatableMixin {
 
   static getComparisonValue(String value) {
     var comparisonValue = value.toLowerCase();
-    if (comparisonValue == "à") {
-      return "a";
-    } else if (comparisonValue == "ô") {
-      return "o";
+    switch (comparisonValue) {
+      case "à":
+        return "a";
+      case "ô":
+      case "ò":
+        return "o";
+      default:
+        return comparisonValue;
     }
-    return comparisonValue;
   }
 
   Char toSlotChar() {

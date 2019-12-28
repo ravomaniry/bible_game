@@ -10,7 +10,7 @@ class BibleVerse with EquatableMixin {
   final int verse;
   final String text;
   final List<Word> words;
-  static final separatorRegex = RegExp("[^a-zàô]", caseSensitive: false);
+  static final separatorRegex = RegExp("[^a-zàôò]", caseSensitive: false);
 
   BibleVerse({
     @required this.bookId,
