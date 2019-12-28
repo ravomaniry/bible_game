@@ -5,6 +5,7 @@ import 'package:bible_game/redux/error/actions.dart';
 import 'package:bible_game/redux/explorer/state.dart';
 import 'package:bible_game/redux/router/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
+import 'package:bible_game/redux/themes/actions.dart';
 import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/utils/retry.dart';
 import 'package:redux/redux.dart';
@@ -19,6 +20,7 @@ class UpdateExplorerState {
 ThunkAction<AppState> goToExplorer() {
   return (Store<AppState> store) async {
     store.dispatch(GoToAction(Routes.explorer));
+    store.dispatch(randomizeTheme());
     loadVersesNum(1, 1, store);
   };
 }

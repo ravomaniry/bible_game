@@ -125,6 +125,10 @@ class Char with EquatableMixin {
     return comparisonValue;
   }
 
+  Char toSlotChar() {
+    return Char(value: comparisonValue.toUpperCase(), comparisonValue: comparisonValue);
+  }
+
   @override
   String toString() {
     return "{value:$value, comparisonValue:$comparisonValue resolved:$resolved, bonus:$bonus}";

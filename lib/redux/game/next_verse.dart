@@ -9,7 +9,6 @@ import 'package:bible_game/redux/error/actions.dart';
 import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/game/lists_handler.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
-import 'package:bible_game/redux/themes/actions.dart';
 import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/utils/retry.dart';
 import 'package:redux/redux.dart';
@@ -35,7 +34,6 @@ ThunkAction<AppState> saveGameAndLoadNextVerse() {
         store.dispatch(initializeRandomGame());
         store.dispatch(ReceiveGamesList(nextList));
         store.dispatch(saveActiveGame());
-        store.dispatch(randomizeTheme());
       }
     } catch (e) {
       print("%%%%%%%%%% error in saveGameAndLoadNextVerse");

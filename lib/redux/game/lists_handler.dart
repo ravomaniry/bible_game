@@ -9,13 +9,17 @@ import 'package:bible_game/redux/game/actions.dart';
 import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/router/actions.dart';
 import 'package:bible_game/redux/router/routes.dart';
+import 'package:bible_game/redux/themes/actions.dart';
+import 'package:bible_game/redux/themes/themes.dart';
+import 'package:bible_game/redux/words_in_word/anagram_logics.dart';
 import 'package:bible_game/redux/words_in_word/logics.dart';
 import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/utils/retry.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
 final gameModes = [
-  GameMode(Routes.wordsInWord, initializeWordsInWord),
+  GameMode(Routes.wordsInWord, initializeWordsInWord, BlueGrayTheme()),
+  GameMode(Routes.anagram, initializeAnagram, GreenTheme()),
 ];
 
 ThunkAction<AppState> selectGameHandler(GameModelWrapper _game) {
@@ -48,7 +52,14 @@ ThunkAction<AppState> initializeRandomGame() {
   return (store) {
     final random = Random();
     final game = gameModes[random.nextInt(gameModes.length)];
+    store.dispatch(initializeGame(game));
+  };
+}
+
+ThunkAction<AppState> initializeGame(GameMode game) {
+  return (store) {
     store.dispatch(game.initAction());
+    store.dispatch(UpdateTheme(game.theme));
     store.dispatch(GoToAction(game.route));
   };
 }
