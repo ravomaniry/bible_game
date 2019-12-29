@@ -23,7 +23,7 @@ class BlueGrayTheme implements AppColorTheme {
   final primary = Color.fromARGB(255, 0, 59, 254);
   final primaryLight = Color.fromARGB(255, 136, 164, 255);
   final primaryDark = Color.fromARGB(255, 28, 40, 80);
-  final accentRight = Color.fromARGB(255, 13, 255, 0);
+  final accentRight = Color.fromARGB(255, 0, 240, 20);
   final accentRightDark = Color.fromARGB(255, 8, 162, 0);
   final accentLeft = Color.fromARGB(255, 255, 0, 13);
   final neutral = Color.fromARGB(255, 255, 255, 255);
