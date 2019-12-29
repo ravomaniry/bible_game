@@ -4,7 +4,9 @@ import 'package:bible_game/redux/inventory/actions.dart';
 import 'package:bible_game/redux/inventory/reducer_utils.dart';
 
 GameState gamesListStateReducer(GameState state, action) {
-  if (action is ReceiveGamesList) {
+  if (action is UpdateGameState) {
+    return action.payload;
+  } else if (action is ReceiveGamesList) {
     return state.copyWith(list: action.payload);
   } else if (action is ReceiveBooksList) {
     return state.copyWith(books: action.payload);

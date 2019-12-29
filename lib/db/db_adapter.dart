@@ -48,6 +48,20 @@ class DbAdapter {
     }
   }
 
+  Future<List<VerseModel>> getChapterVersesUntil(int bookId, int chapter, int verse) {
+    return verseModel
+        .select()
+        .book
+        .equals(bookId)
+        .and
+        .chapter
+        .equals(chapter)
+        .and
+        .verse
+        .lessThanOrEquals(verse)
+        .toList();
+  }
+
   Future<int> getChapterVersesCount(int bookId, int chapter) {
     if (verseModel == null) {
       return null;

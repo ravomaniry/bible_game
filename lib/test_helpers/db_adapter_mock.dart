@@ -40,6 +40,7 @@ class DbAdapterMock extends Mock implements DbAdapter {
       "getBookById",
       "getChapterVersesCount",
       "getVersesNumBetween",
+      "getChapterVersesUntil",
     ]);
     return adapter;
   }
@@ -133,6 +134,15 @@ class DbAdapterMock extends Mock implements DbAdapter {
         return 10;
       });
     }
+    if (methods.contains("getChapterVersesUntil")) {
+      when(adapter.getChapterVersesUntil(any, any, any)).thenAnswer((_) async {
+        return [
+          VerseModel(id: 1, book: 1, chapter: 1, verse: 1, text: "ABC"),
+          VerseModel(id: 2, book: 1, chapter: 1, verse: 2, text: "DEF"),
+        ];
+      });
+    }
+
     return adapter;
   }
 

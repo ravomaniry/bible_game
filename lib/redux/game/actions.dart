@@ -1,6 +1,13 @@
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/game.dart';
+import 'package:bible_game/redux/game/state.dart';
+
+class UpdateGameState {
+  final GameState payload;
+
+  UpdateGameState(this.payload);
+}
 
 class ReceiveGamesList {
   final List<GameModelWrapper> payload;

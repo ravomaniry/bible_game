@@ -27,7 +27,7 @@ import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
 void main() {
-  testWidgets("Open a game + next verse and save flow + SFX", (WidgetTester tester) async {
+  testWidgets("Open a game + next verse  and save flow + SFX", (WidgetTester tester) async {
     final dba = DbAdapterMock.mockMethods(DbAdapterMock(), [
       "init",
       "saveGame",
@@ -66,7 +66,7 @@ void main() {
           startVerse: 1,
           nextBook: 1,
           nextChapter: 1,
-          nextVerse: 1,
+          nextVerse: 5,
           endBook: 1,
           endChapter: 1,
           endVerse: 10,
@@ -100,20 +100,29 @@ void main() {
       id: 1,
       book: 1,
       chapter: 1,
-      verse: 1,
+      verse: 5,
       text: "AOKA",
     );
     final verse1 = VerseModel(
       id: 2,
       book: 1,
       chapter: 1,
-      verse: 2,
+      verse: 6,
       text: "ISIKA",
     );
-    when(dba.getSingleVerse(1, 1, 1)).thenAnswer((_) => Future.value(verse0));
+    final expandedVerses = [
+      VerseModel(book: 1, chapter: 1, verse: 1, text: "ABC"),
+      VerseModel(book: 1, chapter: 1, verse: 2, text: "DEF"),
+      VerseModel(book: 1, chapter: 1, verse: 3, text: "GHI"),
+      VerseModel(book: 1, chapter: 1, verse: 4, text: "JKL"),
+      verse0,
+    ];
+
+    when(dba.getSingleVerse(1, 1, 5)).thenAnswer((_) => Future.value(verse0));
     when(dba.books).thenAnswer((_) => Future.value(books));
-    when(dba.getSingleVerse(1, 1, 2)).thenAnswer((_) => Future.value(verse1));
+    when(dba.getSingleVerse(1, 1, 6)).thenAnswer((_) => Future.value(verse1));
     when(dba.getSingleVerse(1, 2, 1)).thenAnswer((_) => Future.value(verse0));
+    when(dba.getChapterVersesUntil(1, 1, 5)).thenAnswer((_) => Future.value(expandedVerses));
 
     await tester.pumpWidget(BibleGame(store));
     await tester.pump();
@@ -126,7 +135,8 @@ void main() {
     final inventoryOkBtn = find.byKey(Key("inventoryOkButton"));
     expect(game1Button, findsOneWidget);
     expect(game2Button, findsOneWidget);
-    // select game 1
+
+    /// select game 1
     await tester.tap(game1Button);
     await tester.pump(Duration(milliseconds: 10));
     simulateWorInWordAsRandomGame(store);
@@ -157,7 +167,7 @@ void main() {
     verify(store.state.sfx.playBonus()).called(1);
     verify(store.state.sfx.playGreeting()).called(1);
 
-    // ********** Complete a game ***********
+    /// ********** Complete a game ***********
     // => show solution screen
     // => Play long success sfx
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
@@ -166,6 +176,7 @@ void main() {
     )));
     store.dispatch(proposeWordsInWord());
     await tester.pump();
+    expect(find.byKey(Key("expandedVerse")), findsOneWidget);
     expect(store.state.wordsInWord.wordsToFind, []);
     expect(store.state.game.isResolved, true);
     expect(store.state.game.inventory.money, 9);
@@ -173,16 +184,29 @@ void main() {
     expect(wordsInWord, findsNothing);
     verify(store.state.sfx.playLongSuccess()).called(1);
 
-    // => click on next
+    /// Click on expand verses
+    // => Load previous verses from db and update store
+    // => display the expanded display
+    await tester.tap(find.byKey(Key("expandVersesBtn")));
+    await tester.pump(Duration(milliseconds: 10));
+    expect(store.state.game.expandedVerses, expandedVerses.reversed.toList());
+    expect(find.byKey(Key("expandedVerses")), findsOneWidget);
+    expect(find.byKey(Key("expandedVerse")), findsNothing);
+
+    /// Click on next
     await tester.tap(find.byKey(Key("nextButton")));
     await tester.pump(Duration(milliseconds: 10));
-    // Increment and save everything => load next verse => save the game in db => change theme
+    // => Increment and save everything
+    // => load next verse
+    // => save the game in db
+    // => invalidate expanded verses
     final game = store.state.game.list[0];
     expect(game.resolvedVersesCount, 1);
     expect(game.model.money, 9);
     verify(dba.saveGame(any)).called(1);
-    expect(game.nextVerse, 2);
+    expect(game.nextVerse, 6);
     expect(store.state.game.verse.words[0].value, "ISIKA");
+    expect(store.state.game.expandedVerses, []);
 
     // show the bonus screen and save game in db when closing the dialog
     expect(inventoryDialog, findsOneWidget);

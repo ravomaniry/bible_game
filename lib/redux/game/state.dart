@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 
 class GameState {
   final BibleVerse verse;
+  final List<VerseModel> expandedVerses;
   final List<BookModel> books;
   final int activeId;
   final bool dialogIsOpen;
@@ -36,6 +37,7 @@ class GameState {
     this.endVerse = -1,
     this.isResolved = false,
     this.activeGameIsCompleted = false,
+    this.expandedVerses = const [],
   });
 
   factory GameState.emptyState() => GameState(
@@ -63,6 +65,7 @@ class GameState {
     final int endChapter,
     final int endVerse,
     final bool activeGameIsCompleted,
+    final List<VerseModel> expandedVerses,
   }) {
     return GameState(
       isResolved: isResolved ?? this.isResolved,
@@ -79,6 +82,7 @@ class GameState {
       endChapter: endChapter ?? this.endChapter,
       endVerse: endVerse ?? this.endVerse,
       activeGameIsCompleted: activeGameIsCompleted ?? this.activeGameIsCompleted,
+      expandedVerses: expandedVerses ?? this.expandedVerses,
     );
   }
 

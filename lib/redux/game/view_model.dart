@@ -20,6 +20,7 @@ class GameViewModel {
   final Function() openInventory;
   final Function(GameModelWrapper) selectHandler;
   final Function() nextHandler;
+  final Function() expandVersesHandler;
   final AppColorTheme theme;
 
   GameViewModel({
@@ -32,6 +33,7 @@ class GameViewModel {
     @required this.nextHandler,
     @required this.theme,
     @required this.goToEditor,
+    @required this.expandVersesHandler,
   });
 
   static GameViewModel converter(Store<AppState> store) {
@@ -45,6 +47,7 @@ class GameViewModel {
       selectHandler: (GameModelWrapper game) => store.dispatch(selectGameHandler(game)),
       nextHandler: () => store.dispatch(saveGameAndLoadNextVerse()),
       goToEditor: () => store.dispatch(EditorActions.goToEditor()),
+      expandVersesHandler: () => store.dispatch(expandVerses()),
     );
   }
 }

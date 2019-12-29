@@ -28,6 +28,8 @@ ThunkAction<AppState> saveGameAndLoadNextVerse() {
           resolvedVersesCount: game.resolvedVersesCount + 1,
         );
         final nextList = getUpdatedGamesList(nextGame, store.state.game.list, store.state.game.activeId);
+
+        store.dispatch(_invalidateExpandedVerses());
         store.dispatch(OpenInventoryDialog(false));
         store.dispatch(UpdateGameResolvedState(false));
         store.dispatch(UpdateGameVerse(BibleVerse.fromModel(nextVerse, nextBookName)));
@@ -38,6 +40,7 @@ ThunkAction<AppState> saveGameAndLoadNextVerse() {
     } catch (e) {
       print("%%%%%%%%%% error in saveGameAndLoadNextVerse");
       print(e);
+      store.dispatch(ReceiveError(Errors.unknownDbError()));
     }
   };
 }
@@ -81,4 +84,34 @@ Future<VerseModel> _getNextVerse(
     }
   }
   return null;
+}
+
+ThunkAction<AppState> expandVerses() {
+  return (store) async {
+    try {
+      final activeVerse = store.state.game.verse;
+      final verses = await retry(() => store.state.dba.getChapterVersesUntil(
+            activeVerse.bookId,
+            activeVerse.chapter,
+            activeVerse.verse,
+          ));
+      store.dispatch(UpdateGameState(
+        store.state.game.copyWith(
+          expandedVerses: verses.reversed.toList(),
+        ),
+      ));
+    } catch (e) {
+      print("%%%%%%%%%%% error in exoadVerses %%%%%%%%%%%%");
+      print(e);
+      store.dispatch(ReceiveError(Errors.unknownDbError()));
+    }
+  };
+}
+
+ThunkAction<AppState> _invalidateExpandedVerses() {
+  return (store) {
+    store.dispatch(UpdateGameState(store.state.game.copyWith(
+      expandedVerses: [],
+    )));
+  };
 }
