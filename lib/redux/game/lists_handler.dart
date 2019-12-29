@@ -51,7 +51,7 @@ ThunkAction<AppState> selectGameHandler(GameModelWrapper _game) {
 ThunkAction<AppState> initializeRandomGame() {
   return (store) {
     final random = Random();
-    final sameGameProbability = 0.2;
+    final sameGameProbability = 0.1;
     final shouldKeepSameGame = random.nextDouble() < sameGameProbability;
     GameMode game;
     if (shouldKeepSameGame) {
