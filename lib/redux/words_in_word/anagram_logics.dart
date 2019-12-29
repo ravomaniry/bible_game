@@ -28,6 +28,8 @@ ThunkAction<AppState> proposeAnagram() {
       if (hasFoundMatch) {
         store.dispatch(_generateSlots());
       }
+    } else {
+      store.dispatch(_dismissProposition());
     }
   };
 }
@@ -59,5 +61,15 @@ ThunkAction<AppState> _generateSlots() {
       )));
       store.dispatch(recomputeSlotsIndexes());
     }
+  };
+}
+
+ThunkAction<AppState> _dismissProposition() {
+  return (store) {
+    final state = store.state.wordsInWord;
+    store.dispatch(UpdateWordsInWordState(state.copyWith(
+      slots: state.slotsBackup,
+      proposition: [],
+    )));
   };
 }
