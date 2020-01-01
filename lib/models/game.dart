@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:bible_game/db/model.dart';
-import 'package:bible_game/redux/inventory/state.dart';
+import 'package:bible_game/app/inventory/reducer/state.dart';
 import 'package:flutter/cupertino.dart';
 
 final _revealCharBonusJsonEntry = "rcb_";

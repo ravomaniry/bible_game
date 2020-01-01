@@ -1,4 +1,4 @@
-import 'package:bible_game/redux/error/state.dart';
+import 'package:bible_game/app/error/state.dart';
 
 class Errors {
   static final dbNotReady = ErrorState("Tsy vonona ny 'Base de données'", "Avereno sokafana ny application azafady!");
