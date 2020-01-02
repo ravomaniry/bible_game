@@ -9,6 +9,3 @@ int getMinSize(List<Word> words) {
   final totalLength = lengths.reduce((a, b) => a + b);
   return max(maxLength, (totalLength / 5).ceil());
 }
-
-
-
