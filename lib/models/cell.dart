@@ -6,6 +6,8 @@ class Cell with EquatableMixin {
 
   Cell(this.wordIndex, this.charIndex);
 
+  bool isSameAs(int w, int c) => w == wordIndex && c == charIndex;
+
   @override
   String toString() {
     return "$wordIndex $charIndex";

@@ -1,4 +1,4 @@
-import 'package:bible_game/games/words_in_word/cell.dart';
+import 'package:bible_game/models/cell.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:flutter/foundation.dart';
 

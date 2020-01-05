@@ -21,7 +21,10 @@ class Word with EquatableMixin {
   });
 
   factory Word.from(String text, int index, bool isSeparator) {
-    final chars = text.split("").map((t) => Char(value: t, comparisonValue: Char.getComparisonValue(t))).toList();
+    final chars = text
+        .split("")
+        .map((t) => Char(value: t, comparisonValue: Char._getLetterComparisonValue(t)))
+        .toList();
     return Word(
       chars: chars,
       index: index,
@@ -43,6 +46,10 @@ class Word with EquatableMixin {
       resolved: resolved ?? this.resolved,
       bonus: bonus ?? this.bonus,
     );
+  }
+
+  int get length {
+    return chars.length;
   }
 
   Word get resolvedVersion {
@@ -126,7 +133,7 @@ class Char with EquatableMixin {
     );
   }
 
-  static getComparisonValue(String value) {
+  static _getLetterComparisonValue(String value) {
     var comparisonValue = value.toLowerCase();
     switch (comparisonValue) {
       case "à":
@@ -141,6 +148,10 @@ class Char with EquatableMixin {
 
   Char toSlotChar() {
     return Char(value: comparisonValue.toUpperCase(), comparisonValue: comparisonValue);
+  }
+
+  bool isSameAs(Char c) {
+    return comparisonValue == c.comparisonValue;
   }
 
   @override
