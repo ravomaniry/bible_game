@@ -30,6 +30,7 @@ dependencies:
   badges: ^1.1.0
   animator: ^1.0.0
   audioplayers: ^0.13.5
+  bidirectional_scroll_view: ^0.1.1
 
 dev_dependencies:
   flutter_test:
