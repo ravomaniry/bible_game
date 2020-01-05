@@ -94,6 +94,10 @@ class MazeCell {
     return _cells.length == 1 && contains(-1, -1);
   }
 
+  Cell get first {
+    return _cells.first;
+  }
+
   @override
   String toString() {
     return _cells.map((c) => c.toString()).join(",");

@@ -1,21 +1,21 @@
 import 'package:back_button_interceptor/back_button_interceptor.dart';
-import 'package:bible_game/db/model.dart';
-import 'package:bible_game/main.dart';
-import 'package:bible_game/models/bible_verse.dart';
-import 'package:bible_game/models/word.dart';
 import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/config/state.dart';
-import 'package:bible_game/app/game_editor/reducer/state.dart';
 import 'package:bible_game/app/explorer/state.dart';
 import 'package:bible_game/app/game/actions/actions.dart';
 import 'package:bible_game/app/game/reducer/state.dart';
+import 'package:bible_game/app/game_editor/reducer/state.dart';
 import 'package:bible_game/app/inventory/actions/actions.dart';
 import 'package:bible_game/app/main_reducer.dart';
 import 'package:bible_game/app/router/actions.dart';
 import 'package:bible_game/app/router/routes.dart';
 import 'package:bible_game/app/theme/themes.dart';
+import 'package:bible_game/db/model.dart';
 import 'package:bible_game/games/words_in_word/actions/action_creators.dart';
 import 'package:bible_game/games/words_in_word/actions/logics.dart';
+import 'package:bible_game/main.dart';
+import 'package:bible_game/models/bible_verse.dart';
+import 'package:bible_game/models/word.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
 import 'package:bible_game/test_helpers/sfx_mock.dart';
@@ -55,7 +55,8 @@ void main() {
       ),
     );
 
-    final books = [1, 2, 3, 4, 5, 6].map((id) => BookModel(id: id, name: "$id", chapters: 10)).toList();
+    final books =
+        [1, 2, 3, 4, 5, 6].map((id) => BookModel(id: id, name: "$id", chapters: 10)).toList();
     when(dba.books).thenAnswer((_) => Future.value(books));
     when(dba.games).thenAnswer(
       (_) => Future.value([
@@ -364,7 +365,8 @@ void main() {
     expect(store.state.game.activeGameIsCompleted, false);
   });
 
-  testWidgets("Random Game mode - Select game from home screen - 200 attempts max", (WidgetTester tester) async {
+  testWidgets("Random Game mode - Select game from home screen - 200 attempts max",
+      (WidgetTester tester) async {
     final store = newMockedStore();
     final maxAttempts = 100;
     final unvisitedGames = <Routes>[Routes.anagram, Routes.wordsInWord];

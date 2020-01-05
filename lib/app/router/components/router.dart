@@ -1,14 +1,15 @@
-import 'package:bible_game/games/anagram/components/anagram.dart';
-import 'package:bible_game/app/game_editor/components/editor.dart';
+import 'package:bible_game/app/app_state.dart';
+import 'package:bible_game/app/components/loader.dart';
 import 'package:bible_game/app/explorer/components/explorer.dart';
 import 'package:bible_game/app/game/components/congratulation.dart';
 import 'package:bible_game/app/game/components/home.dart';
 import 'package:bible_game/app/game/components/solution.dart';
-import 'package:bible_game/app/components/loader.dart';
-import 'package:bible_game/games/words_in_word/components/words_in_word.dart';
-import 'package:bible_game/app/app_state.dart';
+import 'package:bible_game/app/game_editor/components/editor.dart';
 import 'package:bible_game/app/router/routes.dart';
 import 'package:bible_game/app/router/view_model.dart';
+import 'package:bible_game/games/anagram/components/anagram.dart';
+import 'package:bible_game/games/maze/components/maze.dart';
+import 'package:bible_game/games/words_in_word/components/words_in_word.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -58,6 +59,8 @@ class _RouterBuilder extends StatelessWidget {
         return WordsInWord();
       } else if (route == Routes.anagram) {
         return Anagram();
+      } else if (route == Routes.maze) {
+        return Maze();
       }
     }
     return Loader();

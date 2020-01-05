@@ -4,4 +4,5 @@ enum Routes {
   wordsInWord,
   anagram,
   explorer,
+  maze,
 }

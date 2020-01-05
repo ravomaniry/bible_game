@@ -1,7 +1,10 @@
 import 'package:bible_game/games/maze/actions/create_board.dart';
 import 'package:bible_game/games/maze/models.dart';
+import 'package:bible_game/main.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
+import 'package:bible_game/test_helpers/store.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -127,6 +130,18 @@ void main() {
     expect(moves2, ["(5, 4, 0, -1)", "(6, 6, 0, -1)", "(6, 2, 0, 1)"]);
   });
 
+  test("Overlap with only 1 char words", () {
+    final board = Board.create(10, 10)..set(0, 0, 0, 0);
+    final List<Word> words = [
+      Word.from("A", 0, false),
+      Word.from("Abc", 1, false),
+      Word.from("b", 2, false),
+    ];
+    expect(getOverlaps(1, words, board), []);
+    board..set(0, 1, 1, 0)..set(0, 2, 1, 1)..set(0, 3, 1, 2);
+    expect(getOverlaps(2, words, board), []);
+  });
+
   test("persistMove", () {
     final board = Board.create(10, 10);
     final move = Move(Coordinate(0, 0), Coordinate(1, 1));
@@ -153,7 +168,7 @@ void main() {
     expect(trimmed.getAt(1, 3).contains(1, 1), true);
   });
 
-  test("Create the board 200 times and expect 100% succees", () {
+  test("Create the board many times and expect 100% succees", () {
     final stopAt = 300;
     final verse = BibleVerse.from(
       book: "Jaona",
@@ -168,5 +183,15 @@ void main() {
       expect(board, isNotNull);
     }
     print("֎ Tesed init maze $stopAt times and it is perfect (y)");
+  });
+
+  testWidgets("Maze game init", (WidgetTester tester) async {
+    final store = newMockedStore();
+    await tester.pumpWidget(BibleGame(store));
+    await tester.pump(Duration(milliseconds: 10));
+    await tester.tap(find.byKey(Key("game_1")));
+    await tester.pump(Duration(milliseconds: 10));
+
+    simulateMazeRandomGame(store);
   });
 }

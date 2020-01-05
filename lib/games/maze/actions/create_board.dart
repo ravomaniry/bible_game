@@ -121,7 +121,7 @@ void persistMove(Move move, int length, int index, Board board) {
 
 List<Move> getOverlaps(int index, List<Word> words, Board board) {
   final List<Move> moves = [];
-  if (index == 0) {
+  if (index == 0 || words[index - 1].length == 1 || words[index].length == 1) {
     return moves;
   }
   final overlapIndexes = _getOverlapIndexes(words[index - 1], words[index]);
