@@ -31,10 +31,11 @@ void main() {
     expect(getBoardSize(words2), 42);
   });
 
-  test("Starting points and possible moves", () {
+  test("Starting points and possible moves", () async {
+    final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC DEF GH"));
     final board = Board.create(6, 6);
     // empty board should start in the middle (3, 0)
-    final points0 = getPossibleStartingPoints(0, board);
+    final points0 = await getPossibleStartingPoints(0, board, words);
     expect(points0.map(toString).toList(), ["(0, 3)"]);
     final moves0 = getPossibleMoves(points0, 4, board);
     expect(moves0.map(toString).toList(), [
@@ -45,7 +46,7 @@ void main() {
 
     // 1st word starts at (0, 0) and ends at (0,2)
     board..set(0, 0, 0, 0)..set(0, 1, 0, 1)..set(0, 2, 0, 2);
-    final points1 = getPossibleStartingPoints(1, board);
+    final points1 = await getPossibleStartingPoints(1, board, words);
     expect(points1.map(toString).toList(), ["(1, 1)", "(1, 2)", "(1, 3)", "(0, 3)"]);
     // place 2 chars word
     final moves1_0 = getPossibleMoves(points1, 2, board);
@@ -90,12 +91,12 @@ void main() {
 
     // 2nd word starts at (3, 1) and ends at (1, 1) and 1st word is still there
     board..set(3, 1, 1, 0)..set(2, 1, 1, 1)..set(1, 1, 1, 2);
-    final points2 = getPossibleStartingPoints(2, board);
-    expect(points2.map(toString).toList(), ["(1, 0)", "(2, 0)", "(2, 2)", "(1, 2)"]);
+    final points2 = await getPossibleStartingPoints(2, board, words);
+    expect(points2.map(toString).toList(), ["(1, 0)", "(2, 0)", "(2, 2)"]);
 
     // 3rd Word ends at the bottom right edge
     board..set(5, 4, 2, 0)..set(5, 5, 2, 1);
-    final points3 = getPossibleStartingPoints(3, board);
+    final points3 = await getPossibleStartingPoints(3, board, words);
     expect(points3.map(toString).toList(), ["(4, 5)", "(4, 4)"]);
     final moves3 = getPossibleMoves(points3, 5, board);
     expect(moves3.map(toString).toList(), [
@@ -104,6 +105,17 @@ void main() {
       "(4, 4, 0, -1)",
       "(4, 4, -1, 0)",
     ]);
+  });
+
+  test("Starting point - coordinates near a last point is forbidden", () async {
+    final words = getWordsInScopeForMaze(BibleVerse.from(text: "DE FK AG ABC GH"));
+    final board = Board.create(5, 5);
+    board..set(0, 1, 0, 0)..set(1, 1, 0, 1);
+    board..set(4, 1, 1, 0)..set(4, 0, 1, 1);
+    board..set(4, 4, 2, 0)..set(4, 3, 2, 1);
+    board..set(0, 2, 3, 0)..set(1, 2, 3, 1)..set(2, 2, 3, 2);
+    final points = await getPossibleStartingPoints(4, board, words);
+    expect(points.map(toString).toList(), ["(2, 3)", "(1, 3)"]);
   });
 
   test("Overlap", () {
@@ -142,6 +154,42 @@ void main() {
     expect(getOverlaps(2, words, board), []);
   });
 
+  test("Overlap - should not start a word in a forbidden position", () {
+    final words = getWordsInScopeForMaze(BibleVerse.from(text: "Jesosy Kristy izay"));
+    final board = Board.create(8, 8);
+    // Jesosy (0, 2) => (5, 2)
+    board
+      ..set(0, 2, 0, 0)
+      ..set(1, 2, 0, 1)
+      ..set(2, 2, 0, 2)
+      ..set(3, 2, 0, 3)
+      ..set(4, 2, 0, 4)
+      ..set(5, 2, 0, 5);
+    // Kristy (7, 5) => (2, 0)
+    board
+      ..set(7, 5, 1, 0)
+      ..set(6, 4, 1, 1)
+      ..set(5, 3, 1, 2)
+      ..set(4, 2, 1, 3)
+      ..set(3, 1, 1, 4)
+      ..set(2, 0, 1, 5);
+    final overlaps = getOverlaps(2, words, board);
+    expect(overlaps, []);
+  });
+
+  test("Does not allow 2 words to form a diagonal cross", () async {
+    final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABCD EF FGHI"));
+    final board = Board.create(5, 5);
+    // A B C D
+    board..set(0, 0, 0, 0)..set(1, 1, 0, 1)..set(2, 2, 0, 2)..set(3, 3, 0, 3);
+    board..set(2, 0, 1, 0)..set(3, 0, 1, 1);
+    final overlaps = getOverlaps(2, words, board);
+    expect(overlaps, []);
+    final startingPoints = await getPossibleStartingPoints(2, board, words);
+    final moves = getPossibleMoves(startingPoints, 4, board).map(toString).toList();
+    expect(moves, ["(4, 0, 0, 1)", "(4, 1, 0, 1)"]);
+  });
+
   test("persistMove", () {
     final board = Board.create(10, 10);
     final move = Move(Coordinate(0, 0), Coordinate(1, 1));
@@ -169,7 +217,8 @@ void main() {
   });
 
   test("Create the board many times and expect 100% succees", () async {
-    final stopAt = 300;
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final stopAt = 100;
     final verse = BibleVerse.from(
       book: "Jaona",
       bookId: 4,
@@ -178,11 +227,13 @@ void main() {
       text: "Tamin'ny voalohany ny Teny, ary ny Teny tao amin'Andriamanitra,"
           " ary ny Teny dia Andriamanitra.",
     );
+
     for (var i = 0; i < stopAt; i++) {
       final board = await createMazeBoard(verse);
       expect(board, isNotNull);
     }
-    print("֎ Tesed init maze $stopAt times and it is perfect (y)");
+    await Future.delayed(Duration(seconds: 1));
+    print("֎ Tesed init maze $stopAt times in ${DateTime.now().millisecondsSinceEpoch - now} ms");
   });
 
   testWidgets("Maze game init", (WidgetTester tester) async {
@@ -193,5 +244,7 @@ void main() {
     await tester.pump(Duration(milliseconds: 10));
 
     simulateMazeRandomGame(store);
+
+    await tester.pump(Duration(seconds: 10));
   });
 }

@@ -65,46 +65,46 @@ class Move {
 }
 
 class MazeCell {
-  final List<Cell> _cells;
+  final List<Cell> cells;
 
-  MazeCell(this._cells);
+  MazeCell(this.cells);
 
   factory MazeCell.create(int wIndex, int cIndex) {
     return MazeCell([Cell(wIndex, cIndex)]);
   }
 
   bool contains(int wIndex, int cIndex) {
-    return _cells.where((c) => c.isSameAs(wIndex, cIndex)).isNotEmpty;
+    return cells.where((c) => c.isSameAs(wIndex, cIndex)).isNotEmpty;
   }
 
   MazeCell concat(int wIndex, int cIndex) {
-    if (_cells.length == 1 && _cells.first.isSameAs(-1, -1)) {
+    if (cells.length == 1 && cells.first.isSameAs(-1, -1)) {
       return MazeCell.create(wIndex, cIndex);
     } else {
-      final cells = List<Cell>.from(_cells)..add(Cell(wIndex, cIndex));
-      return MazeCell(cells);
+      final nextCells = List<Cell>.from(cells)..add(Cell(wIndex, cIndex));
+      return MazeCell(nextCells);
     }
   }
 
   forEach(void Function(Cell) callback) {
-    _cells.forEach(callback);
+    cells.forEach(callback);
   }
 
   bool get isFree {
-    return _cells.length == 1 && contains(-1, -1);
+    return cells.length == 1 && contains(-1, -1);
   }
 
   Cell get first {
-    return _cells.first;
+    return cells.first;
   }
 
   bool get isOverlapping {
-    return _cells.length > 1;
+    return cells.length > 1;
   }
 
   @override
   String toString() {
-    return _cells.map((c) => c.toString()).join(",");
+    return cells.map((c) => c.toString()).join(",");
   }
 }
 

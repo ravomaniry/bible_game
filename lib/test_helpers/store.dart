@@ -8,6 +8,7 @@ import 'package:bible_game/app/main_reducer.dart';
 import 'package:bible_game/app/router/routes.dart';
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/games/maze/actions/init.dart';
+import 'package:bible_game/games/maze/redux/state.dart';
 import 'package:bible_game/games/words_in_word/actions/logics.dart';
 import 'package:bible_game/games/words_in_word/reducer/state.dart';
 import 'package:bible_game/models/game_mode.dart';
@@ -32,6 +33,7 @@ Store<AppState> newMockedStore() {
     dbIsReady: false,
     error: null,
     quitSingleGameDialog: false,
+    maze: MazeState.emptyState(),
   );
   final store = Store<AppState>(
     mainReducer,
