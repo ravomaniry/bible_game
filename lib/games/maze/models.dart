@@ -98,6 +98,10 @@ class MazeCell {
     return _cells.first;
   }
 
+  bool get isOverlapping {
+    return _cells.length > 1;
+  }
+
   @override
   String toString() {
     return _cells.map((c) => c.toString()).join(",");

@@ -113,7 +113,7 @@ void main() {
     expect(getOverlaps(1, words, board), []);
 
     /// Overlap on end of active word
-    final verse = BibleVerse.from(text: "dcba adeg FEHCI cjilm");
+    final verse = BibleVerse.from(text: "dcba adeg FEHCI ceilm");
     words = getWordsInScopeForMaze(verse);
     board = Board.create(7, 7)..set(0, 2, 0, 0)..set(1, 2, 0, 1)..set(2, 2, 0, 2)..set(3, 2, 0, 3);
     final moves = getOverlaps(1, words, board).map(toString).toList();
@@ -124,7 +124,7 @@ void main() {
     final moves1 = getOverlaps(2, words, board).map(toString).toList();
     expect(moves1, ["(2, 5, 1, -1)", "(2, 4, 1, 0)", "(4, 4, -1, 0)"]);
 
-    /// Overlap on 2 position
+    /// Overlap on 2 position ++ Not allow overlap on overlapped char
     board..set(2, 4, 2, 0)..set(3, 4, 2, 1)..set(4, 4, 2, 2)..set(5, 4, 2, 3)..set(6, 4, 2, 4);
     final moves2 = getOverlaps(3, words, board).map(toString).toList();
     expect(moves2, ["(5, 4, 0, -1)", "(6, 6, 0, -1)", "(6, 2, 0, 1)"]);
@@ -168,7 +168,7 @@ void main() {
     expect(trimmed.getAt(1, 3).contains(1, 1), true);
   });
 
-  test("Create the board many times and expect 100% succees", () {
+  test("Create the board many times and expect 100% succees", () async {
     final stopAt = 300;
     final verse = BibleVerse.from(
       book: "Jaona",
@@ -179,7 +179,7 @@ void main() {
           " ary ny Teny dia Andriamanitra.",
     );
     for (var i = 0; i < stopAt; i++) {
-      final board = createMazeBoard(verse);
+      final board = await createMazeBoard(verse);
       expect(board, isNotNull);
     }
     print("֎ Tesed init maze $stopAt times and it is perfect (y)");

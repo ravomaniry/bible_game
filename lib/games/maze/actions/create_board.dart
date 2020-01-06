@@ -4,13 +4,13 @@ import 'package:bible_game/games/maze/models.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
 
-Board createMazeBoard(BibleVerse verse) {
+Future<Board> createMazeBoard(BibleVerse verse) async {
   final maxAttempts = 50;
   final words = getWordsInScopeForMaze(verse);
   final size = getBoardSize(words);
   for (var i = 0; i < maxAttempts; i++) {
     final board = Board.create(size, size);
-    final isDone = placeWordsInBoard(words, board);
+    final isDone = await placeWordsInBoard(words, board);
     if (isDone) {
       return board.trim();
     }
@@ -28,7 +28,7 @@ List<Word> getWordsInScopeForMaze(BibleVerse verse) {
   return verse.words.where((w) => !w.isSeparator).toList();
 }
 
-bool placeWordsInBoard(List<Word> words, Board board) {
+Future<bool> placeWordsInBoard(List<Word> words, Board board) async {
   final random = Random();
   final overlapProbability = 0.85;
 
@@ -45,10 +45,9 @@ bool placeWordsInBoard(List<Word> words, Board board) {
       }
       move = moves[random.nextInt(moves.length)];
     }
-    if (move.origin.x < 0 || move.origin.y < 0) {
-      print("Fault here! $move");
-    }
     persistMove(move, words[index].length, index, board);
+    // Let the UI render some animations here
+    await Future.delayed(const Duration(milliseconds: 40));
   }
   return true;
 }
@@ -101,7 +100,9 @@ bool _moveIsPossible(
     currentPos += move.direction;
     if (board.isIn(currentPos)) {
       if (!board.isFreeAt(currentPos) &&
-          allowOverlapAt.where((c) => c.isSameAs(currentPos)).isEmpty) {
+          allowOverlapAt
+              .where((c) => c.isSameAs(currentPos) && !board.getAt(c.x, c.y).isOverlapping)
+              .isEmpty) {
         return false;
       }
     } else {
