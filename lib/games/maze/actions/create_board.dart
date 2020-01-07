@@ -71,14 +71,16 @@ Future<List<Coordinate>> getPossibleStartingPoints(int index, Board board, List<
   final lastPoint = _getLastPoint(index, board);
   final neighbors = _getNeighbors(lastPoint);
   return neighbors
-      .where(
-        (p) => !_isNearALastPoint(p, index, board, words) && board.isIn(p) && board.isFreeAt(p),
-      )
+      .where((p) => board.isIn(p) && board.isFreeAt(p))
+      .where((p) => !_isNearALastPoint(p, index, board, words))
       .toList();
 }
 
 List<Coordinate> _getNeighbors(Coordinate point) {
-  return Coordinate.directionsList.map((delta) => point + delta).toList();
+  return Coordinate.directionsList
+      .map((delta) => point + delta)
+      .where((c) => c.x == point.x || c.y == point.y)
+      .toList();
 }
 
 Coordinate _getLastPoint(int index, Board board) {

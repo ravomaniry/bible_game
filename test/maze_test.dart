@@ -32,6 +32,13 @@ void main() {
   });
 
   test("Starting points and possible moves", () async {
+    //   0 1 2 3 4 5
+    // 0⁰A + - - - -
+    // 1 B F E D¹<-
+    // 2 C + - - - -
+    // 3 - - - - - -
+    // 4 - - - - - G
+    // 5 - - - - +²H
     final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC DEF GH"));
     final board = Board.create(6, 6);
     // empty board should start in the middle (3, 0)
@@ -47,16 +54,10 @@ void main() {
     // 1st word starts at (0, 0) and ends at (0,2)
     board..set(0, 0, 0, 0)..set(0, 1, 0, 1)..set(0, 2, 0, 2);
     final points1 = await getPossibleStartingPoints(1, board, words);
-    expect(points1.map(toString).toList(), ["(1, 1)", "(1, 2)", "(1, 3)", "(0, 3)"]);
+    expect(points1.map(toString).toList(), ["(1, 2)", "(0, 3)"]);
     // place 2 chars word
     final moves1_0 = getPossibleMoves(points1, 2, board);
     expect(moves1_0.map(toString).toList(), [
-      // (1, 1)
-      "(1, 1, 0, -1)",
-      "(1, 1, 1, -1)",
-      "(1, 1, 1, 0)",
-      "(1, 1, 1, 1)",
-      "(1, 1, 0, 1)",
       // (1, 2)
       "(1, 2, 0, -1)",
       "(1, 2, 1, -1)",
@@ -64,14 +65,6 @@ void main() {
       "(1, 2, 1, 1)",
       "(1, 2, 0, 1)",
       "(1, 2, -1, 1)",
-      // (1, 3)
-      "(1, 3, 0, -1)",
-      "(1, 3, 1, -1)",
-      "(1, 3, 1, 0)",
-      "(1, 3, 1, 1)",
-      "(1, 3, 0, 1)",
-      "(1, 3, -1, 1)",
-      "(1, 3, -1, 0)",
       // (0, 3)
       "(0, 3, 1, -1)",
       "(0, 3, 1, 0)",
@@ -81,33 +74,30 @@ void main() {
     // 5 chars word (only some moves are possible)
     final moves1_2 = getPossibleMoves(points1, 5, board);
     expect(moves1_2.map(toString).toList(), [
-      "(1, 1, 1, 0)",
-      "(1, 1, 1, 1)",
-      "(1, 1, 0, 1)",
       "(1, 2, 1, 0)",
-      "(1, 3, 1, 0)",
       "(0, 3, 1, 0)",
     ]);
 
-    // 2nd word starts at (3, 1) and ends at (1, 1) and 1st word is still there
+    // D.E.F 2nd word starts at (3, 1) and ends at (1, 1) and 1st word is still there
     board..set(3, 1, 1, 0)..set(2, 1, 1, 1)..set(1, 1, 1, 2);
     final points2 = await getPossibleStartingPoints(2, board, words);
-    expect(points2.map(toString).toList(), ["(1, 0)", "(2, 0)", "(2, 2)"]);
+    expect(points2.map(toString).toList(), ["(1, 0)"]);
 
-    // 3rd Word ends at the bottom right edge
+    // 3rd Word ends at the bottom right corner
     board..set(5, 4, 2, 0)..set(5, 5, 2, 1);
     final points3 = await getPossibleStartingPoints(3, board, words);
-    expect(points3.map(toString).toList(), ["(4, 5)", "(4, 4)"]);
+    expect(points3.map(toString).toList(), ["(4, 5)"]);
     final moves3 = getPossibleMoves(points3, 5, board);
-    expect(moves3.map(toString).toList(), [
-      "(4, 5, 0, -1)",
-      "(4, 5, -1, 0)",
-      "(4, 4, 0, -1)",
-      "(4, 4, -1, 0)",
-    ]);
+    expect(moves3.map(toString).toList(), ["(4, 5, 0, -1)", "(4, 5, -1, 0)"]);
   });
 
   test("Starting point - coordinates near a last point is forbidden", () async {
+    //    0_1_2_3_4
+    // 0  - - - - K
+    // 1 ⁰D E - -¹F
+    // 2 ³A B C + -
+    // 3  - - + - G
+    // 4  - - - -²A
     final words = getWordsInScopeForMaze(BibleVerse.from(text: "DE FK AG ABC GH"));
     final board = Board.create(5, 5);
     board..set(0, 1, 0, 0)..set(1, 1, 0, 1);
@@ -115,23 +105,36 @@ void main() {
     board..set(4, 4, 2, 0)..set(4, 3, 2, 1);
     board..set(0, 2, 3, 0)..set(1, 2, 3, 1)..set(2, 2, 3, 2);
     final points = await getPossibleStartingPoints(4, board, words);
-    expect(points.map(toString).toList(), ["(2, 3)", "(1, 3)"]);
+    expect(points.map(toString).toList(), ["(3, 2)", "(2, 3)"]);
   });
 
   test("Overlap", () {
-    /// Start & end
+    /// A start of a word-¹ can not be overlapped
+    //   0 1 2 3
+    // 0 - A - -
+    // 1 - B - -
+    // 2 - C - -
+    // 3 - - - -
     var words = [Word.from("ABC", 0, false), Word.from("DAB", 1, false)];
-    var board = Board.create(6, 6)..set(0, 0, 0, 0)..set(0, 1, 0, 1)..set(0, 2, 0, 2);
+    var board = Board.create(6, 6)..set(1, 0, 0, 0)..set(1, 1, 0, 1)..set(1, 2, 0, 2);
     expect(getOverlaps(1, words, board), []);
 
     /// Overlap on end of active word
-    final verse = BibleVerse.from(text: "dcba adeg FEHCI ceilm");
+    //   0 1 2 3 4 5 6
+    // 0 - - - - - - -
+    // 1 - - - - - - -
+    // 2⁰d c b a¹- - -
+    // 3 - - - D - - -
+    // 4 - - f E h c i
+    // 5 - - - G - - -
+    // 6 - - - - - - -
+    final verse = BibleVerse.from(text: "dcba ADEG fehci CEILM");
     words = getWordsInScopeForMaze(verse);
     board = Board.create(7, 7)..set(0, 2, 0, 0)..set(1, 2, 0, 1)..set(2, 2, 0, 2)..set(3, 2, 0, 3);
     final moves = getOverlaps(1, words, board).map(toString).toList();
     expect(moves, ["(3, 2, 1, 1)", "(3, 2, 0, 1)", "(3, 2, -1, 1)"]);
 
-    /// Overlap in the middle + 1 invalid case
+    /// Overlap in the middle + 1 invalid case: overlaps 2 words
     board..set(3, 2, 1, 0)..set(3, 3, 1, 1)..set(3, 4, 1, 2)..set(3, 5, 1, 3);
     final moves1 = getOverlaps(2, words, board).map(toString).toList();
     expect(moves1, ["(2, 5, 1, -1)", "(2, 4, 1, 0)", "(4, 4, -1, 0)"]);
@@ -143,10 +146,16 @@ void main() {
   });
 
   test("Overlap with only 1 char words", () {
+    //   0 1 2 3 4 5 6 7 8 9
+    // 0 A - - - - - - - - -
+    // 1 a - - - - - - - - -
+    // 2 b - - - - - - - - -
+    // 3 c - - - - - - - - -
+    // 4 - - - - - - - - - -
     final board = Board.create(10, 10)..set(0, 0, 0, 0);
     final List<Word> words = [
       Word.from("A", 0, false),
-      Word.from("Abc", 1, false),
+      Word.from("abc", 1, false),
       Word.from("b", 2, false),
     ];
     expect(getOverlaps(1, words, board), []);
@@ -155,6 +164,15 @@ void main() {
   });
 
   test("Overlap - should not start a word in a forbidden position", () {
+    //   0 1 2 3 4 5 6 7
+    // 0 - - Y - - - - -
+    // 1 - - - T - - - -
+    // 2 J E S O S Y - -
+    // 3 - - - - - I - -
+    // 4 - - - - - - R -
+    // 5 - - - - - - - K
+    // 6 - - - - - - - -
+    // 7 - - - - - - - -
     final words = getWordsInScopeForMaze(BibleVerse.from(text: "Jesosy Kristy izay"));
     final board = Board.create(8, 8);
     // Jesosy (0, 2) => (5, 2)
@@ -173,25 +191,39 @@ void main() {
       ..set(4, 2, 1, 3)
       ..set(3, 1, 1, 4)
       ..set(2, 0, 1, 5);
+    // Overlap would be on I if it was allowed
     final overlaps = getOverlaps(2, words, board);
     expect(overlaps, []);
   });
 
   test("Does not allow 2 words to form a diagonal cross", () async {
-    final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABCD EF FGHI"));
+    //    0 1 2 3 4
+    // 0  A - E F *
+    // 1  - B x - *
+    // 2  - x C - *
+    // 3  x - - D *
+    // 4  - - - - -
+    final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABCD EF Fghi"));
     final board = Board.create(5, 5);
-    // A B C D
     board..set(0, 0, 0, 0)..set(1, 1, 0, 1)..set(2, 2, 0, 2)..set(3, 3, 0, 3);
     board..set(2, 0, 1, 0)..set(3, 0, 1, 1);
     final overlaps = getOverlaps(2, words, board);
     expect(overlaps, []);
     final startingPoints = await getPossibleStartingPoints(2, board, words);
     final moves = getPossibleMoves(startingPoints, 4, board).map(toString).toList();
-    expect(moves, ["(4, 0, 0, 1)", "(4, 1, 0, 1)"]);
+    expect(moves, ["(4, 0, 0, 1)"]);
   });
 
   test("persistMove", () {
-    final board = Board.create(10, 10);
+    //   0 1 2 3 4 5 6
+    // 0 + - - - - - -
+    // 1 - + - - - - -
+    // 2 - - + - - - -
+    // 3 - - - + - - -
+    // 4 - - - - + - -
+    // 5 - - - - - - -
+    // 7 - - - - - - -
+    final board = Board.create(7, 7);
     final move = Move(Coordinate(0, 0), Coordinate(1, 1));
     persistMove(move, 4, 0, board);
     expect(board.getAt(0, 0).toString(), "0 0");
