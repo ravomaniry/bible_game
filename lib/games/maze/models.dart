@@ -98,6 +98,10 @@ class MazeCell {
     return cells.first;
   }
 
+  Cell get last {
+    return cells.last;
+  }
+
   bool get isOverlapping {
     return cells.length > 1;
   }
@@ -136,7 +140,7 @@ class Board {
     return cell.contains(-1, -1);
   }
 
-  bool isIn(Coordinate coordinate) {
+  bool includes(Coordinate coordinate) {
     return coordinate.x >= 0 && coordinate.x < width && coordinate.y >= 0 && coordinate.y < height;
   }
 

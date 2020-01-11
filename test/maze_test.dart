@@ -3,6 +3,7 @@ import 'package:bible_game/games/maze/models.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
+import 'package:bible_game/test_helpers/async.dart';
 import 'package:bible_game/test_helpers/store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -33,10 +34,10 @@ void main() {
 
   test("Starting points and possible moves", () async {
     //   0 1 2 3 4 5
-    // 0⁰A + - - - -
-    // 1 B F E D¹<-
-    // 2 C + - - - -
-    // 3 - - - - - -
+    // 0⁰A - - - - -
+    // 1 B - - - - -
+    // 2 C - - - - -
+    // 3 D E F - - -
     // 4 - - - - - G
     // 5 - - - - +²H
     final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC DEF GH"));
@@ -51,7 +52,7 @@ void main() {
       "(0, 3, 1, 0)",
     ]);
 
-    // 1st word starts at (0, 0) and ends at (0,2)
+    // ABC word starts at (0, 0) and ends at (0,2)
     board..set(0, 0, 0, 0)..set(0, 1, 0, 1)..set(0, 2, 0, 2);
     final points1 = await getPossibleStartingPoints(1, board, words);
     expect(points1.map(toString).toList(), ["(1, 2)", "(0, 3)"]);
@@ -79,9 +80,9 @@ void main() {
     ]);
 
     // D.E.F 2nd word starts at (3, 1) and ends at (1, 1) and 1st word is still there
-    board..set(3, 1, 1, 0)..set(2, 1, 1, 1)..set(1, 1, 1, 2);
+    board..set(0, 3, 1, 0)..set(1, 3, 1, 1)..set(2, 3, 1, 2);
     final points2 = await getPossibleStartingPoints(2, board, words);
-    expect(points2.map(toString).toList(), ["(1, 0)"]);
+    expect(points2.map(toString).toList(), ["(2, 2)", "(3, 3)", "(2, 4)"]);
 
     // 3rd Word ends at the bottom right corner
     board..set(5, 4, 2, 0)..set(5, 5, 2, 1);
@@ -130,16 +131,21 @@ void main() {
     // 6 - - - - - - -
     final verse = BibleVerse.from(text: "dcba ADEG fehci CEILM");
     words = getWordsInScopeForMaze(verse);
-    board = Board.create(7, 7)..set(0, 2, 0, 0)..set(1, 2, 0, 1)..set(2, 2, 0, 2)..set(3, 2, 0, 3);
+    board = Board.create(7, 7);
+
+    /// a.d.e.g
+    board..set(0, 2, 0, 0)..set(1, 2, 0, 1)..set(2, 2, 0, 2)..set(3, 2, 0, 3);
     final moves = getOverlaps(1, words, board).map(toString).toList();
     expect(moves, ["(3, 2, 1, 1)", "(3, 2, 0, 1)", "(3, 2, -1, 1)"]);
 
-    /// Overlap in the middle + 1 invalid case: overlaps 2 words
+    /// F.e.h.c.i Overlap in the middle + 2 invalid case:
+    /// - overlaps 2 words
+    /// - starts next to last char
     board..set(3, 2, 1, 0)..set(3, 3, 1, 1)..set(3, 4, 1, 2)..set(3, 5, 1, 3);
     final moves1 = getOverlaps(2, words, board).map(toString).toList();
-    expect(moves1, ["(2, 5, 1, -1)", "(2, 4, 1, 0)", "(4, 4, -1, 0)"]);
+    expect(moves1, ["(2, 4, 1, 0)", "(4, 4, -1, 0)"]);
 
-    /// Overlap on 2 position ++ Not allow overlap on overlapped char
+    /// c.e.l.i.m Overlap on 2 position ++ Not allow overlap on overlapped char
     board..set(2, 4, 2, 0)..set(3, 4, 2, 1)..set(4, 4, 2, 2)..set(5, 4, 2, 3)..set(6, 4, 2, 4);
     final moves2 = getOverlaps(3, words, board).map(toString).toList();
     expect(moves2, ["(5, 4, 0, -1)", "(6, 6, 0, -1)", "(6, 2, 0, 1)"]);
@@ -176,21 +182,9 @@ void main() {
     final words = getWordsInScopeForMaze(BibleVerse.from(text: "Jesosy Kristy izay"));
     final board = Board.create(8, 8);
     // Jesosy (0, 2) => (5, 2)
-    board
-      ..set(0, 2, 0, 0)
-      ..set(1, 2, 0, 1)
-      ..set(2, 2, 0, 2)
-      ..set(3, 2, 0, 3)
-      ..set(4, 2, 0, 4)
-      ..set(5, 2, 0, 5);
+    board..set(0, 2, 0, 0)..set(1, 2, 0, 1)..set(2, 2, 0, 2)..set(3, 2, 0, 3)..set(4, 2, 0, 4)..set(5, 2, 0, 5);
     // Kristy (7, 5) => (2, 0)
-    board
-      ..set(7, 5, 1, 0)
-      ..set(6, 4, 1, 1)
-      ..set(5, 3, 1, 2)
-      ..set(4, 2, 1, 3)
-      ..set(3, 1, 1, 4)
-      ..set(2, 0, 1, 5);
+    board..set(7, 5, 1, 0)..set(6, 4, 1, 1)..set(5, 3, 1, 2)..set(4, 2, 1, 3)..set(3, 1, 1, 4)..set(2, 0, 1, 5);
     // Overlap would be on I if it was allowed
     final overlaps = getOverlaps(2, words, board);
     expect(overlaps, []);
@@ -198,7 +192,7 @@ void main() {
 
   test("Does not allow 2 words to form a diagonal cross", () async {
     //    0 1 2 3 4
-    // 0  A - E F *
+    // 0 ⁰A -¹E F *
     // 1  - B x - *
     // 2  - x C - *
     // 3  x - - D *
@@ -234,11 +228,7 @@ void main() {
   });
 
   test("Trim board", () {
-    final board = Board.create(10, 10)
-      ..set(1, 1, 0, 0)
-      ..set(2, 2, 0, 1)
-      ..set(2, 3, 1, 0)
-      ..set(2, 4, 1, 1);
+    final board = Board.create(10, 10)..set(1, 1, 0, 0)..set(2, 2, 0, 1)..set(2, 3, 1, 0)..set(2, 4, 1, 1);
     final trimmed = board.trim();
     expect(trimmed.width, 2);
     expect(trimmed.height, 4);
@@ -248,7 +238,52 @@ void main() {
     expect(trimmed.getAt(1, 3).contains(1, 1), true);
   });
 
-  test("Create the board many times and expect 100% succees", () async {
+  testWidgets("Add noise - Overlaps", (WidgetTester tester) async {
+    final board = Board.create(8, 8);
+    final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC DEA EFD HHH DDO"));
+    final overlapRefs = getAllOverlapRefs(words).map(toString).toList();
+    expect(overlapRefs, [
+      // 0
+      "0 0,0 0",
+      "0 1,0 1",
+      "0 2,0 2",
+      "0 0,1 2",
+      // 1
+      "1 0,1 0",
+      "1 1,1 1",
+      "1 2,1 2",
+      "1 0,2 2",
+      "1 1,2 0",
+      "1 0,4 0",
+      "1 0,4 1",
+      // 2
+      "2 0,2 0",
+      "2 1,2 1",
+      "2 2,2 2",
+      "2 2,4 0",
+      "2 2,4 1",
+      // 3
+      "3 0,3 0",
+      "3 0,3 1",
+      "3 0,3 2",
+      "3 1,3 1",
+      "3 1,3 2",
+      "3 2,3 2",
+      // 4
+      "4 0,4 0",
+      "4 0,4 1",
+      "4 1,4 1",
+      "4 2,4 2",
+    ]);
+//    final moves = await executeAndAdvanceTimer(() => getOverlapNoiseMoves(board, words), Duration(seconds: 1), tester);
+//    expect(moves.map(toString).toList(), [
+//      // 0 0, 0 0
+//      "(0, 0, 0, -1)",
+//      "(0, 0, 0, 1)",
+//    ]);
+  });
+
+  testWidgets("Create the board many times and expect 100% succees", (WidgetTester tester) async {
     final now = DateTime.now().millisecondsSinceEpoch;
     final stopAt = 100;
     final verse = BibleVerse.from(
@@ -259,12 +294,10 @@ void main() {
       text: "Tamin'ny voalohany ny Teny, ary ny Teny tao amin'Andriamanitra,"
           " ary ny Teny dia Andriamanitra.",
     );
-
     for (var i = 0; i < stopAt; i++) {
-      final board = await createMazeBoard(verse);
+      final board = await executeAndAdvanceTimer(() => createMazeBoard(verse), Duration(minutes: 20), tester);
       expect(board, isNotNull);
     }
-    await Future.delayed(Duration(seconds: 1));
     print("֎ Tesed init maze $stopAt times in ${DateTime.now().millisecondsSinceEpoch - now} ms");
   });
 
@@ -273,7 +306,7 @@ void main() {
     await tester.pumpWidget(BibleGame(store));
     await tester.pump(Duration(milliseconds: 10));
     await tester.tap(find.byKey(Key("game_1")));
-    await tester.pump(Duration(milliseconds: 10));
+    await tester.pump(Duration(seconds: 10));
 
     simulateMazeRandomGame(store);
 
