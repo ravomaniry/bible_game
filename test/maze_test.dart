@@ -1,3 +1,5 @@
+import 'package:bible_game/games/maze/actions/board_noises.dart';
+import 'package:bible_game/games/maze/actions/board_utils.dart';
 import 'package:bible_game/games/maze/actions/create_board.dart';
 import 'package:bible_game/games/maze/models.dart';
 import 'package:bible_game/main.dart';
@@ -45,7 +47,7 @@ void main() {
     // empty board should start in the middle (3, 0)
     final points0 = await getPossibleStartingPoints(0, board, words);
     expect(points0.map(toString).toList(), ["(0, 3)"]);
-    final moves0 = getPossibleMoves(points0, 4, board);
+    final moves0 = getPossibleMoves(points0, 0, 4, board);
     expect(moves0.map(toString).toList(), [
       "(0, 3, 0, -1)",
       "(0, 3, 1, -1)",
@@ -57,7 +59,7 @@ void main() {
     final points1 = await getPossibleStartingPoints(1, board, words);
     expect(points1.map(toString).toList(), ["(1, 2)", "(0, 3)"]);
     // place 2 chars word
-    final moves1_0 = getPossibleMoves(points1, 2, board);
+    final moves1_0 = getPossibleMoves(points1, 0, 2, board);
     expect(moves1_0.map(toString).toList(), [
       // (1, 2)
       "(1, 2, 0, -1)",
@@ -73,7 +75,7 @@ void main() {
       "(0, 3, 0, 1)",
     ]);
     // 5 chars word (only some moves are possible)
-    final moves1_2 = getPossibleMoves(points1, 5, board);
+    final moves1_2 = getPossibleMoves(points1, 0, 5, board);
     expect(moves1_2.map(toString).toList(), [
       "(1, 2, 1, 0)",
       "(0, 3, 1, 0)",
@@ -88,7 +90,7 @@ void main() {
     board..set(5, 4, 2, 0)..set(5, 5, 2, 1);
     final points3 = await getPossibleStartingPoints(3, board, words);
     expect(points3.map(toString).toList(), ["(4, 5)"]);
-    final moves3 = getPossibleMoves(points3, 5, board);
+    final moves3 = getPossibleMoves(points3, 0, 5, board);
     expect(moves3.map(toString).toList(), ["(4, 5, 0, -1)", "(4, 5, -1, 0)"]);
   });
 
@@ -204,7 +206,7 @@ void main() {
     final overlaps = getOverlaps(2, words, board);
     expect(overlaps, []);
     final startingPoints = await getPossibleStartingPoints(2, board, words);
-    final moves = getPossibleMoves(startingPoints, 4, board).map(toString).toList();
+    final moves = getPossibleMoves(startingPoints, 0, 4, board).map(toString).toList();
     expect(moves, ["(4, 0, 0, 1)"]);
   });
 
@@ -218,8 +220,8 @@ void main() {
     // 5 - - - - - - -
     // 7 - - - - - - -
     final board = Board.create(7, 7);
-    final move = Move(Coordinate(0, 0), Coordinate(1, 1));
-    persistMove(move, 4, 0, board);
+    final move = Move(Coordinate(0, 0), Coordinate(1, 1), 0, 4);
+    persistMove(move, board);
     expect(board.getAt(0, 0).toString(), "0 0");
     expect(board.getAt(1, 1).toString(), "0 1");
     expect(board.getAt(2, 2).toString(), "0 2");
@@ -238,10 +240,20 @@ void main() {
     expect(trimmed.getAt(1, 3).contains(1, 1), true);
   });
 
-  testWidgets("Add noise - Overlaps", (WidgetTester tester) async {
-    final board = Board.create(8, 8);
-    final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC DEA EFD HHH DDO"));
-    final overlapRefs = getAllOverlapRefs(words).map(toString).toList();
+  testWidgets("Add noise - Overlaps - simple", (WidgetTester tester) async {
+    //   0 1 2 3 4 5
+    // 0 - - - A - -
+    // 1 - - - E F D
+    // 2 A B C D - H
+    // 3 - - - - - H
+    // 4 - - - - - H
+    final board = Board.create(6, 6);
+    var words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC DEA EFD HHH"));
+    board..set(0, 2, 0, 0)..set(1, 2, 0, 1)..set(2, 2, 0, 2);
+    board..set(3, 2, 1, 0)..set(3, 1, 1, 1)..set(3, 0, 1, 2);
+    board..set(3, 1, 2, 0)..set(4, 1, 2, 1)..set(5, 1, 2, 2);
+    board..set(5, 2, 3, 0)..set(5, 3, 3, 1)..set(5, 4, 3, 2);
+    final overlapRefs = getNoiseOverlapRefs(words).map(toString).toList();
     expect(overlapRefs, [
       // 0
       "0 0,0 0",
@@ -254,14 +266,10 @@ void main() {
       "1 2,1 2",
       "1 0,2 2",
       "1 1,2 0",
-      "1 0,4 0",
-      "1 0,4 1",
       // 2
       "2 0,2 0",
       "2 1,2 1",
       "2 2,2 2",
-      "2 2,4 0",
-      "2 2,4 1",
       // 3
       "3 0,3 0",
       "3 0,3 1",
@@ -269,23 +277,76 @@ void main() {
       "3 1,3 1",
       "3 1,3 2",
       "3 2,3 2",
-      // 4
-      "4 0,4 0",
-      "4 0,4 1",
-      "4 1,4 1",
-      "4 2,4 2",
     ]);
-//    final moves = await executeAndAdvanceTimer(() => getOverlapNoiseMoves(board, words), Duration(seconds: 1), tester);
-//    expect(moves.map(toString).toList(), [
-//      // 0 0, 0 0
-//      "(0, 0, 0, -1)",
-//      "(0, 0, 0, 1)",
-//    ]);
+    final moves = await executeAndAdvanceTimer(() => getOverlapNoiseMoves(board, words), Duration(seconds: 1), tester);
+    expect(moves.map(toString).toList(), [
+      // 0 0, 0 0
+      "(0, 2, 0, -1)",
+      "(0, 2, 1, 1)",
+      "(0, 2, 0, 1)",
+      // 0 1, 0 1
+      "(1, 3, 0, -1)",
+      "(1, 1, 0, 1)",
+      // 0 2, 0 2
+      "(2, 4, 0, -1)",
+      "(0, 4, 1, -1)",
+      "(0, 0, 1, 1)",
+      // 0 0,1 2
+      "(0, 4, 0, -1)",
+      "(0, 0, 0, 1)",
+      "(2, 4, -1, -1)", // 10
+      "(3, 0, -1, 0)",
+      // 1 0,1 0
+      "(3, 2, 0, 1)",
+      "(3, 2, -1, 1)",
+      "(3, 2, -1, -1)",
+      // 1 2,1 2
+      "(1, 0, 1, 0)", // 15
+      // 1 0,2 2
+      "(3, 4, 0, -1)",
+      "(1, 4, 1, -1)",
+      "(1, 0, 1, 1)",
+      // 1 1,2 0
+      "(3, 1, -1, 0)",
+      // 3 0,3 0
+      "(5, 2, -1, 1)",
+      // 3 0, 3 1
+      "(5, 3, -1, 1)",
+      // 3 0,3 2
+      "(3, 4, 1, -1)",
+      "(5, 4, -1, 0)",
+      // 3 1, 3 2
+      "(3, 5, 1, -1)",
+      // 3 2,3 2
+      "(3, 4, 1, 0)",
+    ]);
+  });
+
+  testWidgets("Noise overlaps - should not allow diagonal cross", (tester) async {
+    //   0 1 2 3 4 5
+    // 0 - - - - - -
+    // 1 - - A - - E
+    // 2 - B - - D -
+    // 3 C - - R - -
+    // 4 - I H - - -
+    final board = Board.create(6, 5);
+    final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC CI HRDE"));
+    board..set(2, 1, 0, 0)..set(1, 2, 0, 1)..set(0, 3, 0, 2);
+    board..set(0, 3, 1, 0)..set(1, 4, 1, 1);
+    board..set(2, 4, 2, 0)..set(3, 3, 2, 1)..set(4, 2, 2, 2)..set(5, 1, 2, 3);
+    final moves = await executeAndAdvanceTimer(() => getOverlapNoiseMoves(board, words), Duration(seconds: 1), tester);
+    expect(moves.map(toString).toList(), [
+      "(2, 1, -1, 0)",
+      "(0, 1, 0, 1)",
+      "(2, 4, 1, 0)",
+      "(4, 0, 0, 1)",
+      "(5, 4, 0, -1)",
+    ]);
   });
 
   testWidgets("Create the board many times and expect 100% succees", (WidgetTester tester) async {
     final now = DateTime.now().millisecondsSinceEpoch;
-    final stopAt = 100;
+    final stopAt = 10;
     final verse = BibleVerse.from(
       book: "Jaona",
       bookId: 4,

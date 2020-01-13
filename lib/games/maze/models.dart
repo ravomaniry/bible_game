@@ -1,4 +1,5 @@
 import 'package:bible_game/models/cell.dart';
+import 'package:bible_game/models/word.dart';
 
 class Coordinate {
   final int x;
@@ -43,7 +44,11 @@ class Coordinate {
   }
 
   bool isSameAs(Coordinate c) {
-    return c.x == x && c.y == y;
+    if (c == null) {
+      return false;
+    } else {
+      return c.x == x && c.y == y;
+    }
   }
 
   @override
@@ -55,8 +60,19 @@ class Coordinate {
 class Move {
   final Coordinate origin;
   final Coordinate direction;
+  final int wordIndex;
+  final int length;
+  final Coordinate overlapAt;
 
-  Move(this.origin, this.direction);
+  Move(this.origin, this.direction, this.wordIndex, this.length, {this.overlapAt});
+
+  bool isSameAs(Move m) {
+    return m.origin.isSameAs(origin) && m.direction.isSameAs(direction);
+  }
+
+  Coordinate get end {
+    return origin + direction * (length - 1);
+  }
 
   @override
   String toString() {
@@ -114,14 +130,16 @@ class MazeCell {
 
 class Board {
   final List<List<MazeCell>> value;
+  Coordinate start;
+  Coordinate end;
 
   Board(this.value);
 
   factory Board.create(int width, int height) {
     final generator = (int wIndex) {
-      return List<MazeCell>.generate(height, (i) => MazeCell.create(-1, -1));
+      return List<MazeCell>.generate(width, (i) => MazeCell.create(-1, -1));
     };
-    final value = List<List<MazeCell>>.generate(width, generator);
+    final value = List<List<MazeCell>>.generate(height, generator);
     return Board(value);
   }
 
@@ -185,6 +203,17 @@ class Board {
   @override
   String toString() {
     return value.map((row) => row.join(" | ")).join("\n");
+  }
+
+  void printWith(List<Word> words) {
+    final grid = value
+        .map((row) => row
+            .map((cell) => cell.first.wordIndex >= 0
+                ? words[cell.first.wordIndex].chars[cell.first.charIndex].comparisonValue
+                : "-")
+            .join(" "))
+        .join("\n");
+    print(grid);
   }
 }
 
