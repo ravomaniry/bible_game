@@ -1,5 +1,6 @@
 import 'package:bible_game/app/theme/themes.dart';
-import 'package:bible_game/games/maze/models.dart';
+import 'package:bible_game/games/maze/models/board.dart';
+import 'package:bible_game/games/maze/models/maze_cell.dart';
 import 'package:bible_game/models/cell.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bidirectional_scroll_view/bidirectional_scroll_view.dart';

@@ -1,4 +1,6 @@
-import 'package:bible_game/games/maze/models.dart';
+import 'package:bible_game/games/maze/models/board.dart';
+import 'package:bible_game/games/maze/models/coordinate.dart';
+import 'package:bible_game/games/maze/models/move.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
 

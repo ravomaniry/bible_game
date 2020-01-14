@@ -2,7 +2,9 @@ import 'dart:math';
 
 import 'package:bible_game/games/maze/actions/board_noises.dart';
 import 'package:bible_game/games/maze/actions/board_utils.dart';
-import 'package:bible_game/games/maze/models.dart';
+import 'package:bible_game/games/maze/models/board.dart';
+import 'package:bible_game/games/maze/models/coordinate.dart';
+import 'package:bible_game/games/maze/models/move.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
 
@@ -15,7 +17,7 @@ Future<Board> createMazeBoard(BibleVerse verse) async {
     final board = Board.create(size, size);
     final isDone = await placeWordsInBoard(words, board);
     if (isDone) {
-      await addNoises(board, words);
+//      await addNoises(board, words);
       return board.trim();
     }
   }
@@ -91,12 +93,10 @@ Coordinate _getLastPoint(int index, Board board) {
 
 bool _moveIsPossible(Move move, int length, Board board) {
   var currentPos = move.origin - move.direction;
-
   for (var remaining = length; remaining > 0; remaining--) {
     if (remaining != length && formDiagonalCross(currentPos, move.direction, board)) {
       return false;
     }
-
     currentPos += move.direction;
     if (board.includes(currentPos)) {
       if (!board.isFreeAt(currentPos) && !overlapIsAllowed(currentPos, move.overlapAt, board)) {

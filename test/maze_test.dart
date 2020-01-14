@@ -1,7 +1,9 @@
 import 'package:bible_game/games/maze/actions/board_noises.dart';
 import 'package:bible_game/games/maze/actions/board_utils.dart';
 import 'package:bible_game/games/maze/actions/create_board.dart';
-import 'package:bible_game/games/maze/models.dart';
+import 'package:bible_game/games/maze/models/board.dart';
+import 'package:bible_game/games/maze/models/coordinate.dart';
+import 'package:bible_game/games/maze/models/move.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
@@ -352,12 +354,18 @@ void main() {
       bookId: 4,
       chapter: 1,
       verse: 1,
-      text: "Tamin'ny voalohany ny Teny, ary ny Teny tao amin'Andriamanitra,"
-          " ary ny Teny dia Andriamanitra.",
+      text: "Ny filazana ny razan'i Jesosy Kristy",
     );
     for (var i = 0; i < stopAt; i++) {
       final board = await executeAndAdvanceTimer(() => createMazeBoard(verse), Duration(minutes: 20), tester);
       expect(board, isNotNull);
+      final words = getWordsInScopeForMaze(verse);
+      for (var wIndex = 0; wIndex < words.length; wIndex++) {
+        final word = words[wIndex];
+        for (var cIndex = 0; cIndex < word.length; cIndex++) {
+          expect(board.coordinateOf(wIndex, cIndex), isNotNull);
+        }
+      }
     }
     print("֎ Tesed init maze $stopAt times in ${DateTime.now().millisecondsSinceEpoch - now} ms");
   });
@@ -368,9 +376,7 @@ void main() {
     await tester.pump(Duration(milliseconds: 10));
     await tester.tap(find.byKey(Key("game_1")));
     await tester.pump(Duration(seconds: 10));
-
     simulateMazeRandomGame(store);
-
     await tester.pump(Duration(seconds: 10));
   });
 }

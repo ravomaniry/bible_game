@@ -1,4 +1,4 @@
-import 'package:bible_game/games/maze/models.dart';
+import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:flutter/widgets.dart';
 
