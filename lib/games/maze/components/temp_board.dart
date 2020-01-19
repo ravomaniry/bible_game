@@ -1,8 +1,9 @@
+import 'dart:math';
+
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/maze_cell.dart';
 import 'package:bible_game/models/word.dart';
-import 'package:bidirectional_scroll_view/bidirectional_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -22,21 +23,34 @@ class MazeBoard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final mapWidth = board.width * cellSize;
+    final mapHeight = board.height * cellSize;
     return Expanded(
       child: Container(
-        decoration: BoxDecoration(
-          color: Colors.blue,
-          image: DecorationImage(
-            image: AssetImage("assets/images/maze/waves.png"),
-            repeat: ImageRepeat.repeat,
-          ),
-        ),
-        child: BidirectionalScrollViewPlugin(
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
           child: SizedBox(
-            width: board.width * cellSize,
-            height: board.height * cellSize,
-            child: Column(
-              children: board.value.map(_buildRow).toList(),
+            width: mapWidth,
+            height: min(mapHeight, size.height * 0.8),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: SizedBox(
+                width: mapWidth,
+                height: mapHeight,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.blue,
+                    image: DecorationImage(
+                      image: AssetImage("assets/images/maze/waves.png"),
+                      repeat: ImageRepeat.repeat,
+                    ),
+                  ),
+                  child: Column(
+                    children: board.value.map(_buildRow).toList(),
+                  ),
+                ),
+              ),
             ),
           ),
         ),
