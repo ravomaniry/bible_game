@@ -24,7 +24,13 @@ class MazeBoard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
-        decoration: BoxDecoration(color: Colors.blue),
+        decoration: BoxDecoration(
+          color: Colors.blue,
+          image: DecorationImage(
+            image: AssetImage("assets/images/maze/waves.png"),
+            repeat: ImageRepeat.repeat,
+          ),
+        ),
         child: BidirectionalScrollViewPlugin(
           child: SizedBox(
             width: board.width * cellSize,
