@@ -1,16 +1,16 @@
 import 'dart:math';
 
-import 'package:bible_game/models/bible_verse.dart';
-import 'package:bible_game/models/bonus.dart';
-import 'package:bible_game/models/word.dart';
 import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/game/actions/actions.dart';
 import 'package:bible_game/app/inventory/actions/actions.dart';
 import 'package:bible_game/app/inventory/actions/use_bonus_action.dart';
-import 'package:bible_game/sfx/actions.dart';
 import 'package:bible_game/games/words_in_word/actions/action_creators.dart';
 import 'package:bible_game/games/words_in_word/actions/cells_action.dart';
 import 'package:bible_game/games/words_in_word/reducer/state.dart';
+import 'package:bible_game/models/bible_verse.dart';
+import 'package:bible_game/models/bonus.dart';
+import 'package:bible_game/models/word.dart';
+import 'package:bible_game/sfx/actions.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
