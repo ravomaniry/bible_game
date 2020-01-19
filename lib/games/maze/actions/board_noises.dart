@@ -9,13 +9,15 @@ import 'package:bible_game/models/cell.dart';
 import 'package:bible_game/models/word.dart';
 
 Future addNoises(Board board, List<Word> words) async {
+  final noiseRatio = 1.6;
+  final minNoisesNum = 10;
   final random = Random();
-  final overlapMoves = getOverlapNoiseMoves(board, words);
-  // add other kind of noises here
-  final allMoves = await overlapMoves;
-  while (allMoves.isNotEmpty) {
-    final move = allMoves[random.nextInt(allMoves.length)];
-    allMoves.remove(move);
+  final overlapMoves = await getOverlapNoiseMoves(board, words);
+  final remainingMoves = List<Move>.from(overlapMoves);
+  final stopAt = overlapMoves.length - max(minNoisesNum, words.length * noiseRatio);
+  while (remainingMoves.length > stopAt) {
+    final move = remainingMoves[random.nextInt(remainingMoves.length)];
+    remainingMoves.remove(move);
     if (_noiseMoveIsPossible(move, board, words)) {
       persistMove(move, board);
     }
@@ -30,8 +32,8 @@ Future<List<Move>> getOverlapNoiseMoves(Board board, List<Word> words) async {
 
 List<MazeCell> getNoiseOverlapRefs(List<Word> words) {
   final List<MazeCell> allOverlaps = [];
-  for (var w0 = 0; w0 < words.length; w0++) {
-    for (var w1 = w0; w1 < words.length; w1++) {
+  for (var w0 = 0; w0 < words.length - 1; w0++) {
+    for (var w1 = w0; w1 < words.length - 1; w1++) {
       final overlaps = getOverlapIndexes(words[w0], words[w1], leftOffset: 0, rightOffset: 0);
       for (final overlap in overlaps) {
         final ref = MazeCell.create(w0, overlap.first).concat(w1, overlap.last);

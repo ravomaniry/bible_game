@@ -19,6 +19,6 @@ class Move {
 
   @override
   String toString() {
-    return "(${origin.x}, ${origin.y}, ${direction.x}, ${direction.y})";
+    return "(${origin.x}, ${origin.y}, ${direction.x}, ${direction.y}, $wordIndex, $length)";
   }
 }

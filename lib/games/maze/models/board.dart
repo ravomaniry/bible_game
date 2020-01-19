@@ -45,6 +45,14 @@ class Board {
     }
   }
 
+  forEachMazeCell(void Function(MazeCell) callback) {
+    for (final row in value) {
+      for (final cell in row) {
+        callback(cell);
+      }
+    }
+  }
+
   Coordinate coordinateOf(int wordIndex, int charIndex) {
     for (var y = 0; y < height; y++) {
       for (var x = 0; x < width; x++) {
@@ -82,11 +90,23 @@ class Board {
 
   void printWith(List<Word> words) {
     final grid = value
-        .map((row) => row
-            .map((cell) => cell.first.wordIndex >= 0
-                ? words[cell.first.wordIndex].chars[cell.first.charIndex].comparisonValue
-                : "-")
-            .join(" "))
+        .map((row) => row.map((cell) {
+              if (cell.first.wordIndex >= 0) {
+                return words[cell.first.wordIndex].chars[cell.first.charIndex].comparisonValue;
+              }
+              switch (cell.water) {
+                case CellWater.full:
+                  return "*";
+                case CellWater.upRight:
+                case CellWater.downLeft:
+                  return "\\";
+                case CellWater.upLeft:
+                case CellWater.downRight:
+                  return "/";
+                default:
+                  return " ";
+              }
+            }).join(" "))
         .join("\n");
     print(grid);
   }

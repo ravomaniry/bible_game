@@ -1,7 +1,18 @@
 import 'package:bible_game/models/cell.dart';
 
+enum CellWater {
+  none,
+  full,
+  beach,
+  upLeft,
+  upRight,
+  downRight,
+  downLeft,
+}
+
 class MazeCell {
   final List<Cell> cells;
+  CellWater water = CellWater.none;
 
   MazeCell(this.cells);
 

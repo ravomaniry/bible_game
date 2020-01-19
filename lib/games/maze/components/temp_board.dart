@@ -1,7 +1,6 @@
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/maze_cell.dart';
-import 'package:bible_game/models/cell.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bidirectional_scroll_view/bidirectional_scroll_view.dart';
 import 'package:flutter/material.dart';
@@ -25,6 +24,7 @@ class MazeBoard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Container(
+        decoration: BoxDecoration(color: Colors.blue),
         child: BidirectionalScrollViewPlugin(
           child: SizedBox(
             width: board.width * cellSize,
@@ -45,7 +45,7 @@ class MazeBoard extends StatelessWidget {
             (cell) => _MazeCellWidget(
               theme: theme,
               wordsToFind: wordsToFind,
-              cell: cell.first,
+              cell: cell,
             ),
           )
           .toList(),
@@ -56,7 +56,7 @@ class MazeBoard extends StatelessWidget {
 class _MazeCellWidget extends StatelessWidget {
   final List<Word> wordsToFind;
   final AppColorTheme theme;
-  final Cell cell;
+  final MazeCell cell;
 
   _MazeCellWidget({
     @required this.wordsToFind,
@@ -73,10 +73,8 @@ class _MazeCellWidget extends StatelessWidget {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           color: _background,
-          border: Border.all(
-            color: theme.primary.withAlpha(100),
-            style: BorderStyle.solid,
-          ),
+          border: _border,
+          image: _image,
         ),
         child: Text(_text),
       ),
@@ -84,23 +82,64 @@ class _MazeCellWidget extends StatelessWidget {
   }
 
   String get _text {
-    if (cell.wordIndex >= 0 && cell.charIndex >= 0) {
-      return wordsToFind[cell.wordIndex].chars[cell.charIndex].value.toUpperCase();
+    if (wordIndex >= 0 && charIndex >= 0) {
+      return wordsToFind[wordIndex].chars[charIndex].value.toUpperCase();
     }
     return "";
   }
 
   Color get _background {
-    if (cell.wordIndex >= 0) {
-      switch (cell.wordIndex % 3) {
-        case 0:
-          return Colors.green;
-        case 1:
-          return Colors.deepOrangeAccent;
-        default:
-          return Colors.amber;
-      }
+    if (cell.water == CellWater.none) {
+      return Color.fromARGB(255, 0, 187, 0);
+    } else if (cell.water == CellWater.beach) {
+      return Color.fromARGB(255, 218, 255, 127);
     }
     return Colors.transparent;
   }
+
+  Border get _border {
+    if (wordIndex >= 0) {
+      return Border.all(
+        color: theme.primary.withAlpha(40),
+        style: BorderStyle.solid,
+      );
+    }
+    return null;
+  }
+
+  DecorationImage get _image {
+    switch (cell.water) {
+      case CellWater.upLeft:
+        return DecorationImage(
+          image: AssetImage("assets/images/bottom_right.png"),
+          fit: BoxFit.fill,
+        );
+      case CellWater.upRight:
+        return DecorationImage(
+          image: AssetImage("assets/images/bottom_left.png"),
+          fit: BoxFit.fill,
+        );
+      case CellWater.downRight:
+        return DecorationImage(
+          image: AssetImage("assets/images/top_left.png"),
+          fit: BoxFit.fill,
+        );
+      case CellWater.downLeft:
+        return DecorationImage(
+          image: AssetImage("assets/images/top_right.png"),
+          fit: BoxFit.fill,
+        );
+      case CellWater.beach:
+        return DecorationImage(
+          image: AssetImage("assets/images/beach.png"),
+          fit: BoxFit.fill,
+        );
+      default:
+        return null;
+    }
+  }
+
+  int get wordIndex => cell.first.wordIndex;
+
+  int get charIndex => cell.first.charIndex;
 }

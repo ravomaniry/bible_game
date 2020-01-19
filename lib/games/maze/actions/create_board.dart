@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:bible_game/games/maze/actions/water.dart';
 import 'package:bible_game/games/maze/actions/board_noises.dart';
 import 'package:bible_game/games/maze/actions/board_utils.dart';
 import 'package:bible_game/games/maze/models/board.dart';
@@ -9,16 +10,17 @@ import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
 
 Future<Board> createMazeBoard(BibleVerse verse) async {
-  await Future.delayed(Duration(milliseconds: 500));
   final maxAttempts = 50;
   final words = getWordsInScopeForMaze(verse);
   final size = getBoardSize(words);
   for (var i = 0; i < maxAttempts; i++) {
-    final board = Board.create(size, size);
+    var board = Board.create(size, size);
     final isDone = await placeWordsInBoard(words, board);
     if (isDone) {
-//      await addNoises(board, words);
-      return board.trim();
+      board = board.trim();
+      await addNoises(board, words);
+      assignWaters(board);
+      return board;
     }
   }
   return null;
@@ -35,7 +37,7 @@ Future<bool> placeWordsInBoard(List<Word> words, Board board) async {
     if (overlaps.isNotEmpty && random.nextDouble() <= overlapProbability) {
       move = overlaps[random.nextInt(overlaps.length)];
     } else {
-      final moves = getPossibleMoves(startingPoints, index, words.length, board);
+      final moves = getPossibleMoves(startingPoints, index, words[index].length, board);
       if (moves.isEmpty) {
         return false;
       }
