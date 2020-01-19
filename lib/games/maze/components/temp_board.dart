@@ -111,27 +111,27 @@ class _MazeCellWidget extends StatelessWidget {
     switch (cell.water) {
       case CellWater.upLeft:
         return DecorationImage(
-          image: AssetImage("assets/images/bottom_right.png"),
+          image: AssetImage("assets/images/maze/up_left.png"),
           fit: BoxFit.fill,
         );
       case CellWater.upRight:
         return DecorationImage(
-          image: AssetImage("assets/images/bottom_left.png"),
+          image: AssetImage("assets/images/maze/up_right.png"),
           fit: BoxFit.fill,
         );
       case CellWater.downRight:
         return DecorationImage(
-          image: AssetImage("assets/images/top_left.png"),
+          image: AssetImage("assets/images/maze/down_right.png"),
           fit: BoxFit.fill,
         );
       case CellWater.downLeft:
         return DecorationImage(
-          image: AssetImage("assets/images/top_right.png"),
+          image: AssetImage("assets/images/maze/down_left.png"),
           fit: BoxFit.fill,
         );
       case CellWater.beach:
         return DecorationImage(
-          image: AssetImage("assets/images/beach.png"),
+          image: AssetImage("assets/images/maze/beach.png"),
           fit: BoxFit.fill,
         );
       default:
