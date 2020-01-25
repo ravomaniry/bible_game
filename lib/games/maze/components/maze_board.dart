@@ -24,7 +24,7 @@ class MazeBoard extends StatelessWidget {
       builder: (context, viewModel) => _BoardBody(
         viewModel: viewModel,
         onScroll: onScroll,
-        onScreenLimit: screenLimit,
+        screenLimit: screenLimit,
         adjustBoardSize: adjustBoardSize,
       ),
     );
@@ -34,14 +34,14 @@ class MazeBoard extends StatelessWidget {
 class _BoardBody extends StatelessWidget {
   final Function(PointerMoveEvent) onScroll;
   final Function(Board) adjustBoardSize;
-  final Pair<Size, Size> onScreenLimit;
+  final Pair<Size, Size> screenLimit;
   final MazeViewModel viewModel;
 
   _BoardBody({
     @required this.viewModel,
     @required this.onScroll,
     @required this.adjustBoardSize,
-    @required this.onScreenLimit,
+    @required this.screenLimit,
   });
 
   void _onPointerDown(PointerDownEvent e) {
@@ -70,40 +70,12 @@ class _BoardBody extends StatelessWidget {
             width: _width,
             height: _height,
             child: Column(
-              children: _buildRows(),
+              children: buildRows(screenLimit, viewModel),
             ),
           ),
         ),
       );
     }
-  }
-
-  List<Widget> _buildRows() {
-    final minX = onScreenLimit.first.width.toInt();
-    final minY = onScreenLimit.first.height.toInt();
-    final maxX = onScreenLimit.last.width.toInt();
-    final maxY = onScreenLimit.last.height.toInt();
-    final rows = List<Row>(maxY);
-    for (var y = 0; y < maxY; y++) {
-      if (y < minY) {
-        rows[y] = Row(children: [emptyCell]);
-      } else {
-        final children = List<Widget>(maxX);
-        for (var x = 0; x < maxX; x++) {
-          if (x < minX) {
-            children[x] = emptyCell;
-          } else {
-            children[x] = MazeCellWidget(
-              theme: viewModel.theme,
-              cell: viewModel.state.board.getAt(x, y),
-              wordsToFind: viewModel.state.wordsToFind,
-            );
-          }
-        }
-        rows[y] = Row(children: children);
-      }
-    }
-    return rows;
   }
 }
 
@@ -114,4 +86,32 @@ class _Loader extends StatelessWidget {
       child: Text("Loading..."),
     );
   }
+}
+
+List<Row> buildRows(Pair<Size, Size> screenLimit, MazeViewModel viewModel) {
+  final minX = screenLimit.first.width.toInt();
+  final minY = screenLimit.first.height.toInt();
+  final maxX = screenLimit.last.width.toInt();
+  final maxY = screenLimit.last.height.toInt();
+  final rows = List<Row>(maxY);
+  for (var y = 0; y < maxY; y++) {
+    if (y < minY) {
+      rows[y] = Row(children: [emptyCell]);
+    } else {
+      final children = List<Widget>(maxX);
+      for (var x = 0; x < maxX; x++) {
+        if (x < minX) {
+          children[x] = emptyCell;
+        } else {
+          children[x] = MazeCellWidget(
+            theme: viewModel.theme,
+            cell: viewModel.state.board.getAt(x, y),
+            wordsToFind: viewModel.state.wordsToFind,
+          );
+        }
+      }
+      rows[y] = Row(children: children);
+    }
+  }
+  return rows;
 }
