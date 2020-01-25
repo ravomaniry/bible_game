@@ -1,7 +1,7 @@
 import 'package:bible_game/games/maze/actions/board_noises.dart';
 import 'package:bible_game/games/maze/actions/board_utils.dart';
 import 'package:bible_game/games/maze/actions/create_board.dart';
-import 'package:bible_game/games/maze/actions/water.dart';
+import 'package:bible_game/games/maze/actions/environment.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/maze/models/maze_cell.dart';
@@ -357,16 +357,16 @@ void main() {
     board..set(1, 1, 0, 0)..set(2, 1, 0, 1)..set(0, 2, 1, 0)..set(3, 4, 2, 0);
     assignWaters(board);
     final waters = [
-      [CellWater.upLeft, CellWater.none, CellWater.none, CellWater.upRight, CellWater.beach, CellWater.full],
-      [CellWater.none, CellWater.none, CellWater.none, CellWater.none, CellWater.beach, CellWater.full],
-      [CellWater.none, CellWater.none, CellWater.none, CellWater.downRight, CellWater.beach, CellWater.full],
-      [CellWater.none, CellWater.downRight, CellWater.none, CellWater.none, CellWater.upRight, CellWater.beach],
-      [CellWater.beach, CellWater.beach, CellWater.none, CellWater.none, CellWater.none, CellWater.beach],
-      [CellWater.full, CellWater.beach, CellWater.downLeft, CellWater.none, CellWater.downRight, CellWater.beach],
+      [CellEnv.upLeft, CellEnv.none, CellEnv.none, CellEnv.upRight, CellEnv.frontier, CellEnv.forest],
+      [CellEnv.none, CellEnv.none, CellEnv.none, CellEnv.none, CellEnv.frontier, CellEnv.forest],
+      [CellEnv.none, CellEnv.none, CellEnv.none, CellEnv.downRight, CellEnv.frontier, CellEnv.forest],
+      [CellEnv.none, CellEnv.downRight, CellEnv.none, CellEnv.none, CellEnv.upRight, CellEnv.frontier],
+      [CellEnv.frontier, CellEnv.frontier, CellEnv.none, CellEnv.none, CellEnv.none, CellEnv.frontier],
+      [CellEnv.forest, CellEnv.frontier, CellEnv.downLeft, CellEnv.none, CellEnv.downRight, CellEnv.frontier],
     ];
     for (var x = 0; x < board.width; x++) {
       for (var y = 0; y < board.height; y++) {
-        expect(board.getAt(x, y).water, waters[y][x]);
+        expect(board.getAt(x, y).environment, waters[y][x]);
       }
     }
   });

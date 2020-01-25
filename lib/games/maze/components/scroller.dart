@@ -22,10 +22,8 @@ class MazeBoardScroller extends StatefulWidget {
 }
 
 class _MazeBoardScrollerState extends State<MazeBoardScroller> {
-  double _xOffset = 0;
-  double _yOffset = 0;
-  double _boardWidth = 0;
-  double _boardHeight = 0;
+  Size _offsets = Size(0, 0);
+  Size _boardSize = Size(0, 0);
   Size _containerSize = Size(0, 0);
   Board _prevBoard;
   final _key = GlobalKey();
@@ -45,8 +43,8 @@ class _MazeBoardScrollerState extends State<MazeBoardScroller> {
           overflow: Overflow.clip,
           children: [
             Positioned(
-              top: _yOffset,
-              left: _xOffset,
+              top: _offsets.height,
+              left: _offsets.width,
               child: builder(
                 adjustBoardSize: _adjustBoardSize,
                 onScroll: _onScroll,
@@ -60,24 +58,11 @@ class _MazeBoardScrollerState extends State<MazeBoardScroller> {
 
   void _onScroll(PointerMoveEvent e) {
     _setContainerSize();
-    if (_containerSize != null && _containerSize.width > 0) {
-      double nextXOffset = min(0, _xOffset + e.delta.dx);
-      double nextYOffset = min(0, _yOffset + e.delta.dy);
-      final nextMaxX = _boardWidth + nextXOffset;
-      final nextMaxY = _boardHeight + nextYOffset;
-
-      if (nextMaxX <= _containerSize.width) {
-        nextXOffset = _xOffset;
-      }
-      if (nextMaxY <= _containerSize.height) {
-        nextYOffset = _yOffset;
-      }
-      if (nextXOffset != _xOffset || nextYOffset != _yOffset) {
-        setState(() {
-          _xOffset = nextXOffset;
-          _yOffset = nextYOffset;
-        });
-      }
+    final offsets = getNextOffsets(Size(e.delta.dx, e.delta.dy), _offsets, _boardSize, _containerSize);
+    if (offsets != null) {
+      setState(() {
+        _offsets = offsets;
+      });
     }
   }
 
@@ -86,14 +71,38 @@ class _MazeBoardScrollerState extends State<MazeBoardScroller> {
       _containerSize = null;
     } else if (_prevBoard != board) {
       _prevBoard = board;
-      _boardWidth = board.width * cellSize;
-      _boardHeight = board.height * cellSize;
+      _boardSize = Size(board.width * cellSize, board.height * cellSize);
     }
   }
 
   void _setContainerSize() {
+    // The size of the container does not change on runtime because screen orientation is always vertical
     if (_containerSize == null || _containerSize.width == 0) {
       _containerSize = _key.currentContext.size;
     }
   }
+}
+
+Size getNextOffsets(Size delta, Size current, Size boardSize, Size containerSize) {
+  if (containerSize != null && containerSize.width > 0) {
+    final x = current.width;
+    final y = current.height;
+    final minX = min(0.0, containerSize.width - boardSize.width);
+    final minY = min(0.0, containerSize.height - boardSize.height);
+    double nextX = max(minX, min(0, x + delta.width));
+    double nextY = max(minY, min(0, y + delta.height));
+    final nextMaxX = boardSize.width + nextX;
+    final nextMaxY = boardSize.height + nextY;
+
+    if (nextMaxX < containerSize.width) {
+      nextX = x;
+    }
+    if (nextMaxY < containerSize.height) {
+      nextY = y;
+    }
+    if (nextX != x || nextY != y) {
+      return Size(nextX, nextY);
+    }
+  }
+  return null;
 }
