@@ -13,7 +13,7 @@ class MazeState {
 
   factory MazeState.emptyState() {
     return MazeState(
-      board: Board.create(10, 10),
+      board: null,
       wordsToFind: [],
     );
   }
