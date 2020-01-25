@@ -13,9 +13,10 @@ class Maze extends StatelessWidget {
         children: [
           InGameHeader(),
           MazeBoardScroller(
-            builder: ({onScroll, adjustBoardSize}) => BoardBody(
+            builder: ({onScroll, adjustBoardSize, screenLimit}) => MazeBoard(
               onScroll: onScroll,
               adjustBoardSize: adjustBoardSize,
+              screenLimit: screenLimit,
             ),
           ),
         ],

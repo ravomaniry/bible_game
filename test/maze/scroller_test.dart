@@ -1,4 +1,6 @@
 import 'package:bible_game/games/maze/components/scroller.dart';
+import 'package:bible_game/games/maze/models/board.dart';
+import 'package:bible_game/utils/pair.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -57,5 +59,20 @@ void main() {
     expect(getNextOffsets(Size(-10, -20), current, boardSize, containerSize), Size(-10, 0));
     containerSize = Size(120, 120);
     expect(getNextOffsets(Size(-10, -10), current, boardSize, containerSize), null);
+  });
+
+  test("on screen elements", () {
+    Board board = Board.create(7, 5);
+    Size containerSize = Size(50, 74);
+    Size origin = Size(0, 0);
+    expect(getOnScreenLimit(origin, board, containerSize), Pair(Size(0, 0), Size(3, 4)));
+    origin = Size(-20, -20);
+    expect(getOnScreenLimit(origin, board, containerSize), Pair(Size(0, 0), Size(3, 4)));
+    origin = Size(-24, -20);
+    expect(getOnScreenLimit(origin, board, containerSize), Pair(Size(1, 0), Size(4, 4)));
+    origin = Size(-50, -26);
+    expect(getOnScreenLimit(origin, board, containerSize), Pair(Size(2, 1), Size(5, 5)));
+    containerSize = Size(1000, 1000);
+    expect(getOnScreenLimit(origin, board, containerSize), Pair(Size(2, 1), Size(7, 5)));
   });
 }

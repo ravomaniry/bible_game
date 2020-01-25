@@ -3,44 +3,67 @@ import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/maze_cell.dart';
 import 'package:bible_game/games/maze/redux/view_model.dart';
 import 'package:bible_game/models/word.dart';
+import 'package:bible_game/utils/pair.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 final double cellSize = 24;
+final emptyCell = SizedBox(width: cellSize, height: cellSize);
 
-class BoardBody extends StatelessWidget {
+class MazeBoard extends StatelessWidget {
   final Function(PointerMoveEvent) onScroll;
   final Function(Board) adjustBoardSize;
+  final Pair<Size, Size> screenLimit;
 
-  BoardBody({
+  MazeBoard({
     @required this.onScroll,
     @required this.adjustBoardSize,
+    @required this.screenLimit,
   });
-
-  double _width(MazeViewModel viewModel) => viewModel.state.board.width * cellSize;
-
-  double _height(MazeViewModel viewModel) => viewModel.state.board.height * cellSize;
 
   @override
   Widget build(BuildContext context) {
     return StoreConnector(
       converter: MazeViewModel.converter,
-      builder: _builder,
+      builder: (context, viewModel) => _BoardBody(
+        viewModel: viewModel,
+        onScroll: onScroll,
+        onScreenLimit: screenLimit,
+        adjustBoardSize: adjustBoardSize,
+      ),
     );
   }
+}
+
+class _BoardBody extends StatelessWidget {
+  final Function(PointerMoveEvent) onScroll;
+  final Function(Board) adjustBoardSize;
+  final Pair<Size, Size> onScreenLimit;
+  final MazeViewModel viewModel;
+
+  _BoardBody({
+    @required this.viewModel,
+    @required this.onScroll,
+    @required this.adjustBoardSize,
+    @required this.onScreenLimit,
+  });
 
   void _onPointerDown(PointerDownEvent e) {
-    print("Pointer down $e");
+    print("Pointer down ${e.delta}");
   }
 
   void _onPointerMove(PointerMoveEvent e) {
     onScroll(e);
   }
 
-  Widget _builder(BuildContext context, MazeViewModel viewModel) {
-    adjustBoardSize(viewModel.state.board);
+  double get _width => viewModel.state.board.width * cellSize;
 
+  double get _height => viewModel.state.board.height * cellSize;
+
+  @override
+  Widget build(BuildContext context) {
+    adjustBoardSize(viewModel.state.board);
     if (viewModel.state.board == null) {
       return _Loader();
     } else {
@@ -48,28 +71,42 @@ class BoardBody extends StatelessWidget {
         onPointerDown: _onPointerDown,
         onPointerMove: _onPointerMove,
         child: SizedBox(
-          width: _width(viewModel),
-          height: _height(viewModel),
+          width: _width,
+          height: _height,
           child: Column(
-            children: viewModel.state.board.value.map((row) => _buildRow(row, viewModel)).toList(),
+            children: _buildRows(),
           ),
         ),
       );
     }
   }
 
-  Widget _buildRow(List<MazeCell> row, MazeViewModel viewModel) {
-    return Row(
-      children: row
-          .map(
-            (cell) => _MazeCellWidget(
+  List<Widget> _buildRows() {
+    final minX = onScreenLimit.first.width.toInt();
+    final minY = onScreenLimit.first.height.toInt();
+    final maxX = onScreenLimit.last.width.toInt();
+    final maxY = onScreenLimit.last.height.toInt();
+    final rows = List<Row>(maxY);
+    for (var y = 0; y < maxY; y++) {
+      if (y < minY) {
+        rows[y] = Row(children: [emptyCell]);
+      } else {
+        final children = List<Widget>(maxX);
+        for (var x = 0; x < maxX; x++) {
+          if (x < minX) {
+            children[x] = emptyCell;
+          } else {
+            children[x] = _MazeCellWidget(
               theme: viewModel.theme,
+              cell: viewModel.state.board.getAt(x, y),
               wordsToFind: viewModel.state.wordsToFind,
-              cell: cell,
-            ),
-          )
-          .toList(),
-    );
+            );
+          }
+        }
+        rows[y] = Row(children: children);
+      }
+    }
+    return rows;
   }
 }
 
