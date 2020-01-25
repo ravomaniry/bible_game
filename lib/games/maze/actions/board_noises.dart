@@ -9,7 +9,7 @@ import 'package:bible_game/models/cell.dart';
 import 'package:bible_game/models/word.dart';
 
 Future addNoises(Board board, List<Word> words) async {
-  final noiseRatio = 1.6;
+  final noiseRatio = 2;
   final minNoisesNum = 10;
   final random = Random();
   final overlapMoves = await getOverlapNoiseMoves(board, words);

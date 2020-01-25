@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:bible_game/games/maze/actions/water.dart';
+import 'package:bible_game/games/maze/actions/environment.dart';
 import 'package:bible_game/games/maze/actions/board_noises.dart';
 import 'package:bible_game/games/maze/actions/board_utils.dart';
 import 'package:bible_game/games/maze/models/board.dart';
