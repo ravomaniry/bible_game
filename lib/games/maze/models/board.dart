@@ -94,14 +94,14 @@ class Board {
               if (cell.first.wordIndex >= 0) {
                 return words[cell.first.wordIndex].chars[cell.first.charIndex].comparisonValue;
               }
-              switch (cell.water) {
-                case CellWater.full:
+              switch (cell.environment) {
+                case CellEnv.forest:
                   return "*";
-                case CellWater.upRight:
-                case CellWater.downLeft:
+                case CellEnv.upRight:
+                case CellEnv.downLeft:
                   return "\\";
-                case CellWater.upLeft:
-                case CellWater.downRight:
+                case CellEnv.upLeft:
+                case CellEnv.downRight:
                   return "/";
                 default:
                   return " ";

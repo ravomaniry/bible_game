@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
-final double cellSize = 20;
+final double cellSize = 24;
 
 class BoardBody extends StatelessWidget {
   final Function(PointerMoveEvent) onScroll;
@@ -117,11 +117,11 @@ class _MazeCellWidget extends StatelessWidget {
   }
 
   Color get _background {
-    switch (cell.water) {
-      case CellWater.beach:
+    switch (cell.environment) {
+      case CellEnv.frontier:
+        return Color.fromARGB(40, 218, 255, 127);
+      case CellEnv.forest:
         return Color.fromARGB(100, 218, 255, 127);
-      case CellWater.full:
-        return Color.fromARGB(255, 218, 255, 127);
       default:
         return Colors.transparent;
     }
@@ -135,35 +135,35 @@ class _MazeCellWidget extends StatelessWidget {
       );
     }
 
-    switch (cell.water) {
-      case CellWater.full:
+    switch (cell.environment) {
+      case CellEnv.forest:
         return DecorationImage(
-          image: AssetImage("assets/images/maze/stones.png"),
+          image: AssetImage("assets/images/maze/forest.png"),
           fit: BoxFit.fill,
         );
-      case CellWater.upLeft:
+      case CellEnv.upLeft:
         return DecorationImage(
-          image: AssetImage("assets/images/maze/root.png"),
+          image: AssetImage("assets/images/maze/up_left.png"),
           fit: BoxFit.fill,
         );
-      case CellWater.upRight:
+      case CellEnv.upRight:
         return DecorationImage(
-          image: AssetImage("assets/images/maze/root.png"),
+          image: AssetImage("assets/images/maze/up_right.png"),
           fit: BoxFit.fill,
         );
-      case CellWater.downRight:
+      case CellEnv.downRight:
         return DecorationImage(
-          image: AssetImage("assets/images/maze/root.png"),
+          image: AssetImage("assets/images/maze/down_right.png"),
           fit: BoxFit.fill,
         );
-      case CellWater.downLeft:
+      case CellEnv.downLeft:
         return DecorationImage(
-          image: AssetImage("assets/images/maze/root.png"),
+          image: AssetImage("assets/images/maze/down_left.png"),
           fit: BoxFit.fill,
         );
-      case CellWater.beach:
+      case CellEnv.frontier:
         return DecorationImage(
-          image: AssetImage("assets/images/maze/beach_forest.png"),
+          image: AssetImage("assets/images/maze/frontier.png"),
           fit: BoxFit.fill,
         );
       default:

@@ -4,36 +4,36 @@ import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/maze/models/maze_cell.dart';
 
 final _tests = [
-  MapEntry(CellWater.full, Coordinate.directionsList),
-  MapEntry(CellWater.upRight, [
+  MapEntry(CellEnv.forest, Coordinate.directionsList),
+  MapEntry(CellEnv.upRight, [
     ...directionsExcept([Coordinate.downLeft]),
     ...translateCoordinatesBy(Coordinate.directionsList, Coordinate.up),
   ]),
-  MapEntry(CellWater.upRight, [
+  MapEntry(CellEnv.upRight, [
     ...directionsExcept([Coordinate.downLeft]),
     ...translateCoordinatesBy(Coordinate.directionsList, Coordinate.right),
   ]),
-  MapEntry(CellWater.downLeft, [
+  MapEntry(CellEnv.downLeft, [
     ...directionsExcept([Coordinate.upRight]),
     ...translateCoordinatesBy(Coordinate.directionsList, Coordinate.left),
   ]),
-  MapEntry(CellWater.downLeft, [
+  MapEntry(CellEnv.downLeft, [
     ...directionsExcept([Coordinate.upRight]),
     ...translateCoordinatesBy(Coordinate.directionsList, Coordinate.down),
   ]),
-  MapEntry(CellWater.upLeft, [
+  MapEntry(CellEnv.upLeft, [
     ...directionsExcept([Coordinate.downRight]),
     ...translateCoordinatesBy(Coordinate.directionsList, Coordinate.up),
   ]),
-  MapEntry(CellWater.upLeft, [
+  MapEntry(CellEnv.upLeft, [
     ...directionsExcept([Coordinate.downRight]),
     ...translateCoordinatesBy(Coordinate.directionsList, Coordinate.left),
   ]),
-  MapEntry(CellWater.downRight, [
+  MapEntry(CellEnv.downRight, [
     ...directionsExcept([Coordinate.upLeft]),
     ...translateCoordinatesBy(Coordinate.directionsList, Coordinate.right),
   ]),
-  MapEntry(CellWater.downRight, [
+  MapEntry(CellEnv.downRight, [
     ...directionsExcept([Coordinate.upLeft]),
     ...translateCoordinatesBy(Coordinate.directionsList, Coordinate.down),
   ]),
@@ -53,7 +53,7 @@ void _assignSingleCellWater(int x, int y, Board board) {
     final cell = board.getAt(x, y);
     for (final test in _tests) {
       if (_evaluateTest(x, y, test.value, board)) {
-        cell.water = test.key;
+        cell.environment = test.key;
         return;
       }
     }
@@ -83,23 +83,23 @@ void _assignBeaches(Board board) {
   for (var x = 0; x < board.width; x++) {
     for (var y = 0; y < board.height; y++) {
       final cell = board.getAt(x, y);
-      if (cell.water == CellWater.full) {
+      if (cell.environment == CellEnv.forest) {
         final point = Coordinate(x, y);
-        if (_isNeighborOf(point, CellWater.none, board) ||
-            _isNeighborOf(point, CellWater.upLeft, board) ||
-            _isNeighborOf(point, CellWater.upRight, board) ||
-            _isNeighborOf(point, CellWater.downRight, board) ||
-            _isNeighborOf(point, CellWater.downLeft, board)) {
-          cell.water = CellWater.beach;
+        if (_isNeighborOf(point, CellEnv.none, board) ||
+            _isNeighborOf(point, CellEnv.upLeft, board) ||
+            _isNeighborOf(point, CellEnv.upRight, board) ||
+            _isNeighborOf(point, CellEnv.downRight, board) ||
+            _isNeighborOf(point, CellEnv.downLeft, board)) {
+          cell.environment = CellEnv.frontier;
         }
       }
     }
   }
 }
 
-bool _isNeighborOf(Coordinate point, CellWater waterType, Board board) {
+bool _isNeighborOf(Coordinate point, CellEnv waterType, Board board) {
   for (final neighbor in getNeighbors(point)) {
-    if (board.includes(neighbor) && board.getAt(neighbor.x, neighbor.y).water == waterType) {
+    if (board.includes(neighbor) && board.getAt(neighbor.x, neighbor.y).environment == waterType) {
       return true;
     }
   }

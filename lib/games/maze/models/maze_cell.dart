@@ -1,9 +1,9 @@
 import 'package:bible_game/models/cell.dart';
 
-enum CellWater {
+enum CellEnv {
   none,
-  full,
-  beach,
+  forest,
+  frontier,
   upLeft,
   upRight,
   downRight,
@@ -12,7 +12,7 @@ enum CellWater {
 
 class MazeCell {
   final List<Cell> cells;
-  CellWater water = CellWater.none;
+  CellEnv environment = CellEnv.none;
 
   MazeCell(this.cells);
 
