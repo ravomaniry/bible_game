@@ -1,3 +1,4 @@
+import 'package:bible_game/games/maze/components/cache.dart';
 import 'package:bible_game/games/maze/components/cell.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/redux/view_model.dart';
@@ -7,68 +8,42 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 class MazeBoard extends StatelessWidget {
-  final Function(PointerMoveEvent) onScroll;
   final Function(Board) adjustBoardSize;
   final Pair<Size, Size> screenLimit;
+  final Function(PointerDownEvent, Board) onPointerDown;
+  final Function(PointerMoveEvent) onPointerMove;
+  final Function(PointerUpEvent) onPointerUp;
 
   MazeBoard({
-    @required this.onScroll,
     @required this.adjustBoardSize,
     @required this.screenLimit,
+    @required this.onPointerDown,
+    @required this.onPointerMove,
+    @required this.onPointerUp,
   });
 
   @override
   Widget build(BuildContext context) {
     return StoreConnector(
       converter: MazeViewModel.converter,
-      builder: (context, viewModel) => _BoardBody(
-        viewModel: viewModel,
-        onScroll: onScroll,
-        screenLimit: screenLimit,
-        adjustBoardSize: adjustBoardSize,
-      ),
+      builder: _builder,
     );
   }
-}
 
-class _BoardBody extends StatelessWidget {
-  final Function(PointerMoveEvent) onScroll;
-  final Function(Board) adjustBoardSize;
-  final Pair<Size, Size> screenLimit;
-  final MazeViewModel viewModel;
-
-  _BoardBody({
-    @required this.viewModel,
-    @required this.onScroll,
-    @required this.adjustBoardSize,
-    @required this.screenLimit,
-  });
-
-  void _onPointerDown(PointerDownEvent e) {
-    print("Pointer down ${e.delta}");
-  }
-
-  void _onPointerMove(PointerMoveEvent e) {
-    onScroll(e);
-  }
-
-  double get _width => viewModel.state.board.width * cellSize;
-
-  double get _height => viewModel.state.board.height * cellSize;
-
-  @override
-  Widget build(BuildContext context) {
-    adjustBoardSize(viewModel.state.board);
-    if (viewModel.state.board == null) {
+  Widget _builder(BuildContext context, MazeViewModel viewModel) {
+    final board = viewModel.state.board;
+    adjustBoardSize(board);
+    if (board == null) {
       return _Loader();
     } else {
       return Listener(
-        onPointerDown: _onPointerDown,
-        onPointerMove: _onPointerMove,
+        onPointerDown: (e) => onPointerDown(e, board),
+        onPointerMove: onPointerMove,
+        onPointerUp: onPointerUp,
         child: AbsorbPointer(
           child: SizedBox(
-            width: _width,
-            height: _height,
+            width: _computeBoardPxWidth(board),
+            height: _computeBoardPxHeight(board),
             child: Column(
               children: buildRows(screenLimit, viewModel),
             ),
@@ -79,14 +54,9 @@ class _BoardBody extends StatelessWidget {
   }
 }
 
-class _Loader extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text("Loading..."),
-    );
-  }
-}
+double _computeBoardPxWidth(Board board) => board.width * cellSize;
+
+double _computeBoardPxHeight(Board board) => board.height * cellSize;
 
 List<Row> buildRows(Pair<Size, Size> screenLimit, MazeViewModel viewModel) {
   final minX = screenLimit.first.width.toInt();
@@ -96,22 +66,43 @@ List<Row> buildRows(Pair<Size, Size> screenLimit, MazeViewModel viewModel) {
   final rows = List<Row>(maxY);
   for (var y = 0; y < maxY; y++) {
     if (y < minY) {
-      rows[y] = Row(children: [emptyCell]);
+      rows[y] = Row(
+        key: Key(y.toString()),
+        children: [emptyCell],
+      );
     } else {
-      final children = List<Widget>(maxX);
-      for (var x = 0; x < maxX; x++) {
-        if (x < minX) {
-          children[x] = emptyCell;
-        } else {
-          children[x] = MazeCellWidget(
-            theme: viewModel.theme,
-            cell: viewModel.state.board.getAt(x, y),
-            wordsToFind: viewModel.state.wordsToFind,
-          );
+      final boardRow = viewModel.state.board.value[y];
+      rows[y] = RowCaches.get(y, boardRow, minX, maxX);
+      if (rows[y] == null) {
+        final children = List<Widget>(maxX);
+        for (var x = 0; x < maxX; x++) {
+          if (x < minX) {
+            children[x] = emptyCell;
+          } else {
+            children[x] = MazeCellWidget(
+              key: Key("$y,$x"),
+              theme: viewModel.theme,
+              cell: viewModel.state.board.getAt(x, y),
+              wordsToFind: viewModel.state.wordsToFind,
+            );
+          }
         }
+        rows[y] = Row(
+          key: Key(y.toString()),
+          children: children,
+        );
       }
-      rows[y] = Row(children: children);
+      RowCaches.set(y, boardRow, minX, maxX, rows[y]);
     }
   }
   return rows;
+}
+
+class _Loader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text("Loading..."),
+    );
+  }
 }
