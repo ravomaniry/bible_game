@@ -89,6 +89,7 @@ class _MazeControllerState extends State<MazeController> {
                 Positioned(
                   top: _scroller.origin.height,
                   left: _scroller.origin.width,
+                  key: Key("board_positioned"),
                   child: boardBuilder(
                     adjustBoardSize: _adjustBoardSize,
                     screenLimit: _scroller.screenLimit,

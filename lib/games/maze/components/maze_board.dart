@@ -40,6 +40,7 @@ class MazeBoard extends StatelessWidget {
         onPointerDown: (e) => onPointerDown(e, board),
         onPointerMove: onPointerMove,
         onPointerUp: onPointerUp,
+        key: Key("maze_board"),
         child: AbsorbPointer(
           child: SizedBox(
             width: _computeBoardPxWidth(board),
