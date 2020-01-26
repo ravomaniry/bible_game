@@ -11,10 +11,7 @@ class Pair<F, L> {
 
   @override
   bool operator ==(other) {
-    if (other is Pair<F, L>) {
-      return first == other.first && last == other.last;
-    }
-    return false;
+    return other is Pair<F, L> && first == other.first && last == other.last;
   }
 
   @override
