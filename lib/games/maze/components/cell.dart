@@ -11,12 +11,14 @@ class MazeCellWidget extends StatelessWidget {
   final List<Word> wordsToFind;
   final AppColorTheme theme;
   final MazeCell cell;
+  final Key key;
 
   MazeCellWidget({
     @required this.wordsToFind,
     @required this.theme,
     @required this.cell,
-  });
+    @required this.key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
