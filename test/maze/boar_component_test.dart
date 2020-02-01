@@ -14,7 +14,7 @@ void main() {
     final viewModel = MazeViewModel(
       theme: AppColorTheme(),
       state: MazeState.emptyState().copyWith(
-        board: Board.create(10, 10),
+        board: Board.create(10, 10, 1),
       ),
     );
     // render at 0,0 => not render rows and cols beyond (5, 5)
@@ -43,7 +43,7 @@ void main() {
   });
 
   test("Get tapped cell", () {
-    final board = Board.create(10, 10);
+    final board = Board.create(10, 10, 1);
     board..set(0, 0, 0, 0)..set(1, 1, 0, 1)..set(4, 5, 1, 0);
     expect(getTappedCell(Offset(10, 10), board), board.getAt(0, 0));
     expect(getTappedCell(Offset(25, 10), board), null);

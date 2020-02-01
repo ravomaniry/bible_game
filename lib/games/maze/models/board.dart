@@ -7,15 +7,16 @@ class Board {
   final List<List<MazeCell>> value;
   Coordinate start;
   Coordinate end;
+  final int id;
 
-  Board(this.value);
+  Board(this.value, this.id);
 
-  factory Board.create(int width, int height) {
+  factory Board.create(int width, int height, int id) {
     final generator = (int wIndex) {
       return List<MazeCell>.generate(width, (i) => MazeCell.create(-1, -1));
     };
     final value = List<List<MazeCell>>.generate(height, generator);
-    return Board(value);
+    return Board(value, id);
   }
 
   MazeCell getAt(int x, int y) => value[y][x];
@@ -80,7 +81,7 @@ class Board {
         rows.forEach((cell) => cell.removeAt(column));
       }
     }
-    return Board(rows.toList());
+    return Board(rows.toList(), id);
   }
 
   @override

@@ -73,7 +73,7 @@ void main() {
   });
 
   test("on screen elements", () {
-    Board board = Board.create(7, 5);
+    Board board = Board.create(7, 5, 1);
     Size containerSize = Size(50, 74);
     Size origin = Size(0, 0);
     expect(getOnScreenLimit(origin, board, containerSize), Pair(Size(0, 0), Size(3, 4)));
@@ -93,7 +93,7 @@ void main() {
     tester.binding.window.devicePixelRatioTestValue = 1.0;
 
     final double yOffset = 507.0 - 460;
-    final board = Board.create(20, 20); // 480, 480
+    final board = Board.create(20, 20, 1); // 480, 480
     board..set(2, 0, 0, 0)..set(2, 1, 0, 2)..set(2, 2, 0, 2);
     final verse = BibleVerse.from(text: "Jesosy nitomany", bookId: 4, book: "Jaona", chapter: 11, verse: 33);
     final store = newMockedStore();
@@ -102,6 +102,7 @@ void main() {
     store.dispatch(GoToAction(Routes.maze));
     store.dispatch(UpdateGameVerse(verse));
     store.dispatch(UpdateMazeState(MazeState(
+      nextId: 1,
       board: board,
       wordsToFind: getWordsInScopeForMaze(verse),
     )));

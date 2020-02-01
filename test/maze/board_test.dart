@@ -47,7 +47,7 @@ void main() {
     // 4 - - - - - G
     // 5 - - - - +²H
     final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC DEF GH"));
-    final board = Board.create(6, 6);
+    final board = Board.create(6, 6, 1);
     // empty board should start in the middle (3, 0)
     final points0 = await getPossibleStartingPoints(0, board, words);
     expect(points0.map(toString).toList(), ["(0, 3)"]);
@@ -109,7 +109,7 @@ void main() {
     // 3  - - + - G
     // 4  - - - -²A
     final words = getWordsInScopeForMaze(BibleVerse.from(text: "DE FK AG ABC GH"));
-    final board = Board.create(5, 5);
+    final board = Board.create(5, 5, 1);
     board..set(0, 1, 0, 0)..set(1, 1, 0, 1);
     board..set(4, 1, 1, 0)..set(4, 0, 1, 1);
     board..set(4, 4, 2, 0)..set(4, 3, 2, 1);
@@ -126,7 +126,7 @@ void main() {
     // 2 - C - -
     // 3 - - - -
     var words = [Word.from("ABC", 0, false), Word.from("DAB", 1, false)];
-    var board = Board.create(6, 6)..set(1, 0, 0, 0)..set(1, 1, 0, 1)..set(1, 2, 0, 2);
+    var board = Board.create(6, 6, 1)..set(1, 0, 0, 0)..set(1, 1, 0, 1)..set(1, 2, 0, 2);
     expect(getOverlaps(1, words, board), []);
 
     /// Overlap on end of active word
@@ -140,7 +140,7 @@ void main() {
     // 6 - - - - - - -
     final verse = BibleVerse.from(text: "dcba ADEG fehci CEILM");
     words = getWordsInScopeForMaze(verse);
-    board = Board.create(7, 7);
+    board = Board.create(7, 7, 1);
 
     /// a.d.e.g
     board..set(0, 2, 0, 0)..set(1, 2, 0, 1)..set(2, 2, 0, 2)..set(3, 2, 0, 3);
@@ -178,7 +178,7 @@ void main() {
     // 2 b - - - - - - - - -
     // 3 c - - - - - - - - -
     // 4 - - - - - - - - - -
-    final board = Board.create(10, 10)..set(0, 0, 0, 0);
+    final board = Board.create(10, 10, 1)..set(0, 0, 0, 0);
     final List<Word> words = [
       Word.from("A", 0, false),
       Word.from("abc", 1, false),
@@ -200,7 +200,7 @@ void main() {
     // 6 - - - - - - - -
     // 7 - - - - - - - -
     final words = getWordsInScopeForMaze(BibleVerse.from(text: "Jesosy Kristy izay"));
-    final board = Board.create(8, 8);
+    final board = Board.create(8, 8, 1);
     // Jesosy (0, 2) => (5, 2)
     board..set(0, 2, 0, 0)..set(1, 2, 0, 1)..set(2, 2, 0, 2)..set(3, 2, 0, 3)..set(4, 2, 0, 4)..set(5, 2, 0, 5);
     // Kristy (7, 5) => (2, 0)
@@ -218,7 +218,7 @@ void main() {
     // 3  x - - D *
     // 4  - - - - -
     final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABCD EF Fghi"));
-    final board = Board.create(5, 5);
+    final board = Board.create(5, 5, 1);
     board..set(0, 0, 0, 0)..set(1, 1, 0, 1)..set(2, 2, 0, 2)..set(3, 3, 0, 3);
     board..set(2, 0, 1, 0)..set(3, 0, 1, 1);
     final overlaps = getOverlaps(2, words, board);
@@ -237,7 +237,7 @@ void main() {
     // 4 - - - - + - -
     // 5 - - - - - - -
     // 7 - - - - - - -
-    final board = Board.create(7, 7);
+    final board = Board.create(7, 7, 1);
     final move = Move(Coordinate(0, 0), Coordinate(1, 1), 0, 4);
     persistMove(move, board);
     expect(board.getAt(0, 0).toString(), "0 0");
@@ -248,7 +248,7 @@ void main() {
   });
 
   test("Trim board", () {
-    final board = Board.create(10, 10)..set(1, 1, 0, 0)..set(2, 2, 0, 1)..set(2, 3, 1, 0)..set(2, 4, 1, 1);
+    final board = Board.create(10, 10, 1)..set(1, 1, 0, 0)..set(2, 2, 0, 1)..set(2, 3, 1, 0)..set(2, 4, 1, 1);
     final trimmed = board.trim();
     expect(trimmed.width, 2);
     expect(trimmed.height, 4);
@@ -266,7 +266,7 @@ void main() {
     // 3 - - - - - H
     // 4 - - D E A H
     // 5 - - - - - -
-    final board = Board.create(6, 6);
+    final board = Board.create(6, 6, 1);
     var words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC DEA EFD HHH AED"));
     board..set(0, 2, 0, 0)..set(1, 2, 0, 1)..set(2, 2, 0, 2);
     board..set(3, 2, 1, 0)..set(3, 1, 1, 1)..set(3, 0, 1, 2);
@@ -331,7 +331,7 @@ void main() {
     // 2 - B - - D -
     // 3 C - - R - -
     // 4 - I H - - -
-    final board = Board.create(6, 5);
+    final board = Board.create(6, 5, 1);
     final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC CI HRDE IC"));
     board..set(2, 1, 0, 0)..set(1, 2, 0, 1)..set(0, 3, 0, 2);
     board..set(0, 3, 1, 0)..set(1, 4, 1, 1);
@@ -353,7 +353,7 @@ void main() {
     // 2 E - - - - -
     // 3 - - - Z - -
     // 4 - - - - - -
-    final board = Board.create(6, 6);
+    final board = Board.create(6, 6, 1);
     board..set(1, 1, 0, 0)..set(2, 1, 0, 1)..set(0, 2, 1, 0)..set(3, 4, 2, 0);
     assignWaters(board);
     final waters = [
@@ -382,7 +382,7 @@ void main() {
       text: "Ny filazana ny razan'i Jesosy Kristy",
     );
     for (var i = 0; i < stopAt; i++) {
-      final board = await executeAndAdvanceTimer(() => createMazeBoard(verse), Duration(minutes: 20), tester);
+      final board = await executeAndAdvanceTimer(() => createMazeBoard(verse, 1), Duration(minutes: 20), tester);
       expect(board, isNotNull);
       final words = getWordsInScopeForMaze(verse);
       for (var wIndex = 0; wIndex < words.length; wIndex++) {
@@ -403,5 +403,6 @@ void main() {
     await tester.pump(Duration(seconds: 10));
     simulateMazeRandomGame(store);
     await tester.pump(Duration(seconds: 10));
+    expect(store.state.maze.board, isNotNull);
   });
 }

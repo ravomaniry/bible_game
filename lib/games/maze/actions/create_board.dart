@@ -1,20 +1,20 @@
 import 'dart:math';
 
-import 'package:bible_game/games/maze/actions/environment.dart';
 import 'package:bible_game/games/maze/actions/board_noises.dart';
 import 'package:bible_game/games/maze/actions/board_utils.dart';
+import 'package:bible_game/games/maze/actions/environment.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/maze/models/move.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
 
-Future<Board> createMazeBoard(BibleVerse verse) async {
+Future<Board> createMazeBoard(BibleVerse verse, int id) async {
   final maxAttempts = 50;
   final words = getWordsInScopeForMaze(verse);
   final size = getBoardSize(words);
   for (var i = 0; i < maxAttempts; i++) {
-    var board = Board.create(size, size);
+    var board = Board.create(size, size, id);
     final isDone = await placeWordsInBoard(words, board);
     if (isDone) {
       board = board.trim();
