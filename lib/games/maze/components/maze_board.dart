@@ -43,11 +43,8 @@ class MazeBoard extends StatelessWidget {
         key: Key("maze_board"),
         child: AbsorbPointer(
           child: SizedBox(
-            width: _computeBoardPxWidth(board),
-            height: _computeBoardPxHeight(board),
-            child: Column(
-              children: buildRows(screenLimit, viewModel),
-            ),
+            width: computeBoardPxWidth(board),
+            height: computeBoardPxHeight(board),
           ),
         ),
       );
@@ -55,9 +52,9 @@ class MazeBoard extends StatelessWidget {
   }
 }
 
-double _computeBoardPxWidth(Board board) => board.width * cellSize;
+double computeBoardPxWidth(Board board) => board.width * cellSize;
 
-double _computeBoardPxHeight(Board board) => board.height * cellSize;
+double computeBoardPxHeight(Board board) => board.height * cellSize;
 
 List<Row> buildRows(Pair<Size, Size> screenLimit, MazeViewModel viewModel) {
   final minX = screenLimit.first.width.toInt();

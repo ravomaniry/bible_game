@@ -1,6 +1,8 @@
+import 'package:bible_game/games/maze/components/background.dart';
 import 'package:bible_game/games/maze/components/scroller.dart';
 import 'package:bible_game/games/maze/components/tap_handler.dart';
 import 'package:bible_game/games/maze/models/board.dart';
+import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/utils/pair.dart';
 import 'package:flutter/widgets.dart';
 
@@ -15,6 +17,7 @@ typedef BoardBuilder = Widget Function({
 typedef PathsBuilder = Widget Function({
   Offset start,
   Offset end,
+  List<Coordinate> selected,
 });
 
 // The aim of this class is to hold states and delegate events handling to the
@@ -89,6 +92,11 @@ class _MazeControllerState extends State<MazeController> {
                 Positioned(
                   top: _scroller.origin.height,
                   left: _scroller.origin.width,
+                  child: MazeBackground(),
+                ),
+                Positioned(
+                  top: _scroller.origin.height,
+                  left: _scroller.origin.width,
                   key: Key("board_positioned"),
                   child: boardBuilder(
                     adjustBoardSize: _adjustBoardSize,
@@ -105,6 +113,7 @@ class _MazeControllerState extends State<MazeController> {
                     child: pathsBuilder(
                       start: _tapHandler.lineStart,
                       end: _tapHandler.lineEnd,
+                      selected: _tapHandler.selectedCells,
                     ),
                   ),
                 ),

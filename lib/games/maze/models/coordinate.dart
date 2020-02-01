@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 class Coordinate {
   final int x;
   final int y;
@@ -47,6 +49,12 @@ class Coordinate {
       return c.x == x && c.y == y;
     }
   }
+
+  @override
+  int get hashCode => hashValues(x, y);
+
+  @override
+  bool operator ==(other) => other is Coordinate && other.x == x && other.y == y;
 
   @override
   String toString() {

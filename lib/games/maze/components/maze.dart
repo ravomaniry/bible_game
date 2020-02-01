@@ -28,9 +28,10 @@ class Maze extends StatelessWidget {
               onPointerMove: onPointerMove,
               onPointerUp: onPointerUp,
             ),
-            pathsBuilder: ({start, end}) => MazePaths(
+            pathsBuilder: ({start, end, selected}) => MazePaths(
               start: start,
               end: end,
+              selected: selected,
             ),
           ),
         ],
