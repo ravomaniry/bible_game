@@ -1,3 +1,4 @@
+import 'package:animator/animator.dart';
 import 'package:bible_game/app/game/components/in_game_header.dart';
 import 'package:bible_game/games/maze/components/footer.dart';
 import 'package:bible_game/games/maze/components/maze_board.dart';
@@ -36,7 +37,9 @@ class _MazeState extends State<Maze> {
 
   void _onPointerMove(PointerMoveEvent e) {
     final handled = _tapHandler.onPointerMove(e);
-    if (!handled) {
+    if (handled) {
+      _scroller.handleScreenEdge(e);
+    } else {
       _scroller.onScroll(e);
     }
   }
@@ -72,10 +75,12 @@ class _MazeState extends State<Maze> {
             return Stack(
               overflow: Overflow.clip,
               children: [
-                Positioned(
-                  top: _scroller.origin.height,
-                  left: _scroller.origin.width,
-                  key: Key("board_positioned"),
+                _ScrollAnimator(
+                  onAnimationEnd: _scroller.onAnimationEnd,
+                  start: _scroller.animationStart,
+                  end: _scroller.animationEnd,
+                  origin: _scroller.origin,
+                  shouldAnimate: _scroller.shouldAnimate,
                   child: Stack(
                     children: [
                       MazeBoard(
@@ -101,5 +106,46 @@ class _MazeState extends State<Maze> {
         ),
       ),
     );
+  }
+}
+
+class _ScrollAnimator extends StatelessWidget {
+  final bool shouldAnimate;
+  final Size start;
+  final Size end;
+  final Size origin;
+  final void Function() onAnimationEnd;
+  final Widget child;
+
+  _ScrollAnimator({
+    @required this.start,
+    @required this.end,
+    @required this.shouldAnimate,
+    @required this.onAnimationEnd,
+    @required this.child,
+    @required this.origin,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (shouldAnimate && start != null && end != null) {
+      return Animator(
+        duration: Duration(milliseconds: 600),
+        endAnimationListener: (_) => onAnimationEnd(),
+        builder: (animation) => Positioned(
+          key: Key("board_positioned"),
+          top: start.height + animation.value * (end.height - start.height),
+          left: start.width + animation.value * (end.width - start.width),
+          child: child,
+        ),
+      );
+    } else {
+      return Positioned(
+        key: Key("board_positioned"),
+        top: origin.height,
+        left: origin.width,
+        child: child,
+      );
+    }
   }
 }

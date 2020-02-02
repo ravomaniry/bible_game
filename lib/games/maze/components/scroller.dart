@@ -2,25 +2,69 @@ import 'dart:math';
 
 import 'package:bible_game/games/maze/components/cell.dart';
 import 'package:bible_game/games/maze/models/board.dart';
+import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/utils/pair.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class Scroller {
+  final _animationUnit = cellSize * 2;
   Size origin = Size(0, 0);
   Size _boardSize = Size(0, 0);
   Size _containerSize = Size(0, 0);
   Board _board;
+  bool shouldAnimate = false;
+  Size animationStart;
+  Size animationEnd;
   Pair<Size, Size> screenLimit = Pair(Size(0, 0), Size(0, 0));
   Function() reRender;
 
   void onScroll(PointerMoveEvent e) {
-    final offsets = getNextOffsets(Size(e.delta.dx, e.delta.dy), origin, _boardSize, _containerSize);
-    if (offsets != null) {
-      origin = offsets;
-      reRender();
-      _updateScreenLimit();
+    if (!shouldAnimate) {
+      final offsets =
+          getNextOffsets(Size(e.delta.dx, e.delta.dy), origin, _boardSize, _containerSize);
+      if (offsets != null) {
+        origin = offsets;
+        reRender();
+        _updateScreenLimit();
+      }
     }
+  }
+
+  void handleScreenEdge(PointerMoveEvent e) {
+    final edgeLimit = cellSize * 2;
+    var direction = Coordinate(0, 0);
+    if (e.localPosition.dx - origin.width < edgeLimit) {
+      direction = Coordinate.right;
+    } else if (e.localPosition.dx > _containerSize.width - origin.width - edgeLimit) {
+      direction = Coordinate.left;
+    }
+    if (e.localPosition.dy - origin.height < edgeLimit) {
+      direction = Coordinate(direction.x, 1);
+    } else if (e.localPosition.dy > _containerSize.height - origin.height + edgeLimit) {
+      direction = Coordinate(direction.x, -1);
+    }
+    if (direction != Coordinate(0, 0)) {
+      direction = direction;
+      final delta = Size(
+        _animationUnit * direction.x,
+        _animationUnit * direction.y,
+      );
+      animationEnd = getNextOffsets(delta, origin, _boardSize, _containerSize);
+      if (animationEnd != origin) {
+        shouldAnimate = true;
+        animationStart = origin;
+        reRender();
+      }
+    }
+  }
+
+  void onAnimationEnd() {
+    shouldAnimate = false;
+    origin = animationEnd;
+    animationStart = null;
+    animationEnd = null;
+    reRender();
   }
 
   void adjustBoardSize(Board board) {
