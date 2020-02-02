@@ -1,7 +1,7 @@
-import 'package:bible_game/models/cell.dart';
-import 'package:bible_game/models/word.dart';
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/games/words_in_word/view_model.dart';
+import 'package:bible_game/models/cell.dart';
+import 'package:bible_game/models/word.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -27,8 +27,10 @@ class WordsInWordResult extends StatelessWidget {
     if (verse != null && cells != null) {
       final List<Widget> rowWidgets = cells.map(_buildRow).toList();
       return Expanded(
-        child: Container(
-          child: ListView(children: rowWidgets),
+        child: RepaintBoundary(
+          child: Container(
+            child: ListView(children: rowWidgets),
+          ),
         ),
       );
     }

@@ -1,9 +1,9 @@
 import 'package:animator/animator.dart';
-import 'package:bible_game/games/words_in_word/components/bonuses.dart';
-import 'package:bible_game/models/word.dart';
 import 'package:bible_game/app/theme/themes.dart';
+import 'package:bible_game/games/words_in_word/components/bonuses.dart';
 import 'package:bible_game/games/words_in_word/reducer/state.dart';
 import 'package:bible_game/games/words_in_word/view_model.dart';
+import 'package:bible_game/models/word.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:matrix4_transform/matrix4_transform.dart';
@@ -35,12 +35,14 @@ class WordsInWordControls extends StatelessWidget {
             invalidateCombo: _viewModel.invalidateCombo,
             theme: _viewModel.theme,
           ),
-          _SlotsDisplay(
-            slots: state.slots,
-            onSlotClick: _viewModel.slotClickHandler,
-            shuffle: _viewModel.shuffleSlots,
-            indexes: state.slotsDisplayIndexes,
-            theme: _viewModel.theme,
+          RepaintBoundary(
+            child: _SlotsDisplay(
+              slots: state.slots,
+              onSlotClick: _viewModel.slotClickHandler,
+              shuffle: _viewModel.shuffleSlots,
+              indexes: state.slotsDisplayIndexes,
+              theme: _viewModel.theme,
+            ),
           ),
           SizedBox(height: 15),
           BonusesDisplay(_viewModel),
