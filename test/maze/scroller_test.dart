@@ -95,7 +95,8 @@ void main() {
     final double yOffset = 507.0 - 460;
     final board = Board.create(20, 20, 1); // 480, 480
     board..set(2, 0, 0, 0)..set(2, 1, 0, 2)..set(2, 2, 0, 2);
-    final verse = BibleVerse.from(text: "Jesosy nitomany", bookId: 4, book: "Jaona", chapter: 11, verse: 33);
+    final verse =
+        BibleVerse.from(text: "Jesosy nitomany", bookId: 4, book: "Jaona", chapter: 11, verse: 33);
     final store = newMockedStore();
     await tester.pumpWidget(BibleGame(store));
     await tester.pump(Duration(seconds: 1));
@@ -104,6 +105,7 @@ void main() {
     store.dispatch(UpdateMazeState(MazeState(
       nextId: 1,
       board: board,
+      backgrounds: null,
       wordsToFind: getWordsInScopeForMaze(verse),
     )));
     await tester.pump(Duration(seconds: 1));

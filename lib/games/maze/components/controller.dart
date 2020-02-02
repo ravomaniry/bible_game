@@ -1,53 +1,20 @@
-import 'package:bible_game/games/maze/components/background.dart';
+import 'package:bible_game/games/maze/components/maze_board.dart';
+import 'package:bible_game/games/maze/components/path.dart';
 import 'package:bible_game/games/maze/components/scroller.dart';
 import 'package:bible_game/games/maze/components/tap_handler.dart';
 import 'package:bible_game/games/maze/models/board.dart';
-import 'package:bible_game/games/maze/models/coordinate.dart';
-import 'package:bible_game/utils/pair.dart';
 import 'package:flutter/widgets.dart';
-
-typedef BoardBuilder = Widget Function({
-  Function(Board) adjustBoardSize,
-  Pair<Size, Size> screenLimit,
-  Function(PointerDownEvent, Board) onPointerDown,
-  Function(PointerMoveEvent) onPointerMove,
-  Function(PointerUpEvent) onPointerUp,
-});
-
-typedef PathsBuilder = Widget Function({
-  Offset start,
-  Offset end,
-  List<Coordinate> selected,
-});
 
 // The aim of this class is to hold states and delegate events handling to the
 // underlying handlers
 class MazeController extends StatefulWidget {
-  final BoardBuilder boardBuilder;
-  final PathsBuilder pathsBuilder;
-
-  MazeController({
-    @required this.boardBuilder,
-    @required this.pathsBuilder,
-  });
-
   @override
-  _MazeControllerState createState() => _MazeControllerState(
-        pathsBuilder: pathsBuilder,
-        boardBuilder: boardBuilder,
-      );
+  _MazeControllerState createState() => _MazeControllerState();
 }
 
 class _MazeControllerState extends State<MazeController> {
-  final BoardBuilder boardBuilder;
-  final PathsBuilder pathsBuilder;
   final _tapHandler = TapHandler();
   final _scroller = Scroller();
-
-  _MazeControllerState({
-    @required this.boardBuilder,
-    @required this.pathsBuilder,
-  });
 
   void _reRender() {
     setState(() {});
@@ -92,29 +59,24 @@ class _MazeControllerState extends State<MazeController> {
                 Positioned(
                   top: _scroller.origin.height,
                   left: _scroller.origin.width,
-                  child: MazeBackground(),
-                ),
-                Positioned(
-                  top: _scroller.origin.height,
-                  left: _scroller.origin.width,
                   key: Key("board_positioned"),
-                  child: boardBuilder(
-                    adjustBoardSize: _adjustBoardSize,
-                    screenLimit: _scroller.screenLimit,
-                    onPointerDown: _onPointerDown,
-                    onPointerMove: _onPointerMove,
-                    onPointerUp: _onPointerUp,
-                  ),
-                ),
-                Positioned(
-                  top: _scroller.origin.height,
-                  left: _scroller.origin.width,
-                  child: AbsorbPointer(
-                    child: pathsBuilder(
-                      start: _tapHandler.lineStart,
-                      end: _tapHandler.lineEnd,
-                      selected: _tapHandler.selectedCells,
-                    ),
+                  child: Stack(
+                    children: [
+                      MazeBoard(
+                        onPointerDown: _onPointerDown,
+                        onPointerMove: _onPointerMove,
+                        screenLimit: _scroller.screenLimit,
+                        adjustBoardSize: _adjustBoardSize,
+                        onPointerUp: _onPointerUp,
+                      ),
+                      AbsorbPointer(
+                        child: MazePaths(
+                          start: _tapHandler.lineStart,
+                          end: _tapHandler.lineEnd,
+                          selected: _tapHandler.selectedCells,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

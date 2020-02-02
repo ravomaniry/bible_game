@@ -1,4 +1,4 @@
-import 'package:bible_game/games/maze/components/cache.dart';
+import 'package:bible_game/games/maze/components/background.dart';
 import 'package:bible_game/games/maze/components/cell.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/redux/view_model.dart';
@@ -45,6 +45,7 @@ class MazeBoard extends StatelessWidget {
           child: SizedBox(
             width: computeBoardPxWidth(board),
             height: computeBoardPxHeight(board),
+            child: MazeBackground(viewModel),
           ),
         ),
       );
@@ -55,46 +56,6 @@ class MazeBoard extends StatelessWidget {
 double computeBoardPxWidth(Board board) => board.width * cellSize;
 
 double computeBoardPxHeight(Board board) => board.height * cellSize;
-
-List<Row> buildRows(Pair<Size, Size> screenLimit, MazeViewModel viewModel) {
-  final minX = screenLimit.first.width.toInt();
-  final minY = screenLimit.first.height.toInt();
-  final maxX = screenLimit.last.width.toInt();
-  final maxY = screenLimit.last.height.toInt();
-  final rows = List<Row>(maxY);
-  for (var y = 0; y < maxY; y++) {
-    if (y < minY) {
-      rows[y] = Row(
-        key: Key(y.toString()),
-        children: [emptyCell],
-      );
-    } else {
-      final boardRow = viewModel.state.board.value[y];
-      rows[y] = RowCaches.get(y, boardRow, minX, maxX);
-      if (rows[y] == null) {
-        final children = List<Widget>(maxX);
-        for (var x = 0; x < maxX; x++) {
-          if (x < minX) {
-            children[x] = emptyCell;
-          } else {
-            children[x] = MazeCellWidget(
-              key: Key("$y,$x"),
-              theme: viewModel.theme,
-              cell: viewModel.state.board.getAt(x, y),
-              wordsToFind: viewModel.state.wordsToFind,
-            );
-          }
-        }
-        rows[y] = Row(
-          key: Key(y.toString()),
-          children: children,
-        );
-      }
-      RowCaches.set(y, boardRow, minX, maxX, rows[y]);
-    }
-  }
-  return rows;
-}
 
 class _Loader extends StatelessWidget {
   @override

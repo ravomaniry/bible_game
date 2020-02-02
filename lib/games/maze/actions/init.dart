@@ -36,13 +36,15 @@ ThunkAction<AppState> _loadBackgrounds() {
     if (current == null) {
       final backgrounds = Map<String, Image>();
       final List<MapEntry<String, String>> paths = [
-        MapEntry("downLeft", "assets/images/maze/down_left.png"),
-        MapEntry("downRight", "assets/images/maze/down_right.png"),
         MapEntry("forest", "assets/images/maze/forest.png"),
         MapEntry("frontier", "assets/images/maze/frontier.png"),
+        MapEntry("downLeft", "assets/images/maze/down_left.png"),
+        MapEntry("word", "assets/images/maze/word.png"),
+        MapEntry("downRight", "assets/images/maze/down_right.png"),
+        MapEntry("downLeft2", "assets/images/maze/down_left_2.png"),
         MapEntry("upLeft", "assets/images/maze/up_left.png"),
         MapEntry("upRight", "assets/images/maze/up_right.png"),
-        MapEntry("word", "assets/images/maze/word.png"),
+        MapEntry("upRight2", "assets/images/maze/up_right_2.png"),
       ];
 
       for (final path in paths) {
