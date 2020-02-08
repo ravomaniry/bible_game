@@ -2,21 +2,18 @@ import 'package:bible_game/games/maze/components/background.dart';
 import 'package:bible_game/games/maze/components/cell.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/redux/view_model.dart';
-import 'package:bible_game/utils/pair.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 class MazeBoard extends StatelessWidget {
   final Function(Board) adjustBoardSize;
-  final Pair<Size, Size> screenLimit;
   final Function(PointerDownEvent, Board) onPointerDown;
   final Function(PointerMoveEvent) onPointerMove;
   final Function(PointerUpEvent) onPointerUp;
 
   MazeBoard({
     @required this.adjustBoardSize,
-    @required this.screenLimit,
     @required this.onPointerDown,
     @required this.onPointerMove,
     @required this.onPointerUp,

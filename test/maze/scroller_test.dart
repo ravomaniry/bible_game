@@ -19,57 +19,58 @@ void main() {
   test("Scroll limit", () {
     Size boardSize = Size(100, 200);
     Size containerSize = Size(100, 100);
-    Size current = Size(0, 0);
-    Size offsets = getNextOffsets(Size(10, 10), Size(0, 0), boardSize, null);
-    expect(offsets, null);
+    Offset current = Offset(0, 0);
+    var offset = getNextOffset(Offset(10, 10), current, boardSize, null);
+    expect(offset, null);
     // right 10, down 10 => null
-    expect(getNextOffsets(Size(10, 10), current, boardSize, containerSize), null);
+    expect(getNextOffset(Offset(10, 10), current, boardSize, containerSize), null);
     // left 10 => null
-    expect(getNextOffsets(Size(-10, 0), current, boardSize, containerSize), null);
+    expect(getNextOffset(Offset(-10, 0), current, boardSize, containerSize), null);
     // down 10, right 10, down 10, left 10 => down 10
-    expect(getNextOffsets(Size(10, -10), current, boardSize, containerSize), Size(0, -10));
-    expect(getNextOffsets(Size(-10, -10), current, boardSize, containerSize), Size(0, -10));
+    expect(getNextOffset(Offset(10, -10), current, boardSize, containerSize), Offset(0, -10));
+    expect(getNextOffset(Offset(-10, -10), current, boardSize, containerSize), Offset(0, -10));
     // Over Scroll
-    expect(getNextOffsets(Size(0, -1000), current, boardSize, containerSize), Size(0, -100));
+    expect(getNextOffset(Offset(0, -1000), current, boardSize, containerSize), Offset(0, -100));
 
     /// Scroll to the middle
     boardSize = Size(200, 220);
-    current = Size(-50, -50);
+    current = Offset(-50, -50);
     // Allow scroll to all direction (20 tested)
     // up
-    expect(getNextOffsets(Size(0, -20), current, boardSize, containerSize), Size(-50, -70));
-    expect(getNextOffsets(Size(0, -200), current, boardSize, containerSize), Size(-50, -120));
+    expect(getNextOffset(Offset(0, -20), current, boardSize, containerSize), Offset(-50, -70));
+    expect(getNextOffset(Offset(0, -200), current, boardSize, containerSize), Offset(-50, -120));
     // upRight
-    expect(getNextOffsets(Size(20, -20), current, boardSize, containerSize), Size(-30, -70));
-    expect(getNextOffsets(Size(200, -200), current, boardSize, containerSize), Size(0, -120));
+    expect(getNextOffset(Offset(20, -20), current, boardSize, containerSize), Offset(-30, -70));
+    expect(getNextOffset(Offset(200, -200), current, boardSize, containerSize), Offset(0, -120));
     // right
-    expect(getNextOffsets(Size(20, 0), current, boardSize, containerSize), Size(-30, -50));
-    expect(getNextOffsets(Size(200, 0), current, boardSize, containerSize), Size(0, -50));
+    expect(getNextOffset(Offset(20, 0), current, boardSize, containerSize), Offset(-30, -50));
+    expect(getNextOffset(Offset(200, 0), current, boardSize, containerSize), Offset(0, -50));
     // rightDown
-    expect(getNextOffsets(Size(20, 20), current, boardSize, containerSize), Size(-30, -30));
-    expect(getNextOffsets(Size(200, 200), current, boardSize, containerSize), Size(0, 0));
+    expect(getNextOffset(Offset(20, 20), current, boardSize, containerSize), Offset(-30, -30));
+    expect(getNextOffset(Offset(200, 200), current, boardSize, containerSize), Offset(0, 0));
     // down
-    expect(getNextOffsets(Size(0, 20), current, boardSize, containerSize), Size(-50, -30));
-    expect(getNextOffsets(Size(0, 200), current, boardSize, containerSize), Size(-50, 0));
+    expect(getNextOffset(Offset(0, 20), current, boardSize, containerSize), Offset(-50, -30));
+    expect(getNextOffset(Offset(0, 200), current, boardSize, containerSize), Offset(-50, 0));
     // leftDown
-    expect(getNextOffsets(Size(-20, 20), current, boardSize, containerSize), Size(-70, -30));
-    expect(getNextOffsets(Size(-200, 200), current, boardSize, containerSize), Size(-100, 0));
+    expect(getNextOffset(Offset(-20, 20), current, boardSize, containerSize), Offset(-70, -30));
+    expect(getNextOffset(Offset(-200, 200), current, boardSize, containerSize), Offset(-100, 0));
     // left
-    expect(getNextOffsets(Size(-20, 0), current, boardSize, containerSize), Size(-70, -50));
-    expect(getNextOffsets(Size(-200, 0), current, boardSize, containerSize), Size(-100, -50));
+    expect(getNextOffset(Offset(-20, 0), current, boardSize, containerSize), Offset(-70, -50));
+    expect(getNextOffset(Offset(-200, 0), current, boardSize, containerSize), Offset(-100, -50));
     // upLeft
-    expect(getNextOffsets(Size(-20, -20), current, boardSize, containerSize), Size(-70, -70));
-    expect(getNextOffsets(Size(-200, -200), current, boardSize, containerSize), Size(-100, -120));
+    expect(getNextOffset(Offset(-20, -20), current, boardSize, containerSize), Offset(-70, -70));
+    expect(
+        getNextOffset(Offset(-200, -200), current, boardSize, containerSize), Offset(-100, -120));
 
     /// Container is bigger than board
     boardSize = Size(100, 100);
     containerSize = Size(120, 80);
-    current = Size(0, 0);
-    expect(getNextOffsets(Size(0, -40), current, boardSize, containerSize), Size(0, -20));
+    current = Offset(0, 0);
+    expect(getNextOffset(Offset(0, -40), current, boardSize, containerSize), Offset(0, -20));
     containerSize = Size(80, 150);
-    expect(getNextOffsets(Size(-10, -20), current, boardSize, containerSize), Size(-10, 0));
+    expect(getNextOffset(Offset(-10, -20), current, boardSize, containerSize), Offset(-10, 0));
     containerSize = Size(120, 120);
-    expect(getNextOffsets(Size(-10, -10), current, boardSize, containerSize), null);
+    expect(getNextOffset(Offset(-10, -10), current, boardSize, containerSize), null);
   });
 
   test("on screen elements", () {
@@ -88,15 +89,20 @@ void main() {
   });
 
   testWidgets("Scroll and propose", (tester) async {
-    // This height output 300x460 (12.5 x 15)
+    // This height output 300x460 (12.5x15)
     tester.binding.window.physicalSizeTestValue = Size(300, 507);
     tester.binding.window.devicePixelRatioTestValue = 1.0;
 
     final double yOffset = 507.0 - 460;
-    final board = Board.create(20, 20, 1); // 480, 480
+    final board = Board.create(20, 20, 1); // 480x480
     board..set(2, 0, 0, 0)..set(2, 1, 0, 2)..set(2, 2, 0, 2);
-    final verse =
-        BibleVerse.from(text: "Jesosy nitomany", bookId: 4, book: "Jaona", chapter: 11, verse: 33);
+    final verse = BibleVerse.from(
+      text: "Jesosy nitomany",
+      bookId: 4,
+      book: "Jaona",
+      chapter: 11,
+      verse: 33,
+    );
     final store = newMockedStore();
     await tester.pumpWidget(BibleGame(store));
     await tester.pump(Duration(seconds: 1));
@@ -114,28 +120,27 @@ void main() {
     addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
 
     /// SCROLL
-    // Tap on 10,10 and drag 20px to the left
+    // Tap
     final positionedFinder = find.byKey(Key("board_positioned"));
-    var gesture = await tester.startGesture(Offset(4, 4 + yOffset), pointer: 5);
-    // left -10 goes to (-10, 0)
-    await gesture.moveBy(Offset(-10, 0));
+    var gesture = await tester.startGesture(Offset(100, 100 + yOffset), pointer: 5);
+    // Drag
+    await gesture.moveTo(Offset(90, 100 + yOffset));
     await tester.pump();
     Positioned positioned = positionedFinder.evaluate().single.widget;
-    expect(positioned.top, 0);
     expect(positioned.left, -10);
-    // left 20, up 20 goes to (0, 0)
-    await gesture.moveBy(Offset(20, 20));
-    await tester.pump();
-    positioned = positionedFinder.evaluate().single.widget;
     expect(positioned.top, 0);
-    expect(positioned.left, 0);
-    // (0, 0) + (-100, -100)
-    await gesture.moveBy(Offset(-100, -100));
+    // Drag
+    await gesture.moveTo(Offset(250, 120 + yOffset));
     await tester.pump();
     positioned = positionedFinder.evaluate().single.widget;
-    expect(positioned.top, -20);
-    expect(positioned.left, -100);
-
+    expect(positioned.left, 0);
+    expect(positioned.top, 0);
+    // Drag + exceed max
+    await gesture.moveTo(Offset(50, 50 + yOffset));
+    await tester.pump();
+    positioned = positionedFinder.evaluate().single.widget;
+    expect(positioned.left, -180);
+    expect(positioned.top, -48);
     await gesture.up();
   });
 }

@@ -86,7 +86,6 @@ class _MazeState extends State<Maze> {
                       MazeBoard(
                         onPointerDown: _onPointerDown,
                         onPointerMove: _onPointerMove,
-                        screenLimit: _scroller.screenLimit,
                         adjustBoardSize: _adjustBoardSize,
                         onPointerUp: _onPointerUp,
                       ),
@@ -111,9 +110,9 @@ class _MazeState extends State<Maze> {
 
 class _ScrollAnimator extends StatelessWidget {
   final bool shouldAnimate;
-  final Size start;
-  final Size end;
-  final Size origin;
+  final Offset start;
+  final Offset end;
+  final Offset origin;
   final void Function() onAnimationEnd;
   final Widget child;
 
@@ -134,16 +133,16 @@ class _ScrollAnimator extends StatelessWidget {
         endAnimationListener: (_) => onAnimationEnd(),
         builder: (animation) => Positioned(
           key: Key("board_positioned"),
-          top: start.height + animation.value * (end.height - start.height),
-          left: start.width + animation.value * (end.width - start.width),
+          top: start.dy + animation.value * (end.dy - start.dy),
+          left: start.dx + animation.value * (end.dx - start.dx),
           child: child,
         ),
       );
     } else {
       return Positioned(
         key: Key("board_positioned"),
-        top: origin.height,
-        left: origin.width,
+        top: origin.dy,
+        left: origin.dx,
         child: child,
       );
     }

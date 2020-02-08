@@ -9,24 +9,21 @@ import 'package:flutter/widgets.dart';
 
 class Scroller {
   final _animationUnit = cellSize * 2;
-  Size origin = Size(0, 0);
+  Offset origin = Offset(0, 0);
   Size _boardSize = Size(0, 0);
   Size _containerSize = Size(0, 0);
   Board _board;
   bool shouldAnimate = false;
-  Size animationStart;
-  Size animationEnd;
-  Pair<Size, Size> screenLimit = Pair(Size(0, 0), Size(0, 0));
+  Offset animationStart;
+  Offset animationEnd;
   Function() reRender;
 
   void onScroll(PointerMoveEvent e) {
     if (!shouldAnimate) {
-      final offsets =
-          getNextOffsets(Size(e.delta.dx, e.delta.dy), origin, _boardSize, _containerSize);
-      if (offsets != null) {
-        origin = offsets;
+      final nextOrigin = getNextOffset(e.delta, origin, _boardSize, _containerSize);
+      if (nextOrigin != null) {
+        origin = nextOrigin;
         reRender();
-        _updateScreenLimit();
       }
     }
   }
@@ -34,23 +31,23 @@ class Scroller {
   void handleScreenEdge(PointerMoveEvent e) {
     final edgeLimit = cellSize * 2;
     var direction = Coordinate(0, 0);
-    if (e.localPosition.dx - origin.width < edgeLimit) {
+    if (e.localPosition.dx - origin.dx < edgeLimit) {
       direction = Coordinate.right;
-    } else if (e.localPosition.dx > _containerSize.width - origin.width - edgeLimit) {
+    } else if (e.localPosition.dx > _containerSize.width - origin.dx - edgeLimit) {
       direction = Coordinate.left;
     }
-    if (e.localPosition.dy - origin.height < edgeLimit) {
+    if (e.localPosition.dy - origin.dy < edgeLimit) {
       direction = Coordinate(direction.x, 1);
-    } else if (e.localPosition.dy > _containerSize.height - origin.height + edgeLimit) {
+    } else if (e.localPosition.dy > _containerSize.height - origin.dy + edgeLimit) {
       direction = Coordinate(direction.x, -1);
     }
     if (direction != Coordinate(0, 0)) {
       direction = direction;
-      final delta = Size(
+      final delta = Offset(
         _animationUnit * direction.x,
         _animationUnit * direction.y,
       );
-      animationEnd = getNextOffsets(delta, origin, _boardSize, _containerSize);
+      animationEnd = getNextOffset(delta, origin, _boardSize, _containerSize);
       if (animationEnd != origin) {
         shouldAnimate = true;
         animationStart = origin;
@@ -71,7 +68,6 @@ class Scroller {
     if (_board != board) {
       _board = board;
       _boardSize = Size(board.width * cellSize, board.height * cellSize);
-      _updateScreenLimit();
     }
   }
 
@@ -81,26 +77,18 @@ class Scroller {
         _containerSize.width != constraints.maxWidth ||
         _containerSize.height != constraints.maxHeight) {
       _containerSize = Size(constraints.maxWidth, constraints.maxHeight);
-      _updateScreenLimit();
-    }
-  }
-
-  _updateScreenLimit() {
-    final next = getOnScreenLimit(origin, _board, _containerSize);
-    if (next != screenLimit) {
-      screenLimit = next;
     }
   }
 }
 
-Size getNextOffsets(Size delta, Size current, Size boardSize, Size containerSize) {
+Offset getNextOffset(Offset delta, Offset current, Size boardSize, Size containerSize) {
   if (containerSize != null && containerSize.width > 0) {
-    final x = current.width;
-    final y = current.height;
+    final x = current.dx;
+    final y = current.dy;
     final minX = min(0.0, containerSize.width - boardSize.width);
     final minY = min(0.0, containerSize.height - boardSize.height);
-    double nextX = max(minX, min(0, x + delta.width).round().toDouble());
-    double nextY = max(minY, min(0, y + delta.height).round().toDouble());
+    double nextX = max(minX, min(0, x + delta.dx).round().toDouble());
+    double nextY = max(minY, min(0, y + delta.dy).round().toDouble());
     final nextMaxX = boardSize.width + nextX;
     final nextMaxY = boardSize.height + nextY;
 
@@ -111,7 +99,7 @@ Size getNextOffsets(Size delta, Size current, Size boardSize, Size containerSize
       nextY = y;
     }
     if (nextX != x || nextY != y) {
-      return Size(nextX, nextY);
+      return Offset(nextX, nextY);
     }
   }
   return null;
