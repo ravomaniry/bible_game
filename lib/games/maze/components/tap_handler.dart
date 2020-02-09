@@ -26,10 +26,10 @@ class TapHandler {
     }
   }
 
-  bool onPointerMove(PointerMoveEvent e) {
+  bool onPointerMove(Offset localPosition) {
     if (_shouldHandlerMove) {
-      final nextStart = snapCursor(originalStart, e.localPosition);
-      final nextEnd = snapCursor(e.localPosition, originalStart);
+      final nextStart = snapCursor(originalStart, localPosition);
+      final nextEnd = snapCursor(localPosition, originalStart);
       if (nextStart != lineStart || nextEnd != lineEnd) {
         lineStart = nextStart;
         lineEnd = nextEnd;

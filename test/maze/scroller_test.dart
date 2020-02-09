@@ -149,8 +149,9 @@ void main() {
     tester.binding.window.devicePixelRatioTestValue = 1.0;
 
     final double yOffset = 507.0 - 460;
-    final board = Board.create(20, 20, 1); // 480x480
-    board..set(3, 3, 0, 0);
+    final drag = getDragDispatcher(tester, 0, yOffset);
+    final board = Board.create(30, 30, 1); // 480x480
+    board..set(3, 3, 0, 0)..set(4, 4, 0, 1)..set(5, 5, 0, 2);
     final verse = BibleVerse.from(
       text: "Jesosy nitomany",
       bookId: 4,
@@ -175,8 +176,8 @@ void main() {
     await tester.pump(Duration(seconds: 1));
     expect(find.byKey(Key("maze_board")), findsOneWidget);
 
-    var gesture = await tester.startGesture(Offset(80, 80 + yOffset));
     // A cell is tapped => moving the pointer do not scroll
+    var gesture = await tester.startGesture(Offset(80, 80 + yOffset));
     await gesture.moveTo(Offset(200, 80 + yOffset));
     await tester.pump();
     expect(positionOf(positionedFinder), Offset(0, 0));
@@ -194,15 +195,21 @@ void main() {
     expect(positionOf(positionedFinder), Offset(-48, 0));
     await gesture.up();
     await tester.pump(Duration(seconds: 1));
-    print("---------------");
 
     /// TOP RIGHT (only left move is allowed)
-    gesture = await tester.startGesture(Offset(80.0 - 48, 80 + yOffset));
-    await gesture.moveTo(Offset(210.0, 40 + yOffset));
-    await tester.pump();
+    await drag(32, 80, 280, 40);
     await tester.pump(animationDuration);
     expect(positionOf(positionedFinder), Offset(-96, 0));
-//    print("-----------");
+
+    /// Reposition
+    await drag(96, 98, 96, 2);
+    expect(positionOf(positionedFinder), Offset(-96, -96));
+
+    /// UP RIGHT: X & y
+    await drag(24.0 * 5 - 96, 24.0 * 5 - 96, 280, 40);
+    await tester.pump(animationDuration);
+    expect(positionOf(positionedFinder), Offset(-96.0 - 48, -48));
+
 //    await tester.pump(Duration(seconds: 1));
 //    positioned = positionedFinder.evaluate().single.widget;
 //    expect(positioned.left, 0);

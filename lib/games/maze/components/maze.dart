@@ -19,7 +19,8 @@ class Maze extends StatefulWidget {
 class _MazeState extends State<Maze> {
   final _tapHandler = TapHandler();
   final _scroller = Scroller();
-  final containerKey = GlobalKey();
+  final _containerKey = GlobalKey();
+  Offset _containerOrigin = null;
 
   void _reRender() {
     setState(() {});
@@ -37,9 +38,11 @@ class _MazeState extends State<Maze> {
   }
 
   void _onPointerMove(PointerMoveEvent e) {
-    final handled = _tapHandler.onPointerMove(e);
+    _updateContainerOrigin();
+    final localPosition = e.position - _containerOrigin - _scroller.origin;
+    final handled = _tapHandler.onPointerMove(localPosition);
     if (handled) {
-      _scroller.handleScreenEdge(e);
+      _scroller.handleScreenEdge(localPosition);
     } else {
       _scroller.onScroll(e);
     }
@@ -51,6 +54,13 @@ class _MazeState extends State<Maze> {
 
   void _adjustBoardSize(Board board) {
     _scroller.adjustBoardSize(board);
+  }
+
+  void _updateContainerOrigin() {
+    if (_containerOrigin == null) {
+      RenderBox rb = _containerKey.currentContext.findRenderObject();
+      _containerOrigin = rb.localToGlobal(Offset(0, 0));
+    }
   }
 
   @override
@@ -70,10 +80,11 @@ class _MazeState extends State<Maze> {
   Widget _buildBody() {
     return Expanded(
       child: Container(
-        key: containerKey,
+        key: _containerKey,
         child: LayoutBuilder(
-          builder: (_, constraints) {
+          builder: (context, constraints) {
             _scroller.updateContainerSize(constraints);
+
             return Stack(
               overflow: Overflow.clip,
               children: [
@@ -81,7 +92,7 @@ class _MazeState extends State<Maze> {
                   start: _scroller.animationStart,
                   end: _scroller.animationEnd,
                   origin: _scroller.origin,
-                  shouldAnimate: _scroller.shouldAnimate,
+                  shouldAnimate: _scroller.isAnimating,
                   child: Stack(
                     children: [
                       MazeBoard(

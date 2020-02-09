@@ -15,13 +15,13 @@ class Scroller {
   Size _boardSize = Size(0, 0);
   Size _containerSize = Size(0, 0);
   Board _board;
-  bool shouldAnimate = false;
+  bool isAnimating = false;
   Offset animationStart;
   Offset animationEnd;
   Function() reRender;
 
   void onScroll(PointerMoveEvent e) {
-    if (!shouldAnimate) {
+    if (!isAnimating) {
       final nextOrigin = getNextOffset(e.delta, origin, _boardSize, _containerSize);
       if (nextOrigin != null) {
         origin = nextOrigin;
@@ -30,24 +30,23 @@ class Scroller {
     }
   }
 
-  void handleScreenEdge(PointerMoveEvent e) {
+  void handleScreenEdge(Offset localPosition) {
+    if (isAnimating) {
+      return;
+    }
+
     final edgeLimit = cellSize * 2;
+    final position = localPosition + origin;
     var direction = Coordinate(0, 0);
 
-    print(e.localPosition - origin);
-
-    if (e.localPosition.dx - origin.dx < edgeLimit) {
+    if (position.dx < edgeLimit) {
       direction += Coordinate.right;
-    } else if (e.localPosition.dx + origin.dx > _containerSize.width - edgeLimit) {
+    } else if (position.dx > _containerSize.width - edgeLimit) {
       direction += Coordinate.left;
-      print("Right $direction");
     }
-    print(e.localPosition);
-    print(origin);
-    if (e.localPosition.dy - origin.dy < edgeLimit) {
+    if (position.dy < edgeLimit) {
       direction += Coordinate.down;
-      print("Up $direction");
-    } else if (e.localPosition.dy > _containerSize.height - origin.dy + edgeLimit) {
+    } else if (position.dy > _containerSize.height - edgeLimit) {
       direction += Coordinate.up;
     }
 
@@ -56,7 +55,7 @@ class Scroller {
       final delta = Offset(_animationUnit * direction.x, _animationUnit * direction.y);
       final end = getNextOffset(delta, origin, _boardSize, _containerSize);
       if (end != null && end != origin) {
-        shouldAnimate = true;
+        isAnimating = true;
         animationStart = origin;
         origin = end;
         animationEnd = end;
@@ -68,7 +67,7 @@ class Scroller {
 
   void scheduleAnimationEnd() async {
     await Future.delayed(animationDuration);
-    shouldAnimate = false;
+    isAnimating = false;
     animationStart = null;
     animationEnd = null;
     reRender();
