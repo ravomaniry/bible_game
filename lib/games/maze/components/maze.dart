@@ -20,7 +20,7 @@ class _MazeState extends State<Maze> {
   final _tapHandler = TapHandler();
   final _scroller = Scroller();
   final _containerKey = GlobalKey();
-  Offset _containerOrigin = null;
+  Offset _containerOrigin;
 
   void _reRender() {
     setState(() {});

@@ -46,6 +46,7 @@ class TapHandler {
     _shouldHandlerMove = false;
     lineStart = null;
     lineEnd = null;
+    selectedCells = null;
   }
 }
 

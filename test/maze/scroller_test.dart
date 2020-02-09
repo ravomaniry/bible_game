@@ -144,7 +144,7 @@ void main() {
     await tester.pump();
   });
 
-  testWidgets("Screen edge autoscroll", (WidgetTester tester) async {
+  testWidgets("Screen edge autoscroll + propose", (WidgetTester tester) async {
     tester.binding.window.physicalSizeTestValue = Size(300, 507);
     tester.binding.window.devicePixelRatioTestValue = 1.0;
 
@@ -209,10 +209,5 @@ void main() {
     await drag(24.0 * 5 - 96, 24.0 * 5 - 96, 280, 40);
     await tester.pump(animationDuration);
     expect(positionOf(positionedFinder), Offset(-96.0 - 48, -48));
-
-//    await tester.pump(Duration(seconds: 1));
-//    positioned = positionedFinder.evaluate().single.widget;
-//    expect(positioned.left, 0);
-//    expect(positioned.top, 0);
   });
 }
