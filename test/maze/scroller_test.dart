@@ -8,6 +8,7 @@ import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/redux/state.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/models/bible_verse.dart';
+import 'package:bible_game/test_helpers/positioned.dart';
 import 'package:bible_game/test_helpers/store.dart';
 import 'package:bible_game/utils/pair.dart';
 import 'package:flutter/cupertino.dart';
@@ -88,14 +89,13 @@ void main() {
     expect(getOnScreenLimit(origin, board, containerSize), Pair(Size(2, 1), Size(7, 5)));
   });
 
-  testWidgets("Scroll and propose", (tester) async {
+  testWidgets("Scroll", (tester) async {
     // This height output 300x460 (12.5x15)
     tester.binding.window.physicalSizeTestValue = Size(300, 507);
     tester.binding.window.devicePixelRatioTestValue = 1.0;
 
     final double yOffset = 507.0 - 460;
     final board = Board.create(20, 20, 1); // 480x480
-    board..set(2, 0, 0, 0)..set(2, 1, 0, 2)..set(2, 2, 0, 2);
     final verse = BibleVerse.from(
       text: "Jesosy nitomany",
       bookId: 4,
@@ -117,7 +117,6 @@ void main() {
     await tester.pump(Duration(seconds: 1));
     // render and should display correctly
     expect(find.byKey(Key("maze_board")), findsOneWidget);
-    addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
 
     /// SCROLL
     // Tap
@@ -142,5 +141,71 @@ void main() {
     expect(positioned.left, -180);
     expect(positioned.top, -48);
     await gesture.up();
+    await tester.pump();
+  });
+
+  testWidgets("Screen edge autoscroll", (WidgetTester tester) async {
+    tester.binding.window.physicalSizeTestValue = Size(300, 507);
+    tester.binding.window.devicePixelRatioTestValue = 1.0;
+
+    final double yOffset = 507.0 - 460;
+    final board = Board.create(20, 20, 1); // 480x480
+    board..set(3, 3, 0, 0);
+    final verse = BibleVerse.from(
+      text: "Jesosy nitomany",
+      bookId: 4,
+      book: "Jaona",
+      chapter: 11,
+      verse: 33,
+    );
+    final store = newMockedStore();
+    final positionedFinder = find.byKey(Key("board_positioned"));
+    // render
+    await tester.pumpWidget(BibleGame(store));
+    await tester.pump(Duration(seconds: 1));
+    store.dispatch(GoToAction(Routes.maze));
+    store.dispatch(UpdateGameVerse(verse));
+    store.dispatch(UpdateMazeState(MazeState(
+      nextId: 1,
+      board: board,
+      backgrounds: null,
+      wordsToFind: getWordsInScopeForMaze(verse),
+    )));
+    // render and should display correctly
+    await tester.pump(Duration(seconds: 1));
+    expect(find.byKey(Key("maze_board")), findsOneWidget);
+
+    var gesture = await tester.startGesture(Offset(80, 80 + yOffset));
+    // A cell is tapped => moving the pointer do not scroll
+    await gesture.moveTo(Offset(200, 80 + yOffset));
+    await tester.pump();
+    expect(positionOf(positionedFinder), Offset(0, 0));
+
+    /// RIGHT (animation duration is 600ms)
+    // + concurrent calls
+    await gesture.moveTo(Offset(280, 80 + yOffset));
+    await tester.pump(Duration(milliseconds: 1));
+    await tester.pump(Duration(milliseconds: 200));
+    expect(positionOf(positionedFinder), Offset(-16, 0));
+    await gesture.moveTo(Offset(205, 80 + yOffset));
+    await tester.pump(Duration(milliseconds: 100));
+    await gesture.moveTo(Offset(210, 80 + yOffset));
+    await tester.pump(Duration(milliseconds: 500));
+    expect(positionOf(positionedFinder), Offset(-48, 0));
+    await gesture.up();
+    await tester.pump(Duration(seconds: 1));
+    print("---------------");
+
+    /// TOP RIGHT (only left move is allowed)
+    gesture = await tester.startGesture(Offset(80.0 - 48, 80 + yOffset));
+    await gesture.moveTo(Offset(210.0, 40 + yOffset));
+    await tester.pump();
+    await tester.pump(animationDuration);
+    expect(positionOf(positionedFinder), Offset(-96, 0));
+//    print("-----------");
+//    await tester.pump(Duration(seconds: 1));
+//    positioned = positionedFinder.evaluate().single.widget;
+//    expect(positioned.left, 0);
+//    expect(positioned.top, 0);
   });
 }

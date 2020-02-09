@@ -19,6 +19,7 @@ class Maze extends StatefulWidget {
 class _MazeState extends State<Maze> {
   final _tapHandler = TapHandler();
   final _scroller = Scroller();
+  final containerKey = GlobalKey();
 
   void _reRender() {
     setState(() {});
@@ -69,6 +70,7 @@ class _MazeState extends State<Maze> {
   Widget _buildBody() {
     return Expanded(
       child: Container(
+        key: containerKey,
         child: LayoutBuilder(
           builder: (_, constraints) {
             _scroller.updateContainerSize(constraints);
@@ -76,7 +78,6 @@ class _MazeState extends State<Maze> {
               overflow: Overflow.clip,
               children: [
                 _ScrollAnimator(
-                  onAnimationEnd: _scroller.onAnimationEnd,
                   start: _scroller.animationStart,
                   end: _scroller.animationEnd,
                   origin: _scroller.origin,
@@ -113,14 +114,12 @@ class _ScrollAnimator extends StatelessWidget {
   final Offset start;
   final Offset end;
   final Offset origin;
-  final void Function() onAnimationEnd;
   final Widget child;
 
   _ScrollAnimator({
     @required this.start,
     @required this.end,
     @required this.shouldAnimate,
-    @required this.onAnimationEnd,
     @required this.child,
     @required this.origin,
   });
@@ -130,7 +129,6 @@ class _ScrollAnimator extends StatelessWidget {
     if (shouldAnimate && start != null && end != null) {
       return Animator(
         duration: Duration(milliseconds: 600),
-        endAnimationListener: (_) => onAnimationEnd(),
         builder: (animation) => Positioned(
           key: Key("board_positioned"),
           top: start.dy + animation.value * (end.dy - start.dy),

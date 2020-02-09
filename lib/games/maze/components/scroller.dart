@@ -7,6 +7,8 @@ import 'package:bible_game/utils/pair.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
+final animationDuration = Duration(milliseconds: 600);
+
 class Scroller {
   final _animationUnit = cellSize * 2;
   Offset origin = Offset(0, 0);
@@ -31,34 +33,42 @@ class Scroller {
   void handleScreenEdge(PointerMoveEvent e) {
     final edgeLimit = cellSize * 2;
     var direction = Coordinate(0, 0);
+
+    print(e.localPosition - origin);
+
     if (e.localPosition.dx - origin.dx < edgeLimit) {
-      direction = Coordinate.right;
-    } else if (e.localPosition.dx > _containerSize.width - origin.dx - edgeLimit) {
-      direction = Coordinate.left;
+      direction += Coordinate.right;
+    } else if (e.localPosition.dx + origin.dx > _containerSize.width - edgeLimit) {
+      direction += Coordinate.left;
+      print("Right $direction");
     }
+    print(e.localPosition);
+    print(origin);
     if (e.localPosition.dy - origin.dy < edgeLimit) {
-      direction = Coordinate(direction.x, 1);
+      direction += Coordinate.down;
+      print("Up $direction");
     } else if (e.localPosition.dy > _containerSize.height - origin.dy + edgeLimit) {
-      direction = Coordinate(direction.x, -1);
+      direction += Coordinate.up;
     }
+
     if (direction != Coordinate(0, 0)) {
       direction = direction;
-      final delta = Offset(
-        _animationUnit * direction.x,
-        _animationUnit * direction.y,
-      );
-      animationEnd = getNextOffset(delta, origin, _boardSize, _containerSize);
-      if (animationEnd != origin) {
+      final delta = Offset(_animationUnit * direction.x, _animationUnit * direction.y);
+      final end = getNextOffset(delta, origin, _boardSize, _containerSize);
+      if (end != null && end != origin) {
         shouldAnimate = true;
         animationStart = origin;
+        origin = end;
+        animationEnd = end;
         reRender();
+        scheduleAnimationEnd();
       }
     }
   }
 
-  void onAnimationEnd() {
+  void scheduleAnimationEnd() async {
+    await Future.delayed(animationDuration);
     shouldAnimate = false;
-    origin = animationEnd;
     animationStart = null;
     animationEnd = null;
     reRender();
