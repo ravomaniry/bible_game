@@ -7,6 +7,7 @@ import 'package:bible_game/games/maze/models/maze_cell.dart';
 import 'package:flutter/widgets.dart';
 
 class TapHandler {
+  Function(List<Coordinate>) propose;
   bool _shouldHandlerMove = false;
   Function() reRender;
   Offset originalStart;
@@ -46,6 +47,9 @@ class TapHandler {
     _shouldHandlerMove = false;
     lineStart = null;
     lineEnd = null;
+    if (selectedCells != null && selectedCells.isNotEmpty) {
+      propose(selectedCells);
+    }
     selectedCells = null;
   }
 }

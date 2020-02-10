@@ -1,18 +1,17 @@
-import 'package:bible_game/games/maze/components/background.dart';
 import 'package:bible_game/games/maze/components/cell.dart';
 import 'package:bible_game/games/maze/models/board.dart';
-import 'package:bible_game/games/maze/redux/view_model.dart';
+import 'package:bible_game/games/maze/redux/board_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
-class MazeBoard extends StatelessWidget {
+class MazeListener extends StatelessWidget {
   final Function(Board) adjustBoardSize;
   final Function(PointerDownEvent, Board) onPointerDown;
   final Function(PointerMoveEvent) onPointerMove;
   final Function(PointerUpEvent) onPointerUp;
 
-  MazeBoard({
+  MazeListener({
     @required this.adjustBoardSize,
     @required this.onPointerDown,
     @required this.onPointerMove,
@@ -22,12 +21,12 @@ class MazeBoard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector(
-      converter: MazeViewModel.converter,
+      converter: BoardViewModel.converter,
       builder: _builder,
     );
   }
 
-  Widget _builder(BuildContext context, MazeViewModel viewModel) {
+  Widget _builder(BuildContext context, BoardViewModel viewModel) {
     final board = viewModel.state.board;
     adjustBoardSize(board);
     if (board == null) {
@@ -42,7 +41,6 @@ class MazeBoard extends StatelessWidget {
           child: SizedBox(
             width: computeBoardPxWidth(board),
             height: computeBoardPxHeight(board),
-            child: MazeBackground(viewModel),
           ),
         ),
       );

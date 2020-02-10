@@ -15,12 +15,12 @@ final _selectPaint = Paint()
   ..color = Colors.white
   ..strokeWidth = 4;
 
-class MazePaths extends StatelessWidget {
+class MazeSelection extends StatelessWidget {
   final Offset start;
   final Offset end;
   final List<Coordinate> selected;
 
-  MazePaths({
+  MazeSelection({
     @required this.start,
     @required this.end,
     @required this.selected,

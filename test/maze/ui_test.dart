@@ -1,4 +1,4 @@
-import 'package:bible_game/games/maze/components/path.dart';
+import 'package:bible_game/games/maze/components/canvas/selection.dart';
 import 'package:bible_game/games/maze/components/tap_handler.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';

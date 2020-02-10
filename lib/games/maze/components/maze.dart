@@ -1,26 +1,54 @@
 import 'package:animator/animator.dart';
+import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/game/components/in_game_header.dart';
+import 'package:bible_game/games/maze/components/canvas/background.dart';
+import 'package:bible_game/games/maze/components/canvas/selection.dart';
+import 'package:bible_game/games/maze/components/canvas/words.dart';
+import 'package:bible_game/games/maze/components/canvas/words_bg.dart';
 import 'package:bible_game/games/maze/components/footer.dart';
 import 'package:bible_game/games/maze/components/maze_board.dart';
-import 'package:bible_game/games/maze/components/path.dart';
 import 'package:bible_game/games/maze/components/scroller.dart';
 import 'package:bible_game/games/maze/components/tap_handler.dart';
 import 'package:bible_game/games/maze/models/board.dart';
+import 'package:bible_game/games/maze/models/coordinate.dart';
+import 'package:bible_game/games/maze/redux/view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 
 // The aim of this class is to hold states and delegate events handling to the
 // underlying handlers
-class Maze extends StatefulWidget {
+
+class Maze extends StatelessWidget {
   @override
-  _MazeState createState() => _MazeState();
+  Widget build(BuildContext context) {
+    return StoreConnector<AppState, MazeViewModel>(
+      converter: MazeViewModel.converter,
+      rebuildOnChange: false,
+      builder: (BuildContext context, MazeViewModel viewModel) => MazeController(
+        viewModel.propose,
+      ),
+    );
+  }
 }
 
-class _MazeState extends State<Maze> {
+class MazeController extends StatefulWidget {
+  final Function(List<Coordinate>) _propose;
+
+  MazeController(this._propose);
+
+  @override
+  _MazeState createState() => _MazeState(_propose);
+}
+
+class _MazeState extends State<MazeController> {
   final _tapHandler = TapHandler();
   final _scroller = Scroller();
   final _containerKey = GlobalKey();
+  final Function(List<Coordinate> cells) _propose;
   Offset _containerOrigin;
+
+  _MazeState(this._propose);
 
   void _reRender() {
     setState(() {});
@@ -31,6 +59,7 @@ class _MazeState extends State<Maze> {
     super.initState();
     _scroller.reRender = _reRender;
     _tapHandler.reRender = _reRender;
+    _tapHandler.propose = _propose;
   }
 
   void _onPointerDown(PointerDownEvent e, Board board) {
@@ -95,18 +124,19 @@ class _MazeState extends State<Maze> {
                   shouldAnimate: _scroller.isAnimating,
                   child: Stack(
                     children: [
-                      MazeBoard(
+                      MazeBackground(),
+                      MazeWordsBackground(),
+                      MazeWords(),
+                      MazeSelection(
+                        start: _tapHandler.lineStart,
+                        end: _tapHandler.lineEnd,
+                        selected: _tapHandler.selectedCells,
+                      ),
+                      MazeListener(
                         onPointerDown: _onPointerDown,
                         onPointerMove: _onPointerMove,
                         adjustBoardSize: _adjustBoardSize,
                         onPointerUp: _onPointerUp,
-                      ),
-                      AbsorbPointer(
-                        child: MazePaths(
-                          start: _tapHandler.lineStart,
-                          end: _tapHandler.lineEnd,
-                          selected: _tapHandler.selectedCells,
-                        ),
                       ),
                     ],
                   ),

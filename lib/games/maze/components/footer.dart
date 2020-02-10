@@ -1,7 +1,7 @@
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
-import 'package:bible_game/games/maze/redux/view_model.dart';
+import 'package:bible_game/games/maze/redux/board_view_model.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -15,12 +15,12 @@ class Footer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector(
-      converter: MazeViewModel.converter,
+      converter: BoardViewModel.converter,
       builder: _builder,
     );
   }
 
-  Widget _builder(_, MazeViewModel viewModel) {
+  Widget _builder(_, BoardViewModel viewModel) {
     final theme = viewModel.theme;
     final board = viewModel.state.board;
     final wordsToFind = viewModel.state.wordsToFind;
