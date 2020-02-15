@@ -1,3 +1,4 @@
+import 'dart:isolate';
 import 'dart:math';
 
 import 'package:bible_game/games/maze/actions/board_noises.dart';
@@ -9,16 +10,38 @@ import 'package:bible_game/games/maze/models/move.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
 
+class IsolateArgs {
+  final int id;
+  final BibleVerse verse;
+  final SendPort sendPort;
+
+  IsolateArgs(this.id, this.verse, this.sendPort);
+}
+
 Future<Board> createMazeBoard(BibleVerse verse, int id) async {
+  final port = ReceivePort();
+  final isolate = await Isolate.spawn(_isolateEntryPoint, IsolateArgs(id, verse, port.sendPort));
+  final Board board = await port.first;
+  port.close();
+  isolate.kill(priority: Isolate.immediate);
+  return board;
+}
+
+void _isolateEntryPoint(IsolateArgs args) {
+  final board = _createBoard(args.verse, args.id);
+  args.sendPort.send(board);
+}
+
+Board _createBoard(BibleVerse verse, int id) {
   final maxAttempts = 50;
   final words = getWordsInScopeForMaze(verse);
   final size = getBoardSize(words);
   for (var i = 0; i < maxAttempts; i++) {
     var board = Board.create(size, size, id);
-    final isDone = await placeWordsInBoard(words, board);
+    final isDone = placeWordsInBoard(words, board);
     if (isDone) {
       board = board.trim();
-      await addNoises(board, words);
+      addNoises(board, words);
       assignWaters(board);
       return board;
     }
@@ -26,12 +49,12 @@ Future<Board> createMazeBoard(BibleVerse verse, int id) async {
   return null;
 }
 
-Future<bool> placeWordsInBoard(List<Word> words, Board board) async {
+bool placeWordsInBoard(List<Word> words, Board board) {
   final random = Random();
   final overlapProbability = 0.9;
 
   for (var index = 0; index < words.length; index++) {
-    final startingPoints = await getPossibleStartingPoints(index, board, words);
+    final startingPoints = getPossibleStartingPoints(index, board, words);
     final overlaps = getOverlaps(index, words, board);
     Move move;
     if (overlaps.isNotEmpty && random.nextDouble() <= overlapProbability) {
@@ -65,11 +88,10 @@ List<Move> getPossibleMoves(List<Coordinate> startingPoints, int index, int leng
   return possibleMoves;
 }
 
-Future<List<Coordinate>> getPossibleStartingPoints(int index, Board board, List<Word> words) async {
+List<Coordinate> getPossibleStartingPoints(int index, Board board, List<Word> words) {
   if (index == 0) {
     return [Coordinate(0, (board.height / 2).floor())];
   }
-  await Future.delayed(const Duration(milliseconds: 2));
   final lastPoint = _getLastPoint(index, board);
   final neighbors = getNeighbors(lastPoint);
   return neighbors
@@ -123,10 +145,14 @@ List<Move> getOverlaps(int index, List<Word> words, Board board) {
     for (final direction in Coordinate.directionsList) {
       if (!direction.isSameAs(prevDirection)) {
         final startingPoint = (direction * -indexes.last) + overlapPoint;
-        final isNearPrevLastPoint = isNearLastPoint(startingPoint, index, board, words, rightOffset: 0);
-        final isNearOtherLastPoints = isNearLastPoint(startingPoint, index, board, words, rightOffset: 1);
-        if (!isNearOtherLastPoints && (!isNearPrevLastPoint || startingPoint.isSameAs(overlapPoint))) {
-          final move = Move(startingPoint, direction, index, words[index].length, overlapAt: overlapPoint);
+        final isNearPrevLastPoint =
+            isNearLastPoint(startingPoint, index, board, words, rightOffset: 0);
+        final isNearOtherLastPoints =
+            isNearLastPoint(startingPoint, index, board, words, rightOffset: 1);
+        if (!isNearOtherLastPoints &&
+            (!isNearPrevLastPoint || startingPoint.isSameAs(overlapPoint))) {
+          final move =
+              Move(startingPoint, direction, index, words[index].length, overlapAt: overlapPoint);
           if (_moveIsPossible(move, words[index].length, board)) {
             moves.add(move);
           }

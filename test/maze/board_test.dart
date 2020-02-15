@@ -49,7 +49,7 @@ void main() {
     final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC DEF GH"));
     final board = Board.create(6, 6, 1);
     // empty board should start in the middle (3, 0)
-    final points0 = await getPossibleStartingPoints(0, board, words);
+    final points0 = getPossibleStartingPoints(0, board, words);
     expect(points0.map(toString).toList(), ["(0, 3)"]);
     final moves0 = getPossibleMoves(points0, 0, 4, board);
     expect(moves0.map(toString).toList(), [
@@ -60,7 +60,7 @@ void main() {
 
     // ABC word starts at (0, 0) and ends at (0,2)
     board..set(0, 0, 0, 0)..set(0, 1, 0, 1)..set(0, 2, 0, 2);
-    final points1 = await getPossibleStartingPoints(1, board, words);
+    final points1 = getPossibleStartingPoints(1, board, words);
     expect(points1.map(toString).toList(), ["(1, 2)", "(0, 3)"]);
     // place 2 chars word
     final moves1_0 = getPossibleMoves(points1, 1, 2, board);
@@ -87,12 +87,12 @@ void main() {
 
     // D.E.F 2nd word starts at (3, 1) and ends at (1, 1) and 1st word is still there
     board..set(0, 3, 1, 0)..set(1, 3, 1, 1)..set(2, 3, 1, 2);
-    final points2 = await getPossibleStartingPoints(2, board, words);
+    final points2 = getPossibleStartingPoints(2, board, words);
     expect(points2.map(toString).toList(), ["(2, 2)", "(3, 3)", "(2, 4)"]);
 
     // 3rd Word ends at the bottom right corner
     board..set(5, 4, 2, 0)..set(5, 5, 2, 1);
-    final points3 = await getPossibleStartingPoints(3, board, words);
+    final points3 = getPossibleStartingPoints(3, board, words);
     expect(points3.map(toString).toList(), ["(4, 5)"]);
     final moves3 = getPossibleMoves(points3, 3, 5, board);
     expect(moves3.map(toString).toList(), [
@@ -114,7 +114,7 @@ void main() {
     board..set(4, 1, 1, 0)..set(4, 0, 1, 1);
     board..set(4, 4, 2, 0)..set(4, 3, 2, 1);
     board..set(0, 2, 3, 0)..set(1, 2, 3, 1)..set(2, 2, 3, 2);
-    final points = await getPossibleStartingPoints(4, board, words);
+    final points = getPossibleStartingPoints(4, board, words);
     expect(points.map(toString).toList(), ["(3, 2)", "(2, 3)"]);
   });
 
@@ -202,9 +202,21 @@ void main() {
     final words = getWordsInScopeForMaze(BibleVerse.from(text: "Jesosy Kristy izay"));
     final board = Board.create(8, 8, 1);
     // Jesosy (0, 2) => (5, 2)
-    board..set(0, 2, 0, 0)..set(1, 2, 0, 1)..set(2, 2, 0, 2)..set(3, 2, 0, 3)..set(4, 2, 0, 4)..set(5, 2, 0, 5);
+    board
+      ..set(0, 2, 0, 0)
+      ..set(1, 2, 0, 1)
+      ..set(2, 2, 0, 2)
+      ..set(3, 2, 0, 3)
+      ..set(4, 2, 0, 4)
+      ..set(5, 2, 0, 5);
     // Kristy (7, 5) => (2, 0)
-    board..set(7, 5, 1, 0)..set(6, 4, 1, 1)..set(5, 3, 1, 2)..set(4, 2, 1, 3)..set(3, 1, 1, 4)..set(2, 0, 1, 5);
+    board
+      ..set(7, 5, 1, 0)
+      ..set(6, 4, 1, 1)
+      ..set(5, 3, 1, 2)
+      ..set(4, 2, 1, 3)
+      ..set(3, 1, 1, 4)
+      ..set(2, 0, 1, 5);
     // Overlap would be on I if it was allowed
     final overlaps = getOverlaps(2, words, board);
     expect(overlaps, []);
@@ -223,7 +235,7 @@ void main() {
     board..set(2, 0, 1, 0)..set(3, 0, 1, 1);
     final overlaps = getOverlaps(2, words, board);
     expect(overlaps, []);
-    final startingPoints = await getPossibleStartingPoints(2, board, words);
+    final startingPoints = getPossibleStartingPoints(2, board, words);
     final moves = getPossibleMoves(startingPoints, 0, 4, board).map(toString).toList();
     expect(moves, ["(4, 0, 0, 1, 0, 4)"]);
   });
@@ -248,7 +260,11 @@ void main() {
   });
 
   test("Trim board", () {
-    final board = Board.create(10, 10, 1)..set(1, 1, 0, 0)..set(2, 2, 0, 1)..set(2, 3, 1, 0)..set(2, 4, 1, 1);
+    final board = Board.create(10, 10, 1)
+      ..set(1, 1, 0, 0)
+      ..set(2, 2, 0, 1)
+      ..set(2, 3, 1, 0)
+      ..set(2, 4, 1, 1);
     final trimmed = board.trim();
     expect(trimmed.width, 2);
     expect(trimmed.height, 4);
@@ -298,7 +314,8 @@ void main() {
       "3 1,3 2",
       "3 2,3 2",
     ]);
-    final moves = await executeAndAdvanceTimer(() => getOverlapNoiseMoves(board, words), Duration(seconds: 1), tester);
+    final moves = await executeAndAdvanceTimer(
+        () => getOverlapNoiseMoves(board, words), Duration(seconds: 1), tester);
     expect(moves.map(toString).toList(), [
       // 0 0, 0 0
       "(0, 2, 0, -1, 0, 3)",
@@ -337,7 +354,8 @@ void main() {
     board..set(0, 3, 1, 0)..set(1, 4, 1, 1);
     board..set(2, 4, 2, 0)..set(3, 3, 2, 1)..set(4, 2, 2, 2)..set(5, 1, 2, 3);
     board..set(5, 0, 3, 0)..set(4, 0, 3, 1);
-    final moves = await executeAndAdvanceTimer(() => getOverlapNoiseMoves(board, words), Duration(seconds: 1), tester);
+    final moves = await executeAndAdvanceTimer(
+        () => getOverlapNoiseMoves(board, words), Duration(seconds: 1), tester);
     expect(moves.map(toString).toList(), [
       "(2, 1, -1, 0, 0, 3)",
       "(0, 1, 0, 1, 0, 3)",
@@ -357,12 +375,47 @@ void main() {
     board..set(1, 1, 0, 0)..set(2, 1, 0, 1)..set(0, 2, 1, 0)..set(3, 4, 2, 0);
     assignWaters(board);
     final waters = [
-      [CellEnv.upLeft, CellEnv.none, CellEnv.none, CellEnv.upRight, CellEnv.frontier, CellEnv.forest],
+      [
+        CellEnv.upLeft,
+        CellEnv.none,
+        CellEnv.none,
+        CellEnv.upRight,
+        CellEnv.frontier,
+        CellEnv.forest
+      ],
       [CellEnv.none, CellEnv.none, CellEnv.none, CellEnv.none, CellEnv.frontier, CellEnv.forest],
-      [CellEnv.none, CellEnv.none, CellEnv.none, CellEnv.downRight, CellEnv.frontier, CellEnv.forest],
-      [CellEnv.none, CellEnv.downRight, CellEnv.none, CellEnv.none, CellEnv.upRight, CellEnv.frontier],
-      [CellEnv.frontier, CellEnv.frontier, CellEnv.none, CellEnv.none, CellEnv.none, CellEnv.frontier],
-      [CellEnv.forest, CellEnv.frontier, CellEnv.downLeft, CellEnv.none, CellEnv.downRight, CellEnv.frontier],
+      [
+        CellEnv.none,
+        CellEnv.none,
+        CellEnv.none,
+        CellEnv.downRight,
+        CellEnv.frontier,
+        CellEnv.forest
+      ],
+      [
+        CellEnv.none,
+        CellEnv.downRight,
+        CellEnv.none,
+        CellEnv.none,
+        CellEnv.upRight,
+        CellEnv.frontier
+      ],
+      [
+        CellEnv.frontier,
+        CellEnv.frontier,
+        CellEnv.none,
+        CellEnv.none,
+        CellEnv.none,
+        CellEnv.frontier
+      ],
+      [
+        CellEnv.forest,
+        CellEnv.frontier,
+        CellEnv.downLeft,
+        CellEnv.none,
+        CellEnv.downRight,
+        CellEnv.frontier
+      ],
     ];
     for (var x = 0; x < board.width; x++) {
       for (var y = 0; y < board.height; y++) {
@@ -371,7 +424,7 @@ void main() {
     }
   });
 
-  testWidgets("Create the board many times and expect 100% succees", (WidgetTester tester) async {
+  test("Create the board many times and expect 100% succees", () async {
     final now = DateTime.now().millisecondsSinceEpoch;
     final stopAt = 100;
     final verse = BibleVerse.from(
@@ -382,8 +435,10 @@ void main() {
       text: "Ny filazana ny razan'i Jesosy Kristy",
     );
     for (var i = 0; i < stopAt; i++) {
-      final board = await executeAndAdvanceTimer(() => createMazeBoard(verse, 1), Duration(minutes: 20), tester);
+      // board should not be null
+      final board = await createMazeBoard(verse, 1);
       expect(board, isNotNull);
+      // all the chars are in the board
       final words = getWordsInScopeForMaze(verse);
       for (var wIndex = 0; wIndex < words.length; wIndex++) {
         final word = words[wIndex];
@@ -393,6 +448,18 @@ void main() {
       }
     }
     print("֎ Tesed init maze $stopAt times in ${DateTime.now().millisecondsSinceEpoch - now} ms");
+  });
+
+  test("Create board once", () async {
+    final verse = BibleVerse.from(
+      book: "Jaona",
+      bookId: 4,
+      chapter: 1,
+      verse: 1,
+      text: "Ny filazana ny razan'i Jesosy Kristy",
+    );
+    final board = await createMazeBoard(verse, 1);
+    expect(board, isNotNull);
   });
 
   testWidgets("Maze game init", (WidgetTester tester) async {
