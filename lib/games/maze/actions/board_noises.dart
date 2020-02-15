@@ -8,11 +8,11 @@ import 'package:bible_game/games/maze/models/move.dart';
 import 'package:bible_game/models/cell.dart';
 import 'package:bible_game/models/word.dart';
 
-Future addNoises(Board board, List<Word> words) async {
+void addNoises(Board board, List<Word> words) {
   final noiseRatio = 2;
   final minNoisesNum = 10;
   final random = Random();
-  final overlapMoves = await getOverlapNoiseMoves(board, words);
+  final overlapMoves = getOverlapNoiseMoves(board, words);
   final remainingMoves = List<Move>.from(overlapMoves);
   final stopAt = overlapMoves.length - max(minNoisesNum, words.length * noiseRatio);
   while (remainingMoves.length > stopAt) {
@@ -24,9 +24,9 @@ Future addNoises(Board board, List<Word> words) async {
   }
 }
 
-Future<List<Move>> getOverlapNoiseMoves(Board board, List<Word> words) async {
+List<Move> getOverlapNoiseMoves(Board board, List<Word> words) {
   final refs = getNoiseOverlapRefs(words);
-  final moves = await getAllPossibleNoiseOverlapMoves(board, words, refs);
+  final moves = getAllPossibleNoiseOverlapMoves(board, words, refs);
   return getUniqueMoves(moves);
 }
 
@@ -52,17 +52,17 @@ List<MazeCell> getNoiseOverlapRefs(List<Word> words) {
   return allOverlaps;
 }
 
-Future<List<Move>> getAllPossibleNoiseOverlapMoves(Board board, List<Word> words, List<MazeCell> refs) async {
+List<Move> getAllPossibleNoiseOverlapMoves(Board board, List<Word> words, List<MazeCell> refs) {
   final List<Move> moves = [];
   for (final ref in refs) {
     final delta = _getPossibleNoiseOverlapMoves(words, board, ref);
     moves.addAll(delta);
   }
-  await Future.delayed(const Duration(milliseconds: 1));
   return moves;
 }
 
-List<List<int>> getOverlapIndexes(Word placed, Word toPlace, {int leftOffset = 1, int rightOffset = 1}) {
+List<List<int>> getOverlapIndexes(Word placed, Word toPlace,
+    {int leftOffset = 1, int rightOffset = 1}) {
   final List<List<int>> overlaps = [];
   for (var iPlaced = leftOffset; iPlaced < placed.length; iPlaced++) {
     for (var iToPlace = 0; iToPlace < toPlace.length - rightOffset; iToPlace++) {
@@ -94,7 +94,8 @@ List<Move> _getPossibleNoiseOverlapMoves(List<Word> words, Board board, MazeCell
     for (final direction in Coordinate.directionsList) {
       final startPoint = (direction * -guestCells[i].charIndex) + overlapAt;
       final length = words[guestCells[i].wordIndex].length;
-      final move = Move(startPoint, direction, guestCells[i].wordIndex, length, overlapAt: overlapAt);
+      final move =
+          Move(startPoint, direction, guestCells[i].wordIndex, length, overlapAt: overlapAt);
       if (_noiseMoveIsPossible(move, board, words)) {
         moves.add(move);
       }
@@ -109,7 +110,8 @@ bool _noiseMoveIsPossible(Move move, Board board, List<Word> words) {
 
   if (!board.includes(move.origin) || !board.includes(end)) {
     return false;
-  } else if ((isNearFirstPoint(move.origin, board) || isNearLastPoint(move.origin, words.length, board, words)) &&
+  } else if ((isNearFirstPoint(move.origin, board) ||
+          isNearLastPoint(move.origin, words.length, board, words)) &&
       !move.origin.isSameAs(move.overlapAt)) {
     return false;
   } else if ((isNearFirstPoint(end, board) || isNearLastPoint(end, words.length, board, words)) &&
@@ -118,7 +120,8 @@ bool _noiseMoveIsPossible(Move move, Board board, List<Word> words) {
   }
 
   for (var i = 0; i < words[move.wordIndex].length; i++) {
-    if (board.isFreeAt(currentPos) || overlapIsAllowed(currentPos, move.overlapAt, board, allowMultiOverlap: true)) {
+    if (board.isFreeAt(currentPos) ||
+        overlapIsAllowed(currentPos, move.overlapAt, board, allowMultiOverlap: true)) {
       if (formDiagonalCross(currentPos, move.direction, board)) {
         return false;
       }

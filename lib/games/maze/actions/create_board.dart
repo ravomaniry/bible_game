@@ -42,7 +42,7 @@ Board _createBoard(BibleVerse verse, int id) {
     if (isDone) {
       board = board.trim();
       addNoises(board, words);
-      assignWaters(board);
+      addEnvironments(board);
       return board;
     }
   }

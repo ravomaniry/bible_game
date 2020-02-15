@@ -39,7 +39,7 @@ final _tests = [
   ]),
 ];
 
-void assignWaters(Board board) {
+void addEnvironments(Board board) {
   for (var x = 0; x < board.width; x++) {
     for (var y = 0; y < board.height; y++) {
       _assignSingleCellWater(x, y, board);
@@ -72,7 +72,9 @@ bool _evaluateTest(int x, int y, List<Coordinate> directions, Board board) {
 }
 
 List<Coordinate> directionsExcept(List<Coordinate> toExclude) {
-  return Coordinate.directionsList.where((d) => toExclude.where((x) => x.isSameAs(d)).isEmpty).toList();
+  return Coordinate.directionsList
+      .where((d) => toExclude.where((x) => x.isSameAs(d)).isEmpty)
+      .toList();
 }
 
 List<Coordinate> translateCoordinatesBy(List<Coordinate> points, Coordinate delta) {

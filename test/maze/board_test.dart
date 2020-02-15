@@ -6,12 +6,8 @@ import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/maze/models/maze_cell.dart';
 import 'package:bible_game/games/maze/models/move.dart';
-import 'package:bible_game/main.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
-import 'package:bible_game/test_helpers/async.dart';
-import 'package:bible_game/test_helpers/store.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -314,8 +310,7 @@ void main() {
       "3 1,3 2",
       "3 2,3 2",
     ]);
-    final moves = await executeAndAdvanceTimer(
-        () => getOverlapNoiseMoves(board, words), Duration(seconds: 1), tester);
+    final moves = getOverlapNoiseMoves(board, words);
     expect(moves.map(toString).toList(), [
       // 0 0, 0 0
       "(0, 2, 0, -1, 0, 3)",
@@ -354,8 +349,7 @@ void main() {
     board..set(0, 3, 1, 0)..set(1, 4, 1, 1);
     board..set(2, 4, 2, 0)..set(3, 3, 2, 1)..set(4, 2, 2, 2)..set(5, 1, 2, 3);
     board..set(5, 0, 3, 0)..set(4, 0, 3, 1);
-    final moves = await executeAndAdvanceTimer(
-        () => getOverlapNoiseMoves(board, words), Duration(seconds: 1), tester);
+    final moves = getOverlapNoiseMoves(board, words);
     expect(moves.map(toString).toList(), [
       "(2, 1, -1, 0, 0, 3)",
       "(0, 1, 0, 1, 0, 3)",
@@ -373,7 +367,7 @@ void main() {
     // 4 - - - - - -
     final board = Board.create(6, 6, 1);
     board..set(1, 1, 0, 0)..set(2, 1, 0, 1)..set(0, 2, 1, 0)..set(3, 4, 2, 0);
-    assignWaters(board);
+    addEnvironments(board);
     final waters = [
       [
         CellEnv.upLeft,
@@ -426,7 +420,7 @@ void main() {
 
   test("Create the board many times and expect 100% succees", () async {
     final now = DateTime.now().millisecondsSinceEpoch;
-    final stopAt = 100;
+    final stopAt = 80;
     final verse = BibleVerse.from(
       book: "Jaona",
       bookId: 4,
@@ -460,16 +454,5 @@ void main() {
     );
     final board = await createMazeBoard(verse, 1);
     expect(board, isNotNull);
-  });
-
-  testWidgets("Maze game init", (WidgetTester tester) async {
-    final store = newMockedStore();
-    await tester.pumpWidget(BibleGame(store));
-    await tester.pump(Duration(milliseconds: 10));
-    await tester.tap(find.byKey(Key("game_1")));
-    await tester.pump(Duration(seconds: 10));
-    simulateMazeRandomGame(store);
-    await tester.pump(Duration(seconds: 10));
-    expect(store.state.maze.board, isNotNull);
   });
 }
