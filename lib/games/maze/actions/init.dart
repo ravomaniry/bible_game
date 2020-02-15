@@ -14,7 +14,6 @@ ThunkAction<AppState> initMaze() {
   return (store) async {
     final id = DateTime.now().millisecondsSinceEpoch;
     store.dispatch(UpdateMazeState((store.state.maze ?? MazeState.emptyState()).reset(id)));
-    await Future.delayed(Duration(seconds: 1));
     final state = store.state.maze ?? MazeState.emptyState();
     final verse = store.state.game.verse;
     final wordsToFind = getWordsInScopeForMaze(verse);
