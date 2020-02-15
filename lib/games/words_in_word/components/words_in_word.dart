@@ -1,5 +1,5 @@
 import 'package:bible_game/app/game/components/in_game_header.dart';
-import 'package:bible_game/app/components/loader.dart';
+import 'package:bible_game/app/components/splash_screen.dart';
 import 'package:bible_game/games/words_in_word/components/controls.dart';
 import 'package:bible_game/games/words_in_word/components/results.dart';
 import 'package:bible_game/app/app_state.dart';
@@ -40,7 +40,7 @@ class WordsInWordBody extends StatelessWidget {
     if (_viewModel.inventory.isOpen) {
       return SizedBox.expand();
     } else if (_viewModel.verse == null) {
-      return Loader();
+      return SplashScreen();
     } else {
       return Container(
         decoration: BoxDecoration(

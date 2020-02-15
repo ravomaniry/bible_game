@@ -1,3 +1,5 @@
+import 'package:bible_game/app/components/splash_screen.dart';
+import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/games/maze/components/cell.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/redux/board_view_model.dart';
@@ -30,7 +32,7 @@ class MazeListener extends StatelessWidget {
     final board = viewModel.state.board;
     adjustBoardSize(board);
     if (board == null) {
-      return _Loader();
+      return _Loader(viewModel.theme);
     } else {
       return Listener(
         onPointerDown: (e) => onPointerDown(e, board),
@@ -53,10 +55,25 @@ double computeBoardPxWidth(Board board) => board.width * cellSize;
 double computeBoardPxHeight(Board board) => board.height * cellSize;
 
 class _Loader extends StatelessWidget {
+  final AppColorTheme _theme;
+
+  _Loader(this._theme);
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text("Loading..."),
+    return LayoutBuilder(
+      builder: _builder,
+    );
+  }
+
+  Widget _builder(BuildContext context, BoxConstraints constraints) {
+    final size = MediaQuery.of(context).size;
+    return SizedBox(
+      height: size.height / 1.6,
+      width: size.width,
+      child: Center(
+        child: SplashScreenBody(_theme),
+      ),
     );
   }
 }

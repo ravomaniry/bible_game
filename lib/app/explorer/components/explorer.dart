@@ -1,6 +1,6 @@
 import 'package:bible_game/app/game_editor/components/editor.dart';
 import 'package:bible_game/app/game_editor/components/form.dart';
-import 'package:bible_game/app/components/loader.dart';
+import 'package:bible_game/app/components/splash_screen.dart';
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/explorer/view_model.dart';
@@ -20,7 +20,7 @@ class Explorer extends StatelessWidget {
 
   Widget _builder(BuildContext context, ExplorerViewModel viewModel) {
     if (viewModel.books == null) {
-      return Loader();
+      return SplashScreen();
     }
     return Scaffold(
       appBar: AppBar(

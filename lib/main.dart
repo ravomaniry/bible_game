@@ -1,10 +1,10 @@
-import 'package:bible_game/app/confirm_quit_dialog/components/quit_single_game.dart';
-import 'package:bible_game/app/router/components/router.dart';
-import 'package:bible_game/app/inventory/components/inventory.dart';
 import 'package:bible_game/app/app_state.dart';
+import 'package:bible_game/app/confirm_quit_dialog/components/quit_single_game.dart';
 import 'package:bible_game/app/db/actions.dart';
+import 'package:bible_game/app/inventory/components/inventory.dart';
 import 'package:bible_game/app/main_reducer.dart';
 import 'package:bible_game/app/router/actions.dart';
+import 'package:bible_game/app/router/components/router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
