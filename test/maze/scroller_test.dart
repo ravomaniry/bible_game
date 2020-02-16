@@ -150,7 +150,7 @@ void main() {
 
     final double yOffset = 507.0 - 460;
     final drag = getDragDispatcher(tester, 0, yOffset);
-    final board = Board.create(30, 30, 1); // 480x480
+    final board = Board.create(22, 22, 1); // 528x528
     board..set(3, 3, 0, 0)..set(4, 4, 0, 1)..set(5, 5, 0, 2);
     final verse = BibleVerse.from(
       text: "Jesosy nitomany",
@@ -160,7 +160,7 @@ void main() {
       verse: 33,
     );
     final store = newMockedStore();
-    final positionedFinder = find.byKey(Key("board_positioned"));
+    final finder = find.byKey(Key("board_positioned"));
     // render
     await tester.pumpWidget(BibleGame(store));
     await tester.pump(Duration(seconds: 1));
@@ -180,34 +180,101 @@ void main() {
     var gesture = await tester.startGesture(Offset(80, 80 + yOffset));
     await gesture.moveTo(Offset(200, 80 + yOffset));
     await tester.pump();
-    expect(positionOf(positionedFinder), Offset(0, 0));
+    expect(positionOf(finder), Offset(0, 0));
 
     /// RIGHT (animation duration is 600ms)
     // + concurrent calls
     await gesture.moveTo(Offset(280, 80 + yOffset));
     await tester.pump(Duration(milliseconds: 1));
     await tester.pump(Duration(milliseconds: 200));
-    expect(positionOf(positionedFinder), Offset(-16, 0));
+    expect(positionOf(finder), Offset(-16, 0));
     await gesture.moveTo(Offset(205, 80 + yOffset));
     await tester.pump(Duration(milliseconds: 100));
     await gesture.moveTo(Offset(210, 80 + yOffset));
     await tester.pump(Duration(milliseconds: 500));
-    expect(positionOf(positionedFinder), Offset(-48, 0));
+    expect(positionOf(finder), Offset(-48, 0));
     await gesture.up();
     await tester.pump(Duration(seconds: 1));
 
-    /// TOP RIGHT (only left move is allowed)
+    /// UP RIGHT
+    // only left move is allowed
     await drag(32, 80, 280, 40);
     await tester.pump(animationDuration);
-    expect(positionOf(positionedFinder), Offset(-96, 0));
-
-    /// Reposition
+    expect(positionOf(finder), Offset(-96, 0));
+    // Both axis allowed
     await drag(96, 98, 96, 2);
-    expect(positionOf(positionedFinder), Offset(-96, -96));
-
-    /// UP RIGHT: X & y
+    expect(positionOf(finder), Offset(-96, -96));
     await drag(24.0 * 5 - 96, 24.0 * 5 - 96, 280, 40);
     await tester.pump(animationDuration);
-    expect(positionOf(positionedFinder), Offset(-96.0 - 48, -48));
+    expect(positionOf(finder), Offset(-144, -48));
+    // Constrained
+    await drag(0, 0, 120, 24);
+    expect(positionOf(finder), Offset(-24, -24));
+    await drag(24.0 * 4, 24.0 * 4, 24, 24);
+    await tester.pump(animationDuration);
+    expect(positionOf(finder), Offset(0, 0));
+
+    /// UP
+    await drag(96, 72, 0, 0);
+    expect(positionOf(finder), Offset(-96, -72));
+    // possible
+    await drag(24.0 * 5 - 96, 24.0 * 5 - 72, 120, 24);
+    await tester.pump(animationDuration);
+    expect(positionOf(finder), Offset(-96, -24));
+    // constrained
+    await drag(24.0 * 5 - 96, 24.0 * 4, 120, 24);
+    await tester.pump(animationDuration);
+    expect(positionOf(finder), Offset(-96, 0));
+    // impossible
+    await drag(24.0 * 5 - 96, 24.0 * 5, 120, 24);
+    await tester.pump(animationDuration);
+    expect(positionOf(finder), Offset(-96, 0));
+
+    /// UP LEFT
+    await drag(0, 172, 24, 100);
+    expect(positionOf(finder), Offset(-72, -72));
+    // all possible
+    await drag(24.0 * 5 - 72, 24.0 * 5 - 72, 10, 10);
+    await tester.pump(animationDuration);
+    expect(positionOf(finder), Offset(-24, -24));
+    // constrained
+    await drag(24.0 * 4, 24.0 * 4, 10, 10);
+    await tester.pump(animationDuration);
+    expect(positionOf(finder), Offset(0, 0));
+    // impossible
+    await drag(24.0 * 5, 24.0 * 5, 10, 10);
+    await tester.pump(animationDuration);
+    expect(positionOf(finder), Offset(0, 0));
+
+    /// LEFT
+    await drag(72, 0, 0, 0);
+    expect(positionOf(finder), Offset(-72, 0));
+    await drag(24.0 * 5 - 72, 24.0 * 5, 10, 10);
+    await tester.pump(animationDuration);
+    expect(positionOf(finder), Offset(-24, 0));
+
+    /// DOWN LEFT (container height = 432; board height = 528) => max scroll = 96
+    await drag(0, 24, 0, 0);
+    expect(positionOf(finder), Offset(-24, -24));
+    // Down possible, left constrained
+    await drag(24.0 * 4, 24.0 * 4, 10, 450);
+    await tester.pump(animationDuration);
+    expect(positionOf(finder), Offset(0, -72));
+    // Down constrained
+    await drag(24.0 * 5, 24.0 * 2, 10, 450);
+    await tester.pump(animationDuration);
+    expect(positionOf(finder), Offset(0, -96));
+
+    /// DOWN
+    await drag(0, 120, 0, 168);
+    expect(positionOf(finder), Offset(0, -48));
+    // possible
+    await drag(24.0 * 5, 24.0 * 3, 80, 450);
+    await tester.pump(animationDuration);
+    expect(positionOf(finder), Offset(0, -96));
+    // impossible
+    await drag(24.0 * 5, 24.0, 80, 450);
+    await tester.pump(animationDuration);
+    expect(positionOf(finder), Offset(0, -96));
   });
 }
