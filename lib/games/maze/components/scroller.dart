@@ -13,7 +13,7 @@ class Scroller {
   final _animationUnit = cellSize * 2;
   Offset origin = Offset(0, 0);
   Size _boardSize = Size(0, 0);
-  Size _containerSize = Size(0, 0);
+  Size containerSize = Size(0, 0);
   Board _board;
   bool isAnimating = false;
   Offset animationStart;
@@ -22,7 +22,7 @@ class Scroller {
 
   void onScroll(PointerMoveEvent e) {
     if (!isAnimating) {
-      final nextOrigin = getNextOffset(e.delta, origin, _boardSize, _containerSize);
+      final nextOrigin = getNextOffset(e.delta, origin, _boardSize, containerSize);
       if (nextOrigin != null) {
         origin = nextOrigin;
         reRender();
@@ -41,19 +41,19 @@ class Scroller {
 
     if (position.dx < edgeLimit) {
       direction += Coordinate.right;
-    } else if (position.dx > _containerSize.width - edgeLimit) {
+    } else if (position.dx > containerSize.width - edgeLimit) {
       direction += Coordinate.left;
     }
     if (position.dy < edgeLimit) {
       direction += Coordinate.down;
-    } else if (position.dy > _containerSize.height - edgeLimit) {
+    } else if (position.dy > containerSize.height - edgeLimit) {
       direction += Coordinate.up;
     }
 
     if (direction != Coordinate(0, 0)) {
       direction = direction;
       final delta = Offset(_animationUnit * direction.x, _animationUnit * direction.y);
-      final end = getNextOffset(delta, origin, _boardSize, _containerSize);
+      final end = getNextOffset(delta, origin, _boardSize, containerSize);
       if (end != null && end != origin) {
         isAnimating = true;
         animationStart = origin;
@@ -82,10 +82,10 @@ class Scroller {
 
   void updateContainerSize(BoxConstraints constraints) {
     // The size of the container does not change on runtime because screen orientation is always vertical
-    if (_containerSize == null ||
-        _containerSize.width != constraints.maxWidth ||
-        _containerSize.height != constraints.maxHeight) {
-      _containerSize = Size(constraints.maxWidth, constraints.maxHeight);
+    if (containerSize == null ||
+        containerSize.width != constraints.maxWidth ||
+        containerSize.height != constraints.maxHeight) {
+      containerSize = Size(constraints.maxWidth, constraints.maxHeight);
     }
   }
 }

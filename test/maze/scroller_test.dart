@@ -95,6 +95,7 @@ void main() {
     tester.binding.window.devicePixelRatioTestValue = 1.0;
 
     final double yOffset = 507.0 - 460;
+    final drag = getDragDispatcher(tester, 0, yOffset);
     final board = Board.create(20, 20, 1); // 480x480
     final verse = BibleVerse.from(
       text: "Jesosy nitomany",
@@ -120,28 +121,28 @@ void main() {
 
     /// SCROLL
     // Tap
-    final positionedFinder = find.byKey(Key("board_positioned"));
+    final finder = find.byKey(Key("board_positioned"));
     var gesture = await tester.startGesture(Offset(100, 100 + yOffset), pointer: 5);
     // Drag
     await gesture.moveTo(Offset(90, 100 + yOffset));
     await tester.pump();
-    Positioned positioned = positionedFinder.evaluate().single.widget;
-    expect(positioned.left, -10);
-    expect(positioned.top, 0);
+    expect(positionOf(finder), Offset(-10, 0));
     // Drag
     await gesture.moveTo(Offset(250, 120 + yOffset));
     await tester.pump();
-    positioned = positionedFinder.evaluate().single.widget;
-    expect(positioned.left, 0);
-    expect(positioned.top, 0);
+    expect(positionOf(finder), Offset(0, 0));
     // Drag + exceed max
     await gesture.moveTo(Offset(50, 50 + yOffset));
     await tester.pump();
-    positioned = positionedFinder.evaluate().single.widget;
-    expect(positioned.left, -180);
-    expect(positioned.top, -48);
+    expect(positionOf(finder), Offset(-180, -48));
     await gesture.up();
     await tester.pump();
+
+    /// Ignore scroll outside the container
+    await drag(10, 10, -1, 1);
+    expect(positionOf(finder), Offset(-180, -48));
+    await drag(10, 10, 10, 500);
+    expect(positionOf(finder), Offset(-180, -48));
   });
 
   testWidgets("Screen edge autoscroll + propose", (WidgetTester tester) async {
@@ -182,6 +183,7 @@ void main() {
     await tester.pump();
     expect(positionOf(finder), Offset(0, 0));
 
+    /// container size is 300x432
     /// RIGHT (animation duration is 600ms)
     // + concurrent calls
     await gesture.moveTo(Offset(280, 80 + yOffset));
@@ -257,11 +259,11 @@ void main() {
     await drag(0, 24, 0, 0);
     expect(positionOf(finder), Offset(-24, -24));
     // Down possible, left constrained
-    await drag(24.0 * 4, 24.0 * 4, 10, 450);
+    await drag(24.0 * 4, 24.0 * 4, 10, 430);
     await tester.pump(animationDuration);
     expect(positionOf(finder), Offset(0, -72));
     // Down constrained
-    await drag(24.0 * 5, 24.0 * 2, 10, 450);
+    await drag(24.0 * 5, 24.0 * 2, 10, 430);
     await tester.pump(animationDuration);
     expect(positionOf(finder), Offset(0, -96));
 
@@ -269,11 +271,11 @@ void main() {
     await drag(0, 120, 0, 168);
     expect(positionOf(finder), Offset(0, -48));
     // possible
-    await drag(24.0 * 5, 24.0 * 3, 80, 450);
+    await drag(24.0 * 5, 24.0 * 3, 80, 430);
     await tester.pump(animationDuration);
     expect(positionOf(finder), Offset(0, -96));
     // impossible
-    await drag(24.0 * 5, 24.0, 80, 450);
+    await drag(24.0 * 5, 24.0, 80, 430);
     await tester.pump(animationDuration);
     expect(positionOf(finder), Offset(0, -96));
   });

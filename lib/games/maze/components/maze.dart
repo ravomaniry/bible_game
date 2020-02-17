@@ -69,11 +69,13 @@ class _MazeState extends State<MazeController> {
   void _onPointerMove(PointerMoveEvent e) {
     _updateContainerOrigin();
     final localPosition = e.position - _containerOrigin - _scroller.origin;
-    final handled = _tapHandler.onPointerMove(localPosition);
-    if (handled) {
-      _scroller.handleScreenEdge(localPosition);
-    } else {
-      _scroller.onScroll(e);
+    if (_isInsideContainer(e.position)) {
+      final handled = _tapHandler.onPointerMove(localPosition);
+      if (handled) {
+        _scroller.handleScreenEdge(localPosition);
+      } else {
+        _scroller.onScroll(e);
+      }
     }
   }
 
@@ -90,6 +92,13 @@ class _MazeState extends State<MazeController> {
       RenderBox rb = _containerKey.currentContext.findRenderObject();
       _containerOrigin = rb.localToGlobal(Offset(0, 0));
     }
+  }
+
+  bool _isInsideContainer(Offset gPos) {
+    return gPos.dx >= _containerOrigin.dx &&
+        gPos.dy >= _containerOrigin.dy &&
+        (gPos.dx <= _containerOrigin.dx + _scroller.containerSize.width) &&
+        (gPos.dy <= _containerOrigin.dy + _scroller.containerSize.height);
   }
 
   @override
