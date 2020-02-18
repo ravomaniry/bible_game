@@ -22,11 +22,14 @@ import 'package:flutter_redux/flutter_redux.dart';
 class Maze extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, MazeViewModel>(
-      converter: MazeViewModel.converter,
-      rebuildOnChange: false,
-      builder: (BuildContext context, MazeViewModel viewModel) => MazeController(
-        viewModel.propose,
+    return Scaffold(
+      backgroundColor: Color.fromARGB(255, 153, 208, 70),
+      body: StoreConnector<AppState, MazeViewModel>(
+        converter: MazeViewModel.converter,
+        rebuildOnChange: false,
+        builder: (BuildContext context, MazeViewModel viewModel) => MazeController(
+          viewModel.propose,
+        ),
       ),
     );
   }
@@ -103,15 +106,12 @@ class _MazeState extends State<MazeController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color.fromARGB(255, 153, 208, 70),
-      body: Column(
-        children: [
-          InGameHeader(),
-          _buildBody(),
-          Footer(_tapHandler.selectedCells),
-        ],
-      ),
+    return Column(
+      children: [
+        InGameHeader(),
+        _buildBody(),
+        Footer(_tapHandler.selectedCells),
+      ],
     );
   }
 

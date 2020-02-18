@@ -145,7 +145,7 @@ void main() {
     expect(positionOf(finder), Offset(-180, -48));
   });
 
-  testWidgets("Screen edge autoscroll + propose", (WidgetTester tester) async {
+  testWidgets("Screen edge autoscroll", (WidgetTester tester) async {
     tester.binding.window.physicalSizeTestValue = Size(300, 507);
     tester.binding.window.devicePixelRatioTestValue = 1.0;
 
