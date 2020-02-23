@@ -15,6 +15,21 @@ void main() {
     return x.toString();
   }
 
+  test("Set and cache coordinates", () {
+    final board = Board.create(10, 10, 1);
+    expect(board.coordinateOf(0, 0), isNull);
+    board.set(2, 3, 0, 1);
+    expect(board.coordinateOf(0, 1), Coordinate(2, 3));
+    board.set(0, 0, 0, 2);
+    expect(board.coordinateOf(0, 2), Coordinate(0, 0));
+    // duplicate => ignored + another word
+    board.set(1, 1, 0, 2);
+    board.set(0, 2, 2, 0);
+    expect(board.coordinateOf(2, 0), Coordinate(0, 2));
+    expect(board.coordinateOf(0, 1), Coordinate(2, 3));
+    expect(board.coordinateOf(0, 2), Coordinate(0, 0));
+  });
+
   test("Words in scope", () {
     final verse = BibleVerse.from(
       book: "",
@@ -253,21 +268,26 @@ void main() {
     expect(board.getAt(2, 2).toString(), "0 2");
     expect(board.getAt(3, 3).toString(), "0 3");
     expect(board.getAt(4, 4).toString(), "-1 -1");
+    expect(board.coordinateOf(0, 0), Coordinate(0, 0));
+    expect(board.coordinateOf(0, 1), Coordinate(1, 1));
+    expect(board.coordinateOf(0, 2), Coordinate(2, 2));
   });
 
   test("Trim board", () {
     final board = Board.create(10, 10, 1)
-      ..set(1, 1, 0, 0)
-      ..set(2, 2, 0, 1)
+      ..set(1, 2, 0, 0)
+      ..set(2, 1, 0, 1)
       ..set(2, 3, 1, 0)
       ..set(2, 4, 1, 1);
     final trimmed = board.trim();
     expect(trimmed.width, 2);
     expect(trimmed.height, 4);
-    expect(trimmed.getAt(0, 0).contains(0, 0), true);
-    expect(trimmed.getAt(1, 1).contains(0, 1), true);
+    expect(trimmed.getAt(0, 1).contains(0, 0), true);
+    expect(trimmed.getAt(1, 0).contains(0, 1), true);
     expect(trimmed.getAt(1, 2).contains(1, 0), true);
     expect(trimmed.getAt(1, 3).contains(1, 1), true);
+    expect(trimmed.coordinateOf(0, 0), Coordinate(0, 1));
+    expect(trimmed.coordinateOf(1, 1), Coordinate(1, 3));
   });
 
   testWidgets("Add noise - Overlaps - simple", (WidgetTester tester) async {

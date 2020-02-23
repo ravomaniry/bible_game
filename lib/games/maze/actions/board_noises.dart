@@ -37,13 +37,7 @@ List<MazeCell> getNoiseOverlapRefs(List<Word> words) {
       final overlaps = getOverlapIndexes(words[w0], words[w1], leftOffset: 0, rightOffset: 0);
       for (final overlap in overlaps) {
         final ref = MazeCell.create(w0, overlap.first).concat(w1, overlap.last);
-        final isNew = allOverlaps.where((o) {
-          return (o.first.isSameAs(ref.first.wordIndex, ref.first.charIndex) &&
-                  o.last.isSameAs(ref.last.wordIndex, ref.last.charIndex)) ||
-              (o.first.isSameAs(ref.last.wordIndex, ref.last.charIndex) &&
-                  o.last.isSameAs(ref.first.wordIndex, ref.first.charIndex));
-        }).isEmpty;
-        if (isNew) {
+        if (isNewCell(ref, allOverlaps)) {
           allOverlaps.add(ref);
         }
       }
@@ -78,24 +72,30 @@ List<Move> _getPossibleNoiseOverlapMoves(List<Word> words, Board board, MazeCell
   final List<Move> moves = [];
   List<Coordinate> overlappingPoints;
   List<Cell> guestCells;
-  if (ref.first.isSameAs(ref.last.wordIndex, ref.last.charIndex)) {
-    overlappingPoints = [board.coordinateOf(ref.first.wordIndex, ref.first.charIndex)];
-    guestCells = [ref.last];
+  final first = ref.first;
+  final last = ref.last;
+  if (first.isSameAs(last.wordIndex, last.charIndex)) {
+    overlappingPoints = [board.coordinateOf(first.wordIndex, first.charIndex)];
+    guestCells = [last];
   } else {
     overlappingPoints = [
-      board.coordinateOf(ref.first.wordIndex, ref.first.charIndex),
-      board.coordinateOf(ref.last.wordIndex, ref.last.charIndex),
+      board.coordinateOf(first.wordIndex, first.charIndex),
+      board.coordinateOf(last.wordIndex, last.charIndex),
     ];
-    guestCells = [ref.last, ref.first];
+    guestCells = [last, first];
   }
-
   for (var i = 0; i < overlappingPoints.length; i++) {
     final overlapAt = overlappingPoints[i];
     for (final direction in Coordinate.directionsList) {
       final startPoint = (direction * -guestCells[i].charIndex) + overlapAt;
       final length = words[guestCells[i].wordIndex].length;
-      final move =
-          Move(startPoint, direction, guestCells[i].wordIndex, length, overlapAt: overlapAt);
+      final move = Move(
+        startPoint,
+        direction,
+        guestCells[i].wordIndex,
+        length,
+        overlapAt: overlapAt,
+      );
       if (_noiseMoveIsPossible(move, board, words)) {
         moves.add(move);
       }
@@ -118,7 +118,6 @@ bool _noiseMoveIsPossible(Move move, Board board, List<Word> words) {
       !end.isSameAs(move.overlapAt)) {
     return false;
   }
-
   for (var i = 0; i < words[move.wordIndex].length; i++) {
     if (board.isFreeAt(currentPos) ||
         overlapIsAllowed(currentPos, move.overlapAt, board, allowMultiOverlap: true)) {

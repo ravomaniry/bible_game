@@ -1,5 +1,6 @@
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
+import 'package:bible_game/games/maze/models/maze_cell.dart';
 import 'package:bible_game/games/maze/models/move.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
@@ -18,8 +19,7 @@ bool isNearFirstPoint(Coordinate point, Board board) {
   final neighbors = getNeighbors(point);
   for (final neighbor in neighbors) {
     if (board.includes(neighbor)) {
-      final cells = board.getAt(neighbor.x, neighbor.y);
-      for (final cell in cells.cells) {
+      for (final cell in board.getAt(neighbor.x, neighbor.y).cells) {
         if (cell.charIndex == 0) {
           return true;
         }
@@ -30,19 +30,24 @@ bool isNearFirstPoint(Coordinate point, Board board) {
 }
 
 List<Coordinate> getNeighbors(Coordinate point) {
-  return Coordinate.directionsList
-      .map((delta) => point + delta)
-      .where((c) => c.x == point.x || c.y == point.y)
-      .toList();
+  return [
+    point + Coordinate.up,
+    point + Coordinate.right,
+    point + Coordinate.down,
+    point + Coordinate.left,
+  ];
 }
 
-bool isNearLastPoint(Coordinate point, int index, Board board, List<Word> words, {int rightOffset = 0}) {
-  final neighbors = getNeighbors(point).where(board.includes).toList();
+bool isNearLastPoint(Coordinate point, int index, Board board, List<Word> words,
+    {int rightOffset = 0}) {
+  final neighbors = getNeighbors(point);
   for (final neighbor in neighbors) {
-    for (final cell in board.getAt(neighbor.x, neighbor.y).cells) {
-      if (cell.wordIndex >= 0 && cell.wordIndex < index - rightOffset) {
-        if (cell.charIndex == words[cell.wordIndex].length - 1) {
-          return true;
+    if (board.includes(neighbor)) {
+      for (final cell in board.getAt(neighbor.x, neighbor.y).cells) {
+        if (cell.wordIndex >= 0 && cell.wordIndex < index - rightOffset) {
+          if (cell.charIndex == words[cell.wordIndex].length - 1) {
+            return true;
+          }
         }
       }
     }
@@ -80,9 +85,11 @@ void persistMove(Move move, Board board) {
   }
 }
 
-bool overlapIsAllowed(Coordinate point, Coordinate allowOverlapAt, Board board, {bool allowMultiOverlap = false}) {
+bool overlapIsAllowed(Coordinate point, Coordinate allowOverlapAt, Board board,
+    {bool allowMultiOverlap = false}) {
   if (allowOverlapAt != null) {
-    return allowOverlapAt.isSameAs(point) && (allowMultiOverlap || !board.getAt(point.x, point.y).isOverlapping);
+    return allowOverlapAt.isSameAs(point) &&
+        (allowMultiOverlap || !board.getAt(point.x, point.y).isOverlapping);
   }
   return false;
 }
@@ -98,8 +105,30 @@ List<Move> getUniqueMoves(List<Move> moves) {
 }
 
 bool _moveIsPresentIn(Move move, List<Move> moves) {
-  return moves
-      .where((m) =>
-          m.origin.isSameAs(move.origin) && m.direction.isSameAs(move.direction) && m.wordIndex == move.wordIndex)
-      .isNotEmpty;
+  for (var i = moves.length - 1; i >= 0; i--) {
+    final existing = moves[i];
+    if (existing.wordIndex == move.wordIndex &&
+        existing.origin == move.origin &&
+        existing.direction == move.direction) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool isNewCell(MazeCell cell, List<MazeCell> existing) {
+  final first = cell.cells[0];
+  final last = cell.cells.last;
+  for (var i = 0, max = existing.length; i < max; i++) {
+    final existingItem = existing[i];
+    final existingFirst = existingItem.cells[0];
+    final existingLast = existingItem.cells.last;
+    if ((existingFirst.isSameAs(first.wordIndex, first.charIndex) &&
+            existingLast.isSameAs(last.wordIndex, last.charIndex)) ||
+        (existingFirst.isSameAs(last.wordIndex, last.charIndex) &&
+            existingLast.isSameAs(first.wordIndex, first.charIndex))) {
+      return false;
+    }
+  }
+  return true;
 }

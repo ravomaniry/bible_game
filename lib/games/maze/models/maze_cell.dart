@@ -21,8 +21,8 @@ class MazeCell {
   }
 
   bool contains(int wIndex, int cIndex) {
-    for (final cell in cells) {
-      if (cell.isSameAs(wIndex, cIndex)) {
+    for (var i = 0, max = cells.length; i < max; i++) {
+      if (cells[i].isSameAs(wIndex, cIndex)) {
         return true;
       }
     }

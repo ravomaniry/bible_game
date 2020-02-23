@@ -1,13 +1,17 @@
+import 'dart:math';
+
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/maze/models/maze_cell.dart';
 import 'package:bible_game/models/cell.dart';
 import 'package:bible_game/models/word.dart';
+import 'package:bible_game/utils/pair.dart';
 
 class Board {
   final List<List<MazeCell>> value;
   Coordinate start;
   Coordinate end;
   final int id;
+  final _coordinateMap = Map<int, Map<int, Coordinate>>();
 
   Board(this.value, this.id);
 
@@ -57,33 +61,67 @@ class Board {
   }
 
   Coordinate coordinateOf(int wordIndex, int charIndex) {
-    for (var y = 0; y < height; y++) {
-      for (var x = 0; x < width; x++) {
-        if (getAt(x, y).contains(wordIndex, charIndex)) {
-          return Coordinate(x, y);
-        }
-      }
+    final map = _coordinateMap[wordIndex];
+    if (map != null) {
+      return map[charIndex];
     }
     return null;
   }
 
   set(int x, int y, int wordIndex, int charIndex) {
     value[y][x] = value[y][x].concat(wordIndex, charIndex);
+    _updateCoordinateMap(x, y, wordIndex, charIndex);
+  }
+
+  void _updateCoordinateMap(int x, int y, int wordIndex, int charIndex) {
+    Map<int, Coordinate> map = _coordinateMap[wordIndex];
+    if (map == null) {
+      map = Map();
+      _coordinateMap[wordIndex] = Map<int, Coordinate>();
+    }
+    final coordinate = map[charIndex];
+    if (coordinate == null) {
+      _coordinateMap[wordIndex][charIndex] = Coordinate(x, y);
+    }
   }
 
   Board trim() {
-    final rows = value
-        .where(
-          (row) => !rowIsEmpty(row),
-        )
-        .map((row) => List<MazeCell>.from(row))
-        .toList();
-    for (var column = width - 1; column >= 0; column--) {
-      if (columnIsEmpty(column, rows)) {
-        rows.forEach((cell) => cell.removeAt(column));
+    final minMax = _getMinMaxCell();
+    final first = minMax.first;
+    final last = minMax.last;
+    final nextValue = List<List<MazeCell>>(last.y - first.y + 1);
+    for (var y = 0, max = last.y - first.y; y <= max; y++) {
+      nextValue[y] = value[y + first.y].getRange(first.x, last.x + 1).toList();
+    }
+    return Board(nextValue, id)._adjustCoordinateMap(_coordinateMap, first * -1);
+  }
+
+  Board _adjustCoordinateMap(Map<int, Map<int, Coordinate>> map, Coordinate delta) {
+    for (var wIndex = 0; wIndex < map.length; wIndex++) {
+      _coordinateMap[wIndex] = Map<int, Coordinate>();
+      for (var cIndex = 0, max = map[wIndex].length; cIndex < max; cIndex++) {
+        _coordinateMap[wIndex][cIndex] = map[wIndex][cIndex] + delta;
       }
     }
-    return Board(rows.toList(), id);
+    return this;
+  }
+
+  Pair<Coordinate, Coordinate> _getMinMaxCell() {
+    var minX = width;
+    var minY = height;
+    var maxX = 0;
+    var maxY = 0;
+    for (var y = 0; y < height; y++) {
+      for (var x = 0; x < width; x++) {
+        if (!value[y][x].isFree) {
+          minX = min(minX, x);
+          maxX = max(maxX, x);
+          minY = min(minX, y);
+          maxY = max(maxY, y);
+        }
+      }
+    }
+    return Pair(Coordinate(minX, minY), Coordinate(maxX, maxY));
   }
 
   @override

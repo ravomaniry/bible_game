@@ -19,13 +19,13 @@ class IsolateArgs {
 }
 
 Future<Board> createMazeBoard(BibleVerse verse, int id) async {
-//  return _createBoard(verse, id);
-  final port = ReceivePort();
-  final isolate = await Isolate.spawn(_isolateEntryPoint, IsolateArgs(id, verse, port.sendPort));
-  final Board board = await port.first;
-  port.close();
-  isolate.kill(priority: Isolate.immediate);
-  return board;
+  return _createBoard(verse, id);
+//  final port = ReceivePort();
+//  final isolate = await Isolate.spawn(_isolateEntryPoint, IsolateArgs(id, verse, port.sendPort));
+//  final Board board = await port.first;
+//  port.close();
+//  isolate.kill(priority: Isolate.immediate);
+//  return board;
 }
 
 void _isolateEntryPoint(IsolateArgs args) {
@@ -112,7 +112,9 @@ Coordinate _getLastPoint(int index, Board board) {
   // This must be done this way because of performance issue
   for (var y = 0, height = board.height; y < height; y++) {
     for (var x = 0, width = board.width; x < width; x++) {
-      for (final cell in board.value[y][x].cells) {
+      final cells = board.value[y][x].cells;
+      for (var z = 0, cellsNum = cells.length; z < cellsNum; z++) {
+        final cell = cells[z];
         if (cell.wordIndex == index - 1 && cell.charIndex > maxCharIndexSoFar) {
           maxCharIndexSoFar = cell.charIndex;
           lastPoint = Coordinate(x, y);
