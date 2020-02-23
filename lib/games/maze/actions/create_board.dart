@@ -19,13 +19,12 @@ class IsolateArgs {
 }
 
 Future<Board> createMazeBoard(BibleVerse verse, int id) async {
-  return _createBoard(verse, id);
-//  final port = ReceivePort();
-//  final isolate = await Isolate.spawn(_isolateEntryPoint, IsolateArgs(id, verse, port.sendPort));
-//  final Board board = await port.first;
-//  port.close();
-//  isolate.kill(priority: Isolate.immediate);
-//  return board;
+  final port = ReceivePort();
+  final isolate = await Isolate.spawn(_isolateEntryPoint, IsolateArgs(id, verse, port.sendPort));
+  final Board board = await port.first;
+  port.close();
+  isolate.kill(priority: Isolate.immediate);
+  return board;
 }
 
 void _isolateEntryPoint(IsolateArgs args) {
