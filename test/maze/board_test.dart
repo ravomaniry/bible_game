@@ -279,15 +279,15 @@ void main() {
       ..set(2, 1, 0, 1)
       ..set(2, 3, 1, 0)
       ..set(2, 4, 1, 1);
-    final trimmed = board.trim();
-    expect(trimmed.width, 2);
-    expect(trimmed.height, 4);
-    expect(trimmed.getAt(0, 1).contains(0, 0), true);
-    expect(trimmed.getAt(1, 0).contains(0, 1), true);
-    expect(trimmed.getAt(1, 2).contains(1, 0), true);
-    expect(trimmed.getAt(1, 3).contains(1, 1), true);
-    expect(trimmed.coordinateOf(0, 0), Coordinate(0, 1));
-    expect(trimmed.coordinateOf(1, 1), Coordinate(1, 3));
+    board.trim();
+    expect(board.width, 2);
+    expect(board.height, 4);
+    expect(board.getAt(0, 1).contains(0, 0), true);
+    expect(board.getAt(1, 0).contains(0, 1), true);
+    expect(board.getAt(1, 2).contains(1, 0), true);
+    expect(board.getAt(1, 3).contains(1, 1), true);
+    expect(board.coordinateOf(0, 0), Coordinate(0, 1));
+    expect(board.coordinateOf(1, 1), Coordinate(1, 3));
   });
 
   testWidgets("Add noise - Overlaps - simple", (WidgetTester tester) async {

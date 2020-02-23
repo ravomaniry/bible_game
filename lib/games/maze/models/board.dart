@@ -7,30 +7,35 @@ import 'package:bible_game/models/word.dart';
 import 'package:bible_game/utils/pair.dart';
 
 class Board {
-  final List<List<MazeCell>> value;
+  List<List<MazeCell>> _value;
   Coordinate start;
   Coordinate end;
   final int id;
   final _coordinateMap = Map<int, Map<int, Coordinate>>();
 
-  Board(this.value, this.id);
+  Board(this._value, this.id);
 
   factory Board.create(int width, int height, int id) {
-    final generator = (int wIndex) {
-      return List<MazeCell>.generate(width, (i) => MazeCell.create(-1, -1));
-    };
-    final value = List<List<MazeCell>>.generate(height, generator);
+    final value = List<List<MazeCell>>(height);
+    for (var y = 0; y < height; y++) {
+      value[y] = List<MazeCell>(width);
+      for (var x = 0; x < width; x++) {
+        value[y][x] = MazeCell.create(-1, -1);
+      }
+    }
     return Board(value, id);
   }
 
-  MazeCell getAt(int x, int y) => value[y][x];
+  MazeCell getAt(int x, int y) => _value[y][x];
+
+  List<List<MazeCell>> get value => _value;
 
   int get width {
-    return value.isEmpty ? 0 : value[0].length;
+    return _value.isEmpty ? 0 : _value[0].length;
   }
 
   int get height {
-    return value.length;
+    return _value.length;
   }
 
   bool isFreeAt(Coordinate c) {
@@ -53,7 +58,7 @@ class Board {
   }
 
   forEachMazeCell(void Function(MazeCell) callback) {
-    for (final row in value) {
+    for (final row in _value) {
       for (final cell in row) {
         callback(cell);
       }
@@ -69,7 +74,7 @@ class Board {
   }
 
   set(int x, int y, int wordIndex, int charIndex) {
-    value[y][x] = value[y][x].concat(wordIndex, charIndex);
+    _value[y][x] = _value[y][x].concat(wordIndex, charIndex);
     _updateCoordinateMap(x, y, wordIndex, charIndex);
   }
 
@@ -85,22 +90,22 @@ class Board {
     }
   }
 
-  Board trim() {
+  void trim() {
     final minMax = _getMinMaxCell();
     final first = minMax.first;
     final last = minMax.last;
     final nextValue = List<List<MazeCell>>(last.y - first.y + 1);
     for (var y = 0, max = last.y - first.y; y <= max; y++) {
-      nextValue[y] = value[y + first.y].getRange(first.x, last.x + 1).toList();
+      nextValue[y] = _value[y + first.y].getRange(first.x, last.x + 1).toList();
     }
-    return Board(nextValue, id)._adjustCoordinateMap(_coordinateMap, first * -1);
+    _value = nextValue;
+    _adjustCoordinateMap(first * -1);
   }
 
-  Board _adjustCoordinateMap(Map<int, Map<int, Coordinate>> map, Coordinate delta) {
-    for (var wIndex = 0; wIndex < map.length; wIndex++) {
-      _coordinateMap[wIndex] = Map<int, Coordinate>();
-      for (var cIndex = 0, max = map[wIndex].length; cIndex < max; cIndex++) {
-        _coordinateMap[wIndex][cIndex] = map[wIndex][cIndex] + delta;
+  Board _adjustCoordinateMap(Coordinate delta) {
+    for (var wIndex = 0; wIndex < _coordinateMap.length; wIndex++) {
+      for (var cIndex = 0, max = _coordinateMap[wIndex].length; cIndex < max; cIndex++) {
+        _coordinateMap[wIndex][cIndex] += delta;
       }
     }
     return this;
@@ -113,7 +118,7 @@ class Board {
     var maxY = 0;
     for (var y = 0; y < height; y++) {
       for (var x = 0; x < width; x++) {
-        if (!value[y][x].isFree) {
+        if (_value[y][x].isFilled) {
           minX = min(minX, x);
           maxX = max(maxX, x);
           minY = min(minX, y);
@@ -126,11 +131,11 @@ class Board {
 
   @override
   String toString() {
-    return value.map((row) => row.join(" | ")).join("\n");
+    return _value.map((row) => row.join(" | ")).join("\n");
   }
 
   void printWith(List<Word> words) {
-    final grid = value
+    final grid = _value
         .map((row) => row.map((cell) {
               if (cell.first.wordIndex >= 0) {
                 return words[cell.first.wordIndex].chars[cell.first.charIndex].comparisonValue;

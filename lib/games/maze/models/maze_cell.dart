@@ -46,6 +46,10 @@ class MazeCell {
     return cells.length == 1 && contains(-1, -1);
   }
 
+  bool get isFilled {
+    return cells[0].wordIndex >= 0;
+  }
+
   Cell get first {
     return cells.first;
   }

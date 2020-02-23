@@ -41,7 +41,7 @@ Board _createBoard(BibleVerse verse, int id) {
     var board = Board.create(size, size, id);
     final isDone = placeWordsInBoard(words, board);
     if (isDone) {
-      board = board.trim();
+      board.trim();
       addNoises(board, words);
       addEnvironments(board);
       return board;
@@ -105,24 +105,18 @@ List<Coordinate> getPossibleStartingPoints(int index, Board board, List<Word> wo
 
 Coordinate _getLastPoint(int index, Board board) {
   var lastPoint = Coordinate(0, 0);
-  var maxCharIndexSoFar = -1;
   if (index == 0) {
     return lastPoint;
   }
   // This must be done this way because of performance issue
-  for (var y = 0, height = board.height; y < height; y++) {
-    for (var x = 0, width = board.width; x < width; x++) {
-      final cells = board.value[y][x].cells;
-      for (var z = 0, cellsNum = cells.length; z < cellsNum; z++) {
-        final cell = cells[z];
-        if (cell.wordIndex == index - 1 && cell.charIndex > maxCharIndexSoFar) {
-          maxCharIndexSoFar = cell.charIndex;
-          lastPoint = Coordinate(x, y);
-        }
-      }
+  for (var charIndex = 0; true; charIndex++) {
+    final point = board.coordinateOf(index - 1, charIndex);
+    if (point == null) {
+      return lastPoint;
+    } else {
+      lastPoint = point;
     }
   }
-  return lastPoint;
 }
 
 bool _moveIsPossible(Move move, int length, Board board) {
