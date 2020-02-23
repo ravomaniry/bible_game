@@ -41,7 +41,9 @@ class Board {
   forEach(void Function(Cell, int x, int y) callback) {
     for (var y = 0; y < height; y++) {
       for (var x = 0; x < width; x++) {
-        getAt(x, y).forEach((cell) => callback(cell, x, y));
+        for (final cell in getAt(x, y).cells) {
+          callback(cell, x, y);
+        }
       }
     }
   }

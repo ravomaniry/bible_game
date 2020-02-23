@@ -8,9 +8,7 @@ import 'package:bible_game/app/router/actions.dart';
 import 'package:bible_game/app/router/routes.dart';
 import 'package:bible_game/app/theme/actions.dart';
 import 'package:bible_game/app/theme/themes.dart';
-import 'package:bible_game/games/anagram/actions/logic.dart';
 import 'package:bible_game/games/maze/actions/init.dart';
-import 'package:bible_game/games/words_in_word/actions/logics.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/game.dart';
 import 'package:bible_game/models/game_mode.dart';
@@ -19,8 +17,8 @@ import 'package:bible_game/utils/retry.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
 final gameModes = [
-  GameMode(Routes.wordsInWord, initializeWordsInWord, BlueGrayTheme()),
-  GameMode(Routes.anagram, initializeAnagram, GreenTheme()),
+//  GameMode(Routes.wordsInWord, initializeWordsInWord, BlueGrayTheme()),
+//  GameMode(Routes.anagram, initializeAnagram, GreenTheme()),
   GameMode(Routes.maze, initMaze, AppColorTheme()),
 ];
 

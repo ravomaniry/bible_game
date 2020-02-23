@@ -419,8 +419,7 @@ void main() {
   });
 
   test("Create the board many times and expect 100% succees", () async {
-    final now = DateTime.now().millisecondsSinceEpoch;
-    final stopAt = 80;
+    final stopAt = 100;
     final verse = BibleVerse.from(
       book: "Jaona",
       bookId: 4,
@@ -428,6 +427,7 @@ void main() {
       verse: 1,
       text: "Ny filazana ny razan'i Jesosy Kristy",
     );
+    final now = DateTime.now().millisecondsSinceEpoch;
     for (var i = 0; i < stopAt; i++) {
       // board should not be null
       final board = await createMazeBoard(verse, 1);

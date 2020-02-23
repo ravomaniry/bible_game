@@ -21,7 +21,12 @@ class MazeCell {
   }
 
   bool contains(int wIndex, int cIndex) {
-    return cells.where((c) => c.isSameAs(wIndex, cIndex)).isNotEmpty;
+    for (final cell in cells) {
+      if (cell.isSameAs(wIndex, cIndex)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   MazeCell concat(int wIndex, int cIndex) {

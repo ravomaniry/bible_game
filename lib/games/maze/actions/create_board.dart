@@ -19,6 +19,7 @@ class IsolateArgs {
 }
 
 Future<Board> createMazeBoard(BibleVerse verse, int id) async {
+//  return _createBoard(verse, id);
   final port = ReceivePort();
   final isolate = await Isolate.spawn(_isolateEntryPoint, IsolateArgs(id, verse, port.sendPort));
   final Board board = await port.first;
@@ -95,8 +96,10 @@ List<Coordinate> getPossibleStartingPoints(int index, Board board, List<Word> wo
   final lastPoint = _getLastPoint(index, board);
   final neighbors = getNeighbors(lastPoint);
   return neighbors
-      .where((p) => board.includes(p) && board.isFreeAt(p))
-      .where((p) => !isNearLastPoint(p, index, board, words, rightOffset: 1))
+      .where((p) =>
+          board.includes(p) &&
+          board.isFreeAt(p) &&
+          !isNearLastPoint(p, index, board, words, rightOffset: 1))
       .toList();
 }
 
@@ -106,12 +109,17 @@ Coordinate _getLastPoint(int index, Board board) {
   if (index == 0) {
     return lastPoint;
   }
-  board.forEach((point, x, y) {
-    if (point.wordIndex == index - 1 && point.charIndex > maxCharIndexSoFar) {
-      maxCharIndexSoFar = point.charIndex;
-      lastPoint = Coordinate(x, y);
+  // This must be done this way because of performance issue
+  for (var y = 0, height = board.height; y < height; y++) {
+    for (var x = 0, width = board.width; x < width; x++) {
+      for (final cell in board.value[y][x].cells) {
+        if (cell.wordIndex == index - 1 && cell.charIndex > maxCharIndexSoFar) {
+          maxCharIndexSoFar = cell.charIndex;
+          lastPoint = Coordinate(x, y);
+        }
+      }
     }
-  });
+  }
   return lastPoint;
 }
 
