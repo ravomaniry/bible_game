@@ -460,6 +460,9 @@ void main() {
           expect(board.coordinateOf(wIndex, cIndex), isNotNull);
         }
       }
+      // trimmed
+      expect(board.value[0].where((c) => c.isFilled), isNotEmpty);
+      expect(board.value.where((row) => row[0].isFilled), isNotEmpty);
     }
     print("֎ Tesed init maze $stopAt times in ${DateTime.now().millisecondsSinceEpoch - now} ms");
   });

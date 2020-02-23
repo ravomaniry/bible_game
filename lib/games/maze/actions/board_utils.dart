@@ -19,8 +19,9 @@ bool isNearFirstPoint(Coordinate point, Board board) {
   final neighbors = getNeighbors(point);
   for (final neighbor in neighbors) {
     if (board.includes(neighbor)) {
-      for (final cell in board.getAt(neighbor.x, neighbor.y).cells) {
-        if (cell.charIndex == 0) {
+      final cells = board.getAt(neighbor.x, neighbor.y).cells;
+      for (var i = 0, max = cells.length; i < max; i++) {
+        if (cells[i].charIndex == 0) {
           return true;
         }
       }

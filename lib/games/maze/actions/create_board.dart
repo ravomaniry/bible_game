@@ -108,7 +108,6 @@ Coordinate _getLastPoint(int index, Board board) {
   if (index == 0) {
     return lastPoint;
   }
-  // This must be done this way because of performance issue
   for (var charIndex = 0; true; charIndex++) {
     final point = board.coordinateOf(index - 1, charIndex);
     if (point == null) {

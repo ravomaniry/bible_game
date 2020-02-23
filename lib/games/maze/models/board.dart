@@ -121,7 +121,7 @@ class Board {
         if (_value[y][x].isFilled) {
           minX = min(minX, x);
           maxX = max(maxX, x);
-          minY = min(minX, y);
+          minY = min(minY, y);
           maxY = max(maxY, y);
         }
       }
