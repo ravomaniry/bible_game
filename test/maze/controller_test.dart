@@ -25,18 +25,21 @@ void main() {
       bookId: 4,
       verse: 1,
     );
-    final board = Board.create(20, 20, 1)..set(0, 0, 0, 0)..set(1, 1, 0, 1)..set(2, 2, 0, 2);
+    final board = Board.create(5, 5, 1)..set(0, 0, 0, 0)..set(1, 1, 0, 1)..set(2, 2, 0, 2);
     // store preparation
     store.dispatch(UpdateGameVerse(verse));
     store.dispatch(UpdateMazeState(MazeState.emptyState().copyWith(
       board: board,
       wordsToFind: getWordsInScopeForMaze(verse),
+      revealed: initialRevealedState(board),
     )));
-    // Go!
+
+    /// Go!
     await tester.pumpWidget(TestableWithStore(
       store: store,
       child: MazeController(spy.one),
     ));
+    // one cell
     await drag(20, 20, 10, 10);
     expect(spy, toBeCalledTimes(1));
     expect(
@@ -45,6 +48,7 @@ void main() {
         [Coordinate(0, 0)]
       ]),
     );
+    // 3 cells
     await drag(10, 10, 60, 70);
     expect(
       spy,
@@ -59,8 +63,18 @@ void main() {
         [Coordinate(2, 2), Coordinate(1, 1)]
       ]),
     );
+    // Not starting at word cell
     spy.clear();
     await drag(25, 10, 40, 40);
     expect(spy, toBeCalledTimes(0));
+    // Outside of the canvas
+    spy.clear();
+    await drag(50, 50, 200, 200);
+    expect(
+      spy,
+      toBeCalledWith([
+        [Coordinate(2, 2)]
+      ]),
+    );
   });
 }

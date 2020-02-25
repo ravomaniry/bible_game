@@ -5,6 +5,7 @@ import 'package:bible_game/games/maze/components/canvas/background.dart';
 import 'package:bible_game/games/maze/components/canvas/selection.dart';
 import 'package:bible_game/games/maze/components/canvas/words.dart';
 import 'package:bible_game/games/maze/components/canvas/words_bg.dart';
+import 'package:bible_game/games/maze/components/cell.dart';
 import 'package:bible_game/games/maze/components/footer.dart';
 import 'package:bible_game/games/maze/components/maze_board.dart';
 import 'package:bible_game/games/maze/components/scroller.dart';
@@ -50,6 +51,7 @@ class _MazeState extends State<MazeController> {
   final _containerKey = GlobalKey();
   final Function(List<Coordinate> cells) _propose;
   Offset _containerOrigin;
+  Board _board;
 
   _MazeState(this._propose);
 
@@ -72,7 +74,7 @@ class _MazeState extends State<MazeController> {
   void _onPointerMove(PointerMoveEvent e) {
     _updateContainerOrigin();
     final localPosition = e.position - _containerOrigin - _scroller.origin;
-    if (_isInsideContainer(e.position)) {
+    if (_isInsideContainer(e.position, localPosition)) {
       final handled = _tapHandler.onPointerMove(localPosition);
       if (handled) {
         _scroller.handleScreenEdge(localPosition);
@@ -88,6 +90,9 @@ class _MazeState extends State<MazeController> {
 
   void _adjustBoardSize(Board board) {
     _scroller.adjustBoardSize(board);
+    if (_board != board) {
+      _board = board;
+    }
   }
 
   void _updateContainerOrigin() {
@@ -97,11 +102,13 @@ class _MazeState extends State<MazeController> {
     }
   }
 
-  bool _isInsideContainer(Offset gPos) {
+  bool _isInsideContainer(Offset gPos, Offset localPos) {
     return gPos.dx >= _containerOrigin.dx &&
         gPos.dy >= _containerOrigin.dy &&
         (gPos.dx <= _containerOrigin.dx + _scroller.containerSize.width) &&
-        (gPos.dy <= _containerOrigin.dy + _scroller.containerSize.height);
+        (gPos.dy <= _containerOrigin.dy + _scroller.containerSize.height &&
+            localPos.dx < _board.width * cellSize &&
+            localPos.dy < _board.height * cellSize);
   }
 
   @override
