@@ -439,7 +439,7 @@ void main() {
   });
 
   test("Create the board many times and expect 100% succees", () async {
-    final stopAt = 100;
+    final stopAt = 80;
     final verse = BibleVerse.from(
       book: "Jaona",
       bookId: 4,
