@@ -114,6 +114,7 @@ void main() {
       board: board,
       backgrounds: null,
       wordsToFind: getWordsInScopeForMaze(verse),
+      revealed: initialRevealedState(board),
     )));
     await tester.pump(Duration(seconds: 1));
     // render and should display correctly
@@ -172,6 +173,7 @@ void main() {
       board: board,
       backgrounds: null,
       wordsToFind: getWordsInScopeForMaze(verse),
+      revealed: initialRevealedState(board),
     )));
     // render and should display correctly
     await tester.pump(Duration(seconds: 1));
