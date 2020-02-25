@@ -3,7 +3,6 @@ import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/games/maze/components/cell.dart';
 import 'package:bible_game/games/maze/components/maze_board.dart';
 import 'package:bible_game/games/maze/models/board.dart';
-import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/maze/redux/board_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +37,7 @@ class MazeWordsBackground extends StatelessWidget {
 class _Painter extends CustomPainter {
   final Board _board;
   final AppColorTheme _theme;
-  final List<Coordinate> _revealed;
+  final List<List<bool>> _revealed;
   Paint _revealedPaint;
   Paint _unrevealedPaint;
 
@@ -69,7 +68,7 @@ class _Painter extends CustomPainter {
       bottomRight.dy,
       const Radius.circular(4),
     );
-    final paint = _revealed.contains(Coordinate(x, y)) ? _revealedPaint : _unrevealedPaint;
+    final paint = _revealed[y][x] ? _revealedPaint : _unrevealedPaint;
     canvas.drawRRect(rRect, paint);
   }
 

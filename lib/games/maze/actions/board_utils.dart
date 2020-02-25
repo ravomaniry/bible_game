@@ -133,3 +133,7 @@ bool isNewCell(MazeCell cell, List<MazeCell> existing) {
   }
   return true;
 }
+
+List<List<bool>> initialRevealedState(Board board) {
+  return board.value.map((row) => row.map((_) => false).toList()).toList();
+}

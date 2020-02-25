@@ -23,6 +23,7 @@ ThunkAction<AppState> initMaze() {
       store.dispatch(UpdateMazeState(state.copyWith(
         board: board,
         wordsToFind: wordsToFind,
+        revealed: initialRevealedState(board),
       )));
     }
     store.dispatch(_loadBackgrounds());
@@ -45,7 +46,6 @@ ThunkAction<AppState> _loadBackgrounds() {
         MapEntry("upRight", "assets/images/maze/up_right.png"),
         MapEntry("upRight2", "assets/images/maze/up_right_2.png"),
       ];
-
       for (final path in paths) {
         final bytes = await rootBundle.load(path.value);
         final image = await decodeImageFromList(Uint8List.view(bytes.buffer));

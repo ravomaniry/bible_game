@@ -11,8 +11,7 @@ ThunkAction<AppState> proposeMaze(List<Coordinate> cellCoordinates) {
     final state = store.state.maze;
     final cells = cellCoordinates.map((c) => state.board.getAt(c.x, c.y)).toList();
     if (_isCorrect(cells, state.wordsToFind)) {
-      final revealed = List<Coordinate>.from(state.revealed);
-      revealed.addAll(cellCoordinates);
+      final revealed = _reveal(cellCoordinates, state.revealed);
       store.dispatch(UpdateMazeState(state.copyWith(revealed: revealed)));
       // compute paths ...
     }
@@ -26,7 +25,6 @@ bool _isCorrect(List<MazeCell> cells, List<Word> wordsToFind) {
       wordLengths.add(Pair(cell.wordIndex, 0));
     }
   }
-
   for (final mazeCell in cells) {
     for (final cell in mazeCell.cells) {
       if (cell.wordIndex < 0) {
@@ -39,11 +37,18 @@ bool _isCorrect(List<MazeCell> cells, List<Word> wordsToFind) {
       }
     }
   }
-
   for (final ref in wordLengths) {
-    if (ref.last == wordsToFind[ref.first].length) {
+    if (ref.last == cells.length && ref.last == wordsToFind[ref.first].length) {
       return true;
     }
   }
   return false;
+}
+
+List<List<bool>> _reveal(List<Coordinate> cells, List<List<bool>> revealed) {
+  final updated = revealed.map((x) => [...x]).toList();
+  for (final cell in cells) {
+    updated[cell.y][cell.x] = true;
+  }
+  return updated;
 }

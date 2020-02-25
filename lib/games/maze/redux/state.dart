@@ -1,7 +1,6 @@
 import 'dart:ui' as ui;
 
 import 'package:bible_game/games/maze/models/board.dart';
-import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:flutter/widgets.dart';
 
@@ -10,7 +9,7 @@ class MazeState {
   final List<Word> wordsToFind;
   final int nextId;
   final Map<String, ui.Image> backgrounds;
-  final List<Coordinate> revealed;
+  final List<List<bool>> revealed;
 
   MazeState({
     @required this.board,
@@ -34,7 +33,7 @@ class MazeState {
     final List<Word> wordsToFind,
     final int nextId,
     final Map<String, ui.Image> backgrounds,
-    final List<Coordinate> revealed,
+    final List<List<bool>> revealed,
   }) {
     return MazeState(
       board: board ?? this.board,

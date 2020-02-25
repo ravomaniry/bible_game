@@ -467,6 +467,16 @@ void main() {
     print("֎ Tesed init maze $stopAt times in ${DateTime.now().millisecondsSinceEpoch - now} ms");
   });
 
+  test("Initial revealed state", () {
+    final board = Board.create(4, 4, 0);
+    expect(initialRevealedState(board), [
+      [false, false, false, false],
+      [false, false, false, false],
+      [false, false, false, false],
+      [false, false, false, false],
+    ]);
+  });
+
   test("Create board once", () async {
     final verse = BibleVerse.from(
       book: "Jaona",
