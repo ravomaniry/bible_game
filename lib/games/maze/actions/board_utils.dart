@@ -135,5 +135,11 @@ bool isNewCell(MazeCell cell, List<MazeCell> existing) {
 }
 
 List<List<bool>> initialRevealedState(Board board) {
-  return board.value.map((row) => row.map((_) => false).toList()).toList();
+  return [
+    for (var y = 0; y < board.height; y++)
+      [
+        for (var x = 0; x < board.width; x++)
+          (board.start.x == x && board.start.y == y) || (board.end.x == x && board.end.y == y)
+      ]
+  ];
 }

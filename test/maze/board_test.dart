@@ -472,9 +472,11 @@ void main() {
 
   test("Initial revealed state", () {
     final board = Board.create(4, 4, 0);
+    board..set(0, 0, 0, 0)..set(1, 1, 0, 1);
+    board.updateStartEnd([Word.from("AB", 0, false)]);
     expect(initialRevealedState(board), [
-      [false, false, false, false],
-      [false, false, false, false],
+      [true, false, false, false],
+      [false, true, false, false],
       [false, false, false, false],
       [false, false, false, false],
     ]);
