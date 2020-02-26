@@ -87,5 +87,5 @@ Paint _getUnrevealedPaint(AppColorTheme theme) {
 Paint _getRevealedPaint(AppColorTheme theme) {
   return Paint()
     ..style = PaintingStyle.fill
-    ..color = theme.primary;
+    ..color = theme.neutral;
 }
