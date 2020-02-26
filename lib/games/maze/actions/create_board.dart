@@ -43,6 +43,7 @@ Board _createBoard(BibleVerse verse, int id) {
       board.trim();
       addNoises(board, words);
       addEnvironments(board);
+      board.updateStartEnd(words);
       return board;
     }
   }

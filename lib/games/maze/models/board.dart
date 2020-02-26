@@ -129,6 +129,11 @@ class Board {
     return Pair(Coordinate(minX, minY), Coordinate(maxX, maxY));
   }
 
+  void updateStartEnd(List<Word> words) {
+    start = coordinateOf(0, 0);
+    end = coordinateOf(words.length - 1, words.last.length - 1);
+  }
+
   @override
   String toString() {
     return _value.map((row) => row.join(" | ")).join("\n");
@@ -156,17 +161,4 @@ class Board {
         .join("\n");
     print(grid);
   }
-}
-
-bool rowIsEmpty(List<MazeCell> row) {
-  return row.where((r) => !r.isFree).isEmpty;
-}
-
-bool columnIsEmpty(int column, List<List<MazeCell>> rows) {
-  for (var i = 0; i < rows.length; i++) {
-    if (!rows[i][column].isFree) {
-      return false;
-    }
-  }
-  return true;
 }

@@ -463,6 +463,9 @@ void main() {
       // trimmed
       expect(board.value[0].where((c) => c.isFilled), isNotEmpty);
       expect(board.value.where((row) => row[0].isFilled), isNotEmpty);
+      // have start and end
+      expect(board.start, board.coordinateOf(0, 0));
+      expect(board.end, board.coordinateOf(6, 5));
     }
     print("֎ Tesed init maze $stopAt times in ${DateTime.now().millisecondsSinceEpoch - now} ms");
   });
@@ -487,5 +490,9 @@ void main() {
     );
     final board = await createMazeBoard(verse, 1);
     expect(board, isNotNull);
+    expect(board.start, isNotNull);
+    expect(board.end, isNotNull);
+    expect(board.start, board.coordinateOf(0, 0));
+    expect(board.end, board.coordinateOf(6, 5));
   });
 }
