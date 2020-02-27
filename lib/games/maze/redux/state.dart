@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:bible_game/games/maze/models/board.dart';
+import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:flutter/widgets.dart';
 
@@ -10,6 +11,7 @@ class MazeState {
   final int nextId;
   final Map<String, ui.Image> backgrounds;
   final List<List<bool>> revealed;
+  final List<List<Coordinate>> paths;
 
   MazeState({
     @required this.board,
@@ -17,6 +19,7 @@ class MazeState {
     @required this.nextId,
     @required this.backgrounds,
     this.revealed = const [],
+    this.paths = const [],
   });
 
   factory MazeState.emptyState() {
@@ -34,6 +37,7 @@ class MazeState {
     final int nextId,
     final Map<String, ui.Image> backgrounds,
     final List<List<bool>> revealed,
+    final List<List<Coordinate>> paths,
   }) {
     return MazeState(
       board: board ?? this.board,
@@ -41,6 +45,7 @@ class MazeState {
       nextId: nextId ?? this.nextId,
       backgrounds: backgrounds ?? this.backgrounds,
       revealed: revealed ?? this.revealed,
+      paths: paths ?? this.paths,
     );
   }
 

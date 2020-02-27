@@ -129,7 +129,6 @@ class _MazeState extends State<MazeController> {
         child: LayoutBuilder(
           builder: (context, constraints) {
             _scroller.updateContainerSize(constraints);
-
             return Stack(
               overflow: Overflow.clip,
               children: [

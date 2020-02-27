@@ -8,10 +8,11 @@ import 'package:bible_game/games/maze/redux/state.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/test_helpers/matchers.dart';
 import 'package:bible_game/test_helpers/store.dart';
+import 'package:bible_game/utils/pair.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test("Propose + reveal", () {
+  test("Propose + reveal + path", () {
     final store = newMockedStore();
     final verse = BibleVerse.from(text: "Abc def dab defgh i dk");
     final board = Board.create(6, 6, 0);
@@ -99,5 +100,19 @@ void main() {
     // at the end
     store.dispatch(proposeMaze([Coordinate(0, 3), Coordinate(1, 3), Coordinate(2, 3)]));
     expect(store.state.maze.revealed, toHave2(true, 15));
+  });
+
+  test("getRevealedMoves", () {
+    // simple case
+    var revealed = [
+      [true, false, true, false],
+      [true, false, false, false],
+      [true, false, false, false],
+    ];
+    var moves = [
+      Pair(Coordinate(0, 0), Coordinate(0, 2)),
+      Pair(Coordinate(2, 0), Coordinate(2, 0)),
+    ];
+    expect(getRevealedMoves(revealed), moves);
   });
 }
