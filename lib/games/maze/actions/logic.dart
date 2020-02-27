@@ -1,5 +1,6 @@
 import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/games/maze/actions/actions.dart';
+import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/maze/models/maze_cell.dart';
 import 'package:bible_game/models/word.dart';
@@ -12,7 +13,7 @@ ThunkAction<AppState> proposeMaze(List<Coordinate> cellCoordinates) {
     final cells = cellCoordinates.map((c) => state.board.getAt(c.x, c.y)).toList();
     if (_isCorrect(cells, state.wordsToFind)) {
       final revealed = _reveal(cellCoordinates, state.revealed);
-      final paths = _getPaths(revealed);
+      final paths = _getPaths(state.board, revealed, state.wordsToFind);
       store.dispatch(UpdateMazeState(state.copyWith(
         revealed: revealed,
         paths: paths,
@@ -56,19 +57,27 @@ List<List<bool>> _reveal(List<Coordinate> cells, List<List<bool>> revealed) {
   return updated;
 }
 
-List<List<Coordinate>> _getPaths(List<List<bool>> revealed) {
+List<List<Coordinate>> _getPaths(
+  Board board,
+  List<List<bool>> revealed,
+  List<Word> words,
+) {
   final List<List<Coordinate>> paths = [];
-  final moves = getRevealedMoves(revealed);
+  final moves = getRevealedMoves(board, revealed, words);
   return paths;
 }
 
-List<Pair<Coordinate, Coordinate>> getRevealedMoves(List<List<bool>> revealed) {
+List<Pair<Coordinate, Coordinate>> getRevealedMoves(
+  Board board,
+  List<List<bool>> revealed,
+  List<Word> words,
+) {
   final List<Coordinate> toSkip = [];
   final List<Pair<Coordinate, Coordinate>> moves = [];
 
   for (var y = 0, h = revealed.length; y < h; y++) {
     for (var x = 0, w = revealed[y].length; x < w; x++) {
-      _appendMove(Coordinate(x, y), revealed, moves, toSkip);
+      _appendMove(Coordinate(x, y), moves, toSkip, board, revealed);
     }
   }
   return moves;
@@ -78,19 +87,20 @@ final _directions = [Coordinate.upRight, Coordinate.right, Coordinate.downRight,
 
 void _appendMove(
   Coordinate start,
-  List<List<bool>> revealed,
   List<Pair<Coordinate, Coordinate>> moves,
   List<Coordinate> toSkip,
+  Board board,
+  List<List<bool>> revealed,
 ) {
   final index = toSkip.indexOf(start);
   if (index == -1) {
     var appended = false;
     for (final direction in _directions) {
-      final end = _getMoveEnd(start, direction, revealed);
+      final end = _getMoveEnd(start, direction, board, revealed);
       if (end != null) {
         appended = true;
         moves.add(Pair(start, end));
-        _appendToSkip(start, end, direction, toSkip);
+        _appendToSkip(toSkip, start, end, direction, board);
       }
     }
     if (!appended && revealed[start.y][start.x]) {
@@ -101,34 +111,54 @@ void _appendMove(
   }
 }
 
-Coordinate _getMoveEnd(Coordinate start, Coordinate direction, List<List<bool>> revealed) {
+Coordinate _getMoveEnd(
+  Coordinate start,
+  Coordinate direction,
+  Board board,
+  List<List<bool>> revealed,
+) {
   if (revealed[start.y][start.x]) {
     var point = start;
+    var mazeCell = board.getAt(point.x, point.y);
+    var wordIndexes = [for (final cell in mazeCell.cells) cell.wordIndex];
+    final returnValue = () => point == start ? null : point;
+
     while (true) {
       final next = point + direction;
-      if (_isInsideBoard(next, revealed) && revealed[next.y][next.x]) {
-        point = next;
+      if (board.includes(next) && revealed[next.y][next.x]) {
+        final nextCell = board.getAt(next.x, next.y);
+        final wordIndex = nextCell.first.wordIndex;
+        if (nextCell.cells.length == 1) {
+          if (wordIndexes.contains(wordIndex)) {
+            wordIndexes = [wordIndex];
+            point = next;
+          } else {
+            return returnValue();
+          }
+        } else {
+          if (nextCell.containsOneWordOf(wordIndexes)) {
+            return next;
+          }
+          return returnValue();
+        }
       } else {
-        return point == start ? null : point;
+        return returnValue();
       }
     }
   }
   return null;
 }
 
-bool _isInsideBoard(Coordinate point, List<List<bool>> revealed) {
-  return point.y >= 0 && point.y < revealed.length && point.x >= 0 && point.x < revealed[0].length;
-}
-
 void _appendToSkip(
+  List<Coordinate> toSkip,
   Coordinate start,
   Coordinate end,
   Coordinate direction,
-  List<Coordinate> toSkip,
+  Board board,
 ) {
   for (var point = start; point != end; point += direction) {
     final toAdd = point + direction;
-    if (!toSkip.contains(toAdd)) {
+    if (!toSkip.contains(toAdd) && board.getAt(toAdd.x, toAdd.y).cells.length == 1) {
       toSkip.add(toAdd);
     }
   }

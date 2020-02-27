@@ -20,9 +20,9 @@ class MazeCell {
     return MazeCell([Cell(wIndex, cIndex)]);
   }
 
-  bool contains(int wIndex, int cIndex) {
+  bool contains(int wIndex, int cIndex, {bool wordOnly}) {
     for (var i = 0, max = cells.length; i < max; i++) {
-      if (cells[i].isSameAs(wIndex, cIndex)) {
+      if (cells[i].wordIndex == wIndex && (wordOnly || cells[i].charIndex == cIndex)) {
         return true;
       }
     }
@@ -36,6 +36,15 @@ class MazeCell {
       final nextCells = List<Cell>.from(cells)..add(Cell(wIndex, cIndex));
       return MazeCell(nextCells);
     }
+  }
+
+  bool containsOneWordOf(List<int> wordIndexes) {
+    for (final index in wordIndexes) {
+      if (contains(index, 0, wordOnly: true)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   forEach(void Function(Cell) callback) {

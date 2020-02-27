@@ -103,16 +103,48 @@ void main() {
   });
 
   test("getRevealedMoves", () {
-    // simple case
+    // . . . E
+    // A B C D
+    // . . I .
+    // J I H G
+    final board = Board.create(4, 4, 0);
+    final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC DE IH GHIJ"));
+    board..set(0, 1, 0, 0)..set(1, 1, 0, 1)..set(2, 1, 0, 2);
+    board..set(3, 0, 1, 0)..set(3, 1, 1, 1);
+    board..set(2, 2, 2, 0)..set(2, 3, 2, 1);
+    board..set(3, 3, 3, 0)..set(2, 3, 3, 1)..set(1, 3, 3, 2)..set(0, 3, 3, 3);
+    // one full word
     var revealed = [
-      [true, false, true, false],
-      [true, false, false, false],
-      [true, false, false, false],
+      [false, false, false, false],
+      [true, true, true, false],
+      [false, false, false, false],
+      [false, false, false, false],
     ];
-    var moves = [
-      Pair(Coordinate(0, 0), Coordinate(0, 2)),
-      Pair(Coordinate(2, 0), Coordinate(2, 0)),
+    expect(getRevealedMoves(board, revealed, words), [Pair(Coordinate(0, 1), Coordinate(2, 1))]);
+    // two words: 0 & 1
+    revealed = [
+      [false, false, false, true],
+      [true, true, true, true],
+      [false, false, false, false],
+      [false, false, false, false],
     ];
-    expect(getRevealedMoves(revealed), moves);
+    expect(getRevealedMoves(board, revealed, words), [
+      Pair(Coordinate(3, 0), Coordinate(3, 1)),
+      Pair(Coordinate(0, 1), Coordinate(2, 1)),
+    ]);
+    // Overlap
+    revealed = [
+      [false, false, false, true],
+      [true, true, true, true],
+      [false, false, true, false],
+      [true, true, true, true],
+    ];
+    expect(getRevealedMoves(board, revealed, words), [
+      Pair(Coordinate(3, 0), Coordinate(3, 1)),
+      Pair(Coordinate(0, 1), Coordinate(2, 1)),
+      Pair(Coordinate(2, 2), Coordinate(2, 3)),
+      Pair(Coordinate(0, 3), Coordinate(2, 3)),
+      Pair(Coordinate(2, 3), Coordinate(3, 3)),
+    ]);
   });
 }
