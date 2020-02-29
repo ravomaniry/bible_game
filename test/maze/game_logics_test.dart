@@ -128,9 +128,9 @@ void main() {
       [false, false, false, false, false],
     ];
     expect(getRevealedMoves(board, revealed, words), [Pair(Coordinate(0, 1), Coordinate(2, 1))]);
-//    expect(getRevealedPaths(board, revealed, words), [
-//      [Coordinate(0, 1), Coordinate(2, 1)]
-//    ]);
+    expect(getRevealedPaths(board, revealed, words), [
+      [Coordinate(0, 1), Coordinate(2, 1)]
+    ]);
     // two words: 0 & 1
     revealed = [
       [false, false, false, true, false],
@@ -144,9 +144,9 @@ void main() {
       Pair(Coordinate(3, 0), Coordinate(3, 1)),
       Pair(Coordinate(0, 1), Coordinate(2, 1)),
     ]);
-//    expect(getRevealedPaths(board, revealed, words), [
-//      [Coordinate(3, 0), Coordinate(3, 1), Coordinate(2, 1), Coordinate(0, 1)],
-//    ]);
+    expect(getRevealedPaths(board, revealed, words), [
+      [Coordinate(3, 0), Coordinate(3, 1), Coordinate(2, 1), Coordinate(0, 1)],
+    ]);
     // Overlap single direction
     revealed = [
       [false, false, false, true, false],
@@ -160,14 +160,21 @@ void main() {
       Pair(Coordinate(3, 0), Coordinate(3, 1)),
       Pair(Coordinate(0, 1), Coordinate(2, 1)),
       Pair(Coordinate(2, 2), Coordinate(2, 3)),
-      Pair(Coordinate(0, 3), Coordinate(1, 3)),
-      Pair(Coordinate(1, 3), Coordinate(2, 3)),
+      Pair(Coordinate(0, 3), Coordinate(2, 3)),
       Pair(Coordinate(2, 3), Coordinate(3, 3)),
     ]);
-//    expect(getRevealedPaths(board, revealed, words), [
-//      [Coordinate(3, 0), Coordinate(3, 1), Coordinate(2, 1), Coordinate(0, 1)],
-//      [Coordinate(2, 1), Coordinate(2, 2), Coordinate(2, 3), Coordinate(0, 3)],
-//    ]);
+    expect(getRevealedPaths(board, revealed, words), [
+      [
+        Coordinate(3, 0),
+        Coordinate(3, 1),
+        Coordinate(2, 1),
+        Coordinate(2, 2),
+        Coordinate(2, 3),
+        Coordinate(3, 3),
+      ],
+      [Coordinate(2, 1), Coordinate(0, 1)],
+      [Coordinate(2, 3), Coordinate(0, 3)],
+    ]);
     // Completed + dual direction overlap
     revealed = [
       [false, false, false, true, false],

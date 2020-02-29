@@ -79,7 +79,7 @@ bool placeWordsInBoard(List<Word> words, Board board) {
 List<Move> getPossibleMoves(List<Coordinate> startingPoints, int index, int length, Board board) {
   final List<Move> possibleMoves = [];
   for (final point in startingPoints) {
-    for (final direction in Coordinate.directionsList) {
+    for (final direction in Coordinate.allDirections) {
       final move = Move(point, direction, index, length);
       if (_moveIsPossible(move, length, board)) {
         possibleMoves.add(move);
@@ -145,7 +145,7 @@ List<Move> getOverlaps(int index, List<Word> words, Board board) {
   final prevDirection = board.coordinateOf(index - 1, 1) - board.coordinateOf(index - 1, 0);
   for (final indexes in overlapIndexes) {
     final overlapPoint = board.coordinateOf(index - 1, indexes.first);
-    for (final direction in Coordinate.directionsList) {
+    for (final direction in Coordinate.allDirections) {
       if (!direction.isSameAs(prevDirection)) {
         final startingPoint = (direction * -indexes.last) + overlapPoint;
         final isNearPrevLastPoint =

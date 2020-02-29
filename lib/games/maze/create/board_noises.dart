@@ -86,7 +86,7 @@ List<Move> _getPossibleNoiseOverlapMoves(List<Word> words, Board board, MazeCell
   }
   for (var i = 0; i < overlappingPoints.length; i++) {
     final overlapAt = overlappingPoints[i];
-    for (final direction in Coordinate.directionsList) {
+    for (final direction in Coordinate.allDirections) {
       final startPoint = (direction * -guestCells[i].charIndex) + overlapAt;
       final length = words[guestCells[i].wordIndex].length;
       final move = Move(

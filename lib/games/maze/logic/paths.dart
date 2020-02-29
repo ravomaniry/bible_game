@@ -1,6 +1,8 @@
 import 'package:bible_game/games/maze/create/board_utils.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
+import 'package:bible_game/games/maze/models/maze_cell.dart';
+import 'package:bible_game/models/cell.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/utils/pair.dart';
 
@@ -49,7 +51,7 @@ void _appendMove(
         _appendToSkip(toSkip, start, end, direction, board);
       }
     }
-    if (!appended && revealed[start.y][start.x]) {
+    if (!appended && revealed[start.y][start.x] && moves.where((m) => m.last == start).isEmpty) {
       moves.add(Pair(start, start));
     }
   } else {
@@ -72,9 +74,9 @@ Coordinate _getMoveEnd(
     while (true) {
       final next = point + direction;
       if (board.includes(next) && revealed[next.y][next.x]) {
-        final nextCell = board.getAt(next.x, next.y);
-        final wordIndex = nextCell.first.wordIndex;
-        if (nextCell.cells.length == 1 || !_revealedInOtherDirections(next, direction, revealed)) {
+        final nextCell = _removeUnusedCells(board.getAt(next.x, next.y), next, revealed, board);
+        if (nextCell.cells.length == 1) {
+          final wordIndex = nextCell.first.wordIndex;
           if (wordIndexes.contains(wordIndex)) {
             wordIndexes = [wordIndex];
             point = next;
@@ -104,26 +106,38 @@ void _appendToSkip(
 ) {
   for (var point = start; point != end; point += direction) {
     final toAdd = point + direction;
-    if (!toSkip.contains(toAdd) && board.getAt(toAdd.x, toAdd.y).cells.length == 1) {
+    if (toAdd != end && !toSkip.contains(toAdd)) {
       toSkip.add(toAdd);
     }
   }
 }
 
-bool _revealedInOtherDirections(Coordinate point, Coordinate direction, List<List<bool>> revealed) {
-  for (final otherDir in _directions) {
-    if (otherDir != direction && otherDir != direction * -1) {
-      final otherPoint = point + otherDir;
-      if (otherPoint.x >= 0 &&
-          otherPoint.y >= 0 &&
-          otherPoint.y < revealed.length &&
-          otherPoint.x < revealed[0].length &&
-          revealed[point.y][point.x]) {
-        return true;
+MazeCell _removeUnusedCells(
+  MazeCell mazeCell,
+  Coordinate coordinate,
+  List<List<bool>> revealed,
+  Board board,
+) {
+  if (mazeCell.cells.length == 1) {
+    return mazeCell;
+  }
+  final cells = List<Cell>();
+  for (final cell in mazeCell.cells) {
+    for (final dir in Coordinate.allDirections) {
+      final next = coordinate + dir;
+      if (board.includes(next) && revealed[next.y][next.x]) {
+        final wordIndexes = board.getAt(next.x, next.y).cells.map((c) => c.wordIndex);
+        if (wordIndexes.contains(cell.wordIndex)) {
+          cells.add(cell);
+          break;
+        }
       }
     }
   }
-  return false;
+  if (cells.isEmpty) {
+    return mazeCell;
+  }
+  return MazeCell(cells);
 }
 
 List<List<Coordinate>> _assemblePaths(
@@ -131,12 +145,11 @@ List<List<Coordinate>> _assemblePaths(
   Coordinate start,
   Coordinate end,
 ) {
-  final paths = List<List<Coordinate>>();
   final startToEnd = _joinStartToEnd(moves, start, end);
   if (startToEnd != null) {
     return [startToEnd];
   }
-  return paths;
+  return _getAllPaths(moves);
 }
 
 List<Coordinate> _joinStartToEnd(
@@ -174,6 +187,34 @@ List<Coordinate> _joinStartToEnd(
     }
   }
   return null;
+}
+
+List<List<Coordinate>> _getAllPaths(List<Pair<Coordinate, Coordinate>> moves) {
+  if (moves.isEmpty) {
+    return [];
+  }
+  final all = List<List<Coordinate>>();
+  final queue = [
+    [moves.first.first]
+  ];
+  while (queue.isNotEmpty) {
+    var paths = [queue[0]];
+    while (paths.isNotEmpty) {
+      final next = _continuePaths(paths, moves);
+      if (next.length == 0) {
+        all.addAll(paths);
+        queue.removeAt(0);
+        paths = [];
+      } else if (next.length == 1) {
+        paths = next;
+      } else {
+        final newPaths = next.getRange(1, next.length).map((x) => [x[x.length - 2], x.last]);
+        queue.addAll(newPaths);
+        paths = [next[0]];
+      }
+    }
+  }
+  return all;
 }
 
 List<List<Coordinate>> _continuePaths(

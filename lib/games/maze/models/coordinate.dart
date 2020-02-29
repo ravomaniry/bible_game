@@ -15,7 +15,7 @@ class Coordinate {
   static final left = Coordinate(-1, 0);
   static final upLeft = Coordinate(-1, -1);
 
-  static final List<Coordinate> directionsList = [
+  static final List<Coordinate> allDirections = [
     up,
     upRight,
     right,

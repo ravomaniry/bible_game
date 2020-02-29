@@ -4,38 +4,38 @@ import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/maze/models/maze_cell.dart';
 
 final _tests = [
-  MapEntry(CellEnv.forest, Coordinate.directionsList),
+  MapEntry(CellEnv.forest, Coordinate.allDirections),
   MapEntry(CellEnv.upRight, [
     ...directionsExcept([Coordinate.downLeft]),
-    ...translateCoordinatesBy(Coordinate.directionsList, Coordinate.up),
+    ...translateCoordinatesBy(Coordinate.allDirections, Coordinate.up),
   ]),
   MapEntry(CellEnv.upRight, [
     ...directionsExcept([Coordinate.downLeft]),
-    ...translateCoordinatesBy(Coordinate.directionsList, Coordinate.right),
+    ...translateCoordinatesBy(Coordinate.allDirections, Coordinate.right),
   ]),
   MapEntry(CellEnv.downLeft, [
     ...directionsExcept([Coordinate.upRight]),
-    ...translateCoordinatesBy(Coordinate.directionsList, Coordinate.left),
+    ...translateCoordinatesBy(Coordinate.allDirections, Coordinate.left),
   ]),
   MapEntry(CellEnv.downLeft, [
     ...directionsExcept([Coordinate.upRight]),
-    ...translateCoordinatesBy(Coordinate.directionsList, Coordinate.down),
+    ...translateCoordinatesBy(Coordinate.allDirections, Coordinate.down),
   ]),
   MapEntry(CellEnv.upLeft, [
     ...directionsExcept([Coordinate.downRight]),
-    ...translateCoordinatesBy(Coordinate.directionsList, Coordinate.up),
+    ...translateCoordinatesBy(Coordinate.allDirections, Coordinate.up),
   ]),
   MapEntry(CellEnv.upLeft, [
     ...directionsExcept([Coordinate.downRight]),
-    ...translateCoordinatesBy(Coordinate.directionsList, Coordinate.left),
+    ...translateCoordinatesBy(Coordinate.allDirections, Coordinate.left),
   ]),
   MapEntry(CellEnv.downRight, [
     ...directionsExcept([Coordinate.upLeft]),
-    ...translateCoordinatesBy(Coordinate.directionsList, Coordinate.right),
+    ...translateCoordinatesBy(Coordinate.allDirections, Coordinate.right),
   ]),
   MapEntry(CellEnv.downRight, [
     ...directionsExcept([Coordinate.upLeft]),
-    ...translateCoordinatesBy(Coordinate.directionsList, Coordinate.down),
+    ...translateCoordinatesBy(Coordinate.allDirections, Coordinate.down),
   ]),
 ];
 
@@ -72,7 +72,7 @@ bool _evaluateTest(int x, int y, List<Coordinate> directions, Board board) {
 }
 
 List<Coordinate> directionsExcept(List<Coordinate> toExclude) {
-  return Coordinate.directionsList
+  return Coordinate.allDirections
       .where((d) => toExclude.where((x) => x.isSameAs(d)).isEmpty)
       .toList();
 }
