@@ -20,7 +20,7 @@ class MazeCell {
     return MazeCell([Cell(wIndex, cIndex)]);
   }
 
-  bool contains(int wIndex, int cIndex, {bool wordOnly}) {
+  bool contains(int wIndex, int cIndex, {bool wordOnly = false}) {
     for (var i = 0, max = cells.length; i < max; i++) {
       if (cells[i].wordIndex == wIndex && (wordOnly || cells[i].charIndex == cIndex)) {
         return true;
