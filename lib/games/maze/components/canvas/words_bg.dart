@@ -81,7 +81,7 @@ class _Painter extends CustomPainter {
 Paint _getUnrevealedPaint(AppColorTheme theme) {
   return Paint()
     ..style = PaintingStyle.fill
-    ..color = theme.neutral;
+    ..color = theme.neutral.withAlpha(120);
 }
 
 Paint _getRevealedPaint(AppColorTheme theme) {
