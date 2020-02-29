@@ -1,4 +1,4 @@
-import 'package:bible_game/games/maze/actions/board_utils.dart';
+import 'package:bible_game/games/maze/create/board_utils.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/maze/models/maze_cell.dart';

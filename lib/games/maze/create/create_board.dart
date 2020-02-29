@@ -1,9 +1,9 @@
 import 'dart:isolate';
 import 'dart:math';
 
-import 'package:bible_game/games/maze/actions/board_noises.dart';
-import 'package:bible_game/games/maze/actions/board_utils.dart';
-import 'package:bible_game/games/maze/actions/environment.dart';
+import 'package:bible_game/games/maze/create/board_noises.dart';
+import 'package:bible_game/games/maze/create/board_utils.dart';
+import 'package:bible_game/games/maze/create/environment.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/maze/models/move.dart';

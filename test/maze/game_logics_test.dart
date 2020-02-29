@@ -1,6 +1,6 @@
 import 'package:bible_game/app/game/actions/actions.dart';
 import 'package:bible_game/games/maze/actions/actions.dart';
-import 'package:bible_game/games/maze/actions/board_utils.dart';
+import 'package:bible_game/games/maze/create/board_utils.dart';
 import 'package:bible_game/games/maze/logic/logic.dart';
 import 'package:bible_game/games/maze/logic/paths.dart';
 import 'package:bible_game/games/maze/models/board.dart';

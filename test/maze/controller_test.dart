@@ -1,7 +1,7 @@
 import 'package:bible_game/app/game/actions/actions.dart';
 import 'package:bible_game/games/maze/actions/actions.dart';
-import 'package:bible_game/games/maze/actions/board_utils.dart';
 import 'package:bible_game/games/maze/components/maze.dart';
+import 'package:bible_game/games/maze/create/board_utils.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/maze/redux/state.dart';
