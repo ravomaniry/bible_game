@@ -66,7 +66,7 @@ Coordinate _getMoveEnd(
   if (revealed[start.y][start.x]) {
     var point = start;
     var mazeCell = board.getAt(point.x, point.y);
-    var wordIndexes = [for (final cell in mazeCell.cells) cell.wordIndex];
+    var wordIndexes = mazeCell.cells.map((cell) => cell.wordIndex).toList();
     final returnValue = () => point == start ? null : point;
 
     while (true) {
@@ -74,7 +74,7 @@ Coordinate _getMoveEnd(
       if (board.includes(next) && revealed[next.y][next.x]) {
         final nextCell = board.getAt(next.x, next.y);
         final wordIndex = nextCell.first.wordIndex;
-        if (nextCell.cells.length == 1) {
+        if (nextCell.cells.length == 1 || !_revealedInOtherDirections(next, direction, revealed)) {
           if (wordIndexes.contains(wordIndex)) {
             wordIndexes = [wordIndex];
             point = next;
@@ -108,6 +108,22 @@ void _appendToSkip(
       toSkip.add(toAdd);
     }
   }
+}
+
+bool _revealedInOtherDirections(Coordinate point, Coordinate direction, List<List<bool>> revealed) {
+  for (final otherDir in _directions) {
+    if (otherDir != direction && otherDir != direction * -1) {
+      final otherPoint = point + otherDir;
+      if (otherPoint.x >= 0 &&
+          otherPoint.y >= 0 &&
+          otherPoint.y < revealed.length &&
+          otherPoint.x < revealed[0].length &&
+          revealed[point.y][point.x]) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 List<List<Coordinate>> _assemblePaths(
