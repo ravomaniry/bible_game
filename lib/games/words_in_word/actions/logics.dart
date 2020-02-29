@@ -11,8 +11,27 @@ import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/sfx/actions.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
+
+class ProposeResult {
+  final BibleVerse verse;
+  final bool hasFoundMatch;
+  final List<Word> wordsToFind;
+  final Word revealed;
+  final List<Char> slots;
+  final List<Word> resolvedWords;
+
+  ProposeResult({
+    @required this.verse,
+    @required this.hasFoundMatch,
+    @required this.wordsToFind,
+    @required this.revealed,
+    @required this.slots,
+    @required this.resolvedWords,
+  });
+}
 
 ThunkAction<AppState> initializeWordsInWord() {
   return (store) {
@@ -78,7 +97,9 @@ ThunkAction<AppState> _fillEmptySlots() {
 List<Word> _extractWordsToFind(List<Word> words) {
   final List<Word> wordsToFind = [];
   for (final word in words) {
-    if (!word.isSeparator && !word.resolved && wordsToFind.where((w) => w.sameAsChars(word.chars)).length == 0) {
+    if (!word.isSeparator &&
+        !word.resolved &&
+        wordsToFind.where((w) => w.sameAsChars(word.chars)).length == 0) {
       wordsToFind.add(word);
     }
   }
@@ -112,7 +133,9 @@ List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
     }
   }
 
-  if (!stillContainValidWord && eligibleAdditionalChars.length == 0 && otherAdditionalChars.length > 0) {
+  if (!stillContainValidWord &&
+      eligibleAdditionalChars.length == 0 &&
+      otherAdditionalChars.length > 0) {
     while ((targetLength - slots.length) < shortestAdditionalChars) {
       slots.removeLast();
     }
@@ -125,7 +148,8 @@ List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
   }
 
   while (eligibleAdditionalChars.length > 0 && slots.length < targetLength) {
-    final randomIndex = (random.nextDouble() * random.nextInt(eligibleAdditionalChars.length)).floor();
+    final randomIndex =
+        (random.nextDouble() * random.nextInt(eligibleAdditionalChars.length)).floor();
     final additionalChars = eligibleAdditionalChars[randomIndex];
     eligibleAdditionalChars.removeAt(randomIndex);
     for (final char in additionalChars) {
@@ -147,7 +171,8 @@ List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
         otherWords.add(word);
       }
     }
-    otherWords.sort((a, b) => getAdditionalChars(a, slots).length - getAdditionalChars(b, slots).length);
+    otherWords
+        .sort((a, b) => getAdditionalChars(a, slots).length - getAdditionalChars(b, slots).length);
 
     if (otherWords.length > 0) {
       for (final word in otherWords) {
@@ -177,7 +202,8 @@ List<Char> getAdditionalChars(Word word, List<Char> slots) {
   final missingChars = List<Char>.from(word.chars);
   final slotsCopy = List<Char>.from(slots);
   for (int i = missingChars.length - 1; i >= 0; i--) {
-    final matches = slotsCopy.where((char) => char.comparisonValue == missingChars[i].comparisonValue);
+    final matches =
+        slotsCopy.where((char) => char.comparisonValue == missingChars[i].comparisonValue);
     final match = matches.length > 0 ? matches.first : null;
     if (match != null) {
       missingChars.removeAt(i);
@@ -213,12 +239,41 @@ ThunkAction<AppState> proposeWordsInWord() {
 
 bool propose(Store<AppState> store) {
   final state = store.state.wordsInWord;
+  final prevVerse = store.state.game.verse;
+  final result = _getPropositionResult(state, prevVerse);
+  final hasFoundMatch = result.hasFoundMatch;
+  final wordsToFind = result.wordsToFind;
+  final verse = result.verse;
+
+  store.dispatch(UpdateWordsInWordState(state.copyWith(
+    slots: result.slots,
+    proposition: [],
+    resolvedWords: result.resolvedWords,
+    wordsToFind: wordsToFind,
+  )));
+  store.dispatch(UpdateGameVerse(verse));
+  if (hasFoundMatch) {
+    store.dispatch(incrementMoney(prevVerse, verse));
+    store.dispatch(useBonus(result.revealed.bonus, false));
+    store.dispatch(triggerPropositionSuccessAnimation());
+    store.dispatch(playSuccessSfx(wordsToFind.length == 0));
+  } else {
+    store.dispatch(triggerPropositionFailureAnimation());
+  }
+  if (wordsToFind.length == 0) {
+    // this means that the game is completed
+    store.dispatch(InvalidateCombo());
+    store.dispatch(UpdateGameResolvedState(true));
+    store.dispatch(stopPropositionAnimation());
+  }
+  return hasFoundMatch;
+}
+
+ProposeResult _getPropositionResult(WordsInWordState state, BibleVerse verse) {
   final wordsToFind = List<Word>.from(state.wordsToFind);
   final resolvedWords = List<Word>.from(state.resolvedWords);
   final proposition = state.proposition;
   Word revealed;
-  var verse = store.state.game.verse;
-  final prevVerse = verse;
   var slots = state.slots;
   bool hasFoundMatch = false;
 
@@ -237,30 +292,14 @@ bool propose(Store<AppState> store) {
     slots = state.slotsBackup;
   }
 
-  store.dispatch(UpdateWordsInWordState(state.copyWith(
+  return ProposeResult(
+    verse: verse,
     slots: slots,
-    proposition: [],
-    resolvedWords: resolvedWords,
+    revealed: revealed,
     wordsToFind: wordsToFind,
-  )));
-  store.dispatch(UpdateGameVerse(verse));
-
-  if (hasFoundMatch) {
-    store.dispatch(incrementMoney(prevVerse, verse));
-    store.dispatch(useBonus(revealed.bonus, false));
-    store.dispatch(triggerPropositionSuccessAnimation());
-    store.dispatch(playSuccessSfx(wordsToFind.length == 0));
-  } else {
-    store.dispatch(triggerPropositionFailureAnimation());
-  }
-  // wordsToFind.length == 0 this means that the game is completed
-  if (wordsToFind.length == 0) {
-    store.dispatch(InvalidateCombo());
-    store.dispatch(UpdateGameResolvedState(true));
-    store.dispatch(stopPropositionAnimation());
-  }
-
-  return hasFoundMatch;
+    resolvedWords: resolvedWords,
+    hasFoundMatch: hasFoundMatch,
+  );
 }
 
 BibleVerse _updateVerseResolvedWords(List<Char> proposition, BibleVerse verse) {
