@@ -103,61 +103,84 @@ void main() {
     expect(store.state.maze.revealed, toHave2(true, 15));
   });
 
-  test("getRevealedMoves + get paths", () {
-    // . . . E
-    // A B C D
-    // . . I .
-    // J I H G
-    final board = Board.create(4, 4, 0);
-    final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC DE IH GHIJ"));
+  test("revealed moves + paths", () {
+    // . . . E .
+    // A B C D .
+    // . . I . .
+    // J I H G .
+    // . K . . .
+    final board = Board.create(5, 5, 0);
+    final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC DE IH GHIJ IK"));
     board..set(0, 1, 0, 0)..set(1, 1, 0, 1)..set(2, 1, 0, 2);
     board..set(3, 0, 1, 0)..set(3, 1, 1, 1);
     board..set(2, 2, 2, 0)..set(2, 3, 2, 1);
     board..set(3, 3, 3, 0)..set(2, 3, 3, 1)..set(1, 3, 3, 2)..set(0, 3, 3, 3);
+    board..set(1, 3, 4, 0)..set(1, 4, 4, 1);
     board.updateStartEnd(words);
     // one full word
     var revealed = [
-      [false, false, false, false],
-      [true, true, true, false],
-      [false, false, false, false],
-      [false, false, false, false],
+      [false, false, false, false, false],
+      [true, true, true, false, false],
+      [false, false, false, false, false],
+      [false, false, false, false, false],
+      [false, false, false, false, false],
     ];
     expect(getRevealedMoves(board, revealed, words), [Pair(Coordinate(0, 1), Coordinate(2, 1))]);
     expect(getRevealedPaths(board, revealed, words), [
-      [Coordinate(2, 1), Coordinate(0, 1)]
+      [Coordinate(0, 1), Coordinate(2, 1)]
     ]);
     // two words: 0 & 1
     revealed = [
-      [false, false, false, true],
-      [true, true, true, true],
-      [false, false, false, false],
-      [false, false, false, false],
+      [false, false, false, true, false],
+      [true, true, true, true, false],
+      [false, false, false, false, false],
+      [false, false, false, false, false],
+      [false, false, false, false, false],
     ];
     expect(getRevealedMoves(board, revealed, words), [
       Pair(Coordinate(3, 0), Coordinate(3, 1)),
       Pair(Coordinate(0, 1), Coordinate(2, 1)),
     ]);
     expect(getRevealedPaths(board, revealed, words), [
-      [Coordinate(2, 1), Coordinate(0, 1), Coordinate(3, 1), Coordinate(3, 0)],
+      [Coordinate(3, 0), Coordinate(3, 1), Coordinate(2, 1), Coordinate(0, 1)],
     ]);
     // Overlap
     revealed = [
-      [false, false, false, true],
-      [true, true, true, true],
-      [false, false, true, false],
-      [true, true, true, true],
+      [false, false, false, true, false],
+      [true, true, true, true, false],
+      [false, false, true, false, false],
+      [true, true, true, true, false],
+      [false, false, false, false, false],
     ];
     expect(getRevealedMoves(board, revealed, words), [
       Pair(Coordinate(3, 0), Coordinate(3, 1)),
       Pair(Coordinate(0, 1), Coordinate(2, 1)),
       Pair(Coordinate(2, 2), Coordinate(2, 3)),
-      Pair(Coordinate(0, 3), Coordinate(2, 3)),
+      Pair(Coordinate(0, 3), Coordinate(1, 3)),
+      Pair(Coordinate(1, 3), Coordinate(2, 3)),
       Pair(Coordinate(2, 3), Coordinate(3, 3)),
     ]);
     expect(getRevealedPaths(board, revealed, words), [
-      [Coordinate(2, 1), Coordinate(0, 1), Coordinate(2, 2), Coordinate(0, 3)],
-      [Coordinate(3, 0), Coordinate(3, 1), Coordinate(2, 1)],
-      [Coordinate(2, 3), Coordinate(3, 3)],
+      [Coordinate(3, 0), Coordinate(3, 1), Coordinate(2, 1), Coordinate(0, 1)],
+      [Coordinate(2, 1), Coordinate(2, 2), Coordinate(2, 3), Coordinate(1, 3), Coordinate(0, 3)],
+    ]);
+    // Completed
+    revealed = [
+      [false, false, false, true, false],
+      [true, true, true, true, false],
+      [false, false, true, false, false],
+      [true, true, true, true, false],
+      [false, true, false, false, false],
+    ];
+    expect(getRevealedPaths(board, revealed, words), [
+      [
+        Coordinate(0, 1),
+        Coordinate(2, 1),
+        Coordinate(2, 2),
+        Coordinate(2, 3),
+        Coordinate(1, 3),
+        Coordinate(1, 4),
+      ],
     ]);
   });
 }

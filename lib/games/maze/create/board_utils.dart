@@ -143,3 +143,7 @@ List<List<bool>> initialRevealedState(Board board) {
       ]
   ];
 }
+
+bool areNeighbors(Coordinate a, Coordinate b) {
+  return getNeighbors(a).contains(b);
+}
