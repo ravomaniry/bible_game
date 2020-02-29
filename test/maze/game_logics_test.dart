@@ -1,7 +1,8 @@
 import 'package:bible_game/app/game/actions/actions.dart';
 import 'package:bible_game/games/maze/actions/actions.dart';
 import 'package:bible_game/games/maze/actions/board_utils.dart';
-import 'package:bible_game/games/maze/actions/logic.dart';
+import 'package:bible_game/games/maze/logic/logic.dart';
+import 'package:bible_game/games/maze/logic/paths.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/maze/redux/state.dart';
@@ -102,7 +103,7 @@ void main() {
     expect(store.state.maze.revealed, toHave2(true, 15));
   });
 
-  test("getRevealedMoves", () {
+  test("getRevealedMoves + get paths", () {
     // . . . E
     // A B C D
     // . . I .
@@ -113,6 +114,7 @@ void main() {
     board..set(3, 0, 1, 0)..set(3, 1, 1, 1);
     board..set(2, 2, 2, 0)..set(2, 3, 2, 1);
     board..set(3, 3, 3, 0)..set(2, 3, 3, 1)..set(1, 3, 3, 2)..set(0, 3, 3, 3);
+    board.updateStartEnd(words);
     // one full word
     var revealed = [
       [false, false, false, false],
@@ -121,6 +123,9 @@ void main() {
       [false, false, false, false],
     ];
     expect(getRevealedMoves(board, revealed, words), [Pair(Coordinate(0, 1), Coordinate(2, 1))]);
+    expect(getRevealedPaths(board, revealed, words), [
+      [Coordinate(2, 1), Coordinate(0, 1)]
+    ]);
     // two words: 0 & 1
     revealed = [
       [false, false, false, true],
@@ -131,6 +136,9 @@ void main() {
     expect(getRevealedMoves(board, revealed, words), [
       Pair(Coordinate(3, 0), Coordinate(3, 1)),
       Pair(Coordinate(0, 1), Coordinate(2, 1)),
+    ]);
+    expect(getRevealedPaths(board, revealed, words), [
+      [Coordinate(2, 1), Coordinate(0, 1), Coordinate(3, 1), Coordinate(3, 0)],
     ]);
     // Overlap
     revealed = [
@@ -145,6 +153,11 @@ void main() {
       Pair(Coordinate(2, 2), Coordinate(2, 3)),
       Pair(Coordinate(0, 3), Coordinate(2, 3)),
       Pair(Coordinate(2, 3), Coordinate(3, 3)),
+    ]);
+    expect(getRevealedPaths(board, revealed, words), [
+      [Coordinate(2, 1), Coordinate(0, 1), Coordinate(2, 2), Coordinate(0, 3)],
+      [Coordinate(3, 0), Coordinate(3, 1), Coordinate(2, 1)],
+      [Coordinate(2, 3), Coordinate(3, 3)],
     ]);
   });
 }

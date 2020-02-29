@@ -1,69 +1,17 @@
-import 'package:bible_game/app/app_state.dart';
-import 'package:bible_game/games/maze/actions/actions.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
-import 'package:bible_game/games/maze/models/maze_cell.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/utils/pair.dart';
-import 'package:redux_thunk/redux_thunk.dart';
 
-ThunkAction<AppState> proposeMaze(List<Coordinate> cellCoordinates) {
-  return (store) {
-    final state = store.state.maze;
-    final cells = cellCoordinates.map((c) => state.board.getAt(c.x, c.y)).toList();
-    if (_isCorrect(cells, state.wordsToFind)) {
-      final revealed = _reveal(cellCoordinates, state.revealed);
-      final paths = _getPaths(state.board, revealed, state.wordsToFind);
-      store.dispatch(UpdateMazeState(state.copyWith(
-        revealed: revealed,
-        paths: paths,
-      )));
-    }
-  };
-}
+final _directions = [Coordinate.upRight, Coordinate.right, Coordinate.downRight, Coordinate.down];
 
-bool _isCorrect(List<MazeCell> cells, List<Word> wordsToFind) {
-  final List<Pair<int, int>> wordLengths = [];
-  for (final cell in cells.first.cells) {
-    if (cell.charIndex == 0) {
-      wordLengths.add(Pair(cell.wordIndex, 0));
-    }
-  }
-  for (final mazeCell in cells) {
-    for (final cell in mazeCell.cells) {
-      if (cell.wordIndex < 0) {
-        return false;
-      } else {
-        final index = wordLengths.indexOf(Pair(cell.wordIndex, cell.charIndex));
-        if (index >= 0) {
-          wordLengths[index] = Pair(wordLengths[index].first, wordLengths[index].last + 1);
-        }
-      }
-    }
-  }
-  for (final ref in wordLengths) {
-    if (ref.last == cells.length && ref.last == wordsToFind[ref.first].length) {
-      return true;
-    }
-  }
-  return false;
-}
-
-List<List<bool>> _reveal(List<Coordinate> cells, List<List<bool>> revealed) {
-  final updated = revealed.map((x) => [...x]).toList();
-  for (final cell in cells) {
-    updated[cell.y][cell.x] = true;
-  }
-  return updated;
-}
-
-List<List<Coordinate>> _getPaths(
+List<List<Coordinate>> getRevealedPaths(
   Board board,
   List<List<bool>> revealed,
   List<Word> words,
 ) {
-  final List<List<Coordinate>> paths = [];
   final moves = getRevealedMoves(board, revealed, words);
+  final paths = _assemblePaths(moves, board.start, board.end);
   return paths;
 }
 
@@ -74,7 +22,6 @@ List<Pair<Coordinate, Coordinate>> getRevealedMoves(
 ) {
   final List<Coordinate> toSkip = [];
   final List<Pair<Coordinate, Coordinate>> moves = [];
-
   for (var y = 0, h = revealed.length; y < h; y++) {
     for (var x = 0, w = revealed[y].length; x < w; x++) {
       _appendMove(Coordinate(x, y), moves, toSkip, board, revealed);
@@ -82,8 +29,6 @@ List<Pair<Coordinate, Coordinate>> getRevealedMoves(
   }
   return moves;
 }
-
-final _directions = [Coordinate.upRight, Coordinate.right, Coordinate.downRight, Coordinate.down];
 
 void _appendMove(
   Coordinate start,
@@ -162,4 +107,14 @@ void _appendToSkip(
       toSkip.add(toAdd);
     }
   }
+}
+
+List<List<Coordinate>> _assemblePaths(
+  List<Pair<Coordinate, Coordinate>> moves,
+  Coordinate start,
+  Coordinate end,
+) {
+  final paths = List<List<Coordinate>>();
+
+  return paths;
 }

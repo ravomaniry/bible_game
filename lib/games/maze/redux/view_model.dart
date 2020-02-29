@@ -1,5 +1,5 @@
 import 'package:bible_game/app/app_state.dart';
-import 'package:bible_game/games/maze/actions/logic.dart';
+import 'package:bible_game/games/maze/logic/logic.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:redux/redux.dart';
