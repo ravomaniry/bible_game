@@ -2,6 +2,7 @@ import 'package:animator/animator.dart';
 import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/game/components/in_game_header.dart';
 import 'package:bible_game/games/maze/components/canvas/background.dart';
+import 'package:bible_game/games/maze/components/canvas/paths.dart';
 import 'package:bible_game/games/maze/components/canvas/selection.dart';
 import 'package:bible_game/games/maze/components/canvas/words.dart';
 import 'package:bible_game/games/maze/components/canvas/words_bg.dart';
@@ -142,6 +143,7 @@ class _MazeState extends State<MazeController> {
                       MazeBackground(),
                       MazeWordsBackground(),
                       MazeWords(),
+                      MazePaths(),
                       MazeSelection(
                         start: _tapHandler.lineStart,
                         end: _tapHandler.lineEnd,

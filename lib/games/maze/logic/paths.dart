@@ -77,6 +77,7 @@ Coordinate _getMoveEnd(
         final nextCell = _removeUnusedCells(board.getAt(next.x, next.y), next, revealed, board);
         if (nextCell.cells.length == 1) {
           final wordIndex = nextCell.first.wordIndex;
+          // TODO check this logic as this may cause bug
           if (wordIndexes.contains(wordIndex)) {
             wordIndexes = [wordIndex];
             point = next;
