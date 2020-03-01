@@ -14,12 +14,11 @@ ThunkAction<AppState> proposeMaze(List<Coordinate> cellCoordinates) {
     if (shouldReveal(cells, state.wordsToFind)) {
       final revealed = reveal(cellCoordinates, state.revealed);
       final paths = getRevealedPaths(state.board, revealed, state.wordsToFind);
-      print(paths);
       store.dispatch(UpdateMazeState(state.copyWith(
         revealed: revealed,
         paths: paths,
       )));
-      if (paths.length == 1 && paths[0].last == state.board.end) {
+      if (paths.length == 1 && paths[0].first == board.start && paths[0].last == board.end) {
         await Future.delayed(Duration(seconds: 1));
         store.dispatch(UpdateGameResolvedState(true));
       }

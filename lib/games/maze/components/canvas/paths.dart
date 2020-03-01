@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/games/maze/components/cell.dart';
 import 'package:bible_game/games/maze/components/maze_board.dart';
@@ -9,7 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
-final _tmpPaint = Paint()
+final _tmpLinePaint = Paint()
+  ..style = PaintingStyle.stroke
+  ..strokeWidth = 6
+  ..color = Colors.deepOrange.withAlpha(150);
+
+final _tmpCirclePaint = Paint()
   ..style = PaintingStyle.stroke
   ..strokeWidth = 2
   ..color = Colors.deepOrange;
@@ -59,14 +62,14 @@ class _Painter extends CustomPainter {
   }
 
   void _drawCircle(Coordinate coordinate, Canvas canvas) {
-    canvas.drawCircle(_centerInPx(coordinate, 1), cellSize / 2 - 2, _tmpPaint);
+    canvas.drawCircle(_centerInPx(coordinate, Offset(1, 1)), cellSize / 2 - 2, _tmpCirclePaint);
   }
 
   void _drawLine(Coordinate start, Coordinate end, Canvas canvas) {
     canvas.drawLine(
-      _centerInPx(start, _getLineMarginX(start, end)),
-      _centerInPx(end, _getLineMarginY(start, end)),
-      _tmpPaint,
+      _centerInPx(start, _getLineMargin(start, end)),
+      _centerInPx(end, _getLineMargin(end, start)),
+      _tmpLinePaint,
     );
   }
 
@@ -76,31 +79,17 @@ class _Painter extends CustomPainter {
   }
 }
 
-Offset _centerInPx(Coordinate point, double margin) {
+Offset _centerInPx(Coordinate point, Offset margin) {
   return Offset(
-    (point.x + 0.5) * cellSize + margin,
-    (point.y + 0.5) * cellSize + margin,
+    (point.x + 0.5) * cellSize + margin.dx,
+    (point.y + 0.5) * cellSize + margin.dy,
   );
 }
 
-double _getLineMarginX(Coordinate start, Coordinate end) {
-  final sign = start.x > end.x ? -1 : 1;
-  if (start.x == end.x) {
-    return 0;
-  } else if (start.y == end.y) {
-    return sign * cellSize / 2;
-  } else {
-    return sign * cellSize / 2 * sin(pi / 4);
-  }
-}
-
-double _getLineMarginY(Coordinate start, Coordinate end) {
-  final sign = start.y > end.y ? -1 : 1;
-  if (start.y == end.y) {
-    return 0;
-  } else if (start.x == end.x) {
-    return sign * cellSize / 2;
-  } else {
-    return sign * cellSize / 2 * sin(pi / 4);
-  }
+Offset _getLineMargin(Coordinate start, Coordinate end) {
+  final xSign = start.x > end.x ? -1 : 1;
+  final ySign = start.y > end.y ? -1 : 1;
+  final dx = start.x == end.x ? 0 : xSign * cellSize / 4;
+  final dy = start.y == end.y ? 0 : ySign * cellSize / 4;
+  return Offset(dx.toDouble(), dy.toDouble());
 }
