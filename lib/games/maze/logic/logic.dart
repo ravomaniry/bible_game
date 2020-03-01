@@ -14,6 +14,7 @@ ThunkAction<AppState> proposeMaze(List<Coordinate> cellCoordinates) {
     if (shouldReveal(cells, state.wordsToFind)) {
       final revealed = reveal(cellCoordinates, state.revealed);
       final paths = getRevealedPaths(state.board, revealed, state.wordsToFind);
+      print(paths);
       store.dispatch(UpdateMazeState(state.copyWith(
         revealed: revealed,
         paths: paths,

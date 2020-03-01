@@ -80,6 +80,7 @@ bool formDiagonalCross(Coordinate point, Coordinate direction, Board board) {
 
 void persistMove(Move move, Board board) {
   var position = move.origin;
+  board.startMove(position);
   for (var i = 0; i < move.length; i++) {
     board.set(position.x, position.y, move.wordIndex, i);
     position += move.direction;

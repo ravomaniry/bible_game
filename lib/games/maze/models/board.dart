@@ -12,6 +12,8 @@ class Board {
   Coordinate end;
   final int id;
   final _coordinateMap = Map<int, Map<int, Coordinate>>();
+  final moves = List<List<List<List<Coordinate>>>>();
+  var _activeMove = Pair(Coordinate(-1, -1), -1);
 
   Board(this._value, this.id);
 
@@ -23,7 +25,9 @@ class Board {
         value[y][x] = MazeCell.create(-1, -1);
       }
     }
-    return Board(value, id);
+    final board = Board(value, id);
+    board._createEmptyMoves(width, height);
+    return board;
   }
 
   MazeCell getAt(int x, int y) => _value[y][x];
@@ -76,6 +80,7 @@ class Board {
   set(int x, int y, int wordIndex, int charIndex) {
     _value[y][x] = _value[y][x].concat(wordIndex, charIndex);
     _updateCoordinateMap(x, y, wordIndex, charIndex);
+    _appendMove(x, y);
   }
 
   void _updateCoordinateMap(int x, int y, int wordIndex, int charIndex) {
@@ -94,21 +99,54 @@ class Board {
     final minMax = _getMinMaxCell();
     final first = minMax.first;
     final last = minMax.last;
+    final delta = first * -1;
     final nextValue = List<List<MazeCell>>(last.y - first.y + 1);
     for (var y = 0, max = last.y - first.y; y <= max; y++) {
       nextValue[y] = _value[y + first.y].getRange(first.x, last.x + 1).toList();
     }
     _value = nextValue;
-    _adjustCoordinateMap(first * -1);
+    _adjustCoordinateMap(delta);
+    _adjustMoves(delta);
   }
 
-  Board _adjustCoordinateMap(Coordinate delta) {
+  void _adjustCoordinateMap(Coordinate delta) {
     for (var wIndex = 0; wIndex < _coordinateMap.length; wIndex++) {
       for (var cIndex = 0, max = _coordinateMap[wIndex].length; cIndex < max; cIndex++) {
         _coordinateMap[wIndex][cIndex] += delta;
       }
     }
-    return this;
+  }
+
+  void _createEmptyMoves(int width, int height) {
+    for (var y = 0; y < height; y++) {
+      moves.add(List<List<List<Coordinate>>>(width));
+      for (var x = 0; x < width; x++) {
+        moves[y][x] = [];
+      }
+    }
+  }
+
+  void startMove(Coordinate start) {
+    _activeMove = Pair(start, moves[start.y][start.x].length);
+    moves[start.y][start.x].add([]);
+  }
+
+  void _appendMove(int x, int y) {
+    final point = _activeMove.first;
+    moves[point.y][point.x][_activeMove.last].add(Coordinate(x, y));
+  }
+
+  void _adjustMoves(Coordinate delta) {
+    for (var y = 0; y < height; y++) {
+      for (var x = 0; x < width; x++) {
+        final cellMoves = moves[y][x];
+        for (final row in cellMoves) {
+          for (var i = 0; i < row.length; i++) {
+            row[i] += delta;
+          }
+        }
+      }
+    }
   }
 
   Pair<Coordinate, Coordinate> _getMinMaxCell() {

@@ -18,6 +18,7 @@ void main() {
   test("Set and cache coordinates", () {
     final board = Board.create(10, 10, 1);
     expect(board.coordinateOf(0, 0), isNull);
+    board.startMove(Coordinate(2, 3));
     board.set(2, 3, 0, 1);
     expect(board.coordinateOf(0, 1), Coordinate(2, 3));
     board.set(0, 0, 0, 2);
@@ -49,6 +50,39 @@ void main() {
     expect(getBoardSize(words2), 42);
   });
 
+  test("persistMove", () {
+    //   0 1 2 3 4 5 6
+    // 0 + - - - - - -
+    // 1 - + - - - x -
+    // 2 - - + - x - -
+    // 3 - - - * - - -
+    // 4 - - - * - - -
+    // 5 - - - - - - -
+    // 7 - - - - - - -
+    final board = Board.create(7, 7, 1);
+    persistMove(Move(Coordinate(0, 0), Coordinate(1, 1), 0, 4), board);
+    persistMove(Move(Coordinate(3, 3), Coordinate(1, -1), 1, 3), board);
+    persistMove(Move(Coordinate(3, 3), Coordinate(0, 1), 2, 2), board);
+    expect(board.getAt(0, 0).toString(), "0 0");
+    expect(board.getAt(1, 1).toString(), "0 1");
+    expect(board.getAt(2, 2).toString(), "0 2");
+    expect(board.getAt(3, 3).toString(), "0 3,1 0,2 0");
+    expect(board.getAt(4, 4).toString(), "-1 -1");
+    expect(board.getAt(4, 2).toString(), "1 1");
+    expect(board.getAt(5, 1).toString(), "1 2");
+    expect(board.coordinateOf(0, 0), Coordinate(0, 0));
+    expect(board.coordinateOf(0, 1), Coordinate(1, 1));
+    expect(board.coordinateOf(0, 2), Coordinate(2, 2));
+    expect(board.coordinateOf(1, 2), Coordinate(5, 1));
+    expect(board.moves[0][0], [
+      [Coordinate(0, 0), Coordinate(1, 1), Coordinate(2, 2), Coordinate(3, 3)]
+    ]);
+    expect(board.moves[3][3], [
+      [Coordinate(3, 3), Coordinate(4, 2), Coordinate(5, 1)],
+      [Coordinate(3, 3), Coordinate(3, 4)],
+    ]);
+  });
+
   test("Starting points and possible moves", () async {
     //   0 1 2 3 4 5
     // 0⁰A - - - - -
@@ -68,9 +102,8 @@ void main() {
       "(0, 3, 1, -1, 0, 4)",
       "(0, 3, 1, 0, 0, 4)",
     ]);
-
     // ABC word starts at (0, 0) and ends at (0,2)
-    board..set(0, 0, 0, 0)..set(0, 1, 0, 1)..set(0, 2, 0, 2);
+    persistMove(Move(Coordinate(0, 0), Coordinate.down, 0, 3), board);
     final points1 = getPossibleStartingPoints(1, board, words);
     expect(points1.map(toString).toList(), ["(1, 2)", "(0, 3)"]);
     // place 2 chars word
@@ -95,14 +128,12 @@ void main() {
       "(1, 2, 1, 0, 1, 5)",
       "(0, 3, 1, 0, 1, 5)",
     ]);
-
     // D.E.F 2nd word starts at (3, 1) and ends at (1, 1) and 1st word is still there
-    board..set(0, 3, 1, 0)..set(1, 3, 1, 1)..set(2, 3, 1, 2);
+    persistMove(Move(Coordinate(0, 3), Coordinate.right, 1, 3), board);
     final points2 = getPossibleStartingPoints(2, board, words);
     expect(points2.map(toString).toList(), ["(2, 2)", "(3, 3)", "(2, 4)"]);
-
     // 3rd Word ends at the bottom right corner
-    board..set(5, 4, 2, 0)..set(5, 5, 2, 1);
+    persistMove(Move(Coordinate(5, 4), Coordinate.down, 2, 2), board);
     final points3 = getPossibleStartingPoints(3, board, words);
     expect(points3.map(toString).toList(), ["(4, 5)"]);
     final moves3 = getPossibleMoves(points3, 3, 5, board);
@@ -121,10 +152,10 @@ void main() {
     // 4  - - - -²A
     final words = getWordsInScopeForMaze(BibleVerse.from(text: "DE FK AG ABC GH"));
     final board = Board.create(5, 5, 1);
-    board..set(0, 1, 0, 0)..set(1, 1, 0, 1);
-    board..set(4, 1, 1, 0)..set(4, 0, 1, 1);
-    board..set(4, 4, 2, 0)..set(4, 3, 2, 1);
-    board..set(0, 2, 3, 0)..set(1, 2, 3, 1)..set(2, 2, 3, 2);
+    persistMove(Move(Coordinate(0, 1), Coordinate.right, 0, 2), board);
+    persistMove(Move(Coordinate(4, 1), Coordinate.up, 1, 2), board);
+    persistMove(Move(Coordinate(4, 4), Coordinate.up, 2, 2), board);
+    persistMove(Move(Coordinate(0, 2), Coordinate.right, 3, 3), board);
     final points = getPossibleStartingPoints(4, board, words);
     expect(points.map(toString).toList(), ["(3, 2)", "(2, 3)"]);
   });
@@ -137,7 +168,8 @@ void main() {
     // 2 - C - -
     // 3 - - - -
     var words = [Word.from("ABC", 0, false), Word.from("DAB", 1, false)];
-    var board = Board.create(6, 6, 1)..set(1, 0, 0, 0)..set(1, 1, 0, 1)..set(1, 2, 0, 2);
+    var board = Board.create(6, 6, 1);
+    persistMove(Move(Coordinate(1, 0), Coordinate.down, 0, 3), board);
     expect(getOverlaps(1, words, board), []);
 
     /// Overlap on end of active word
@@ -154,7 +186,7 @@ void main() {
     board = Board.create(7, 7, 1);
 
     /// a.d.e.g
-    board..set(0, 2, 0, 0)..set(1, 2, 0, 1)..set(2, 2, 0, 2)..set(3, 2, 0, 3);
+    persistMove(Move(Coordinate(0, 2), Coordinate.right, 0, 4), board);
     final moves = getOverlaps(1, words, board).map(toString).toList();
     expect(moves, [
       "(3, 2, 1, 1, 1, 4)",
@@ -189,14 +221,15 @@ void main() {
     // 2 b - - - - - - - - -
     // 3 c - - - - - - - - -
     // 4 - - - - - - - - - -
-    final board = Board.create(10, 10, 1)..set(0, 0, 0, 0);
+    final board = Board.create(10, 10, 1);
+    persistMove(Move(Coordinate(0, 0), Coordinate.right, 0, 1), board);
     final List<Word> words = [
       Word.from("A", 0, false),
       Word.from("abc", 1, false),
       Word.from("b", 2, false),
     ];
     expect(getOverlaps(1, words, board), []);
-    board..set(0, 1, 1, 0)..set(0, 2, 1, 1)..set(0, 3, 1, 2);
+    persistMove(Move(Coordinate(0, 1), Coordinate.down, 1, 3), board);
     expect(getOverlaps(2, words, board), []);
   });
 
@@ -212,25 +245,11 @@ void main() {
     // 7 - - - - - - - -
     final words = getWordsInScopeForMaze(BibleVerse.from(text: "Jesosy Kristy izay"));
     final board = Board.create(8, 8, 1);
-    // Jesosy (0, 2) => (5, 2)
-    board
-      ..set(0, 2, 0, 0)
-      ..set(1, 2, 0, 1)
-      ..set(2, 2, 0, 2)
-      ..set(3, 2, 0, 3)
-      ..set(4, 2, 0, 4)
-      ..set(5, 2, 0, 5);
-    // Kristy (7, 5) => (2, 0)
-    board
-      ..set(7, 5, 1, 0)
-      ..set(6, 4, 1, 1)
-      ..set(5, 3, 1, 2)
-      ..set(4, 2, 1, 3)
-      ..set(3, 1, 1, 4)
-      ..set(2, 0, 1, 5);
+    board.startMove(Coordinate(0, 2));
+    persistMove(Move(Coordinate(0, 2), Coordinate.right, 0, 6), board);
+    persistMove(Move(Coordinate(7, 5), Coordinate.upLeft, 1, 6), board);
     // Overlap would be on I if it was allowed
-    final overlaps = getOverlaps(2, words, board);
-    expect(overlaps, []);
+    expect(getOverlaps(2, words, board), []);
   });
 
   test("Does not allow 2 words to form a diagonal cross", () async {
@@ -242,8 +261,8 @@ void main() {
     // 4  - - - - -
     final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABCD EF Fghi"));
     final board = Board.create(5, 5, 1);
-    board..set(0, 0, 0, 0)..set(1, 1, 0, 1)..set(2, 2, 0, 2)..set(3, 3, 0, 3);
-    board..set(2, 0, 1, 0)..set(3, 0, 1, 1);
+    persistMove(Move(Coordinate(0, 0), Coordinate.downRight, 0, 4), board);
+    persistMove(Move(Coordinate(2, 0), Coordinate.right, 1, 2), board);
     final overlaps = getOverlaps(2, words, board);
     expect(overlaps, []);
     final startingPoints = getPossibleStartingPoints(2, board, words);
@@ -251,34 +270,10 @@ void main() {
     expect(moves, ["(4, 0, 0, 1, 0, 4)"]);
   });
 
-  test("persistMove", () {
-    //   0 1 2 3 4 5 6
-    // 0 + - - - - - -
-    // 1 - + - - - - -
-    // 2 - - + - - - -
-    // 3 - - - + - - -
-    // 4 - - - - + - -
-    // 5 - - - - - - -
-    // 7 - - - - - - -
-    final board = Board.create(7, 7, 1);
-    final move = Move(Coordinate(0, 0), Coordinate(1, 1), 0, 4);
-    persistMove(move, board);
-    expect(board.getAt(0, 0).toString(), "0 0");
-    expect(board.getAt(1, 1).toString(), "0 1");
-    expect(board.getAt(2, 2).toString(), "0 2");
-    expect(board.getAt(3, 3).toString(), "0 3");
-    expect(board.getAt(4, 4).toString(), "-1 -1");
-    expect(board.coordinateOf(0, 0), Coordinate(0, 0));
-    expect(board.coordinateOf(0, 1), Coordinate(1, 1));
-    expect(board.coordinateOf(0, 2), Coordinate(2, 2));
-  });
-
   test("Trim board", () {
-    final board = Board.create(10, 10, 1)
-      ..set(1, 2, 0, 0)
-      ..set(2, 1, 0, 1)
-      ..set(2, 3, 1, 0)
-      ..set(2, 4, 1, 1);
+    final board = Board.create(10, 10, 1);
+    persistMove(Move(Coordinate(1, 2), Coordinate.upRight, 0, 2), board);
+    persistMove(Move(Coordinate(2, 3), Coordinate.down, 1, 2), board);
     board.trim();
     expect(board.width, 2);
     expect(board.height, 4);
@@ -300,11 +295,11 @@ void main() {
     // 5 - - - - - -
     final board = Board.create(6, 6, 1);
     var words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC DEA EFD HHH AED"));
-    board..set(0, 2, 0, 0)..set(1, 2, 0, 1)..set(2, 2, 0, 2);
-    board..set(3, 2, 1, 0)..set(3, 1, 1, 1)..set(3, 0, 1, 2);
-    board..set(3, 1, 2, 0)..set(4, 1, 2, 1)..set(5, 1, 2, 2);
-    board..set(5, 2, 3, 0)..set(5, 3, 3, 1)..set(5, 4, 3, 2);
-    board..set(4, 4, 4, 0)..set(3, 4, 4, 1)..set(2, 4, 4, 2);
+    persistMove(Move(Coordinate(0, 2), Coordinate.right, 0, 3), board);
+    persistMove(Move(Coordinate(3, 2), Coordinate.up, 1, 3), board);
+    persistMove(Move(Coordinate(3, 1), Coordinate.right, 2, 3), board);
+    persistMove(Move(Coordinate(5, 2), Coordinate.down, 3, 3), board);
+    persistMove(Move(Coordinate(4, 4), Coordinate.left, 4, 3), board);
     final overlapRefs = getNoiseOverlapRefs(words).map(toString).toList();
     expect(overlapRefs, [
       // 0
@@ -365,10 +360,10 @@ void main() {
     // 4 - I H - - -
     final board = Board.create(6, 5, 1);
     final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC CI HRDE IC"));
-    board..set(2, 1, 0, 0)..set(1, 2, 0, 1)..set(0, 3, 0, 2);
-    board..set(0, 3, 1, 0)..set(1, 4, 1, 1);
-    board..set(2, 4, 2, 0)..set(3, 3, 2, 1)..set(4, 2, 2, 2)..set(5, 1, 2, 3);
-    board..set(5, 0, 3, 0)..set(4, 0, 3, 1);
+    persistMove(Move(Coordinate(2, 1), Coordinate.downLeft, 0, 3), board);
+    persistMove(Move(Coordinate(0, 3), Coordinate.downRight, 1, 2), board);
+    persistMove(Move(Coordinate(2, 4), Coordinate.upRight, 2, 4), board);
+    persistMove(Move(Coordinate(5, 0), Coordinate.left, 3, 2), board);
     final moves = getOverlapNoiseMoves(board, words);
     expect(moves.map(toString).toList(), [
       "(2, 1, -1, 0, 0, 3)",
@@ -378,7 +373,7 @@ void main() {
     ]);
   });
 
-  test("Outer Waters (sea)", () {
+  test("Outer Forest", () {
     //   0 1 2 3 4 5
     // 0 - - - - - -
     // 1 - A D - - -
@@ -386,7 +381,9 @@ void main() {
     // 3 - - - Z - -
     // 4 - - - - - -
     final board = Board.create(6, 6, 1);
-    board..set(1, 1, 0, 0)..set(2, 1, 0, 1)..set(0, 2, 1, 0)..set(3, 4, 2, 0);
+    persistMove(Move(Coordinate(1, 1), Coordinate.right, 0, 2), board);
+    persistMove(Move(Coordinate(0, 2), Coordinate.right, 1, 1), board);
+    persistMove(Move(Coordinate(3, 4), Coordinate.right, 2, 1), board);
     addEnvironments(board);
     final waters = [
       [
@@ -472,7 +469,7 @@ void main() {
 
   test("Initial revealed state", () {
     final board = Board.create(4, 4, 0);
-    board..set(0, 0, 0, 0)..set(1, 1, 0, 1);
+    persistMove(Move(Coordinate(0, 0), Coordinate.downRight, 0, 2), board);
     board.updateStartEnd([Word.from("AB", 0, false)]);
     expect(initialRevealedState(board), [
       [false, false, false, false],

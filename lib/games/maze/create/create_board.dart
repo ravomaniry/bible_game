@@ -68,10 +68,6 @@ bool placeWordsInBoard(List<Word> words, Board board) {
       move = moves[random.nextInt(moves.length)];
     }
     persistMove(move, board);
-
-    if (index == 0) {
-      board.start = move.origin;
-    }
   }
   return true;
 }

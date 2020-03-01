@@ -4,6 +4,7 @@ import 'package:bible_game/games/maze/components/maze.dart';
 import 'package:bible_game/games/maze/create/board_utils.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
+import 'package:bible_game/games/maze/models/move.dart';
 import 'package:bible_game/games/maze/redux/state.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/test_helpers/positioned.dart';
@@ -25,7 +26,8 @@ void main() {
       bookId: 4,
       verse: 1,
     );
-    final board = Board.create(5, 5, 1)..set(0, 0, 0, 0)..set(1, 1, 0, 1)..set(2, 2, 0, 2);
+    final board = Board.create(5, 5, 1);
+    persistMove(Move(Coordinate(0, 0), Coordinate.downRight, 0, 3), board);
     // store preparation
     store.dispatch(UpdateGameVerse(verse));
     store.dispatch(UpdateMazeState(MazeState.emptyState().copyWith(
