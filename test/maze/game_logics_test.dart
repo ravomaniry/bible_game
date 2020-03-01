@@ -106,103 +106,84 @@ void main() {
   });
 
   test("revealed moves + paths", () {
-    // . . . E . . O
-    // A B C D . N .
-    // . . I . M . .
-    // J I H G . . .
-    // . . K . . . .
-    // . . . L . . .
-    // . . . . . . .
-    final board = Board.create(7, 7, 0);
-    final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC DE IH GHIJ MNO IKL"));
-    board.startMove(Coordinate(0, 1));
-    board..set(0, 1, 0, 0)..set(1, 1, 0, 1)..set(2, 1, 0, 2);
-    board..set(3, 0, 1, 0)..set(3, 1, 1, 1);
-    board..set(2, 2, 2, 0)..set(2, 3, 2, 1);
-    board..set(3, 3, 3, 0)..set(2, 3, 3, 1)..set(1, 3, 3, 2)..set(0, 3, 3, 3);
-    board..set(4, 2, 4, 0)..set(5, 1, 4, 1)..set(6, 0, 4, 2);
-    board..set(1, 3, 5, 0)..set(2, 4, 5, 1)..set(3, 5, 5, 2);
+    // . . . E . .
+    // A B C D . .
+    // . . I . . .
+    // J I H G . .
+    // . . K . . .
+    // . . . L . .
+    final board = Board.create(6, 6, 0);
+    final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC DE IH GHIJ IKL"));
+    persistMove(Move(Coordinate(0, 1), Coordinate.right, 0, 3), board);
+    persistMove(Move(Coordinate(3, 0), Coordinate.down, 1, 2), board);
+    persistMove(Move(Coordinate(2, 2), Coordinate.down, 2, 2), board);
+    persistMove(Move(Coordinate(3, 3), Coordinate.left, 3, 4), board);
+    persistMove(Move(Coordinate(1, 3), Coordinate.downRight, 4, 3), board);
     board.updateStartEnd(words);
     // one full word
     var revealed = [
-      [false, false, false, false, false, false],
-      [true, true, true, false, false, false],
-      [false, false, false, false, false, false],
-      [false, false, false, false, false, false],
-      [false, false, false, false, false, false],
-      [false, false, false, false, false, false],
-      [false, false, false, false, false, false],
+      [false, false, false, false, false],
+      [true, true, true, false, false],
+      [false, false, false, false, false],
+      [false, false, false, false, false],
+      [false, false, false, false, false],
+      [false, false, false, false, false],
     ];
     expect(getRevealedMoves(board, revealed, words), [Pair(Coordinate(0, 1), Coordinate(2, 1))]);
     expect(getRevealedPaths(board, revealed, words), [
       [Coordinate(0, 1), Coordinate(2, 1)]
     ]);
-    // 0 & 1 & 4
+    // 0 & 1
     revealed = [
-      [false, false, false, true, false, false, true],
-      [true, true, true, true, false, true, false],
-      [false, false, false, false, true, false, false],
-      [false, false, false, false, false, false, false],
-      [false, false, false, false, false, false, false],
-      [false, false, false, false, false, false, false],
-      [false, false, false, false, false, false, false],
+      [false, false, false, true, false, false],
+      [true, true, true, true, false, false],
+      [false, false, false, false, false, false],
+      [false, false, false, false, false, false],
+      [false, false, false, false, false, false],
+      [false, false, false, false, false, false],
     ];
     expect(getRevealedMoves(board, revealed, words), [
       Pair(Coordinate(3, 0), Coordinate(3, 1)),
-      Pair(Coordinate(6, 0), Coordinate(4, 2)),
       Pair(Coordinate(0, 1), Coordinate(2, 1)),
     ]);
     expect(getRevealedPaths(board, revealed, words), [
       [Coordinate(3, 0), Coordinate(3, 1), Coordinate(2, 1), Coordinate(0, 1)],
-      [Coordinate(6, 0), Coordinate(4, 2)],
     ]);
-    // Overlap single direction
+    // Overlap single direction ( 0 & 1 & 3)
     revealed = [
       [false, false, false, true, false, false],
       [true, true, true, true, false, false],
-      [false, false, true, false, false, false],
-      [true, true, true, true, false, false],
       [false, false, false, false, false, false],
+      [true, true, true, true, false, false],
       [false, false, false, false, false, false],
       [false, false, false, false, false, false],
     ];
     expect(getRevealedMoves(board, revealed, words), [
       Pair(Coordinate(3, 0), Coordinate(3, 1)),
       Pair(Coordinate(0, 1), Coordinate(2, 1)),
-      Pair(Coordinate(2, 2), Coordinate(2, 3)),
-      Pair(Coordinate(0, 3), Coordinate(2, 3)),
-      Pair(Coordinate(2, 3), Coordinate(3, 3)),
+      Pair(Coordinate(3, 3), Coordinate(0, 3)),
     ]);
     expect(getRevealedPaths(board, revealed, words), [
-      [
-        Coordinate(3, 0),
-        Coordinate(3, 1),
-        Coordinate(2, 1),
-        Coordinate(2, 2),
-        Coordinate(2, 3),
-        Coordinate(3, 3),
-      ],
-      [Coordinate(2, 1), Coordinate(0, 1)],
-      [Coordinate(2, 3), Coordinate(0, 3)],
+      [Coordinate(3, 0), Coordinate(3, 1), Coordinate(2, 1), Coordinate(0, 1)],
+      [Coordinate(3, 3), Coordinate(0, 3)],
     ]);
     // Completed + dual direction overlap
     revealed = [
-      [false, false, false, true, false, false],
-      [true, true, true, true, false, false],
-      [false, false, true, false, false, false],
-      [true, true, true, true, false, false],
-      [false, false, true, false, false, false],
-      [false, false, false, true, false, false],
-      [false, false, false, false, false, false],
+      [false, false, false, true, false],
+      [true, true, true, true, false],
+      [false, false, true, false, false],
+      [true, true, true, true, false],
+      [false, false, true, false, false],
+      [false, false, false, true, false],
     ];
     expect(getRevealedMoves(board, revealed, words), [
       Pair(Coordinate(3, 0), Coordinate(3, 1)),
       Pair(Coordinate(0, 1), Coordinate(2, 1)),
       Pair(Coordinate(2, 2), Coordinate(2, 3)),
-      Pair(Coordinate(0, 3), Coordinate(1, 3)),
-      Pair(Coordinate(1, 3), Coordinate(2, 3)),
       Pair(Coordinate(1, 3), Coordinate(3, 5)),
-      Pair(Coordinate(2, 3), Coordinate(3, 3)),
+      Pair(Coordinate(3, 3), Coordinate(2, 3)),
+      Pair(Coordinate(2, 3), Coordinate(1, 3)),
+      Pair(Coordinate(1, 3), Coordinate(0, 3)),
     ]);
     expect(getRevealedPaths(board, revealed, words), [
       [

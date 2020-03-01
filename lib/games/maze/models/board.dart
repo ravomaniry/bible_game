@@ -12,7 +12,8 @@ class Board {
   Coordinate end;
   final int id;
   final _coordinateMap = Map<int, Map<int, Coordinate>>();
-  final moves = List<List<List<List<Coordinate>>>>();
+  List<List<List<List<Coordinate>>>> _moves = List();
+
   var _activeMove = Pair(Coordinate(-1, -1), -1);
 
   Board(this._value, this.id);
@@ -30,7 +31,7 @@ class Board {
     return board;
   }
 
-  MazeCell getAt(int x, int y) => _value[y][x];
+  List<List<List<List<Coordinate>>>> get moves => _moves;
 
   List<List<MazeCell>> get value => _value;
 
@@ -41,6 +42,8 @@ class Board {
   int get height {
     return _value.length;
   }
+
+  MazeCell getAt(int x, int y) => _value[y][x];
 
   bool isFreeAt(Coordinate c) {
     final cell = getAt(c.x, c.y);
@@ -101,10 +104,13 @@ class Board {
     final last = minMax.last;
     final delta = first * -1;
     final nextValue = List<List<MazeCell>>(last.y - first.y + 1);
+    final nextMovesList = List<List<List<List<Coordinate>>>>.from(_moves);
     for (var y = 0, max = last.y - first.y; y <= max; y++) {
       nextValue[y] = _value[y + first.y].getRange(first.x, last.x + 1).toList();
+      nextMovesList[y] = _moves[y + first.y].getRange(first.x, last.x + 1).toList();
     }
     _value = nextValue;
+    _moves = nextMovesList;
     _adjustCoordinateMap(delta);
     _adjustMoves(delta);
   }

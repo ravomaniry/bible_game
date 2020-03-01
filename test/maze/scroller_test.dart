@@ -156,7 +156,6 @@ void main() {
     final drag = getDragDispatcher(tester, 0, yOffset);
     final board = Board.create(22, 22, 1); // 528x528
     persistMove(Move(Coordinate(3, 3), Coordinate.downRight, 0, 3), board);
-//    board..set(3, 3, 0, 0)..set(4, 4, 0, 1)..set(5, 5, 0, 2);
     final verse = BibleVerse.from(
       text: "Jesosy nitomany",
       bookId: 4,

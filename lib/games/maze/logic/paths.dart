@@ -1,12 +1,8 @@
 import 'package:bible_game/games/maze/create/board_utils.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
-import 'package:bible_game/games/maze/models/maze_cell.dart';
-import 'package:bible_game/models/cell.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/utils/pair.dart';
-
-final _directions = [Coordinate.upRight, Coordinate.right, Coordinate.downRight, Coordinate.down];
 
 List<List<Coordinate>> getRevealedPaths(
   Board board,
@@ -23,122 +19,65 @@ List<Pair<Coordinate, Coordinate>> getRevealedMoves(
   List<List<bool>> revealed,
   List<Word> words,
 ) {
-  final List<Coordinate> toSkip = [];
-  final List<Pair<Coordinate, Coordinate>> moves = [];
-  for (var y = 0, h = revealed.length; y < h; y++) {
-    for (var x = 0, w = revealed[y].length; x < w; x++) {
-      _appendMove(Coordinate(x, y), moves, toSkip, board, revealed);
+  final rawMoves = _getRawRevealedMoves(board, revealed);
+  final appearances = _getPointsAppearances(rawMoves);
+  return _mergeMoves(rawMoves, appearances);
+}
+
+List<List<Coordinate>> _getRawRevealedMoves(Board board, List<List<bool>> revealed) {
+  final moves = List<List<Coordinate>>();
+  for (var y = 0, height = board.height; y < height; y++) {
+    for (final cellMoves in board.moves[y]) {
+      for (final move in cellMoves) {
+        if (_moveIsAllRevealed(move, revealed)) {
+          moves.add(move);
+        }
+      }
     }
   }
   return moves;
 }
 
-void _appendMove(
-  Coordinate start,
-  List<Pair<Coordinate, Coordinate>> moves,
-  List<Coordinate> toSkip,
-  Board board,
-  List<List<bool>> revealed,
-) {
-  final index = toSkip.indexOf(start);
-  if (index == -1) {
-    var appended = false;
-    for (final direction in _directions) {
-      final end = _getMoveEnd(start, direction, board, revealed);
-      if (end != null) {
-        appended = true;
-        moves.add(Pair(start, end));
-        _appendToSkip(toSkip, start, end, direction, board);
-      }
+bool _moveIsAllRevealed(List<Coordinate> move, List<List<bool>> revealed) {
+  for (final point in move) {
+    if (!revealed[point.y][point.x]) {
+      return false;
     }
-    if (!appended && revealed[start.y][start.x] && moves.where((m) => m.last == start).isEmpty) {
-      moves.add(Pair(start, start));
-    }
-  } else {
-    toSkip.removeAt(index);
   }
+  return true;
 }
 
-Coordinate _getMoveEnd(
-  Coordinate start,
-  Coordinate direction,
-  Board board,
-  List<List<bool>> revealed,
-) {
-  if (revealed[start.y][start.x]) {
-    var point = start;
-    var mazeCell = board.getAt(point.x, point.y);
-    var wordIndexes = mazeCell.cells.map((cell) => cell.wordIndex).toList();
-    final returnValue = () => point == start ? null : point;
-
-    while (true) {
-      final next = point + direction;
-      if (board.includes(next) && revealed[next.y][next.x]) {
-        final nextCell = _removeUnusedCells(board.getAt(next.x, next.y), next, revealed, board);
-        if (nextCell.cells.length == 1) {
-          final wordIndex = nextCell.first.wordIndex;
-          // TODO check this logic as this may cause bug
-          if (wordIndexes.contains(wordIndex)) {
-            wordIndexes = [wordIndex];
-            point = next;
-          } else {
-            return returnValue();
-          }
-        } else {
-          if (nextCell.containsOneWordOf(wordIndexes)) {
-            return next;
-          }
-          return returnValue();
-        }
+Map<Coordinate, int> _getPointsAppearances(List<List<Coordinate>> rawMoves) {
+  final map = Map<Coordinate, int>();
+  for (final move in rawMoves) {
+    for (var i = 0, max = move.length; i < max; i++) {
+      if (map[move[i]] == null) {
+        map[move[i]] = 1;
       } else {
-        return returnValue();
+        map[move[i]]++;
       }
     }
   }
-  return null;
+  return map;
 }
 
-void _appendToSkip(
-  List<Coordinate> toSkip,
-  Coordinate start,
-  Coordinate end,
-  Coordinate direction,
-  Board board,
+List<Pair<Coordinate, Coordinate>> _mergeMoves(
+  List<List<Coordinate>> rawMoves,
+  Map<Coordinate, int> appearances,
 ) {
-  for (var point = start; point != end; point += direction) {
-    final toAdd = point + direction;
-    if (toAdd != end && !toSkip.contains(toAdd)) {
-      toSkip.add(toAdd);
-    }
-  }
-}
-
-MazeCell _removeUnusedCells(
-  MazeCell mazeCell,
-  Coordinate coordinate,
-  List<List<bool>> revealed,
-  Board board,
-) {
-  if (mazeCell.cells.length == 1) {
-    return mazeCell;
-  }
-  final cells = List<Cell>();
-  for (final cell in mazeCell.cells) {
-    for (final dir in Coordinate.allDirections) {
-      final next = coordinate + dir;
-      if (board.includes(next) && revealed[next.y][next.x]) {
-        final wordIndexes = board.getAt(next.x, next.y).cells.map((c) => c.wordIndex);
-        if (wordIndexes.contains(cell.wordIndex)) {
-          cells.add(cell);
-          break;
-        }
+  final moves = List<Pair<Coordinate, Coordinate>>();
+  for (final points in rawMoves) {
+    var start = points[0];
+    for (var i = 1; i < points.length - 1; i++) {
+      final point = points[i];
+      if (appearances[point] > 1) {
+        moves.add(Pair(start, point));
+        start = point;
       }
     }
+    moves.add(Pair(start, points.last));
   }
-  if (cells.isEmpty) {
-    return mazeCell;
-  }
-  return MazeCell(cells);
+  return moves;
 }
 
 List<List<Coordinate>> _assemblePaths(
@@ -213,6 +152,9 @@ List<List<Coordinate>> _getAllPaths(List<Pair<Coordinate, Coordinate>> moves) {
         queue.addAll(newPaths);
         paths = [next[0]];
       }
+    }
+    if (moves.isNotEmpty && queue.isEmpty) {
+      queue.add([moves.first.first]);
     }
   }
   return all;

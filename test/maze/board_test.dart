@@ -283,6 +283,8 @@ void main() {
     expect(board.getAt(1, 3).contains(1, 1), true);
     expect(board.coordinateOf(0, 0), Coordinate(0, 1));
     expect(board.coordinateOf(1, 1), Coordinate(1, 3));
+    expect(board.moves[1][0][0], [Coordinate(0, 1), Coordinate(1, 0)]);
+    expect(board.moves[2][1][0], [Coordinate(1, 2), Coordinate(1, 3)]);
   });
 
   testWidgets("Add noise - Overlaps - simple", (WidgetTester tester) async {
