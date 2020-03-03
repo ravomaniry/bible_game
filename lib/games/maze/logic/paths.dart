@@ -2,7 +2,32 @@ import 'package:bible_game/games/maze/create/board_utils.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/models/word.dart';
-import 'package:bible_game/utils/pair.dart';
+import 'package:flutter/cupertino.dart';
+
+class MazeMove {
+  final Coordinate start;
+  final Coordinate end;
+  final bool isStarting;
+  final bool isEnding;
+
+  MazeMove(this.start, this.end, this.isStarting, this.isEnding);
+
+  @override
+  int get hashCode => hashValues(start, end, isStarting, isEnding);
+
+  @override
+  bool operator ==(other) =>
+      other is MazeMove &&
+      other.start == start &&
+      other.end == end &&
+      other.isStarting == isStarting &&
+      other.isEnding == isEnding;
+
+  @override
+  String toString() {
+    return "$start $end ${isStarting ? 'isStarging' : ''} ${isEnding ? 'isEnding' : ''}";
+  }
+}
 
 List<List<Coordinate>> getRevealedPaths(
   Board board,
@@ -14,7 +39,7 @@ List<List<Coordinate>> getRevealedPaths(
   return paths;
 }
 
-List<Pair<Coordinate, Coordinate>> getRevealedMoves(
+List<MazeMove> getRevealedMoves(
   Board board,
   List<List<bool>> revealed,
   List<Word> words,
@@ -61,27 +86,27 @@ Map<Coordinate, int> _getPointsAppearances(List<List<Coordinate>> rawMoves) {
   return map;
 }
 
-List<Pair<Coordinate, Coordinate>> _mergeMoves(
+List<MazeMove> _mergeMoves(
   List<List<Coordinate>> rawMoves,
   Map<Coordinate, int> appearances,
 ) {
-  final moves = List<Pair<Coordinate, Coordinate>>();
+  final moves = List<MazeMove>();
   for (final points in rawMoves) {
     var start = points[0];
     for (var i = 1; i < points.length - 1; i++) {
       final point = points[i];
       if (appearances[point] > 1) {
-        moves.add(Pair(start, point));
+        moves.add(MazeMove(start, point, start == points[0], false));
         start = point;
       }
     }
-    moves.add(Pair(start, points.last));
+    moves.add(MazeMove(start, points.last, start == points[0], true));
   }
   return moves;
 }
 
 List<List<Coordinate>> _assemblePaths(
-  List<Pair<Coordinate, Coordinate>> moves,
+  List<MazeMove> moves,
   Coordinate start,
   Coordinate end,
 ) {
@@ -89,109 +114,96 @@ List<List<Coordinate>> _assemblePaths(
   if (startToEnd != null) {
     return [startToEnd];
   }
-  return _getAllPaths(moves);
+  return getAllPaths(moves, start);
 }
 
 List<Coordinate> _joinStartToEnd(
-  List<Pair<Coordinate, Coordinate>> moves,
+  List<MazeMove> moves,
   Coordinate start,
   Coordinate end,
 ) {
-  var fromStart = [
+  moves = [...moves];
+  final fromStart = _continuePaths([
     [start]
-  ];
-  var fromEnd = [
+  ], moves);
+  final fromEnd = _continuePaths([
     [end]
-  ];
-  final movesLeft = List<Pair<Coordinate, Coordinate>>.from(moves);
-  final getCompletePath = () {
-    for (final left in fromStart) {
-      for (final right in fromEnd) {
-        if (left.last == right.last) {
-          return [...left.getRange(0, left.length - 1), ...right.reversed];
-        }
-      }
-    }
-    return null;
-  };
+  ], moves);
 
-  while (fromStart.isNotEmpty && fromEnd.isNotEmpty) {
-    fromStart = _continuePaths(fromStart, movesLeft);
-    var completePath = getCompletePath();
-    if (completePath == null) {
-      fromEnd = _continuePaths(fromEnd, movesLeft);
-      completePath = getCompletePath();
-    }
-    if (completePath != null) {
-      return completePath;
+  for (final left in fromStart) {
+    for (final right in fromEnd) {
+      final joined = _joinLeftAndRight(left, right);
+      if (joined != null) {
+        return joined;
+      }
     }
   }
   return null;
 }
 
-List<List<Coordinate>> _getAllPaths(List<Pair<Coordinate, Coordinate>> moves) {
-  if (moves.isEmpty) {
-    return [];
-  }
-  final all = List<List<Coordinate>>();
-  final queue = [
-    [moves.first.first]
-  ];
-  while (queue.isNotEmpty) {
-    var paths = [queue[0]];
-    while (paths.isNotEmpty) {
-      final next = _continuePaths(paths, moves);
-      if (next.length == 0) {
-        all.addAll(paths);
-        queue.removeAt(0);
-        paths = [];
-      } else if (next.length == 1) {
-        paths = next;
-      } else {
-        final newPaths = next.getRange(1, next.length).map((x) => [x[x.length - 2], x.last]);
-        queue.addAll(newPaths);
-        paths = [next[0]];
+List<Coordinate> _joinLeftAndRight(List<Coordinate> left, List<Coordinate> right) {
+  for (var l = left.length - 1; l >= 0; l--) {
+    for (var r = 0; r < right.length; r++) {
+      if (left[l] == right[r]) {
+        return [...left.getRange(0, l), ...right.getRange(r, right.length)];
       }
     }
-    if (moves.isNotEmpty && queue.isEmpty) {
-      queue.add([moves.first.first]);
+  }
+  return null;
+}
+
+List<List<Coordinate>> getAllPaths(List<MazeMove> moves, Coordinate start) {
+  final all = List<List<Coordinate>>();
+  var path = [start];
+  while (moves.isNotEmpty) {
+    final continued = _continuePath(path, moves);
+    all.add(continued ?? path);
+    if (moves.isNotEmpty) {
+      path = [moves.first.start, moves.first.end];
+      if (moves.length == 1) {
+        all.add(path);
+      }
+      moves.removeAt(0);
+      // handle isStarting && isEnding here
     }
   }
   return all;
 }
 
-List<List<Coordinate>> _continuePaths(
-  List<List<Coordinate>> paths,
-  List<Pair<Coordinate, Coordinate>> moves,
-) {
+List<List<Coordinate>> _continuePaths(List<List<Coordinate>> paths, List<MazeMove> moves) {
   final newPaths = List<List<Coordinate>>();
   for (final path in paths) {
-    final last = path.last;
-    for (var i = moves.length - 1; i >= 0; i--) {
-      final sameAsFirst = moves[i].first == last;
-      final sameAsLast = moves[i].last == last;
-      final isNeighborOfFirst = areNeighbors(moves[i].first, last);
-      final isNeighborOfLast = areNeighbors(moves[i].last, last);
-      if (sameAsFirst || sameAsLast || isNeighborOfFirst || isNeighborOfLast) {
-        final nextPoint = sameAsLast || isNeighborOfFirst ? moves[i].first : moves[i].last;
-        final newPath = [...path, nextPoint];
-        if (!_containsPath(newPaths, newPath)) {
-          newPaths.add(newPath);
-        }
-        if (sameAsFirst || sameAsLast) {
-          moves.removeAt(i);
-        }
-      }
+    final continued = _continuePath(path, moves);
+    if (continued != null) {
+      newPaths.add(continued);
     }
   }
   return newPaths;
 }
 
-bool _containsPath(List<List<Coordinate>> paths, List<Coordinate> path) {
-  for (final existing in paths) {
-    if (existing.first == path.first && existing.last == path.last) {
-      return true;
+List<Coordinate> _continuePath(List<Coordinate> path, List<MazeMove> moves) {
+  var next = path;
+  var i = moves.length - 1;
+  while (i >= 0) {
+    final move = moves[i];
+    final before = next;
+    if (move.start == next.last && !next.contains(move.end)) {
+      next = [...next, move.end];
+    } else if (move.end == next.first && !next.contains(move.start)) {
+      next = [move.start, ...next];
+    } else if (!next.contains(move.start) && !next.contains(move.end)) {
+      if (move.isStarting && areNeighbors(next.last, move.start)) {
+        next = [...next, move.start, move.end];
+      } else if (move.isEnding && areNeighbors(next.first, move.end)) {
+        next = [move.start, move.end, ...next];
+      }
+    }
+    if (next != before) {
+      moves.removeAt(i);
+      i = moves.length - 1;
+    } else {
+      i--;
     }
   }
-  return false;
+  return next == path ? null : next;
 }

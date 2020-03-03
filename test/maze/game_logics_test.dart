@@ -10,7 +10,6 @@ import 'package:bible_game/games/maze/redux/state.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/test_helpers/matchers.dart';
 import 'package:bible_game/test_helpers/store.dart';
-import 'package:bible_game/utils/pair.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -40,6 +39,7 @@ void main() {
     persistMove(Move(Coordinate(5, 0), Coordinate.upRight, 4, 1), board);
     persistMove(Move(Coordinate(3, 4), Coordinate.upRight, 4, 1), board);
     persistMove(Move(Coordinate(4, 3), Coordinate.left, 5, 2), board);
+    board.updateStartEnd(getWordsInScopeForMaze(verse));
 
     /// Invalid ones
     store.dispatch(proposeMaze([Coordinate(0, 0)]));
@@ -105,31 +105,71 @@ void main() {
     expect(store.state.maze.revealed, toHave2(true, 15));
   });
 
+  test("getAllPaths", () {
+    var moves = [
+      MazeMove(Coordinate(0, 1), Coordinate(2, 1), true, true),
+      MazeMove(Coordinate(3, 1), Coordinate(3, 0), true, true),
+    ];
+    expect(getAllPaths(moves, Coordinate(0, 1)), [
+      [Coordinate(0, 1), Coordinate(2, 1), Coordinate(3, 1), Coordinate(3, 0)],
+    ]);
+    // Overlap
+    moves = [
+      MazeMove(Coordinate(3, 3), Coordinate(1, 3), true, false),
+      MazeMove(Coordinate(1, 3), Coordinate(0, 3), false, true),
+      MazeMove(Coordinate(5, 4), Coordinate(4, 3), true, true),
+      MazeMove(Coordinate(1, 3), Coordinate(3, 5), true, true),
+    ];
+    expect(getAllPaths(moves, Coordinate(0, 0)), [
+      [Coordinate(0, 0)],
+      [Coordinate(5, 4), Coordinate(4, 3), Coordinate(3, 3), Coordinate(1, 3), Coordinate(3, 5)],
+      [Coordinate(1, 3), Coordinate(0, 3)],
+    ]);
+    // Overlap again
+    moves = [
+      MazeMove(Coordinate(1, 3), Coordinate(3, 5), true, true),
+      MazeMove(Coordinate(3, 3), Coordinate(1, 3), true, false),
+      MazeMove(Coordinate(1, 3), Coordinate(0, 3), false, true),
+      MazeMove(Coordinate(1, 4), Coordinate(1, 5), true, true),
+      MazeMove(Coordinate(5, 4), Coordinate(4, 3), true, true),
+    ];
+    expect(getAllPaths(moves, Coordinate(0, 1)), [
+      [Coordinate(0, 1)],
+      [Coordinate(5, 4), Coordinate(4, 3), Coordinate(3, 3), Coordinate(1, 3), Coordinate(3, 5)],
+      [Coordinate(1, 3), Coordinate(0, 3)],
+      [Coordinate(1, 4), Coordinate(1, 5)],
+    ]);
+  });
+
   test("revealed moves + paths", () {
     // . . . E . .
     // A B C D . .
     // . . I . . .
-    // J I H G . .
-    // . . K . . .
-    // . . . L . .
+    // J I H G N .
+    // . M K . . M
+    // . N . L . .
     final board = Board.create(6, 6, 0);
-    final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC DE IH GHIJ IKL"));
+    final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC DE IH GHIJ MN IKL"));
     persistMove(Move(Coordinate(0, 1), Coordinate.right, 0, 3), board);
-    persistMove(Move(Coordinate(3, 0), Coordinate.down, 1, 2), board);
+    persistMove(Move(Coordinate(3, 1), Coordinate.up, 1, 2), board);
     persistMove(Move(Coordinate(2, 2), Coordinate.down, 2, 2), board);
     persistMove(Move(Coordinate(3, 3), Coordinate.left, 3, 4), board);
-    persistMove(Move(Coordinate(1, 3), Coordinate.downRight, 4, 3), board);
+    persistMove(Move(Coordinate(5, 4), Coordinate.upLeft, 4, 2), board);
+    persistMove(Move(Coordinate(1, 4), Coordinate.down, 4, 2), board);
+    persistMove(Move(Coordinate(1, 3), Coordinate.downRight, 5, 3), board);
     board.updateStartEnd(words);
     // one full word
     var revealed = [
-      [false, false, false, false, false],
-      [true, true, true, false, false],
-      [false, false, false, false, false],
-      [false, false, false, false, false],
-      [false, false, false, false, false],
-      [false, false, false, false, false],
+      [false, false, false, false, false, false],
+      [true, true, true, false, false, false],
+      [false, false, false, false, false, false],
+      [false, false, false, false, false, false],
+      [false, false, false, false, false, false],
+      [false, false, false, false, false, false],
     ];
-    expect(getRevealedMoves(board, revealed, words), [Pair(Coordinate(0, 1), Coordinate(2, 1))]);
+    expect(getRevealedMoves(board, revealed, words), [
+      MazeMove(Coordinate(0, 1), Coordinate(2, 1), true, true),
+    ]);
     expect(getRevealedPaths(board, revealed, words), [
       [Coordinate(0, 1), Coordinate(2, 1)]
     ]);
@@ -143,11 +183,11 @@ void main() {
       [false, false, false, false, false, false],
     ];
     expect(getRevealedMoves(board, revealed, words), [
-      Pair(Coordinate(3, 0), Coordinate(3, 1)),
-      Pair(Coordinate(0, 1), Coordinate(2, 1)),
+      MazeMove(Coordinate(0, 1), Coordinate(2, 1), true, true),
+      MazeMove(Coordinate(3, 1), Coordinate(3, 0), true, true),
     ]);
     expect(getRevealedPaths(board, revealed, words), [
-      [Coordinate(3, 0), Coordinate(3, 1), Coordinate(2, 1), Coordinate(0, 1)],
+      [Coordinate(0, 1), Coordinate(2, 1), Coordinate(3, 1), Coordinate(3, 0)],
     ]);
     // Overlap single direction ( 0 & 1 & 3)
     revealed = [
@@ -159,31 +199,57 @@ void main() {
       [false, false, false, false, false, false],
     ];
     expect(getRevealedMoves(board, revealed, words), [
-      Pair(Coordinate(3, 0), Coordinate(3, 1)),
-      Pair(Coordinate(0, 1), Coordinate(2, 1)),
-      Pair(Coordinate(3, 3), Coordinate(0, 3)),
+      MazeMove(Coordinate(0, 1), Coordinate(2, 1), true, true),
+      MazeMove(Coordinate(3, 1), Coordinate(3, 0), true, true),
+      MazeMove(Coordinate(3, 3), Coordinate(0, 3), true, true),
     ]);
     expect(getRevealedPaths(board, revealed, words), [
-      [Coordinate(3, 0), Coordinate(3, 1), Coordinate(2, 1), Coordinate(0, 1)],
+      [Coordinate(0, 1), Coordinate(2, 1), Coordinate(3, 1), Coordinate(3, 0)],
       [Coordinate(3, 3), Coordinate(0, 3)],
     ]);
-    // Completed + dual direction overlap
+
+    // Append at start || end
     revealed = [
-      [false, false, false, true, false],
-      [true, true, true, true, false],
-      [false, false, true, false, false],
-      [true, true, true, true, false],
-      [false, false, true, false, false],
-      [false, false, false, true, false],
+      [false, false, false, true, false, false],
+      [true, true, true, true, false, false],
+      [false, false, false, false, false, false],
+      [true, true, true, true, true, false],
+      [false, true, true, false, false, true],
+      [false, true, false, true, false, false],
     ];
     expect(getRevealedMoves(board, revealed, words), [
-      Pair(Coordinate(3, 0), Coordinate(3, 1)),
-      Pair(Coordinate(0, 1), Coordinate(2, 1)),
-      Pair(Coordinate(2, 2), Coordinate(2, 3)),
-      Pair(Coordinate(1, 3), Coordinate(3, 5)),
-      Pair(Coordinate(3, 3), Coordinate(2, 3)),
-      Pair(Coordinate(2, 3), Coordinate(1, 3)),
-      Pair(Coordinate(1, 3), Coordinate(0, 3)),
+      MazeMove(Coordinate(0, 1), Coordinate(2, 1), true, true),
+      MazeMove(Coordinate(3, 1), Coordinate(3, 0), true, true),
+      MazeMove(Coordinate(1, 3), Coordinate(3, 5), true, true),
+      MazeMove(Coordinate(3, 3), Coordinate(1, 3), true, false),
+      MazeMove(Coordinate(1, 3), Coordinate(0, 3), false, true),
+      MazeMove(Coordinate(1, 4), Coordinate(1, 5), true, true),
+      MazeMove(Coordinate(5, 4), Coordinate(4, 3), true, true),
+    ]);
+    expect(getRevealedPaths(board, revealed, words), [
+      [Coordinate(0, 1), Coordinate(2, 1), Coordinate(3, 1), Coordinate(3, 0)],
+      [Coordinate(5, 4), Coordinate(4, 3), Coordinate(3, 3), Coordinate(1, 3), Coordinate(3, 5)],
+      [Coordinate(1, 3), Coordinate(0, 3)],
+      [Coordinate(1, 4), Coordinate(1, 5)],
+    ]);
+
+    // Completed + dual direction overlap
+    revealed = [
+      [false, false, false, true, false, false],
+      [true, true, true, true, false, false],
+      [false, false, true, false, false, false],
+      [true, true, true, true, false, false],
+      [false, false, true, false, false, false],
+      [false, false, false, true, false, false],
+    ];
+    expect(getRevealedMoves(board, revealed, words), [
+      MazeMove(Coordinate(0, 1), Coordinate(2, 1), true, true),
+      MazeMove(Coordinate(3, 1), Coordinate(3, 0), true, true),
+      MazeMove(Coordinate(2, 2), Coordinate(2, 3), true, true),
+      MazeMove(Coordinate(1, 3), Coordinate(3, 5), true, true),
+      MazeMove(Coordinate(3, 3), Coordinate(2, 3), true, false),
+      MazeMove(Coordinate(2, 3), Coordinate(1, 3), false, false),
+      MazeMove(Coordinate(1, 3), Coordinate(0, 3), false, true),
     ]);
     expect(getRevealedPaths(board, revealed, words), [
       [

@@ -18,7 +18,7 @@ ThunkAction<AppState> proposeMaze(List<Coordinate> cellCoordinates) {
         revealed: revealed,
         paths: paths,
       )));
-      if (paths.length == 1 && paths[0].first == board.start && paths[0].last == board.end) {
+      if (paths.length == 1 && paths[0].last == board.end) {
         await Future.delayed(Duration(seconds: 1));
         store.dispatch(UpdateGameResolvedState(true));
       }
