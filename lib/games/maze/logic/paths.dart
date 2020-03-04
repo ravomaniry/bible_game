@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:bible_game/games/maze/create/board_utils.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
@@ -35,7 +37,7 @@ List<List<Coordinate>> getRevealedPaths(
   List<Word> words,
 ) {
   final moves = getRevealedMoves(board, revealed, words);
-  final paths = _assemblePaths(moves, board.start, board.end);
+  final paths = assemblePaths(moves, board.start, board.end);
   return paths;
 }
 
@@ -105,16 +107,17 @@ List<MazeMove> _mergeMoves(
   return moves;
 }
 
-List<List<Coordinate>> _assemblePaths(
+List<List<Coordinate>> assemblePaths(
   List<MazeMove> moves,
   Coordinate start,
   Coordinate end,
 ) {
+  moves = [...moves];
   final startToEnd = _joinStartToEnd(moves, start, end);
   if (startToEnd != null) {
     return [startToEnd];
   }
-  return getAllPaths(moves, start);
+  return _getAllPaths(moves, start);
 }
 
 List<Coordinate> _joinStartToEnd(
@@ -123,12 +126,19 @@ List<Coordinate> _joinStartToEnd(
   Coordinate end,
 ) {
   moves = [...moves];
-  final fromStart = _continuePaths([
+  var fromStart = [
     [start]
-  ], moves);
-  final fromEnd = _continuePaths([
+  ];
+  var fromEnd = [
     [end]
-  ], moves);
+  ];
+  fromStart = _continuePaths(paths: fromStart, moves: moves);
+  fromEnd = _continuePaths(paths: fromEnd, moves: moves);
+  if (fromEnd.isEmpty) {
+    fromEnd = [
+      [end]
+    ];
+  }
 
   for (final left in fromStart) {
     for (final right in fromEnd) {
@@ -152,28 +162,46 @@ List<Coordinate> _joinLeftAndRight(List<Coordinate> left, List<Coordinate> right
   return null;
 }
 
-List<List<Coordinate>> getAllPaths(List<MazeMove> moves, Coordinate start) {
+List<List<Coordinate>> _getAllPaths(List<MazeMove> moves, Coordinate start) {
   final all = List<List<Coordinate>>();
   var path = [start];
+  var openStart = false;
+  var openEnd = false;
   while (moves.isNotEmpty) {
-    final continued = _continuePath(path, moves);
+    final continued = _continuePath(
+      path: path,
+      moves: moves,
+      openStart: openStart,
+      openEnd: openEnd,
+    );
     all.add(continued ?? path);
     if (moves.isNotEmpty) {
       path = [moves.first.start, moves.first.end];
+      openStart = moves.first.isStarting;
+      openEnd = moves.first.isEnding;
       if (moves.length == 1) {
         all.add(path);
       }
       moves.removeAt(0);
-      // handle isStarting && isEnding here
     }
   }
   return all;
 }
 
-List<List<Coordinate>> _continuePaths(List<List<Coordinate>> paths, List<MazeMove> moves) {
+List<List<Coordinate>> _continuePaths({
+  @required List<List<Coordinate>> paths,
+  @required List<MazeMove> moves,
+  bool openStart = false,
+  bool openEnd = false,
+}) {
   final newPaths = List<List<Coordinate>>();
   for (final path in paths) {
-    final continued = _continuePath(path, moves);
+    final continued = _continuePath(
+      path: path,
+      moves: moves,
+      openStart: openStart,
+      openEnd: openEnd,
+    );
     if (continued != null) {
       newPaths.add(continued);
     }
@@ -181,7 +209,12 @@ List<List<Coordinate>> _continuePaths(List<List<Coordinate>> paths, List<MazeMov
   return newPaths;
 }
 
-List<Coordinate> _continuePath(List<Coordinate> path, List<MazeMove> moves) {
+List<Coordinate> _continuePath({
+  @required List<Coordinate> path,
+  @required List<MazeMove> moves,
+  bool openStart = false,
+  bool openEnd = false,
+}) {
   var next = path;
   var i = moves.length - 1;
   while (i >= 0) {
@@ -189,13 +222,17 @@ List<Coordinate> _continuePath(List<Coordinate> path, List<MazeMove> moves) {
     final before = next;
     if (move.start == next.last && !next.contains(move.end)) {
       next = [...next, move.end];
+      openEnd = move.isEnding;
     } else if (move.end == next.first && !next.contains(move.start)) {
       next = [move.start, ...next];
+      openStart = move.isStarting;
     } else if (!next.contains(move.start) && !next.contains(move.end)) {
-      if (move.isStarting && areNeighbors(next.last, move.start)) {
+      if (openEnd && move.isStarting && areNeighbors(next.last, move.start)) {
         next = [...next, move.start, move.end];
-      } else if (move.isEnding && areNeighbors(next.first, move.end)) {
+        openEnd = move.isEnding;
+      } else if (openStart && move.isEnding && areNeighbors(next.first, move.end)) {
         next = [move.start, move.end, ...next];
+        openStart = move.isStarting;
       }
     }
     if (next != before) {

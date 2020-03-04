@@ -7,6 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
+final _colors = [
+  Colors.blue.withAlpha(100),
+  Colors.deepOrange.withAlpha(100),
+  Colors.indigo.withAlpha(100),
+];
+
 final _tmpLinePaint = Paint()
   ..style = PaintingStyle.stroke
   ..strokeWidth = 6
@@ -36,7 +42,7 @@ class MazePaths extends StatelessWidget {
       return RepaintBoundary(
         child: CustomPaint(
           size: Size(computeBoardPxWidth(board), computeBoardPxHeight(board)),
-          painter: _Painter(paths, theme),
+          painter: _Painter(paths, theme, board.end),
         ),
       );
     }
@@ -46,30 +52,38 @@ class MazePaths extends StatelessWidget {
 class _Painter extends CustomPainter {
   final List<List<Coordinate>> _paths;
   final AppColorTheme _theme;
+  final Coordinate _end;
 
-  _Painter(this._paths, this._theme);
+  _Painter(this._paths, this._theme, this._end);
 
   @override
   void paint(Canvas canvas, Size size) {
-    for (final path in _paths) {
+    for (var pathIndex = 0; pathIndex < _paths.length; pathIndex++) {
+      final path = _paths[pathIndex];
+      final color = _colors[pathIndex % _colors.length];
       for (var i = 0, max = path.length; i < max; i++) {
-        _drawCircle(path[i], canvas);
+        _drawCircle(path[i], canvas, color);
         if (i != max - 1) {
-          _drawLine(path[i], path[i + 1], canvas);
+          _drawLine(path[i], path[i + 1], canvas, color);
         }
       }
     }
+    _drawCircle(_end, canvas, _colors[0]);
   }
 
-  void _drawCircle(Coordinate coordinate, Canvas canvas) {
-    canvas.drawCircle(_centerInPx(coordinate, Offset(1, 1)), cellSize / 2 - 2, _tmpCirclePaint);
+  void _drawCircle(Coordinate coordinate, Canvas canvas, Color color) {
+    canvas.drawCircle(
+      _centerInPx(coordinate, Offset(1, 1)),
+      cellSize / 2 - 2,
+      _tmpCirclePaint..color = color,
+    );
   }
 
-  void _drawLine(Coordinate start, Coordinate end, Canvas canvas) {
+  void _drawLine(Coordinate start, Coordinate end, Canvas canvas, Color color) {
     canvas.drawLine(
       _centerInPx(start, _getLineMargin(start, end)),
       _centerInPx(end, _getLineMargin(end, start)),
-      _tmpLinePaint,
+      _tmpLinePaint..color = color,
     );
   }
 

@@ -105,12 +105,12 @@ void main() {
     expect(store.state.maze.revealed, toHave2(true, 15));
   });
 
-  test("getAllPaths", () {
+  test("assemblePaths", () {
     var moves = [
       MazeMove(Coordinate(0, 1), Coordinate(2, 1), true, true),
       MazeMove(Coordinate(3, 1), Coordinate(3, 0), true, true),
     ];
-    expect(getAllPaths(moves, Coordinate(0, 1)), [
+    expect(assemblePaths(moves, Coordinate(0, 1), Coordinate(2, 2)), [
       [Coordinate(0, 1), Coordinate(2, 1), Coordinate(3, 1), Coordinate(3, 0)],
     ]);
     // Overlap
@@ -120,12 +120,11 @@ void main() {
       MazeMove(Coordinate(5, 4), Coordinate(4, 3), true, true),
       MazeMove(Coordinate(1, 3), Coordinate(3, 5), true, true),
     ];
-    expect(getAllPaths(moves, Coordinate(0, 0)), [
+    expect(assemblePaths(moves, Coordinate(0, 0), Coordinate(5, 5)), [
       [Coordinate(0, 0)],
       [Coordinate(5, 4), Coordinate(4, 3), Coordinate(3, 3), Coordinate(1, 3), Coordinate(3, 5)],
       [Coordinate(1, 3), Coordinate(0, 3)],
     ]);
-    // Overlap again
     moves = [
       MazeMove(Coordinate(1, 3), Coordinate(3, 5), true, true),
       MazeMove(Coordinate(3, 3), Coordinate(1, 3), true, false),
@@ -133,11 +132,45 @@ void main() {
       MazeMove(Coordinate(1, 4), Coordinate(1, 5), true, true),
       MazeMove(Coordinate(5, 4), Coordinate(4, 3), true, true),
     ];
-    expect(getAllPaths(moves, Coordinate(0, 1)), [
+    expect(assemblePaths(moves, Coordinate(0, 1), Coordinate(5, 5)), [
       [Coordinate(0, 1)],
       [Coordinate(5, 4), Coordinate(4, 3), Coordinate(3, 3), Coordinate(1, 3), Coordinate(3, 5)],
       [Coordinate(1, 3), Coordinate(0, 3)],
       [Coordinate(1, 4), Coordinate(1, 5)],
+    ]);
+    expect(assemblePaths(moves, Coordinate(5, 4), Coordinate(0, 3)), [
+      [Coordinate(5, 4), Coordinate(4, 3), Coordinate(3, 3), Coordinate(1, 3), Coordinate(0, 3)],
+    ]);
+    // Multiple overlap a.b.c.d | b.g.g | b.g.g | gh | gh | xx | yy
+    // . . a . .
+    // g g b g g
+    // x h c h y
+    // x . d . y
+    moves = [
+      MazeMove(Coordinate(2, 0), Coordinate(2, 1), true, false),
+      MazeMove(Coordinate(2, 1), Coordinate(2, 3), false, true),
+      MazeMove(Coordinate(2, 1), Coordinate(1, 1), true, false),
+      MazeMove(Coordinate(1, 1), Coordinate(0, 1), false, true),
+      MazeMove(Coordinate(1, 1), Coordinate(1, 2), true, true),
+      MazeMove(Coordinate(2, 1), Coordinate(3, 1), true, false),
+      MazeMove(Coordinate(3, 1), Coordinate(4, 1), false, true),
+      MazeMove(Coordinate(3, 1), Coordinate(3, 2), true, true),
+      MazeMove(Coordinate(0, 2), Coordinate(0, 3), true, true),
+      MazeMove(Coordinate(4, 2), Coordinate(4, 3), true, true),
+    ];
+    expect(assemblePaths(moves, Coordinate(2, 0), Coordinate(1, 3)), [
+      [
+        Coordinate(2, 0),
+        Coordinate(2, 1),
+        Coordinate(3, 1),
+        Coordinate(3, 2),
+        Coordinate(4, 2),
+        Coordinate(4, 3),
+      ],
+      [Coordinate(2, 1), Coordinate(2, 3)],
+      [Coordinate(2, 1), Coordinate(1, 1), Coordinate(1, 2), Coordinate(0, 2), Coordinate(0, 3)],
+      [Coordinate(1, 1), Coordinate(0, 1)],
+      [Coordinate(3, 1), Coordinate(4, 1)],
     ]);
   });
 
