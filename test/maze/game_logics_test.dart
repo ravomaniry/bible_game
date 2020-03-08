@@ -172,6 +172,26 @@ void main() {
       [Coordinate(1, 1), Coordinate(0, 1)],
       [Coordinate(3, 1), Coordinate(4, 1)],
     ]);
+    expect(assemblePaths(moves, Coordinate(2, 0), Coordinate(4, 3)), [
+      [
+        Coordinate(2, 0),
+        Coordinate(2, 1),
+        Coordinate(3, 1),
+        Coordinate(3, 2),
+        Coordinate(4, 2),
+        Coordinate(4, 3)
+      ],
+    ]);
+    expect(assemblePaths(moves, Coordinate(2, 0), Coordinate(2, 3)), [
+      [Coordinate(2, 0), Coordinate(2, 1), Coordinate(2, 3)],
+    ]);
+    expect(assemblePaths(moves, Coordinate(2, 0), Coordinate(4, 1)), [
+      [Coordinate(2, 0), Coordinate(2, 1), Coordinate(3, 1), Coordinate(4, 1)],
+    ]);
+    // From the middle
+    expect(assemblePaths(moves, Coordinate(2, 1), Coordinate(4, 1)), [
+      [Coordinate(2, 1), Coordinate(3, 1), Coordinate(4, 1)],
+    ]);
   });
 
   test("revealed moves + paths", () {
@@ -295,4 +315,33 @@ void main() {
       ],
     ]);
   });
+
+//  test("Always resolvable", () async {
+//    final iterations = 40;
+//    final verse = BibleVerse.from(
+//      bookId: 4,
+//      book: "Jaona",
+//      chapter: 1,
+//      verse: 1,
+//      text: "Tamin''ny voalohany ny Teny, ary ny Teny tao amin''Andriamanitra, "
+//          "ary ny Teny dia Andriamanitra.",
+//    );
+//    final words = getWordsInScopeForMaze(verse);
+//    for (var i = 0; i < iterations; i++) {
+//      print("  $i");
+//      final board = await createMazeBoard(verse, 1);
+//      final revealed = initialRevealedState(board);
+//      board.updateStartEnd(words);
+//      board.forEach((cell, x, y) {
+//        if (cell.wordIndex >= 0) {
+//          revealed[y][x] = true;
+//        }
+//      });
+//      final paths = getRevealedPaths(board, revealed, words);
+//      expect([board.start, board.end], toHave1(null, 0));
+//      expect(paths.length, 1);
+//      expect(paths[0].first, board.start);
+//      expect(paths[0].last, board.end);
+//    }
+//  });
 }
