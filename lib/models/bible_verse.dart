@@ -22,7 +22,7 @@ class BibleVerse with EquatableMixin {
 
   factory BibleVerse.from({String book, int bookId, int verse, int chapter, String text}) {
     var words = _parseText(text);
-    if (words.isEmpty) {
+    if (_onlySeparators(words)) {
       words = _parseText(_removeIgnoreSymbols(text));
     }
     return BibleVerse(
@@ -122,4 +122,13 @@ List<Word> _parseText(String text) {
 
 String _removeIgnoreSymbols(String text) {
   return text.replaceAll(RegExp(r"\(|\)|\[|\]"), "");
+}
+
+bool _onlySeparators(List<Word> words) {
+  for (final word in words) {
+    if (!word.isSeparator) {
+      return false;
+    }
+  }
+  return true;
 }

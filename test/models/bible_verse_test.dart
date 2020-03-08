@@ -87,8 +87,8 @@ void main() {
   });
 
   test("Do not ignore words if all is ignored", () {
-    final text = "(fa Izay niasa)";
-    expect(BibleVerse.from(bookId: 1, book: "", verse: 1, chapter: 2, text: text).words.length, 5);
+    final text = "(fa Izay niasa),";
+    expect(BibleVerse.from(bookId: 1, book: "", verse: 1, chapter: 2, text: text).words.length, 6);
   });
 
   test("Copy", () {
