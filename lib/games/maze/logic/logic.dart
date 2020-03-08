@@ -18,12 +18,14 @@ ThunkAction<AppState> proposeMaze(List<Coordinate> cellCoordinates) {
       final revealed = reveal(cellCoordinates, state.revealed);
       if (_isCompleted(board, words, revealed)) {
         store.dispatch(UpdateGameResolvedState(true));
+        store.state.sfx.playLongSuccess();
       } else {
         final paths = getRevealedPaths(state.board, revealed, state.wordsToFind);
         store.dispatch(UpdateMazeState(state.copyWith(
           revealed: revealed,
           paths: paths,
         )));
+        store.state.sfx.playShortSuccess();
       }
     }
   };

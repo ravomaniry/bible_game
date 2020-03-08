@@ -11,6 +11,7 @@ import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/test_helpers/matchers.dart';
 import 'package:bible_game/test_helpers/store.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 
 void main() {
   test("Propose + reveal + path", () {
@@ -105,7 +106,7 @@ void main() {
     expect(store.state.maze.revealed, toHave2(true, 15));
   });
 
-  test("Play + Complete", () {
+  test("Play + Complete + sfx", () {
     final store = newMockedStore();
     final verse = BibleVerse.from(text: "Abc def");
     final board = Board.create(6, 6, 0);
@@ -121,8 +122,10 @@ void main() {
     )));
     store.dispatch(proposeMaze([Coordinate(0, 0), Coordinate(1, 0), Coordinate(2, 0)]));
     expect(store.state.game.isResolved, false);
+    verify(store.state.sfx.playShortSuccess()).called(1);
     store.dispatch(proposeMaze([Coordinate(3, 0), Coordinate(3, 1), Coordinate(3, 2)]));
     expect(store.state.game.isResolved, true);
+    verify(store.state.sfx.playLongSuccess()).called(1);
   });
 
   test("getAllPaths", () {
