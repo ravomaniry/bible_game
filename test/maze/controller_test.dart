@@ -20,19 +20,21 @@ void main() {
     final yOffset = 73.0;
     final drag = getDragDispatcher(tester, 0, yOffset);
     final verse = BibleVerse.from(
-      text: "Tamin'ny voalohany ny Teny",
+      text: "Abc",
       book: "Jaona",
       chapter: 1,
       bookId: 4,
       verse: 1,
     );
+    final words = getWordsInScopeForMaze(verse);
     final board = Board.create(5, 5, 1);
     persistMove(Move(Coordinate(0, 0), Coordinate.downRight, 0, 3), board);
+    board.updateStartEnd(words);
     // store preparation
     store.dispatch(UpdateGameVerse(verse));
     store.dispatch(UpdateMazeState(MazeState.emptyState().copyWith(
       board: board,
-      wordsToFind: getWordsInScopeForMaze(verse),
+      wordsToFind: words,
       revealed: initialRevealedState(board),
     )));
 

@@ -106,6 +106,7 @@ void main() {
       chapter: 11,
       verse: 33,
     );
+    board.end = Coordinate(0, 0);
     final store = newMockedStore();
     await tester.pumpWidget(BibleGame(store));
     await tester.pump(Duration(seconds: 1));
@@ -154,15 +155,17 @@ void main() {
 
     final double yOffset = 507.0 - 460;
     final drag = getDragDispatcher(tester, 0, yOffset);
-    final board = Board.create(22, 22, 1); // 528x528
-    persistMove(Move(Coordinate(3, 3), Coordinate.downRight, 0, 3), board);
     final verse = BibleVerse.from(
-      text: "Jesosy nitomany",
+      text: "Abc",
       bookId: 4,
       book: "Jaona",
       chapter: 11,
       verse: 33,
     );
+    final words = getWordsInScopeForMaze(verse);
+    final board = Board.create(22, 22, 1); // 528x528
+    persistMove(Move(Coordinate(3, 3), Coordinate.downRight, 0, 3), board);
+    board.updateStartEnd(words);
     final store = newMockedStore();
     final finder = find.byKey(Key("board_positioned"));
     // render
@@ -174,7 +177,7 @@ void main() {
       nextId: 1,
       board: board,
       backgrounds: null,
-      wordsToFind: getWordsInScopeForMaze(verse),
+      wordsToFind: words,
       revealed: initialRevealedState(board),
     )));
     // render and should display correctly

@@ -1,7 +1,6 @@
 import 'package:bible_game/app/game/actions/actions.dart';
 import 'package:bible_game/games/maze/actions/actions.dart';
 import 'package:bible_game/games/maze/create/board_utils.dart';
-import 'package:bible_game/games/maze/create/create_board.dart';
 import 'package:bible_game/games/maze/logic/logic.dart';
 import 'package:bible_game/games/maze/logic/paths.dart';
 import 'package:bible_game/games/maze/models/board.dart';
@@ -106,12 +105,32 @@ void main() {
     expect(store.state.maze.revealed, toHave2(true, 15));
   });
 
-  test("assemblePaths", () {
+  test("Play + Complete", () {
+    final store = newMockedStore();
+    final verse = BibleVerse.from(text: "Abc def");
+    final board = Board.create(6, 6, 0);
+    final words = getWordsInScopeForMaze(verse);
+    persistMove(Move(Coordinate(0, 0), Coordinate.right, 0, 3), board);
+    persistMove(Move(Coordinate(3, 0), Coordinate.down, 1, 3), board);
+    board.updateStartEnd(words);
+    store.dispatch(UpdateGameVerse(verse));
+    store.dispatch(UpdateMazeState(MazeState.emptyState().copyWith(
+      wordsToFind: words,
+      board: board,
+      revealed: initialRevealedState(board),
+    )));
+    store.dispatch(proposeMaze([Coordinate(0, 0), Coordinate(1, 0), Coordinate(2, 0)]));
+    expect(store.state.game.isResolved, false);
+    store.dispatch(proposeMaze([Coordinate(3, 0), Coordinate(3, 1), Coordinate(3, 2)]));
+    expect(store.state.game.isResolved, true);
+  });
+
+  test("getAllPaths", () {
     var moves = [
       MazeMove(Coordinate(0, 1), Coordinate(2, 1), true, true),
       MazeMove(Coordinate(3, 1), Coordinate(3, 0), true, true),
     ];
-    expect(assemblePaths(moves, Coordinate(0, 1), Coordinate(2, 2)), [
+    expect(getAllPaths(moves, Coordinate(0, 1)), [
       [Coordinate(0, 1), Coordinate(2, 1), Coordinate(3, 1), Coordinate(3, 0)],
     ]);
     // Overlap
@@ -121,8 +140,7 @@ void main() {
       MazeMove(Coordinate(5, 4), Coordinate(4, 3), true, true),
       MazeMove(Coordinate(1, 3), Coordinate(3, 5), true, true),
     ];
-    expect(assemblePaths(moves, Coordinate(0, 0), Coordinate(5, 5)), [
-      [Coordinate(0, 0)],
+    expect(getAllPaths(moves, Coordinate(5, 4)), [
       [Coordinate(5, 4), Coordinate(4, 3), Coordinate(3, 3), Coordinate(1, 3), Coordinate(3, 5)],
       [Coordinate(1, 3), Coordinate(0, 3)],
     ]);
@@ -133,14 +151,10 @@ void main() {
       MazeMove(Coordinate(1, 4), Coordinate(1, 5), true, true),
       MazeMove(Coordinate(5, 4), Coordinate(4, 3), true, true),
     ];
-    expect(assemblePaths(moves, Coordinate(0, 1), Coordinate(5, 5)), [
-      [Coordinate(0, 1)],
-      [Coordinate(5, 4), Coordinate(4, 3), Coordinate(3, 3), Coordinate(1, 3), Coordinate(3, 5)],
-      [Coordinate(1, 3), Coordinate(0, 3)],
-      [Coordinate(1, 4), Coordinate(1, 5)],
-    ]);
-    expect(assemblePaths(moves, Coordinate(5, 4), Coordinate(0, 3)), [
+    expect(getAllPaths(moves, Coordinate(5, 4)), [
       [Coordinate(5, 4), Coordinate(4, 3), Coordinate(3, 3), Coordinate(1, 3), Coordinate(0, 3)],
+      [Coordinate(1, 3), Coordinate(3, 5)],
+      [Coordinate(1, 4), Coordinate(1, 5)],
     ]);
     // Multiple overlap a.b.c.d | b.g.g | b.g.g | gh | gh | xx | yy
     // . . a . .
@@ -159,7 +173,7 @@ void main() {
       MazeMove(Coordinate(0, 2), Coordinate(0, 3), true, true),
       MazeMove(Coordinate(4, 2), Coordinate(4, 3), true, true),
     ];
-    expect(assemblePaths(moves, Coordinate(2, 0), Coordinate(1, 3)), [
+    expect(getAllPaths(moves, Coordinate(2, 0)), [
       [
         Coordinate(2, 0),
         Coordinate(2, 1),
@@ -173,125 +187,6 @@ void main() {
       [Coordinate(1, 1), Coordinate(0, 1)],
       [Coordinate(3, 1), Coordinate(4, 1)],
     ]);
-    expect(assemblePaths(moves, Coordinate(2, 0), Coordinate(4, 3)), [
-      [
-        Coordinate(2, 0),
-        Coordinate(2, 1),
-        Coordinate(3, 1),
-        Coordinate(3, 2),
-        Coordinate(4, 2),
-        Coordinate(4, 3)
-      ],
-    ]);
-    expect(assemblePaths(moves, Coordinate(2, 0), Coordinate(2, 3)), [
-      [Coordinate(2, 0), Coordinate(2, 1), Coordinate(2, 3)],
-    ]);
-    expect(assemblePaths(moves, Coordinate(2, 0), Coordinate(4, 1)), [
-      [Coordinate(2, 0), Coordinate(2, 1), Coordinate(3, 1), Coordinate(4, 1)],
-    ]);
-    // From the middle
-    expect(assemblePaths(moves, Coordinate(2, 1), Coordinate(4, 1)), [
-      [Coordinate(2, 1), Coordinate(3, 1), Coordinate(4, 1)],
-    ]);
-  });
-
-  test("Join start to end", () {
-    var paths = [
-      [Coordinate(1, 1), Coordinate(2, 1), Coordinate(3, 1)],
-      [Coordinate(2, 1), Coordinate(4, 1)],
-      [Coordinate(4, 1), Coordinate(5, 1), Coordinate(6, 1)],
-    ];
-    expect(joinStartToEnd(paths, Coordinate(2, 1), Coordinate(2, 1)), isNull);
-    expect(
-      joinStartToEnd(paths, Coordinate(1, 1), Coordinate(3, 1)),
-      [Coordinate(1, 1), Coordinate(2, 1), Coordinate(3, 1)],
-    );
-    expect(
-      joinStartToEnd(paths, Coordinate(1, 1), Coordinate(4, 1)),
-      [Coordinate(1, 1), Coordinate(2, 1), Coordinate(4, 1)],
-    );
-    expect(
-      joinStartToEnd(paths, Coordinate(2, 1), Coordinate(6, 1)),
-      [Coordinate(2, 1), Coordinate(4, 1), Coordinate(5, 1), Coordinate(6, 1)],
-    );
-    paths = [
-      [Coordinate(0, 0), Coordinate(0, 1), Coordinate(0, 2)],
-      [Coordinate(1, 1), Coordinate(0, 1), Coordinate(0, 3)],
-    ];
-    expect(
-      joinStartToEnd(paths, Coordinate(0, 0), Coordinate(0, 3)),
-      [Coordinate(0, 0), Coordinate(0, 1), Coordinate(0, 3)],
-    );
-
-    paths = [
-      [
-        Coordinate(0, 5),
-        Coordinate(0, 1),
-        Coordinate(1, 0),
-        Coordinate(2, 0),
-        Coordinate(2, 2),
-        Coordinate(3, 2),
-      ],
-      [
-        Coordinate(1, 2),
-        Coordinate(2, 2),
-        Coordinate(2, 7),
-        Coordinate(1, 7),
-        Coordinate(0, 7),
-        Coordinate(0, 10),
-        Coordinate(1, 10),
-        Coordinate(3, 8),
-        Coordinate(3, 9),
-        Coordinate(4, 10),
-        Coordinate(5, 10),
-        Coordinate(5, 7),
-      ],
-      [Coordinate(2, 7), Coordinate(2, 8)],
-      [Coordinate(3, 5), Coordinate(3, 8)],
-      [
-        Coordinate(4, 12),
-        Coordinate(5, 13),
-        Coordinate(6, 13),
-        Coordinate(7, 14),
-        Coordinate(10, 11),
-        Coordinate(14, 15),
-        Coordinate(16, 15),
-        Coordinate(16, 14),
-        Coordinate(17, 13),
-        Coordinate(18, 13),
-        Coordinate(16, 11),
-        Coordinate(15, 10),
-        Coordinate(15, 9),
-        Coordinate(14, 10),
-        Coordinate(14, 2),
-      ],
-      [Coordinate(14, 14), Coordinate(14, 10), Coordinate(13, 11), Coordinate(13, 5)],
-      [Coordinate(5, 10), Coordinate(5, 11), Coordinate(3, 11)],
-      [
-        Coordinate(6, 11),
-        Coordinate(5, 11),
-        Coordinate(5, 13),
-        Coordinate(6, 13),
-        Coordinate(6, 16),
-      ],
-      [Coordinate(9, 10), Coordinate(10, 11)],
-      [Coordinate(14, 15), Coordinate(16, 17), Coordinate(17, 18), Coordinate(17, 19)],
-      [Coordinate(20, 15), Coordinate(17, 18), Coordinate(19, 20), Coordinate(19, 22)],
-      [Coordinate(19, 20), Coordinate(21, 22)],
-      [Coordinate(9, 10), Coordinate(11, 10)],
-      [Coordinate(9, 10), Coordinate(9, 7)],
-      [Coordinate(9, 10), Coordinate(7, 12)],
-      [Coordinate(16, 11), Coordinate(17, 10)],
-      [Coordinate(2, 12), Coordinate(0, 10)],
-      [Coordinate(7, 14), Coordinate(8, 15)],
-      [Coordinate(10, 13), Coordinate(8, 15)],
-      [Coordinate(13, 13), Coordinate(13, 11)],
-      [Coordinate(14, 17), Coordinate(16, 17)],
-    ];
-    final joined = joinStartToEnd(paths, Coordinate(0, 5), Coordinate(14, 2));
-    expect(joined.length, isNotNull);
-    expect(joined.first, Coordinate(0, 5));
-    expect(joined.last, Coordinate(14, 2));
   });
 
   test("revealed moves + paths", () {
@@ -301,8 +196,8 @@ void main() {
     // J I H G N .
     // . M K . . M
     // . N . L . .
-    final board = Board.create(6, 6, 0);
-    final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC DE IH GHIJ MN IKL"));
+    var board = Board.create(6, 6, 0);
+    var words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC DE IH GHIJ MN IKL"));
     persistMove(Move(Coordinate(0, 1), Coordinate.right, 0, 3), board);
     persistMove(Move(Coordinate(3, 1), Coordinate.up, 1, 2), board);
     persistMove(Move(Coordinate(2, 2), Coordinate.down, 2, 2), board);
@@ -404,45 +299,5 @@ void main() {
       MazeMove(Coordinate(2, 3), Coordinate(1, 3), false, false),
       MazeMove(Coordinate(1, 3), Coordinate(0, 3), false, true),
     ]);
-    // To verify if this test should pass
-//    expect(getRevealedPaths(board, revealed, words), [
-//      [
-//        Coordinate(0, 1),
-//        Coordinate(2, 1),
-//        Coordinate(2, 2),
-//        Coordinate(2, 3),
-//        Coordinate(1, 3),
-//        Coordinate(3, 5),
-//      ],
-//    ]);
-  });
-
-  test("Always resolvable", () async {
-    final iterations = 40;
-    final verse = BibleVerse.from(
-      bookId: 4,
-      book: "Jaona",
-      chapter: 1,
-      verse: 1,
-      text: "Tamin'ny voalohany ny Teny, ary ny Teny tao amin''Andriamanitra, "
-          "ary ny Teny dia Andriamanitra.",
-    );
-    final words = getWordsInScopeForMaze(verse);
-    for (var i = 0; i < iterations; i++) {
-      print(i);
-      final board = await createMazeBoard(verse, 1);
-      final revealed = initialRevealedState(board);
-      board.updateStartEnd(words);
-      for (var y = 0; y < board.height; y++) {
-        for (var x = 0; x < board.width; x++) {
-          revealed[y][x] = true;
-        }
-      }
-      final paths = getRevealedPaths(board, revealed, words);
-      expect([board.start, board.end], toHave1(null, 0));
-      expect(paths.length, 1);
-      expect(paths[0].first, board.start);
-      expect(paths[0].last, board.end);
-    }
   });
 }
