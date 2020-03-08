@@ -68,15 +68,17 @@ ThunkAction<AppState> addBonusesToVerse() {
 }
 
 Word _addRandomBonusToWord(Word word) {
+  final bonusRatio = 2;
+  final probability = 0.6;
   if (word.isSeparator) {
     return word;
   }
   final random = Random();
   int power = 1;
   if (word.chars.length > 1) {
-    power += Random().nextInt((word.chars.length * 0.8).floor());
+    power += Random().nextInt((word.chars.length * bonusRatio).floor());
   }
-  if (random.nextDouble() > 0.5) {
+  if (random.nextDouble() < probability) {
     return word.copyWith(bonus: RevealCharBonus(power, 0));
   }
   return word;
