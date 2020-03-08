@@ -112,90 +112,65 @@ List<List<Coordinate>> assemblePaths(
   Coordinate start,
   Coordinate end,
 ) {
-  moves = [...moves];
-  final paths = _getAllPaths(moves, start);
-  final startToEnd = _joinStartToEnd(paths, start, end);
+  final editedMoves = [...moves];
+  final paths = _getAllPaths(editedMoves, start);
+  final startToEnd = joinStartToEnd(paths, start, end);
   return startToEnd == null ? paths : [startToEnd];
 }
 
-List<Coordinate> _joinStartToEnd(
+List<Coordinate> joinStartToEnd(
   List<List<Coordinate>> paths,
   Coordinate start,
   Coordinate end,
 ) {
-  final allPaths = _preparePathsForStartToEnd(paths, start, end);
+  final allPaths = [...paths]; //_preparePathsForStartToEnd(paths, start, end);
   var fromStart = [
     [start]
-  ];
-  var fromEnd = [
-    [end]
   ];
   var repeat = true;
 
   while (repeat) {
     final pointsNum = _countPoints(allPaths);
-    fromStart = _moveAllOnce(paths: fromStart, allPaths: allPaths);
-    var joined = _findCompletedPath(fromStart, fromEnd);
-    if (joined == null) {
-      fromEnd = _moveAllOnce(paths: fromEnd, allPaths: allPaths, forward: false);
-    }
-    joined = _findCompletedPath(fromStart, fromEnd);
+    fromStart = _moveAllOnce(fromStart, allPaths);
+    final joined = _findCompletedPath(fromStart, end);
     if (joined != null) {
       return joined;
     }
-    repeat = fromStart.isNotEmpty && fromEnd.isNotEmpty && pointsNum != _countPoints(allPaths);
+    repeat = fromStart.isNotEmpty && pointsNum != _countPoints(allPaths);
   }
   return null;
 }
 
-List<Coordinate> _findCompletedPath(
-  List<List<Coordinate>> fromStart,
-  List<List<Coordinate>> fromEnd,
-) {
-  for (final left in fromStart) {
-    for (final right in fromEnd) {
-      final joined = _joinLeftAndRight(left, right);
-      if (joined != null) {
-        return joined;
-      }
+List<Coordinate> _findCompletedPath(List<List<Coordinate>> fromStart, Coordinate end) {
+  for (final path in fromStart) {
+    if (path.last == end) {
+      return path;
     }
   }
   return null;
 }
 
-List<List<Coordinate>> _moveAllOnce({
-  @required List<List<Coordinate>> paths,
-  @required List<List<Coordinate>> allPaths,
-  bool forward = true,
-}) {
+List<List<Coordinate>> _moveAllOnce(List<List<Coordinate>> paths, List<List<Coordinate>> allPaths) {
   final next = List<List<Coordinate>>();
   for (final path in paths) {
-    next.addAll(_moveOnce(path: path, allPaths: allPaths, forward: forward));
+    next.addAll(_moveForwardOnce(path, allPaths));
   }
   return next;
 }
 
-List<List<Coordinate>> _moveOnce({
-  @required List<Coordinate> path,
-  @required List<List<Coordinate>> allPaths,
-  bool forward = true,
-}) {
+List<List<Coordinate>> _moveForwardOnce(List<Coordinate> path, List<List<Coordinate>> allPaths) {
   final next = List<List<Coordinate>>();
-  for (var i = allPaths.length - 1; i >= 0; i--) {
-    if (forward) {
-      if (path.last == allPaths[i].first && allPaths[i].length > 1) {
-        next.add([...path, allPaths[i][1]]);
-        allPaths[i].removeAt(0);
+  for (var pathIndex = allPaths.length - 1; pathIndex >= 0; pathIndex--) {
+    final dest = allPaths[pathIndex];
+    for (var i = 0; i < dest.length - 1; i++) {
+      if (dest[i] == path.last) {
+        next.add([...path, dest[i + 1]]);
+        if (dest.length > i + 1) {
+          allPaths[pathIndex] = dest.getRange(i + 1, dest.length).toList();
+        } else {
+          allPaths.removeAt(pathIndex);
+        }
       }
-    } else {
-      if (path.last == allPaths[i].last && allPaths[i].length > 1) {
-        final index = allPaths[i].length - 2;
-        next.add([...path, allPaths[i][index]]);
-        allPaths[i].removeLast();
-      }
-    }
-    if (allPaths[i].length <= 1) {
-      allPaths.removeAt(i);
     }
   }
   return next;
@@ -203,32 +178,6 @@ List<List<Coordinate>> _moveOnce({
 
 int _countPoints(List<List<Coordinate>> paths) {
   return paths.map((x) => x.length).reduce((a, b) => a + b);
-}
-
-List<List<Coordinate>> _preparePathsForStartToEnd(
-  List<List<Coordinate>> paths,
-  Coordinate start,
-  Coordinate end,
-) {
-  return paths.map((path) {
-    path = [...path];
-    final startIndex = path.indexOf(start);
-    if (startIndex > 0) {
-      path = path.getRange(startIndex, path.length).toList();
-    }
-    final endIndex = path.indexOf(end);
-    if (endIndex >= 0 && endIndex < path.length - 1) {
-      path = path.getRange(0, endIndex + 1);
-    }
-    return path;
-  }).toList();
-}
-
-List<Coordinate> _joinLeftAndRight(List<Coordinate> left, List<Coordinate> right) {
-  if (left.last == right.last) {
-    return [...left, ...right.getRange(0, right.length - 1).toList().reversed];
-  }
-  return null;
 }
 
 List<List<Coordinate>> _getAllPaths(List<MazeMove> moves, Coordinate start) {
