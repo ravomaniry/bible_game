@@ -142,8 +142,8 @@ class _MazeState extends State<MazeController> {
                     children: [
                       MazeBackground(),
                       MazeWordsBackground(),
-                      MazeWords(),
                       MazePaths(),
+                      MazeWords(),
                       MazeSelection(
                         start: _tapHandler.lineStart,
                         end: _tapHandler.lineEnd,

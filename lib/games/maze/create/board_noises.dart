@@ -14,7 +14,10 @@ void addNoises(Board board, List<Word> words) {
   final random = Random();
   final overlapMoves = getOverlapNoiseMoves(board, words);
   final remainingMoves = List<Move>.from(overlapMoves);
-  final stopAt = overlapMoves.length - max(minNoisesNum, words.length * noiseRatio);
+  var stopAt = max(
+    minNoisesNum,
+    overlapMoves.length - max(minNoisesNum, words.length * noiseRatio),
+  );
   while (remainingMoves.length > stopAt) {
     final move = remainingMoves[random.nextInt(remainingMoves.length)];
     remainingMoves.remove(move);

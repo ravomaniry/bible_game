@@ -31,16 +31,6 @@ class MazeMove {
   }
 }
 
-List<List<Coordinate>> getRevealedPaths(
-  Board board,
-  List<List<bool>> revealed,
-  List<Word> words,
-) {
-  final moves = getRevealedMoves(board, revealed, words);
-  final paths = assemblePaths(moves, board.start, board.end);
-  return paths;
-}
-
 List<MazeMove> getRevealedMoves(
   Board board,
   List<List<bool>> revealed,
@@ -49,6 +39,15 @@ List<MazeMove> getRevealedMoves(
   final rawMoves = _getRawRevealedMoves(board, revealed);
   final appearances = _getPointsAppearances(rawMoves);
   return _mergeMoves(rawMoves, appearances);
+}
+
+List<List<Coordinate>> getRevealedPaths(
+  Board board,
+  List<List<bool>> revealed,
+  List<Word> words,
+) {
+  final moves = getRevealedMoves(board, revealed, words);
+  return getAllPaths(moves, board.start);
 }
 
 List<List<Coordinate>> _getRawRevealedMoves(Board board, List<List<bool>> revealed) {
@@ -107,80 +106,8 @@ List<MazeMove> _mergeMoves(
   return moves;
 }
 
-List<List<Coordinate>> assemblePaths(
-  List<MazeMove> moves,
-  Coordinate start,
-  Coordinate end,
-) {
-  final editedMoves = [...moves];
-  final paths = _getAllPaths(editedMoves, start);
-  final startToEnd = joinStartToEnd(paths, start, end);
-  return startToEnd == null ? paths : [startToEnd];
-}
-
-List<Coordinate> joinStartToEnd(
-  List<List<Coordinate>> paths,
-  Coordinate start,
-  Coordinate end,
-) {
-  final allPaths = [...paths]; //_preparePathsForStartToEnd(paths, start, end);
-  var fromStart = [
-    [start]
-  ];
-  var repeat = true;
-
-  while (repeat) {
-    final pointsNum = _countPoints(allPaths);
-    fromStart = _moveAllOnce(fromStart, allPaths);
-    final joined = _findCompletedPath(fromStart, end);
-    if (joined != null) {
-      return joined;
-    }
-    repeat = fromStart.isNotEmpty && pointsNum != _countPoints(allPaths);
-  }
-  return null;
-}
-
-List<Coordinate> _findCompletedPath(List<List<Coordinate>> fromStart, Coordinate end) {
-  for (final path in fromStart) {
-    if (path.last == end) {
-      return path;
-    }
-  }
-  return null;
-}
-
-List<List<Coordinate>> _moveAllOnce(List<List<Coordinate>> paths, List<List<Coordinate>> allPaths) {
-  final next = List<List<Coordinate>>();
-  for (final path in paths) {
-    next.addAll(_moveForwardOnce(path, allPaths));
-  }
-  return next;
-}
-
-List<List<Coordinate>> _moveForwardOnce(List<Coordinate> path, List<List<Coordinate>> allPaths) {
-  final next = List<List<Coordinate>>();
-  for (var pathIndex = allPaths.length - 1; pathIndex >= 0; pathIndex--) {
-    final dest = allPaths[pathIndex];
-    for (var i = 0; i < dest.length - 1; i++) {
-      if (dest[i] == path.last) {
-        next.add([...path, dest[i + 1]]);
-        if (dest.length > i + 1) {
-          allPaths[pathIndex] = dest.getRange(i + 1, dest.length).toList();
-        } else {
-          allPaths.removeAt(pathIndex);
-        }
-      }
-    }
-  }
-  return next;
-}
-
-int _countPoints(List<List<Coordinate>> paths) {
-  return paths.map((x) => x.length).reduce((a, b) => a + b);
-}
-
-List<List<Coordinate>> _getAllPaths(List<MazeMove> moves, Coordinate start) {
+List<List<Coordinate>> getAllPaths(List<MazeMove> moves, Coordinate start) {
+  moves = [...moves];
   final all = List<List<Coordinate>>();
   var path = [start];
   var openStart = false;
