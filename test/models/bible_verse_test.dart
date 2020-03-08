@@ -86,6 +86,11 @@ void main() {
     expect(verse, verse.copyWith());
   });
 
+  test("Do not ignore words if all is ignored", () {
+    final text = "(fa Izay niasa)";
+    expect(BibleVerse.from(bookId: 1, book: "", verse: 1, chapter: 2, text: text).words.length, 5);
+  });
+
   test("Copy", () {
     final List<Word> words = [
       Word(

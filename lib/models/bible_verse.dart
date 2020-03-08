@@ -10,7 +10,6 @@ class BibleVerse with EquatableMixin {
   final int verse;
   final String text;
   final List<Word> words;
-  static final separatorRegex = RegExp("[^a-zàôò]", caseSensitive: false);
 
   BibleVerse({
     @required this.bookId,
@@ -22,49 +21,10 @@ class BibleVerse with EquatableMixin {
   });
 
   factory BibleVerse.from({String book, int bookId, int verse, int chapter, String text}) {
-    final List<Word> words = [];
-    var index = 0;
-    var wordValue = "";
-    var separatorMode = false;
-    var isBetweenBraces = false;
-    var isBetweenParenthesis = false;
-
-    void appendWord(bool isLastWord) {
-      if (wordValue.length > 0) {
-        if (!isLastWord || wordValue.trim() != "") {
-          words.add(Word.from(wordValue, index, separatorMode));
-          separatorMode = false;
-          wordValue = "";
-          index++;
-        }
-      }
+    var words = _parseText(text);
+    if (words.isEmpty) {
+      words = _parseText(_removeIgnoreSymbols(text));
     }
-
-    for (var i = 0; i < text.length; i++) {
-      if (text[i] == "[" || text[i] == "]") {
-        isBetweenBraces = !isBetweenBraces;
-        continue;
-      } else if (text[i] == "(" || text[i] == ")") {
-        isBetweenParenthesis = !isBetweenParenthesis;
-        continue;
-      } else if (isBetweenBraces || isBetweenParenthesis) {
-        continue;
-      } else if (separatorRegex.hasMatch(text[i])) {
-        if (!separatorMode) {
-          appendWord(false);
-          separatorMode = true;
-        }
-      } else {
-        if (separatorMode) {
-          appendWord(false);
-        }
-      }
-      if (!(separatorMode && wordValue.endsWith(" ") && text[i] == " ")) {
-        wordValue += text[i];
-      }
-    }
-    appendWord(true);
-
     return BibleVerse(
       book: book,
       chapter: chapter,
@@ -110,4 +70,56 @@ class BibleVerse with EquatableMixin {
   List<Object> get props {
     return [book, chapter, verse, words];
   }
+}
+
+final separatorRegex = RegExp("[^a-zàôò]", caseSensitive: false);
+
+List<Word> _parseText(String text) {
+  var index = 0;
+  var wordValue = "";
+  var separatorMode = false;
+  var isBetweenBraces = false;
+  var isBetweenParenthesis = false;
+  final List<Word> words = [];
+
+  void appendWord(bool isLastWord) {
+    if (wordValue.length > 0) {
+      if (!isLastWord || wordValue.trim() != "") {
+        words.add(Word.from(wordValue, index, separatorMode));
+        separatorMode = false;
+        wordValue = "";
+        index++;
+      }
+    }
+  }
+
+  for (var i = 0; i < text.length; i++) {
+    if (text[i] == "[" || text[i] == "]") {
+      isBetweenBraces = !isBetweenBraces;
+      continue;
+    } else if (text[i] == "(" || text[i] == ")") {
+      isBetweenParenthesis = !isBetweenParenthesis;
+      continue;
+    } else if (isBetweenBraces || isBetweenParenthesis) {
+      continue;
+    } else if (separatorRegex.hasMatch(text[i])) {
+      if (!separatorMode) {
+        appendWord(false);
+        separatorMode = true;
+      }
+    } else {
+      if (separatorMode) {
+        appendWord(false);
+      }
+    }
+    if (!(separatorMode && wordValue.endsWith(" ") && text[i] == " ")) {
+      wordValue += text[i];
+    }
+  }
+  appendWord(true);
+  return words;
+}
+
+String _removeIgnoreSymbols(String text) {
+  return text.replaceAll(RegExp(r"\(|\)|\[|\]"), "");
 }
