@@ -15,6 +15,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   testWidgets("Snap & select to right word", (tester) async {
+    //   0 1 2 3 4
+    // 0 A . . . .
+    // 1 . B . . .
+    // 2 . . C . .
+    // 3 . . . . .
+    // 4 . . . . .
     final spy = Spy();
     final store = newMockedStore();
     final yOffset = 73.0;
@@ -67,9 +73,9 @@ void main() {
         [Coordinate(2, 2), Coordinate(1, 1)]
       ]),
     );
-    // Not starting at word cell
+    // Not starting at word cell and no snap as it's not the nearest neighbor
     spy.clear();
-    await drag(25, 10, 40, 40);
+    await drag(37, 10, 40, 40);
     expect(spy, toBeCalledTimes(0));
     // Outside of the canvas
     spy.clear();
@@ -78,6 +84,23 @@ void main() {
       spy,
       toBeCalledWith([
         [Coordinate(2, 2)]
+      ]),
+    );
+    // Snap to the nearest neighbor if it's filled
+    spy.clear();
+    await drag(12, 28, 50, 35);
+    expect(
+      spy,
+      toBeCalledWith([
+        [Coordinate(0, 0), Coordinate(1, 1)],
+      ]),
+    );
+    spy.clear();
+    await drag(22, 28, 50, 34);
+    expect(
+      spy,
+      toBeCalledWith([
+        [Coordinate(1, 1)],
       ]),
     );
   });

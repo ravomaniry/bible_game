@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:bible_game/games/maze/components/cell.dart';
+import 'package:bible_game/games/maze/create/board_utils.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/maze/models/maze_cell.dart';
@@ -12,20 +15,21 @@ class TapHandler {
   Offset lineEnd;
   List<Coordinate> selectedCells;
 
-  void onPointerDown(PointerDownEvent e, Board board) {
-    final tappedCell = getTappedCell(e.localPosition, board);
+  void onPointerDown(Offset localPosition, Board board) {
+    final tappedCell =
+        getTappedCell(localPosition, board) ?? _getTappedNearestNeighbor(localPosition, board);
     _shouldHandlerMove = tappedCell != null;
     if (_shouldHandlerMove) {
-      lineEnd = snapCursor(e.localPosition);
-      lineStart = snapCursor(e.localPosition);
+      lineEnd = snapCursor(localPosition, board);
+      lineStart = snapCursor(localPosition, board);
       selectedCells = getSelectedCells(lineStart, lineEnd);
       reRender();
     }
   }
 
-  bool onPointerMove(Offset localPosition) {
+  bool onPointerMove(Offset localPosition, Board board) {
     if (_shouldHandlerMove) {
-      final nextEnd = snapCursor(localPosition);
+      final nextEnd = snapCursor(localPosition, board);
       if (nextEnd != lineEnd) {
         lineEnd = nextEnd;
         selectedCells = getSelectedCells(lineStart, nextEnd);
@@ -36,7 +40,7 @@ class TapHandler {
     return false;
   }
 
-  void onPointerUp(PointerUpEvent e) {
+  void onPointerUp(_) {
     reRender();
     _shouldHandlerMove = false;
     lineStart = null;
@@ -64,8 +68,43 @@ double _snapValue(double value) {
   return value - (value % cellSize) + cellSize / 2;
 }
 
-Offset snapCursor(Offset point) {
-  return Offset(_snapValue(point.dx), _snapValue(point.dy));
+Offset snapCursor(Offset position, Board board) {
+  final tapped = getTappedCell(position, board);
+  if (tapped == null) {
+    final neighbor = _getTappedNearestNeighbor(position, board);
+    if (neighbor != null) {
+      position = _getCenterPositionOf(neighbor);
+    }
+  }
+  return Offset(_snapValue(position.dx), _snapValue(position.dy));
+}
+
+Coordinate _getTappedNearestNeighbor(Offset position, Board board) {
+  final coordinate = Coordinate((position.dx / cellSize).floor(), (position.dy / cellSize).floor());
+  final neighbors = getNeighbors(coordinate);
+  Coordinate nearest;
+  var minDistance = pow(cellSize, 2) * 2;
+  for (final neighbor in neighbors) {
+    final distance = _squaredDiff(position, _getCenterPositionOf(neighbor));
+    if (minDistance > distance) {
+      minDistance = distance;
+      if (board.includes(neighbor) && !board.isFreeAt(neighbor)) {
+        nearest = neighbor;
+      }
+    }
+  }
+  return nearest;
+}
+
+double _squaredDiff(Offset a, Offset b) {
+  return pow(a.dx - b.dx, 2) + pow(a.dy - b.dy, 2);
+}
+
+Offset _getCenterPositionOf(Coordinate point) {
+  return Offset(
+    cellSize * (point.x + 0.5),
+    cellSize * (point.y + 0.5),
+  );
 }
 
 List<Coordinate> getSelectedCells(Offset start, Offset end) {

@@ -69,14 +69,19 @@ class _MazeState extends State<MazeController> {
   }
 
   void _onPointerDown(PointerDownEvent e, Board board) {
-    _tapHandler.onPointerDown(e, board);
+    _board = board;
+    _updateContainerOrigin();
+    final localPosition = e.position - _containerOrigin - _scroller.origin;
+    if (_isInsideContainer(e.position, localPosition)) {
+      _tapHandler.onPointerDown(localPosition, board);
+    }
   }
 
   void _onPointerMove(PointerMoveEvent e) {
     _updateContainerOrigin();
     final localPosition = e.position - _containerOrigin - _scroller.origin;
     if (_isInsideContainer(e.position, localPosition)) {
-      final handled = _tapHandler.onPointerMove(localPosition);
+      final handled = _tapHandler.onPointerMove(localPosition, _board);
       if (handled) {
         _scroller.handleScreenEdge(localPosition);
       } else {

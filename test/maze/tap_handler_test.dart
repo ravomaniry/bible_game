@@ -4,11 +4,6 @@ import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test("Snap selection", () {
-    expect(snapCursor(Offset(0, 0)), Offset(12, 12));
-    expect(snapCursor(Offset(26, 26)), Offset(36, 36));
-  });
-
   test("Selection Rects", () {
     expect(getSelectedCells(Offset(12, 12), Offset(12, 12)), [Coordinate(0, 0)]);
     expect(getSelectedCells(Offset(12, 12), Offset(132, 36)), isNull);
