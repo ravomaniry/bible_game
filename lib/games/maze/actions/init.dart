@@ -18,7 +18,6 @@ ThunkAction<AppState> initMaze() {
     final verse = store.state.game.verse;
     final wordsToFind = getWordsInScopeForMaze(verse);
     final board = await createMazeBoard(verse, id);
-
     if (store.state.maze.nextId == id) {
       store.dispatch(UpdateMazeState(state.copyWith(
         board: board,
