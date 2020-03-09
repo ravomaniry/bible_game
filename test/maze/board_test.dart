@@ -6,8 +6,12 @@ import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/maze/models/maze_cell.dart';
 import 'package:bible_game/games/maze/models/move.dart';
+import 'package:bible_game/main.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
+import 'package:bible_game/test_helpers/store.dart';
+import 'package:bible_game/test_helpers/wait.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -481,15 +485,19 @@ void main() {
     ]);
   });
 
-  test("Create board once", () async {
-    final verse = BibleVerse.from(
-      book: "Jaona",
-      bookId: 4,
-      chapter: 1,
-      verse: 1,
-      text: "Ny filazana ny razan'i Jesosy Kristy",
-    );
-    final board = await createMazeBoard(verse, 1);
+  testWidgets("Initialize maze game", (tester) async {
+    final store = newMockedStore();
+    final boardFinder = find.byKey(Key("maze_board"));
+    await tester.pumpWidget(BibleGame(store));
+    await tester.pump(Duration(seconds: 1));
+    await tester.tap(find.byKey(Key("game_1")));
+    await tester.pump(Duration(seconds: 1));
+    simulateMazeRandomGame(store);
+    await tester.pump(Duration(seconds: 1));
+
+    await waitForWidget(boardFinder, tester);
+    expect(boardFinder, findsOneWidget);
+    final board = store.state.maze.board;
     expect(board, isNotNull);
     expect(board.start, isNotNull);
     expect(board.end, isNotNull);

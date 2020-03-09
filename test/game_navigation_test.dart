@@ -365,11 +365,11 @@ void main() {
     expect(store.state.game.activeGameIsCompleted, false);
   });
 
-  testWidgets("Random Game mode - Select game from home screen - 200 attempts max",
-      (WidgetTester tester) async {
+  testWidgets("Random Game mode - Select game from home screen", (WidgetTester tester) async {
     final store = newMockedStore();
     final maxAttempts = 100;
-    final unvisitedGames = <Routes>[Routes.anagram, Routes.wordsInWord];
+    final unvisitedGames = <Routes>[Routes.anagram, Routes.wordsInWord, Routes.maze];
+    final gameScreenFinder = find.byKey(Key("gameScreen"));
 
     await tester.pumpWidget(BibleGame(store));
     await tester.pump(Duration(milliseconds: 10));
@@ -390,6 +390,9 @@ void main() {
           case Routes.anagram:
             expect(store.state.theme is GreenTheme, true);
             break;
+          case Routes.maze:
+            expect(store.state.theme is AppColorTheme, true);
+            break;
           default:
             break;
         }
@@ -399,9 +402,9 @@ void main() {
         print("֎ From games list: Visited all game modes in ${i + 1} attempts.");
         return;
       }
-
       store.dispatch(CloseInventoryDialog());
       await tester.pump();
+      expect(gameScreenFinder, findsOneWidget);
       store.dispatch(goToHome());
       await tester.pump();
     }
@@ -411,7 +414,7 @@ void main() {
   testWidgets("Random games - next handler", (WidgetTester tester) async {
     final maxAttempts = 100;
     final store = newMockedStore();
-    final unvisitedGames = <Routes>[Routes.anagram, Routes.wordsInWord];
+    final unvisitedGames = <Routes>[Routes.anagram, Routes.wordsInWord, Routes.maze];
     final inventoryOkBtn = find.byKey(Key("inventoryOkButton"));
     final nextBtn = find.byKey(Key("nextButton"));
 
@@ -423,27 +426,13 @@ void main() {
     for (var i = 0; i < maxAttempts && unvisitedGames.isNotEmpty; i++) {
       await tester.tap(inventoryOkBtn);
       await tester.pump();
-
       if (unvisitedGames.contains(store.state.route)) {
         unvisitedGames.remove(store.state.route);
-        // check the theme: wiw = blue gray && anagram = green
-        switch (store.state.route) {
-          case Routes.wordsInWord:
-            expect(store.state.theme is BlueGrayTheme, true);
-            break;
-          case Routes.anagram:
-            expect(store.state.theme is GreenTheme, true);
-            break;
-          default:
-            break;
-        }
       }
-
       if (unvisitedGames.isEmpty) {
         print("֎ From Next verse: visited all game modes in ${i + 1} attempts.");
         return;
       }
-
       // complete the game and tap on next
       store.dispatch(UpdateGameResolvedState(true));
       await tester.pump();

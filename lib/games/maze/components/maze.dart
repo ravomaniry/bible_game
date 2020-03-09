@@ -25,6 +25,7 @@ class Maze extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: Key("gameScreen"),
       backgroundColor: Color.fromARGB(255, 153, 208, 70),
       body: StoreConnector<AppState, MazeViewModel>(
         converter: MazeViewModel.converter,
