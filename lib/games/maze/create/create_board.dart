@@ -116,6 +116,9 @@ Coordinate _getLastPoint(int index, Board board) {
 
 bool _moveIsPossible(Move move, int length, Board board) {
   var currentPos = move.origin - move.direction;
+  if (isNearFirstPoint(move.end, board)) {
+    return false;
+  }
   for (var remaining = length; remaining > 0; remaining--) {
     if (remaining != length && formDiagonalCross(currentPos, move.direction, board)) {
       return false;

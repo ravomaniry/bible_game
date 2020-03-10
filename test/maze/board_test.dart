@@ -97,53 +97,63 @@ void main() {
     // 5 - - - - +²H
     final words = getWordsInScopeForMaze(BibleVerse.from(text: "ABC DEF GH"));
     final board = Board.create(6, 6, 1);
+
+    /// ABC
     // empty board should start in the middle (3, 0)
     final points0 = getPossibleStartingPoints(0, board, words);
-    expect(points0.map(toString).toList(), ["(0, 3)"]);
+    expect(points0, [Coordinate(0, 3)]);
     final moves0 = getPossibleMoves(points0, 0, 4, board);
-    expect(moves0.map(toString).toList(), [
-      "(0, 3, 0, -1, 0, 4)",
-      "(0, 3, 1, -1, 0, 4)",
-      "(0, 3, 1, 0, 0, 4)",
+    expect(moves0, [
+      Move(Coordinate(0, 3), Coordinate.up, 0, 4),
+      Move(Coordinate(0, 3), Coordinate.upRight, 0, 4),
+      Move(Coordinate(0, 3), Coordinate.right, 0, 4),
     ]);
-    // ABC word starts at (0, 0) and ends at (0,2)
     persistMove(Move(Coordinate(0, 0), Coordinate.down, 0, 3), board);
+
+    /// DEF
     final points1 = getPossibleStartingPoints(1, board, words);
-    expect(points1.map(toString).toList(), ["(1, 2)", "(0, 3)"]);
+    expect(points1, [Coordinate(1, 2), Coordinate(0, 3)]);
     // place 2 chars word
     final moves1_0 = getPossibleMoves(points1, 1, 2, board);
-    expect(moves1_0.map(toString).toList(), [
+    expect(moves1_0, [
       // (1, 2)
-      "(1, 2, 0, -1, 1, 2)",
-      "(1, 2, 1, -1, 1, 2)",
-      "(1, 2, 1, 0, 1, 2)",
-      "(1, 2, 1, 1, 1, 2)",
-      "(1, 2, 0, 1, 1, 2)",
-      "(1, 2, -1, 1, 1, 2)",
+      Move(Coordinate(1, 2), Coordinate.up, 1, 2),
+      Move(Coordinate(1, 2), Coordinate.upRight, 1, 2),
+      Move(Coordinate(1, 2), Coordinate.right, 1, 2),
+      Move(Coordinate(1, 2), Coordinate.downRight, 1, 2),
+      Move(Coordinate(1, 2), Coordinate.down, 1, 2),
+      Move(Coordinate(1, 2), Coordinate.downLeft, 1, 2),
       // (0, 3)
-      "(0, 3, 1, -1, 1, 2)",
-      "(0, 3, 1, 0, 1, 2)",
-      "(0, 3, 1, 1, 1, 2)",
-      "(0, 3, 0, 1, 1, 2)",
+      Move(Coordinate(0, 3), Coordinate.upRight, 1, 2),
+      Move(Coordinate(0, 3), Coordinate.right, 1, 2),
+      Move(Coordinate(0, 3), Coordinate.downRight, 1, 2),
+      Move(Coordinate(0, 3), Coordinate.down, 1, 2),
     ]);
     // 5 chars word (only some moves are possible)
     final moves1_2 = getPossibleMoves(points1, 1, 5, board);
-    expect(moves1_2.map(toString).toList(), [
-      "(1, 2, 1, 0, 1, 5)",
-      "(0, 3, 1, 0, 1, 5)",
+    expect(moves1_2, [
+      Move(Coordinate(1, 2), Coordinate.right, 1, 5),
+      Move(Coordinate(0, 3), Coordinate.right, 1, 5),
     ]);
-    // D.E.F 2nd word starts at (3, 1) and ends at (1, 1) and 1st word is still there
     persistMove(Move(Coordinate(0, 3), Coordinate.right, 1, 3), board);
+
+    /// GH
     final points2 = getPossibleStartingPoints(2, board, words);
-    expect(points2.map(toString).toList(), ["(2, 2)", "(3, 3)", "(2, 4)"]);
-    // 3rd Word ends at the bottom right corner
+    expect(points2, [Coordinate(2, 2), Coordinate(3, 3), Coordinate(2, 4)]);
+    // Do not allow word to end near any start point
+    expect(getPossibleMoves([Coordinate(0, 5)], 2, 2, board), [
+      Move(Coordinate(0, 5), Coordinate.upRight, 2, 2),
+      Move(Coordinate(0, 5), Coordinate.right, 2, 2),
+    ]);
     persistMove(Move(Coordinate(5, 4), Coordinate.down, 2, 2), board);
+
+    /// Random word
     final points3 = getPossibleStartingPoints(3, board, words);
-    expect(points3.map(toString).toList(), ["(4, 5)"]);
+    expect(points3, [Coordinate(4, 5)]);
     final moves3 = getPossibleMoves(points3, 3, 5, board);
-    expect(moves3.map(toString).toList(), [
-      "(4, 5, 0, -1, 3, 5)",
-      "(4, 5, -1, 0, 3, 5)",
+    expect(moves3, [
+      Move(Coordinate(4, 5), Coordinate.up, 3, 5),
+      Move(Coordinate(4, 5), Coordinate.left, 3, 5),
     ]);
   });
 
@@ -161,7 +171,7 @@ void main() {
     persistMove(Move(Coordinate(4, 4), Coordinate.up, 2, 2), board);
     persistMove(Move(Coordinate(0, 2), Coordinate.right, 3, 3), board);
     final points = getPossibleStartingPoints(4, board, words);
-    expect(points.map(toString).toList(), ["(3, 2)", "(2, 3)"]);
+    expect(points, [Coordinate(3, 2), Coordinate(2, 3)]);
   });
 
   test("Overlap", () {

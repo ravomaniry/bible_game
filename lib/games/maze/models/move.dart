@@ -1,4 +1,5 @@
 import 'package:bible_game/games/maze/models/coordinate.dart';
+import 'package:flutter/cupertino.dart';
 
 class Move {
   final Coordinate origin;
@@ -21,4 +22,16 @@ class Move {
   String toString() {
     return "(${origin.x}, ${origin.y}, ${direction.x}, ${direction.y}, $wordIndex, $length)";
   }
+
+  @override
+  int get hashCode => hashValues(origin, direction, wordIndex, length, overlapAt);
+
+  @override
+  bool operator ==(other) =>
+      other is Move &&
+      other.origin == origin &&
+      other.direction == direction &&
+      other.wordIndex == wordIndex &&
+      other.length == length &&
+      other.overlapAt == overlapAt;
 }
