@@ -13,7 +13,8 @@ class MazeState {
   final List<List<bool>> revealed;
   final List<List<Coordinate>> paths;
   final List<Coordinate> newlyRevealed;
-  final List<int> wordsToFind;
+  final List<int> wordsToReveal;
+  final List<int> wordsToConfirm;
   final List<Coordinate> confirmed;
 
   MazeState({
@@ -24,8 +25,9 @@ class MazeState {
     this.revealed = const [],
     this.paths = const [],
     this.newlyRevealed = const [],
-    this.wordsToFind = const [],
+    this.wordsToReveal = const [],
     this.confirmed = const [],
+    this.wordsToConfirm = const [],
   });
 
   factory MazeState.emptyState() {
@@ -46,6 +48,7 @@ class MazeState {
     final List<List<Coordinate>> paths,
     final List<Coordinate> newlyRevealed,
     final List<int> wordsToFind,
+    final List<int> wordsToConfirm,
     final List<Coordinate> confirmed,
   }) {
     return MazeState(
@@ -56,7 +59,8 @@ class MazeState {
       revealed: revealed ?? this.revealed,
       paths: paths ?? this.paths,
       newlyRevealed: newlyRevealed ?? this.newlyRevealed,
-      wordsToFind: wordsToFind ?? this.wordsToFind,
+      wordsToReveal: wordsToFind ?? this.wordsToReveal,
+      wordsToConfirm: wordsToConfirm ?? this.wordsToConfirm,
       confirmed: confirmed ?? this.confirmed,
     );
   }

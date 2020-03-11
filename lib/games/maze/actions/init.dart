@@ -6,11 +6,20 @@ import 'package:bible_game/games/maze/actions/actions.dart';
 import 'package:bible_game/games/maze/create/board_utils.dart';
 import 'package:bible_game/games/maze/create/create_board.dart';
 import 'package:bible_game/games/maze/redux/state.dart';
+import 'package:bible_game/games/words_in_word/actions/bonus.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
 ThunkAction<AppState> initMaze() {
+  return (store) async {
+    store.dispatch(addBonusesToVerse());
+    store.dispatch(_initState());
+    store.dispatch(_loadBackgrounds());
+  };
+}
+
+ThunkAction<AppState> _initState() {
   return (store) async {
     final id = DateTime.now().millisecondsSinceEpoch;
     store.dispatch(UpdateMazeState((store.state.maze ?? MazeState.emptyState()).reset(id)));
@@ -26,7 +35,6 @@ ThunkAction<AppState> initMaze() {
         wordsToFind: _initialWordsToFind(words),
       )));
     }
-    store.dispatch(_loadBackgrounds());
   };
 }
 

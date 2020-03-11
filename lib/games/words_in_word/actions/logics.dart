@@ -5,10 +5,10 @@ import 'package:bible_game/app/game/actions/actions.dart';
 import 'package:bible_game/app/inventory/actions/actions.dart';
 import 'package:bible_game/app/inventory/actions/use_bonus_action.dart';
 import 'package:bible_game/games/words_in_word/actions/action_creators.dart';
+import 'package:bible_game/games/words_in_word/actions/bonus.dart';
 import 'package:bible_game/games/words_in_word/actions/cells_action.dart';
 import 'package:bible_game/games/words_in_word/reducer/state.dart';
 import 'package:bible_game/models/bible_verse.dart';
-import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/sfx/actions.dart';
 import 'package:flutter/cupertino.dart';
@@ -55,33 +55,6 @@ ThunkAction<AppState> initializeState() {
     )));
     store.dispatch(recomputeCells());
   };
-}
-
-ThunkAction<AppState> addBonusesToVerse() {
-  return (store) {
-    final verse = store.state.game.verse;
-    final verseWithBonus = verse.copyWith(
-      words: verse.words.map(_addRandomBonusToWord).toList(),
-    );
-    store.dispatch(UpdateGameVerse(verseWithBonus));
-  };
-}
-
-Word _addRandomBonusToWord(Word word) {
-  final bonusRatio = 2;
-  final probability = 0.6;
-  if (word.isSeparator) {
-    return word;
-  }
-  final random = Random();
-  int power = 1;
-  if (word.chars.length > 1) {
-    power += Random().nextInt((word.chars.length * bonusRatio).floor());
-  }
-  if (random.nextDouble() < probability) {
-    return word.copyWith(bonus: RevealCharBonus(power, 0));
-  }
-  return word;
 }
 
 ThunkAction<AppState> _fillEmptySlots() {

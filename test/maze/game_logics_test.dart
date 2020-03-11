@@ -51,13 +51,13 @@ void main() {
     expect(store.state.maze.revealed, toBeAll2(false));
     store.dispatch(proposeMaze([Coordinate(0, 1), Coordinate(1, 1), Coordinate(2, 1)]));
     expect(store.state.maze.revealed, toBeAll2(false));
-    expect(store.state.maze.wordsToFind, [0, 1, 2, 3, 4, 5]);
+    expect(store.state.maze.wordsToReveal, [0, 1, 2, 3, 4, 5]);
 
     /// One cell
     store.dispatch(proposeMaze([Coordinate(5, 0)]));
     expect(store.state.maze.revealed[0], [false, false, false, false, false, true]);
     expect(store.state.maze.revealed, toHave2(true, 1));
-    expect(store.state.maze.wordsToFind, [0, 1, 2, 3, 5]);
+    expect(store.state.maze.wordsToReveal, [0, 1, 2, 3, 5]);
 
     /// one word
     store.dispatch(proposeMaze([Coordinate(0, 0), Coordinate(0, 1), Coordinate(0, 2)]));
@@ -65,7 +65,7 @@ void main() {
     expect(store.state.maze.revealed[1][0], true);
     expect(store.state.maze.revealed[2][0], true);
     expect(store.state.maze.revealed, toHave2(true, 4));
-    expect(store.state.maze.wordsToFind, [1, 2, 3, 5]);
+    expect(store.state.maze.wordsToReveal, [1, 2, 3, 5]);
 
     /// exceed
     // empty
@@ -91,10 +91,10 @@ void main() {
     // at 0
     store.dispatch(proposeMaze([Coordinate(4, 3), Coordinate(3, 3)]));
     expect(store.state.maze.revealed, toHave2(true, 6));
-    expect(store.state.maze.wordsToFind, [1, 2, 3]);
+    expect(store.state.maze.wordsToReveal, [1, 2, 3]);
     store.dispatch(proposeMaze([Coordinate(4, 3), Coordinate(4, 4), Coordinate(4, 5)]));
     expect(store.state.maze.revealed, toHave2(true, 8));
-    expect(store.state.maze.wordsToFind, [1, 2, 3]);
+    expect(store.state.maze.wordsToReveal, [1, 2, 3]);
     // at the middle
     store.dispatch(proposeMaze([
       Coordinate(0, 5),

@@ -1,6 +1,8 @@
 import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/game/actions/actions.dart';
+import 'package:bible_game/app/inventory/actions/use_bonus_action.dart';
 import 'package:bible_game/games/maze/actions/actions.dart';
+import 'package:bible_game/games/maze/logic/bonus.dart';
 import 'package:bible_game/games/maze/logic/paths.dart';
 import 'package:bible_game/games/maze/logic/reveal.dart';
 import 'package:bible_game/games/maze/models/board.dart';
@@ -14,27 +16,23 @@ ThunkAction<AppState> proposeMaze(List<Coordinate> cellCoordinates) {
     final board = state.board;
     final words = state.words;
     final cells = cellCoordinates.map((c) => board.getAt(c.x, c.y)).toList();
-    if (shouldReveal(cells, state.words)) {
+    final revealedWord = getRevealedWord(cells, state.words);
+    if (revealedWord != null) {
       final revealed = reveal(cellCoordinates, state.revealed);
       if (_isCompleted(board, words, revealed)) {
         store.dispatch(UpdateGameResolvedState(true));
         store.state.sfx.playLongSuccess();
       } else {
-        final wordsToFind = getUpdatedWordsToFind(
-          state.wordsToFind,
-          cellCoordinates,
-          revealed,
-          board,
-          words,
-        );
         final paths = getRevealedPaths(state.board, revealed, state.words);
         store.dispatch(UpdateMazeState(state.copyWith(
           revealed: revealed,
           paths: paths,
           newlyRevealed: cellCoordinates,
-          wordsToFind: wordsToFind,
         )));
         store.state.sfx.playShortSuccess();
+        store.dispatch(updatedWordsToReveal(cellCoordinates));
+        store.dispatch(updateWordsToConfirm());
+        store.dispatch(useBonus(revealedWord.bonus, false));
         await Future.delayed(Duration(milliseconds: 600));
         store.dispatch(invalidateNewlyRevealed());
       }
