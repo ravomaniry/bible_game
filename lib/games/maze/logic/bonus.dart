@@ -54,6 +54,7 @@ ThunkAction<AppState> _confirmChars(Bonus bonus, int wordIndex, Random rand) {
         confirmed.add(board.coordinateOf(wordIndex, charIndex));
         power--;
       }
+      store.dispatch(updateWordsToConfirm());
     }
   };
 }
