@@ -12,6 +12,7 @@ class MazeState {
   final Map<String, ui.Image> backgrounds;
   final List<List<bool>> revealed;
   final List<List<Coordinate>> paths;
+  final List<Coordinate> newlyRevealed;
 
   MazeState({
     @required this.board,
@@ -20,6 +21,7 @@ class MazeState {
     @required this.backgrounds,
     this.revealed = const [],
     this.paths = const [],
+    this.newlyRevealed = const [],
   });
 
   factory MazeState.emptyState() {
@@ -38,6 +40,7 @@ class MazeState {
     final Map<String, ui.Image> backgrounds,
     final List<List<bool>> revealed,
     final List<List<Coordinate>> paths,
+    final List<Coordinate> newlyRevealed,
   }) {
     return MazeState(
       board: board ?? this.board,
@@ -46,6 +49,7 @@ class MazeState {
       backgrounds: backgrounds ?? this.backgrounds,
       revealed: revealed ?? this.revealed,
       paths: paths ?? this.paths,
+      newlyRevealed: newlyRevealed ?? this.newlyRevealed,
     );
   }
 

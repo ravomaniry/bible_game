@@ -53,7 +53,7 @@ class MazePaths extends StatelessWidget {
       return RepaintBoundary(
         child: CustomPaint(
           size: Size(computeBoardPxWidth(board), computeBoardPxHeight(board)),
-          painter: _Painter(paths, theme, board.end),
+          painter: _Painter(paths, theme, board.start, board.end),
         ),
       );
     }
@@ -63,9 +63,10 @@ class MazePaths extends StatelessWidget {
 class _Painter extends CustomPainter {
   final List<List<Coordinate>> _paths;
   final AppColorTheme _theme;
+  final Coordinate _start;
   final Coordinate _end;
 
-  _Painter(this._paths, this._theme, this._end);
+  _Painter(this._paths, this._theme, this._start, this._end);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -81,6 +82,7 @@ class _Painter extends CustomPainter {
         }
       }
     }
+    _drawCheckpoint(_start, canvas, rectPaint);
     _drawCheckpoint(_end, canvas, rectPaint);
   }
 

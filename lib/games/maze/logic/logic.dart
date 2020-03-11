@@ -24,8 +24,11 @@ ThunkAction<AppState> proposeMaze(List<Coordinate> cellCoordinates) {
         store.dispatch(UpdateMazeState(state.copyWith(
           revealed: revealed,
           paths: paths,
+          newlyRevealed: cellCoordinates,
         )));
         store.state.sfx.playShortSuccess();
+        await Future.delayed(Duration(seconds: 1));
+        store.dispatch(invalidateNewlyRevealed());
       }
     }
   };
