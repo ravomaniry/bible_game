@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/game/actions/actions.dart';
 import 'package:bible_game/app/inventory/actions/actions.dart';
-import 'package:bible_game/app/inventory/actions/use_bonus_action.dart';
+import 'package:bible_game/app/inventory/actions/bonus.dart';
 import 'package:bible_game/games/words_in_word/actions/action_creators.dart';
 import 'package:bible_game/games/words_in_word/actions/bonus.dart';
 import 'package:bible_game/games/words_in_word/actions/cells_action.dart';

@@ -1,22 +1,26 @@
 import 'package:bible_game/app/inventory/components/shop.dart';
-import 'package:bible_game/models/bonus.dart';
+import 'package:bible_game/app/inventory/in_game_bonus_view_model.dart';
 import 'package:bible_game/app/theme/themes.dart';
-import 'package:bible_game/games/words_in_word/view_model.dart';
+import 'package:bible_game/models/bonus.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 
 final _revealCharBonus1 = RevealCharBonus1();
 final _revealCharBonus2 = RevealCharBonus2();
 final _revealCharBonus5 = RevealCharBonus5();
 final _revealCharBonus10 = RevealCharBonus10();
 
-class BonusesDisplay extends StatelessWidget {
-  final WordsInWordViewModel _viewModel;
-
-  BonusesDisplay(this._viewModel);
-
+class InGameBonuses extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final inventory = _viewModel.inventory;
+    return StoreConnector(
+      converter: InGameBonusViewModel.converter,
+      builder: _builder,
+    );
+  }
+
+  Widget _builder(_, InGameBonusViewModel viewModel) {
+    final inventory = viewModel.inventory;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -25,27 +29,27 @@ class BonusesDisplay extends StatelessWidget {
           children: [
             _RevealCharDisplayWrapper(
               bonus: _revealCharBonus1,
-              theme: _viewModel.theme,
+              theme: viewModel.theme,
               number: inventory.revealCharBonus1,
-              useBonus: _viewModel.useBonus,
+              useBonus: viewModel.use,
             ),
             _RevealCharDisplayWrapper(
               bonus: _revealCharBonus2,
-              theme: _viewModel.theme,
+              theme: viewModel.theme,
               number: inventory.revealCharBonus2,
-              useBonus: _viewModel.useBonus,
+              useBonus: viewModel.use,
             ),
             _RevealCharDisplayWrapper(
               bonus: _revealCharBonus5,
-              theme: _viewModel.theme,
+              theme: viewModel.theme,
               number: inventory.revealCharBonus5,
-              useBonus: _viewModel.useBonus,
+              useBonus: viewModel.use,
             ),
             _RevealCharDisplayWrapper(
               bonus: _revealCharBonus10,
-              theme: _viewModel.theme,
+              theme: viewModel.theme,
               number: inventory.revealCharBonus10,
-              useBonus: _viewModel.useBonus,
+              useBonus: viewModel.use,
             ),
           ],
         ),

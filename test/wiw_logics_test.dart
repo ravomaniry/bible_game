@@ -2,7 +2,7 @@ import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/config/state.dart';
 import 'package:bible_game/app/game/reducer/state.dart';
 import 'package:bible_game/app/game_editor/reducer/state.dart';
-import 'package:bible_game/app/inventory/actions/use_bonus_action.dart';
+import 'package:bible_game/app/inventory/actions/bonus.dart';
 import 'package:bible_game/app/main_reducer.dart';
 import 'package:bible_game/app/router/routes.dart';
 import 'package:bible_game/app/theme/themes.dart';

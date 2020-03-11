@@ -1,6 +1,7 @@
 import 'package:animator/animator.dart';
 import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/game/components/in_game_header.dart';
+import 'package:bible_game/app/inventory/components/in_game_bonuses.dart';
 import 'package:bible_game/games/maze/components/canvas/background.dart';
 import 'package:bible_game/games/maze/components/canvas/cell_animations.dart';
 import 'package:bible_game/games/maze/components/canvas/paths.dart';
@@ -126,6 +127,7 @@ class _MazeState extends State<MazeController> {
         InGameHeader(),
         _buildBody(),
         Footer(_tapHandler.selectedCells),
+        InGameBonuses(),
       ],
     );
   }

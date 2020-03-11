@@ -7,7 +7,7 @@ import 'package:bible_game/app/config/state.dart';
 import 'package:bible_game/app/game/actions/next_verse.dart';
 import 'package:bible_game/app/inventory/actions/actions.dart';
 import 'package:bible_game/app/inventory/reducer/state.dart';
-import 'package:bible_game/app/inventory/actions/use_bonus_action.dart' as bonusActions;
+import 'package:bible_game/app/inventory/actions/bonus.dart' as bonusActions;
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/games/words_in_word/actions/action_creators.dart';
 import 'package:bible_game/games/anagram/actions/logic.dart';

@@ -1,6 +1,6 @@
 import 'package:animator/animator.dart';
 import 'package:bible_game/app/theme/themes.dart';
-import 'package:bible_game/games/words_in_word/components/bonuses.dart';
+import 'package:bible_game/app/inventory/components/in_game_bonuses.dart';
 import 'package:bible_game/games/words_in_word/reducer/state.dart';
 import 'package:bible_game/games/words_in_word/view_model.dart';
 import 'package:bible_game/models/word.dart';
@@ -45,7 +45,7 @@ class WordsInWordControls extends StatelessWidget {
             ),
           ),
           SizedBox(height: 15),
-          BonusesDisplay(_viewModel),
+          InGameBonuses(),
         ],
       ),
     );

@@ -1,17 +1,12 @@
 import 'dart:math';
 
-import 'package:bible_game/main.dart';
-import 'package:bible_game/models/bible_verse.dart';
-import 'package:bible_game/models/bonus.dart';
-import 'package:bible_game/models/cell.dart';
-import 'package:bible_game/models/word.dart';
 import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/config/actions.dart';
 import 'package:bible_game/app/config/state.dart';
-import 'package:bible_game/app/game_editor/reducer/state.dart';
 import 'package:bible_game/app/explorer/state.dart';
 import 'package:bible_game/app/game/actions/actions.dart';
 import 'package:bible_game/app/game/reducer/state.dart';
+import 'package:bible_game/app/game_editor/reducer/state.dart';
 import 'package:bible_game/app/inventory/actions/actions.dart';
 import 'package:bible_game/app/inventory/reducer/state.dart';
 import 'package:bible_game/app/main_reducer.dart';
@@ -22,6 +17,11 @@ import 'package:bible_game/games/words_in_word/actions/action_creators.dart';
 import 'package:bible_game/games/words_in_word/actions/cells_action.dart';
 import 'package:bible_game/games/words_in_word/actions/logics.dart';
 import 'package:bible_game/games/words_in_word/reducer/state.dart';
+import 'package:bible_game/main.dart';
+import 'package:bible_game/models/bible_verse.dart';
+import 'package:bible_game/models/bonus.dart';
+import 'package:bible_game/models/cell.dart';
+import 'package:bible_game/models/word.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
 import 'package:bible_game/test_helpers/sfx_mock.dart';
@@ -65,9 +65,27 @@ void main() {
     await Future.delayed(Duration(milliseconds: 10));
     final expectedCells = [
       [Cell(0, 0), Cell(0, 1), Cell(1, 0)],
-      [Cell(2, 0), Cell(2, 1), Cell(2, 2), Cell(2, 3), Cell(2, 4), Cell(2, 5), Cell(2, 6), Cell(2, 7)],
+      [
+        Cell(2, 0),
+        Cell(2, 1),
+        Cell(2, 2),
+        Cell(2, 3),
+        Cell(2, 4),
+        Cell(2, 5),
+        Cell(2, 6),
+        Cell(2, 7)
+      ],
       [Cell(4, 0), Cell(4, 1), Cell(5, 0)],
-      [Cell(6, 0), Cell(6, 1), Cell(6, 2), Cell(6, 3), Cell(6, 4), Cell(7, 0), Cell(8, 0), Cell(9, 0)],
+      [
+        Cell(6, 0),
+        Cell(6, 1),
+        Cell(6, 2),
+        Cell(6, 3),
+        Cell(6, 4),
+        Cell(7, 0),
+        Cell(8, 0),
+        Cell(9, 0)
+      ],
       [Cell(10, 0), Cell(10, 1), Cell(10, 2), Cell(10, 3), Cell(10, 4), Cell(10, 5), Cell(11, 0)],
       [Cell(12, 0), Cell(12, 1), Cell(12, 2), Cell(12, 3), Cell(12, 4), Cell(12, 5)]
     ];
@@ -93,7 +111,8 @@ void main() {
   });
 
   testWidgets("In game interractivity - Tap + propose", (WidgetTester tester) async {
-    final verse = BibleVerse.from(bookId: 1, book: "Matio", chapter: 1, verse: 1, text: "Ny teny ny Azy");
+    final verse =
+        BibleVerse.from(bookId: 1, book: "Matio", chapter: 1, verse: 1, text: "Ny teny ny Azy");
     final initialState = AppState(
       editor: EditorState(),
       sfx: SfxMock(),
@@ -106,7 +125,8 @@ void main() {
       config: ConfigState.initialState(),
       wordsInWord: WordsInWordState.emptyState(),
     );
-    final store = Store<AppState>(mainReducer, middleware: [thunkMiddleware], initialState: initialState);
+    final store =
+        Store<AppState>(mainReducer, middleware: [thunkMiddleware], initialState: initialState);
     // This is to simulate previous game session
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
       proposition: Word.from("AA", 0, false).chars,
@@ -147,7 +167,8 @@ void main() {
     await tester.pump(Duration(milliseconds: 10));
     expect(store.state.wordsInWord.proposition, []);
     expect(listEquals(store.state.wordsInWord.slots, Word.from("NYTENY", 0, false).chars), true);
-    expect(listEquals(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars), true);
+    expect(
+        listEquals(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars), true);
     expect(store.state.wordsInWord.wordsToFind.length, 3);
     expect(store.state.wordsInWord.resolvedWords, []);
     expect(store.state.wordsInWord.propositionAnimation, PropositionAnimations.failure);
@@ -164,10 +185,13 @@ void main() {
     await tester.pump(Duration(milliseconds: 10));
     expect(store.state.wordsInWord.proposition, []);
     expect(listEquals(store.state.wordsInWord.slots, Word.from("NYTENY", 0, false).chars), false);
-    expect(listEquals(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars), false);
+    expect(listEquals(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars),
+        false);
     expect(store.state.wordsInWord.wordsToFind.map((w) => w.value), ["teny", "Azy"]);
-    expect(store.state.wordsInWord.resolvedWords, [Word.from("Ny", 0, false).copyWith(resolved: true)]);
-    expect(store.state.game.verse.words.map((w) => w.value), ["Ny", " ", "teny", " ", "ny", " ", "Azy"]);
+    expect(store.state.wordsInWord.resolvedWords,
+        [Word.from("Ny", 0, false).copyWith(resolved: true)]);
+    expect(store.state.game.verse.words.map((w) => w.value),
+        ["Ny", " ", "teny", " ", "ny", " ", "Azy"]);
     expect(store.state.wordsInWord.propositionAnimation, PropositionAnimations.success);
     verify(store.state.sfx.playShortSuccess()).called(1);
     // Animation is removed automatically after 0.5s
@@ -176,7 +200,8 @@ void main() {
   });
 
   testWidgets("Click on bonuses", (WidgetTester tester) async {
-    final verse = BibleVerse.from(book: "", bookId: 1, chapter: 1, verse: 1, text: "ABCDEFGHIJKLMNOPQRST");
+    final verse =
+        BibleVerse.from(book: "", bookId: 1, chapter: 1, verse: 1, text: "ABCDEFGHIJKLMNOPQRST");
     final state = AppState(
       sfx: SfxMock(),
       editor: EditorState(),
@@ -276,8 +301,9 @@ void main() {
 
   testWidgets("useBonus", (WidgetTester tester) async {
     int countUnrevealedWord(List<Word> words) {
-      final wordLengths =
-          words.where((w) => !w.isSeparator && !w.resolved).map((w) => w.chars.where((c) => !c.resolved).length);
+      final wordLengths = words
+          .where((w) => !w.isSeparator && !w.resolved)
+          .map((w) => w.chars.where((c) => !c.resolved).length);
       return wordLengths.isEmpty ? 0 : wordLengths.reduce((a, b) => a + b);
     }
 
