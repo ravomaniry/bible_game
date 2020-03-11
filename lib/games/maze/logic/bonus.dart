@@ -6,6 +6,7 @@ import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/models/word.dart';
+import 'package:bible_game/utils/random.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
@@ -50,7 +51,7 @@ ThunkAction<AppState> _confirmChars(Bonus bonus, int wordIndex, Random rand) {
     if (power > 0) {
       final charIndexes = _getUnconfirmedCharIndexes(word, wordIndex, board, confirmed);
       while (power > 0 && charIndexes.isNotEmpty) {
-        final charIndex = charIndexes[rand.nextInt(charIndexes.length)];
+        final charIndex = getRandomElement(charIndexes, rand);
         confirmed.add(board.coordinateOf(wordIndex, charIndex));
         power--;
       }
@@ -99,7 +100,7 @@ List<List<bool>> _revealRandomChars(
 ) {
   revealed = revealed.map((x) => [...x]).toList();
   for (var power = bonus.point; power > 0 && charIndexes.length > 1; power--) {
-    final charIndex = charIndexes[rand.nextInt(charIndexes.length)];
+    final charIndex = getRandomElement(charIndexes, rand);
     final point = board.coordinateOf(wordIndex, charIndex);
     revealed[point.y][point.x] = true;
   }
