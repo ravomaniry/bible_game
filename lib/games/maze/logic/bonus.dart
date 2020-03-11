@@ -16,9 +16,8 @@ bool useBonusInMaze(Bonus bonus, Store<AppState> store) {
   final toConfirm = state.wordsToConfirm;
   if (toReveal.isNotEmpty || toReveal.isNotEmpty) {
     final rand = Random();
-    final wordIndex = toReveal.isEmpty
-        ? toConfirm[rand.nextInt(toConfirm.length)]
-        : toReveal[rand.nextInt(toReveal.length)];
+    final wordIndex =
+        toReveal.isEmpty ? getRandomElement(toConfirm, rand) : getRandomElement(toReveal, rand);
     store.dispatch(_revealChars(bonus, wordIndex, rand));
     store.dispatch(_confirmChars(bonus, wordIndex, rand));
     return true;
