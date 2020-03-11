@@ -20,7 +20,7 @@ void main() {
     final board = Board.create(6, 6, 0);
     store.dispatch(UpdateGameVerse(verse));
     store.dispatch(UpdateMazeState(MazeState.emptyState().copyWith(
-      wordsToFind: getWordsInScopeForMaze(verse),
+      words: getWordsInScopeForMaze(verse),
       board: board,
       revealed: initialRevealedState(board),
     )));
@@ -116,7 +116,7 @@ void main() {
     board.updateStartEnd(words);
     store.dispatch(UpdateGameVerse(verse));
     store.dispatch(UpdateMazeState(MazeState.emptyState().copyWith(
-      wordsToFind: words,
+      words: words,
       board: board,
       revealed: initialRevealedState(board),
     )));

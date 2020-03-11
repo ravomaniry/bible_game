@@ -24,7 +24,7 @@ class MazeWords extends StatelessWidget {
 
   Widget _builder(BuildContext context, BoardViewModel viewModel) {
     final board = viewModel.state.board;
-    final wordsToFind = viewModel.state.wordsToFind;
+    final wordsToFind = viewModel.state.words;
 
     if (board != null) {
       return RepaintBoundary(

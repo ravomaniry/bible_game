@@ -21,7 +21,7 @@ ThunkAction<AppState> initMaze() {
     if (store.state.maze.nextId == id) {
       store.dispatch(UpdateMazeState(state.copyWith(
         board: board,
-        wordsToFind: wordsToFind,
+        words: wordsToFind,
         revealed: initialRevealedState(board),
       )));
     }

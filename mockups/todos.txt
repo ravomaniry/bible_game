@@ -1,11 +1,9 @@
 Maze:
-    - Color/animate start and end
     - Bonus:
         - reveal word in chars (1 word per click)
         - leave at least one char unrevealed per word
         - do not use bonus if nothing were revealed
     - Move auto scroll request/logic in a different method
     - Auto scroll after scroll
-    - Animate newly revealed cells
 - Help
 - Move all texts into a new class

@@ -12,22 +12,22 @@ ThunkAction<AppState> proposeMaze(List<Coordinate> cellCoordinates) {
   return (store) async {
     final state = store.state.maze;
     final board = state.board;
-    final words = state.wordsToFind;
+    final words = state.words;
     final cells = cellCoordinates.map((c) => board.getAt(c.x, c.y)).toList();
-    if (shouldReveal(cells, state.wordsToFind)) {
+    if (shouldReveal(cells, state.words)) {
       final revealed = reveal(cellCoordinates, state.revealed);
       if (_isCompleted(board, words, revealed)) {
         store.dispatch(UpdateGameResolvedState(true));
         store.state.sfx.playLongSuccess();
       } else {
-        final paths = getRevealedPaths(state.board, revealed, state.wordsToFind);
+        final paths = getRevealedPaths(state.board, revealed, state.words);
         store.dispatch(UpdateMazeState(state.copyWith(
           revealed: revealed,
           paths: paths,
           newlyRevealed: cellCoordinates,
         )));
         store.state.sfx.playShortSuccess();
-        await Future.delayed(Duration(seconds: 1));
+        await Future.delayed(Duration(milliseconds: 600));
         store.dispatch(invalidateNewlyRevealed());
       }
     }

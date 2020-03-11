@@ -40,7 +40,7 @@ void main() {
     store.dispatch(UpdateGameVerse(verse));
     store.dispatch(UpdateMazeState(MazeState.emptyState().copyWith(
       board: board,
-      wordsToFind: words,
+      words: words,
       revealed: initialRevealedState(board),
     )));
 

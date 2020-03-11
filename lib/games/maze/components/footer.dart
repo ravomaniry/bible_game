@@ -23,7 +23,7 @@ class Footer extends StatelessWidget {
   Widget _builder(_, BoardViewModel viewModel) {
     final theme = viewModel.theme;
     final board = viewModel.state.board;
-    final wordsToFind = viewModel.state.wordsToFind;
+    final wordsToFind = viewModel.state.words;
     return _FooterContainer(
       theme: theme,
       child: Text(

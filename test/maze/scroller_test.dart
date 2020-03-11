@@ -116,7 +116,7 @@ void main() {
       nextId: 1,
       board: board,
       backgrounds: null,
-      wordsToFind: getWordsInScopeForMaze(verse),
+      words: getWordsInScopeForMaze(verse),
       revealed: initialRevealedState(board),
     )));
     await tester.pump(Duration(seconds: 1));
@@ -177,7 +177,7 @@ void main() {
       nextId: 1,
       board: board,
       backgrounds: null,
-      wordsToFind: words,
+      words: words,
       revealed: initialRevealedState(board),
     )));
     // render and should display correctly
