@@ -1,3 +1,4 @@
+import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/maze/models/maze_cell.dart';
 import 'package:bible_game/models/word.dart';
@@ -36,4 +37,49 @@ List<List<bool>> reveal(List<Coordinate> cells, List<List<bool>> revealed) {
     updated[cell.y][cell.x] = true;
   }
   return updated;
+}
+
+List<int> getUpdatedWordsToFind(
+  List<int> wordsToFind,
+  List<Coordinate> newlyRevealed,
+  List<List<bool>> revealed,
+  Board board,
+  List<Word> words,
+) {
+  wordsToFind = List<int>.from(wordsToFind);
+  final indexes = _getWordIndexesAt(newlyRevealed, board);
+  for (final index in indexes) {
+    if (_wordIsRevealed(index, board, revealed)) {
+      wordsToFind.remove(index);
+    }
+  }
+  return wordsToFind;
+}
+
+List<int> _getWordIndexesAt(List<Coordinate> points, Board board) {
+  final List<int> wordIndexes = [];
+  for (final point in points) {
+    for (final cell in board.getAt(point.x, point.y).cells) {
+      if (cell.wordIndex >= 0 && !wordIndexes.contains(cell)) {
+        wordIndexes.add(cell.wordIndex);
+      }
+    }
+  }
+  return wordIndexes;
+}
+
+bool _wordIsRevealed(int index, Board board, List<List<bool>> revealed) {
+  var point = board.coordinateOf(index, 0);
+  if (point == null) {
+    return false;
+  }
+  for (var i = 1; point != null; i++) {
+    point = board.coordinateOf(index, i);
+    if (point != null) {
+      if (!revealed[point.y][point.x]) {
+        return false;
+      }
+    }
+  }
+  return true;
 }

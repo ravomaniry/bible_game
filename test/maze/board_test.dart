@@ -513,5 +513,6 @@ void main() {
     expect(board.end, isNotNull);
     expect(board.start, board.coordinateOf(0, 0));
     expect(board.end, board.coordinateOf(6, 5));
+    expect(store.state.maze.wordsToFind, [0, 1, 2, 3, 4, 5, 6]);
   });
 }

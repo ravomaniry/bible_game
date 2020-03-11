@@ -20,11 +20,19 @@ ThunkAction<AppState> proposeMaze(List<Coordinate> cellCoordinates) {
         store.dispatch(UpdateGameResolvedState(true));
         store.state.sfx.playLongSuccess();
       } else {
+        final wordsToFind = getUpdatedWordsToFind(
+          state.wordsToFind,
+          cellCoordinates,
+          revealed,
+          board,
+          words,
+        );
         final paths = getRevealedPaths(state.board, revealed, state.words);
         store.dispatch(UpdateMazeState(state.copyWith(
           revealed: revealed,
           paths: paths,
           newlyRevealed: cellCoordinates,
+          wordsToFind: wordsToFind,
         )));
         store.state.sfx.playShortSuccess();
         await Future.delayed(Duration(milliseconds: 600));

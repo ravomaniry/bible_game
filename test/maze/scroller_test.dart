@@ -106,6 +106,7 @@ void main() {
       chapter: 11,
       verse: 33,
     );
+    board.start = Coordinate(1, 1);
     board.end = Coordinate(0, 0);
     final store = newMockedStore();
     await tester.pumpWidget(BibleGame(store));

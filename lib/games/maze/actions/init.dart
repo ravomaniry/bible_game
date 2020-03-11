@@ -16,13 +16,14 @@ ThunkAction<AppState> initMaze() {
     store.dispatch(UpdateMazeState((store.state.maze ?? MazeState.emptyState()).reset(id)));
     final state = store.state.maze ?? MazeState.emptyState();
     final verse = store.state.game.verse;
-    final wordsToFind = getWordsInScopeForMaze(verse);
+    final words = getWordsInScopeForMaze(verse);
     final board = await createMazeBoard(verse, id);
     if (store.state.maze.nextId == id) {
       store.dispatch(UpdateMazeState(state.copyWith(
         board: board,
-        words: wordsToFind,
+        words: words,
         revealed: initialRevealedState(board),
+        wordsToFind: _initialWordsToFind(words),
       )));
     }
     store.dispatch(_loadBackgrounds());
@@ -53,4 +54,8 @@ ThunkAction<AppState> _loadBackgrounds() {
       store.dispatch(UpdateMazeState(store.state.maze.copyWith(backgrounds: backgrounds)));
     }
   };
+}
+
+List<int> _initialWordsToFind(List words) {
+  return [for (var i = 0; i < words.length; i++) i];
 }
