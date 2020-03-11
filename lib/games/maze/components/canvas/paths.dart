@@ -9,7 +9,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 final _linePaintCache = Map<AppColorTheme, Paint>();
-final _checkpointPaintCache = Map<AppColorTheme, Paint>();
+final _checkpointPaintCache = Map<Color, Paint>();
 
 Paint _getLinePaint(AppColorTheme theme) {
   var paint = _linePaintCache[theme];
@@ -23,13 +23,13 @@ Paint _getLinePaint(AppColorTheme theme) {
   return paint;
 }
 
-Paint _getCheckpointPaint(AppColorTheme theme) {
-  var paint = _checkpointPaintCache[theme];
+Paint _getCheckpointPaint(Color color) {
+  var paint = _checkpointPaintCache[color];
   if (paint == null) {
     paint = Paint()
       ..style = PaintingStyle.fill
-      ..color = theme.primary;
-    _checkpointPaintCache[theme] = paint;
+      ..color = color;
+    _checkpointPaintCache[color] = paint;
   }
   return paint;
 }
@@ -71,7 +71,7 @@ class _Painter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final linePaint = _getLinePaint(_theme);
-    final rectPaint = _getCheckpointPaint(_theme);
+    final rectPaint = _getCheckpointPaint(_theme.primary);
 
     for (var pathIndex = 0; pathIndex < _paths.length; pathIndex++) {
       final path = _paths[pathIndex];
@@ -82,8 +82,8 @@ class _Painter extends CustomPainter {
         }
       }
     }
-    _drawCheckpoint(_start, canvas, rectPaint);
-    _drawCheckpoint(_end, canvas, rectPaint);
+    _drawCheckpoint(_start, canvas, _getCheckpointPaint(_theme.accentLeft));
+    _drawCheckpoint(_end, canvas, _getCheckpointPaint(_theme.accentLeft));
   }
 
   void _drawCheckpoint(Coordinate coordinate, Canvas canvas, Paint paint) {

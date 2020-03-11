@@ -40,10 +40,12 @@ class _Painter extends CustomPainter {
   final List<List<bool>> _revealed;
   Paint _revealedPaint;
   Paint _unrevealedPaint;
+  Paint _startEndPaint;
 
   _Painter(this._board, this._revealed, this._theme) {
-    _revealedPaint = _getRevealedPaint(_theme);
-    _unrevealedPaint = _getUnrevealedPaint(_theme);
+    _revealedPaint = _getPaint(_theme.neutral, 255);
+    _unrevealedPaint = _getPaint(_theme.neutral, 120);
+    _startEndPaint = _getPaint(_theme.primary, 255);
   }
 
   @override
@@ -68,7 +70,10 @@ class _Painter extends CustomPainter {
       bottomRight.dy,
       const Radius.circular(4),
     );
-    final paint = _revealed[y][x] ? _revealedPaint : _unrevealedPaint;
+    final paint =
+        x == _board.start.x && y == _board.start.y || x == _board.end.x && y == _board.end.y
+            ? _startEndPaint
+            : _revealed[y][x] ? _revealedPaint : _unrevealedPaint;
     canvas.drawRRect(rRect, paint);
   }
 
@@ -78,14 +83,16 @@ class _Painter extends CustomPainter {
   }
 }
 
-Paint _getUnrevealedPaint(AppColorTheme theme) {
-  return Paint()
-    ..style = PaintingStyle.fill
-    ..color = theme.neutral.withAlpha(120);
-}
+final _paintsCache = Map<String, Paint>();
 
-Paint _getRevealedPaint(AppColorTheme theme) {
-  return Paint()
-    ..style = PaintingStyle.fill
-    ..color = theme.neutral;
+Paint _getPaint(Color color, int alpha) {
+  final key = "$color-$alpha";
+  var paint = _paintsCache[key];
+  if (paint == null) {
+    paint = Paint()
+      ..style = PaintingStyle.fill
+      ..color = color.withAlpha(alpha);
+    _paintsCache[key] = paint;
+  }
+  return paint;
 }
