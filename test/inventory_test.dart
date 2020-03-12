@@ -1,20 +1,20 @@
-import 'package:bible_game/db/model.dart';
-import 'package:bible_game/main.dart';
-import 'package:bible_game/models/bible_verse.dart';
-import 'package:bible_game/models/word.dart';
 import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/config/state.dart';
-import 'package:bible_game/app/game_editor/reducer/state.dart';
 import 'package:bible_game/app/explorer/state.dart';
 import 'package:bible_game/app/game/reducer/state.dart';
+import 'package:bible_game/app/game_editor/reducer/state.dart';
 import 'package:bible_game/app/inventory/actions/actions.dart';
 import 'package:bible_game/app/inventory/reducer/state.dart';
 import 'package:bible_game/app/main_reducer.dart';
 import 'package:bible_game/app/router/routes.dart';
 import 'package:bible_game/app/theme/themes.dart';
+import 'package:bible_game/db/model.dart';
 import 'package:bible_game/games/words_in_word/actions/action_creators.dart';
 import 'package:bible_game/games/words_in_word/actions/logics.dart';
 import 'package:bible_game/games/words_in_word/reducer/state.dart';
+import 'package:bible_game/main.dart';
+import 'package:bible_game/models/bible_verse.dart';
+import 'package:bible_game/models/word.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
 import 'package:bible_game/test_helpers/sfx_mock.dart';
@@ -145,7 +145,8 @@ void main() {
         wordsToFind: verse.words.sublist(1).where((w) => !w.isSeparator).toList(),
       ),
     );
-    final store = Store<AppState>(mainReducer, middleware: [thunkMiddleware], initialState: initialState);
+    final store =
+        Store<AppState>(mainReducer, middleware: [thunkMiddleware], initialState: initialState);
     // Resolving AB should increment score by 4
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
       proposition: Word.from("AB", 0, false).chars,

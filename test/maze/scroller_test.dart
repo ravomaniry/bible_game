@@ -98,7 +98,7 @@ void main() {
 
   testWidgets("Scroll", (tester) async {
     // This height output 300x460 (12.5x15)
-    tester.binding.window.physicalSizeTestValue = Size(300, 507);
+    tester.binding.window.physicalSizeTestValue = Size(300, 539);
     tester.binding.window.devicePixelRatioTestValue = 1.0;
 
     final double yOffset = 507.0 - 460;
@@ -156,7 +156,7 @@ void main() {
   });
 
   testWidgets("Screen edge autoscroll", (WidgetTester tester) async {
-    tester.binding.window.physicalSizeTestValue = Size(300, 507);
+    tester.binding.window.physicalSizeTestValue = Size(300, 539);
     tester.binding.window.devicePixelRatioTestValue = 1.0;
 
     final double yOffset = 507.0 - 460;
