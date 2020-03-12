@@ -22,7 +22,7 @@ class MazeBackground extends StatelessWidget {
   Widget _builder(BuildContext context, BoardViewModel viewModel) {
     final board = viewModel.state.board;
     final backgrounds = viewModel.state.backgrounds;
-
+    print("backgrounds $backgrounds");
     if (board != null && backgrounds != null) {
       return RepaintBoundary(
         child: CustomPaint(

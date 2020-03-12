@@ -1,6 +1,7 @@
 import 'package:animator/animator.dart';
 import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/game/components/in_game_header.dart';
+import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/games/maze/components/bonus.dart';
 import 'package:bible_game/games/maze/components/canvas/background.dart';
 import 'package:bible_game/games/maze/components/canvas/cell_animations.dart';
@@ -28,12 +29,11 @@ class Maze extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       key: Key("gameScreen"),
-      backgroundColor: Color.fromARGB(255, 153, 208, 70),
       body: StoreConnector<AppState, MazeViewModel>(
         converter: MazeViewModel.converter,
-        rebuildOnChange: false,
         builder: (BuildContext context, MazeViewModel viewModel) => MazeController(
           viewModel.propose,
+          viewModel.theme,
         ),
       ),
     );
@@ -42,14 +42,16 @@ class Maze extends StatelessWidget {
 
 class MazeController extends StatefulWidget {
   final Function(List<Coordinate>) _propose;
+  final AppColorTheme _theme;
 
-  MazeController(this._propose);
+  MazeController(this._propose, this._theme);
 
   @override
-  _MazeState createState() => _MazeState(_propose);
+  _MazeState createState() => _MazeState(_propose, _theme);
 }
 
 class _MazeState extends State<MazeController> {
+  final AppColorTheme _theme;
   final _tapHandler = TapHandler();
   final _scroller = Scroller();
   final _containerKey = GlobalKey();
@@ -57,7 +59,7 @@ class _MazeState extends State<MazeController> {
   Offset _containerOrigin;
   Board _board;
 
-  _MazeState(this._propose);
+  _MazeState(this._propose, this._theme);
 
   void _reRender() {
     setState(() {});
@@ -122,19 +124,31 @@ class _MazeState extends State<MazeController> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        InGameHeader(),
-        _buildBody(),
-        Footer(_tapHandler.selectedCells),
-        MazeBonus(),
-      ],
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage(_theme.background),
+          fit: BoxFit.fill,
+        ),
+      ),
+      child: Column(
+        children: [
+          InGameHeader(),
+          _buildBody(),
+          Footer(_tapHandler.selectedCells),
+          MazeBonus(),
+        ],
+      ),
     );
   }
 
   Widget _buildBody() {
     return Expanded(
       child: Container(
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 153, 208, 70),
+          borderRadius: BorderRadius.circular(6),
+        ),
         key: _containerKey,
         child: LayoutBuilder(
           builder: (context, constraints) {

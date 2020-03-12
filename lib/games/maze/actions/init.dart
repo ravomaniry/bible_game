@@ -24,11 +24,11 @@ ThunkAction<AppState> _initState() {
   return (store) async {
     final id = DateTime.now().millisecondsSinceEpoch;
     store.dispatch(UpdateMazeState((store.state.maze ?? MazeState.emptyState()).reset(id)));
-    final state = store.state.maze ?? MazeState.emptyState();
     final verse = store.state.game.verse;
     final words = getWordsInScopeForMaze(verse);
     final board = await createMazeBoard(verse, id);
     if (store.state.maze.nextId == id) {
+      final state = store.state.maze ?? MazeState.emptyState();
       store.dispatch(UpdateMazeState(state.copyWith(
         board: board,
         words: words,

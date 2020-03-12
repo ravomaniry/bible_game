@@ -1,4 +1,5 @@
 import 'package:bible_game/app/game/actions/actions.dart';
+import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/games/maze/actions/actions.dart';
 import 'package:bible_game/games/maze/components/maze.dart';
 import 'package:bible_game/games/maze/create/board_utils.dart';
@@ -47,7 +48,7 @@ void main() {
     /// Go!
     await tester.pumpWidget(TestableWithStore(
       store: store,
-      child: MazeController(spy.one),
+      child: MazeController(spy.one, AppColorTheme()),
     ));
     // one cell
     await drag(20, 20, 10, 10);
