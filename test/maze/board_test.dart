@@ -513,6 +513,8 @@ void main() {
     expect(board.end, isNotNull);
     expect(board.start, board.coordinateOf(0, 0));
     expect(board.end, board.coordinateOf(6, 5));
-    expect(store.state.maze.wordsToReveal, [0, 1, 2, 4, 5, 6]);
+    expect(store.state.maze.wordsToReveal, [0, 1, 2, 3, 5, 6]);
+    expect(store.state.maze.wordsToConfirm, [0, 1, 2, 3, 4, 5, 6]);
+    expect(store.state.maze.confirmed, [board.start, board.end]);
   });
 }

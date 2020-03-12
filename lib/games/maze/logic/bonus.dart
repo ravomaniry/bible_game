@@ -14,49 +14,49 @@ bool useBonusInMaze(Bonus bonus, Store<AppState> store) {
   final state = store.state.maze;
   final toReveal = state.wordsToReveal;
   final toConfirm = state.wordsToConfirm;
-  if (toReveal.isNotEmpty || toReveal.isNotEmpty) {
+  if (bonus is RevealCharBonus && (toReveal.isNotEmpty || toConfirm.isNotEmpty)) {
     final rand = Random();
     final wordIndex =
         toReveal.isEmpty ? getRandomElement(toConfirm, rand) : getRandomElement(toReveal, rand);
-    store.dispatch(_revealChars(bonus, wordIndex, rand));
-    store.dispatch(_confirmChars(bonus, wordIndex, rand));
+    final usedToReveal = _revealChars(bonus, wordIndex, rand, store);
+    final usedToConfirm = _confirmChars(bonus, wordIndex, rand, store);
+    return usedToReveal || usedToConfirm;
+  }
+  return false;
+}
+
+bool _revealChars(RevealCharBonus bonus, int wordIndex, Random rand, Store<AppState> store) {
+  final toReveal = store.state.maze.wordsToReveal;
+  final word = store.state.maze.words[wordIndex];
+  final board = store.state.maze.board;
+  final revealed = store.state.maze.revealed;
+  if (toReveal.contains(wordIndex)) {
+    final charIndexes = _getUnrevealedCharIndexes(word, wordIndex, board, revealed);
+    final nextRevealed = _revealRandomChars(bonus, wordIndex, charIndexes, revealed, board, rand);
+    store.dispatch(UpdateMazeState(store.state.maze.copyWith(revealed: nextRevealed)));
     return true;
   }
   return false;
 }
 
-ThunkAction<AppState> _revealChars(Bonus bonus, int wordIndex, Random rand) {
-  return (store) {
-    final toReveal = store.state.maze.wordsToReveal;
-    final word = store.state.maze.words[wordIndex];
-    final board = store.state.maze.board;
-    var revealed = store.state.maze.revealed;
-    if (toReveal.contains(wordIndex)) {
-      final charIndexes = _getUnrevealedCharIndexes(word, wordIndex, board, revealed);
-      revealed = _revealRandomChars(bonus, wordIndex, charIndexes, revealed, board, rand);
-      store.dispatch(UpdateMazeState(store.state.maze.copyWith(revealed: revealed)));
-      store.dispatch(updatedWordsToReveal([board.coordinateOf(wordIndex, 0)]));
+bool _confirmChars(RevealCharBonus bonus, int wordIndex, Random rand, Store<AppState> store) {
+  final state = store.state.maze;
+  final word = state.words[wordIndex];
+  final board = state.board;
+  final confirmed = List<Coordinate>.from(state.confirmed);
+  var power = (bonus.power / 5).round();
+  if (power > 0) {
+    final charIndexes = _getUnconfirmedCharIndexes(word, wordIndex, board, confirmed);
+    while (power > 0 && charIndexes.isNotEmpty) {
+      final charIndex = getRandomElement(charIndexes, rand);
+      confirmed.add(board.coordinateOf(wordIndex, charIndex));
+      power--;
     }
-  };
-}
-
-ThunkAction<AppState> _confirmChars(Bonus bonus, int wordIndex, Random rand) {
-  return (store) {
-    final state = store.state.maze;
-    final word = state.words[wordIndex];
-    final board = state.board;
-    final confirmed = List<Coordinate>.from(state.confirmed);
-    var power = (bonus.point / 8).round();
-    if (power > 0) {
-      final charIndexes = _getUnconfirmedCharIndexes(word, wordIndex, board, confirmed);
-      while (power > 0 && charIndexes.isNotEmpty) {
-        final charIndex = getRandomElement(charIndexes, rand);
-        confirmed.add(board.coordinateOf(wordIndex, charIndex));
-        power--;
-      }
-      store.dispatch(updateWordsToConfirm());
-    }
-  };
+    store.dispatch(UpdateMazeState(state.copyWith(confirmed: confirmed)));
+    store.dispatch(updateWordsToConfirm());
+    return true;
+  }
+  return false;
 }
 
 List<int> _getUnrevealedCharIndexes(
@@ -91,25 +91,28 @@ List<int> _getUnconfirmedCharIndexes(
 }
 
 List<List<bool>> _revealRandomChars(
-  Bonus bonus,
+  RevealCharBonus bonus,
   int wordIndex,
   List<int> charIndexes,
   List<List<bool>> revealed,
   Board board,
   Random rand,
 ) {
+  charIndexes = [...charIndexes];
   revealed = revealed.map((x) => [...x]).toList();
-  for (var power = bonus.point; power > 0 && charIndexes.length > 1; power--) {
+  for (var power = bonus.power; power > 0 && charIndexes.length > 1; power--) {
     final charIndex = getRandomElement(charIndexes, rand);
     final point = board.coordinateOf(wordIndex, charIndex);
     revealed[point.y][point.x] = true;
+    charIndexes.remove(charIndex);
   }
   return revealed;
 }
 
-ThunkAction<AppState> updatedWordsToReveal(List<Coordinate> newlyRevealed) {
+ThunkAction<AppState> updatedWordsToReveal() {
   return (store) {
     final state = store.state.maze;
+    final newlyRevealed = state.newlyRevealed;
     final words = state.words;
     final wordsToFind = List<int>.from(state.wordsToReveal);
     final indexes = _getWordIndexesAt(newlyRevealed, state.board);
@@ -141,9 +144,16 @@ ThunkAction<AppState> updateWordsToConfirm() {
     final state = store.state.maze;
     final words = state.words;
     final toConfirm = List<int>.from(state.wordsToConfirm);
-    for (final index in toConfirm) {
-      if (_getUnconfirmedCharIndexes(words[index], index, state.board, state.confirmed).isEmpty) {
-        toConfirm.remove(index);
+    for (var i = toConfirm.length - 2; i >= 0; i--) {
+      final wordIndex = toConfirm[i];
+      final unconfirmedChars = _getUnconfirmedCharIndexes(
+        words[wordIndex],
+        wordIndex,
+        state.board,
+        state.confirmed,
+      );
+      if (unconfirmedChars.isNotEmpty) {
+        toConfirm.removeAt(i);
       }
     }
     if (toConfirm.length != state.wordsToConfirm.length) {

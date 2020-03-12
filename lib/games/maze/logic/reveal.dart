@@ -1,7 +1,10 @@
+import 'package:bible_game/app/app_state.dart';
+import 'package:bible_game/games/maze/actions/actions.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/maze/models/maze_cell.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/utils/pair.dart';
+import 'package:redux_thunk/redux_thunk.dart';
 
 Word getRevealedWord(List<MazeCell> cells, List<Word> words) {
   final List<Pair<int, int>> wordLengths = [];
@@ -36,4 +39,19 @@ List<List<bool>> reveal(List<Coordinate> cells, List<List<bool>> revealed) {
     updated[cell.y][cell.x] = true;
   }
   return updated;
+}
+
+ThunkAction<AppState> updateNewlyRevealed(List<List<bool>> old) {
+  return (store) {
+    final current = store.state.maze.revealed;
+    final newlyRevealed = List<Coordinate>();
+    for (var y = 0; y < old.length; y++) {
+      for (var x = 0; x < old[0].length; x++) {
+        if (current[y][x] && !old[y][x]) {
+          newlyRevealed.add(Coordinate(x, y));
+        }
+      }
+    }
+    store.dispatch(UpdateMazeState(store.state.maze.copyWith(newlyRevealed: newlyRevealed)));
+  };
 }

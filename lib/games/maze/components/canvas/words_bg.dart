@@ -62,9 +62,6 @@ class _Painter extends CustomPainter {
     for (final point in _confirmed) {
       _paintConfirmed(point, canvas);
     }
-    _paintBackground(_board.start.x, _board.start.y, canvas);
-    _paintConfirmed(_board.start, canvas);
-    _paintConfirmed(_board.end, canvas);
   }
 
   void _paintBackground(int x, int y, Canvas canvas) {

@@ -61,9 +61,14 @@ void main() {
     expect(getNextOffset(Offset(-20, 0), current, boardSize, containerSize), Offset(-70, -50));
     expect(getNextOffset(Offset(-200, 0), current, boardSize, containerSize), Offset(-100, -50));
     // upLeft
-    expect(getNextOffset(Offset(-20, -20), current, boardSize, containerSize), Offset(-70, -70));
     expect(
-        getNextOffset(Offset(-200, -200), current, boardSize, containerSize), Offset(-100, -120));
+      getNextOffset(Offset(-20, -20), current, boardSize, containerSize),
+      Offset(-70, -70),
+    );
+    expect(
+      getNextOffset(Offset(-200, -200), current, boardSize, containerSize),
+      Offset(-100, -120),
+    );
 
     /// Container is bigger than board
     boardSize = Size(100, 100);

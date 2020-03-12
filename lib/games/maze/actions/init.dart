@@ -7,6 +7,7 @@ import 'package:bible_game/games/maze/create/board_utils.dart';
 import 'package:bible_game/games/maze/create/create_board.dart';
 import 'package:bible_game/games/maze/redux/state.dart';
 import 'package:bible_game/games/words_in_word/actions/bonus.dart';
+import 'package:bible_game/models/word.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:redux_thunk/redux_thunk.dart';
@@ -33,6 +34,8 @@ ThunkAction<AppState> _initState() {
         words: words,
         revealed: initialRevealedState(board),
         wordsToFind: _initialWordsToFind(words),
+        wordsToConfirm: _initializeWordsToConfirm(words),
+        confirmed: [board.start, board.end],
       )));
     }
   };
@@ -64,6 +67,16 @@ ThunkAction<AppState> _loadBackgrounds() {
   };
 }
 
-List<int> _initialWordsToFind(List words) {
+List<int> _initialWordsToFind(List<Word> words) {
+  final indexes = List<int>();
+  for (var i = 0; i < words.length; i++) {
+    if (words[i].length > 1) {
+      indexes.add(i);
+    }
+  }
+  return indexes;
+}
+
+List<int> _initializeWordsToConfirm(List<Word> words) {
   return [for (var i = 0; i < words.length; i++) i];
 }

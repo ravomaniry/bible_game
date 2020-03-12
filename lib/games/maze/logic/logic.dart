@@ -15,6 +15,7 @@ ThunkAction<AppState> proposeMaze(List<Coordinate> cellCoordinates) {
     final state = store.state.maze;
     final board = state.board;
     final words = state.words;
+    final oldRevealed = state.revealed;
     final cells = cellCoordinates.map((c) => board.getAt(c.x, c.y)).toList();
     final revealedWord = getRevealedWord(cells, state.words);
     if (revealedWord != null) {
@@ -29,10 +30,13 @@ ThunkAction<AppState> proposeMaze(List<Coordinate> cellCoordinates) {
           paths: paths,
           newlyRevealed: cellCoordinates,
         )));
-        store.state.sfx.playShortSuccess();
-        store.dispatch(updatedWordsToReveal(cellCoordinates));
+        store.dispatch(updatedWordsToReveal());
         store.dispatch(updateWordsToConfirm());
         store.dispatch(useBonus(revealedWord.bonus, false));
+        store.dispatch(updateNewlyRevealed(oldRevealed));
+        store.dispatch(updatedWordsToReveal());
+        store.state.sfx.playShortSuccess();
+
         await Future.delayed(Duration(milliseconds: 600));
         store.dispatch(invalidateNewlyRevealed());
       }
