@@ -1,10 +1,13 @@
 import 'dart:ui';
 
+import 'package:bible_game/app/app_state.dart';
+import 'package:bible_game/games/maze/actions/actions.dart';
 import 'package:bible_game/games/maze/create/board_utils.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:redux_thunk/redux_thunk.dart';
 
 class MazeMove {
   final Coordinate start;
@@ -29,6 +32,14 @@ class MazeMove {
   String toString() {
     return "$start $end ${isStarting ? 'isStarging' : ''} ${isEnding ? 'isEnding' : ''}";
   }
+}
+
+ThunkAction<AppState> updatePaths() {
+  return (store) {
+    final state = store.state.maze;
+    final paths = getRevealedPaths(state.board, state.revealed, state.words);
+    store.dispatch(UpdateMazeState(state.copyWith(paths: paths)));
+  };
 }
 
 List<MazeMove> getRevealedMoves(

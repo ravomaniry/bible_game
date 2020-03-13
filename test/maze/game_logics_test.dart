@@ -319,8 +319,8 @@ void main() {
     // ⁰ A B C .
     // ¹ . . D .
     // ² G F E .
-    // ³ . . . .
-    final verse = BibleVerse.from(text: "Abc d efg");
+    // ³ H I J .
+    final verse = BibleVerse.from(text: "Abc d efg hij");
     verse.words[0] = verse.words[0].copyWith(bonus: RevealCharBonus5());
     final words = getWordsInScopeForMaze(verse);
 
@@ -328,6 +328,7 @@ void main() {
     persistMove(Move(Coordinate(0, 0), Coordinate.right, 0, 3), board);
     persistMove(Move(Coordinate(2, 1), Coordinate.right, 1, 1), board);
     persistMove(Move(Coordinate(2, 2), Coordinate.left, 2, 3), board);
+    persistMove(Move(Coordinate(0, 3), Coordinate.right, 3, 3), board);
     board.updateStartEnd(words);
 
     final store = newMockedStore();
@@ -337,14 +338,15 @@ void main() {
       backgrounds: null,
       words: words,
       revealed: initialRevealedState(board),
-      wordsToReveal: [0, 2],
-      wordsToConfirm: [0, 1, 2],
+      wordsToReveal: [0, 2, 3],
+      wordsToConfirm: [0, 1, 2, 3],
       confirmed: [Coordinate(0, 0), Coordinate(0, 2)],
     );
     await tester.pumpWidget(BibleGame(store));
     await tester.pump(Duration(seconds: 1));
     store.dispatch(UpdateInventory(InventoryState.emptyState().copyWith(
-      revealCharBonus2: 1,
+      revealCharBonus1: 1,
+      revealCharBonus2: 2,
       revealCharBonus5: 1,
       revealCharBonus10: 1,
     )));
@@ -357,26 +359,61 @@ void main() {
     expect(store.state.maze.revealed, toHave2(true, 5));
     expect(store.state.maze.newlyRevealed.length, 5);
     expect(store.state.maze.confirmed.length, 3);
-    expect(store.state.maze.wordsToReveal, []);
-    expect(store.state.maze.wordsToConfirm, [0, 1, 2]);
+    expect(
+      store.state.maze.wordsToReveal,
+      anyOf([
+        [2],
+        [3]
+      ]),
+    );
+    expect(store.state.maze.wordsToConfirm, [0, 1, 2, 3]);
+    expect(store.state.maze.paths.length, 1);
     await tester.pump(Duration(seconds: 1));
     expect(store.state.maze.newlyRevealed, []);
 
-    /// Click on un-useful bonus
+    /// Reveal partially
+    await tester.pump();
+    await tester.tap(find.byKey(Key("revealCharBonusBtn_1")));
+    await tester.pump();
+    expect(store.state.maze.revealed, toHave2(true, 6));
+    expect(store.state.game.inventory.revealCharBonus1, 0);
+    expect(store.state.maze.wordsToConfirm, [0, 1, 2, 3]);
+    expect(
+      store.state.maze.wordsToReveal,
+      anyOf([
+        [2],
+        [3]
+      ]),
+    );
+    await tester.pump(Duration(seconds: 1));
+
+    /// Reveal except one char
     await tester.pump();
     await tester.tap(find.byKey(Key("revealCharBonusBtn_2")));
     await tester.pump();
-    expect(store.state.maze.revealed, toHave2(true, 5));
+    expect(store.state.maze.revealed, toHave2(true, 7));
     expect(store.state.maze.confirmed.length, 3);
     expect(store.state.game.inventory.revealCharBonus2, 1);
-    expect(store.state.maze.wordsToConfirm, [0, 1, 2]);
+    expect(store.state.maze.wordsToConfirm, [0, 1, 2, 3]);
+    expect(store.state.maze.wordsToReveal, []);
+    expect(store.state.maze.newlyRevealed, isNotEmpty);
+    await tester.pump(Duration(seconds: 1));
+    expect(store.state.maze.newlyRevealed, isEmpty);
+
+    /// Unused bonus
+    await tester.pump();
+    await tester.tap(find.byKey(Key("revealCharBonusBtn_2")));
+    await tester.pump();
+    expect(store.state.maze.revealed, toHave2(true, 7));
+    expect(store.state.game.inventory.revealCharBonus2, 1);
     await tester.pump(Duration(seconds: 1));
 
     /// Click on useful bonus
     await tester.tap(find.byKey(Key("revealCharBonusBtn_10")));
     await tester.pump();
-    expect(store.state.maze.revealed, toHave2(true, 5));
+    expect(store.state.maze.revealed, toHave2(true, 7));
     expect(store.state.maze.confirmed.length, 5);
     expect(store.state.game.inventory.revealCharBonus10, 0);
+    await tester.pump(Duration(seconds: 1));
   });
 }

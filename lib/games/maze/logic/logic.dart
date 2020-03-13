@@ -12,7 +12,7 @@ import 'package:redux_thunk/redux_thunk.dart';
 
 ThunkAction<AppState> proposeMaze(List<Coordinate> cellCoordinates) {
   return (store) async {
-    final state = store.state.maze;
+    var state = store.state.maze;
     final board = state.board;
     final words = state.words;
     final oldRevealed = state.revealed;
@@ -24,21 +24,17 @@ ThunkAction<AppState> proposeMaze(List<Coordinate> cellCoordinates) {
         store.dispatch(UpdateGameResolvedState(true));
         store.state.sfx.playLongSuccess();
       } else {
-        final paths = getRevealedPaths(state.board, revealed, state.words);
         store.dispatch(UpdateMazeState(state.copyWith(
           revealed: revealed,
-          paths: paths,
           newlyRevealed: cellCoordinates,
         )));
+        store.dispatch(updatePaths());
+        store.dispatch(updateNewlyRevealed(oldRevealed));
         store.dispatch(updatedWordsToReveal());
         store.dispatch(updateWordsToConfirm());
         store.dispatch(useBonus(revealedWord.bonus, false));
-        store.dispatch(updateNewlyRevealed(oldRevealed));
-        store.dispatch(updatedWordsToReveal());
         store.state.sfx.playShortSuccess();
-
-        await Future.delayed(Duration(milliseconds: 600));
-        store.dispatch(invalidateNewlyRevealed());
+        store.dispatch(scheduleInvalidateNewlyRevealed());
       }
     }
   };

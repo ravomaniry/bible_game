@@ -44,11 +44,14 @@ List<List<bool>> reveal(List<Coordinate> cells, List<List<bool>> revealed) {
 ThunkAction<AppState> updateNewlyRevealed(List<List<bool>> old) {
   return (store) {
     final current = store.state.maze.revealed;
-    final newlyRevealed = List<Coordinate>();
+    final newlyRevealed = List<Coordinate>.from(store.state.maze.newlyRevealed);
     for (var y = 0; y < old.length; y++) {
       for (var x = 0; x < old[0].length; x++) {
         if (current[y][x] && !old[y][x]) {
-          newlyRevealed.add(Coordinate(x, y));
+          final point = Coordinate(x, y);
+          if (!newlyRevealed.contains(point)) {
+            newlyRevealed.add(point);
+          }
         }
       }
     }

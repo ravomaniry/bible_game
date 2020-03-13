@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/games/maze/actions/actions.dart';
+import 'package:bible_game/games/maze/logic/paths.dart';
+import 'package:bible_game/games/maze/logic/reveal.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/models/bonus.dart';
@@ -14,13 +16,20 @@ bool useBonusInMaze(Bonus bonus, Store<AppState> store) {
   final state = store.state.maze;
   final toReveal = state.wordsToReveal;
   final toConfirm = state.wordsToConfirm;
+  final oldRevealed = state.revealed;
   if (bonus is RevealCharBonus && (toReveal.isNotEmpty || toConfirm.isNotEmpty)) {
     final rand = Random();
     final wordIndex =
         toReveal.isEmpty ? getRandomElement(toConfirm, rand) : getRandomElement(toReveal, rand);
     final usedToReveal = _revealChars(bonus, wordIndex, rand, store);
     final usedToConfirm = _confirmChars(bonus, wordIndex, rand, store);
-    return usedToReveal || usedToConfirm;
+    if (usedToReveal || usedToConfirm) {
+      store.dispatch(updateNewlyRevealed(oldRevealed));
+      store.dispatch(updatedWordsToReveal());
+      store.dispatch(updatePaths());
+      store.dispatch(scheduleInvalidateNewlyRevealed());
+      return true;
+    }
   }
   return false;
 }
@@ -114,15 +123,15 @@ ThunkAction<AppState> updatedWordsToReveal() {
     final state = store.state.maze;
     final newlyRevealed = state.newlyRevealed;
     final words = state.words;
-    final wordsToFind = List<int>.from(state.wordsToReveal);
+    final wordsToReveal = List<int>.from(state.wordsToReveal);
     final indexes = _getWordIndexesAt(newlyRevealed, state.board);
     for (final index in indexes) {
       if (_getUnrevealedCharIndexes(words[index], index, state.board, state.revealed).length < 2) {
-        wordsToFind.remove(index);
+        wordsToReveal.remove(index);
       }
     }
-    if (wordsToFind.length != state.wordsToReveal.length) {
-      store.dispatch(UpdateMazeState(state.copyWith(wordsToFind: wordsToFind)));
+    if (wordsToReveal.length != state.wordsToReveal.length) {
+      store.dispatch(UpdateMazeState(state.copyWith(wordsToFind: wordsToReveal)));
     }
   };
 }
@@ -152,12 +161,12 @@ ThunkAction<AppState> updateWordsToConfirm() {
         state.board,
         state.confirmed,
       );
-      if (unconfirmedChars.isNotEmpty) {
+      if (unconfirmedChars.isEmpty) {
         toConfirm.removeAt(i);
       }
     }
     if (toConfirm.length != state.wordsToConfirm.length) {
-      store.dispatch(UpdateMazeState(state.copyWith(wordsToFind: toConfirm)));
+      store.dispatch(UpdateMazeState(state.copyWith(wordsToConfirm: toConfirm)));
     }
   };
 }

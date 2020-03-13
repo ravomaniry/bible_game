@@ -8,8 +8,9 @@ class UpdateMazeState {
   UpdateMazeState(this.payload);
 }
 
-ThunkAction<AppState> invalidateNewlyRevealed() {
-  return (store) {
+ThunkAction<AppState> scheduleInvalidateNewlyRevealed() {
+  return (store) async {
+    await Future.delayed(Duration(milliseconds: 600));
     store.dispatch(UpdateMazeState(store.state.maze.copyWith(
       newlyRevealed: [],
     )));
