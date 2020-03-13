@@ -2,7 +2,6 @@ import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/config/actions.dart';
 import 'package:bible_game/app/config/state.dart';
 import 'package:bible_game/app/game/actions/next_verse.dart';
-import 'package:bible_game/app/inventory/actions/actions.dart';
 import 'package:bible_game/app/inventory/reducer/state.dart';
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/games/words_in_word/actions/action_creators.dart';
@@ -28,7 +27,6 @@ class WordsInWordViewModel {
   final Function() propose;
   final Function() nextHandler;
   final Function() shuffleSlots;
-  final Function() invalidateCombo;
   final Function() stopPropositionAnimationHandler;
 
   WordsInWordViewModel({
@@ -44,7 +42,6 @@ class WordsInWordViewModel {
     @required this.propose,
     @required this.nextHandler,
     @required this.shuffleSlots,
-    @required this.invalidateCombo,
     @required this.theme,
     @required this.stopPropositionAnimationHandler,
   });
@@ -68,7 +65,6 @@ class WordsInWordViewModel {
       propose: () => store.dispatch(logic.proposeWordsInWord()),
       nextHandler: () => store.dispatch(saveGameAndLoadNextVerse()),
       shuffleSlots: () => store.dispatch(logic.shuffleSlotsAction()),
-      invalidateCombo: () => store.dispatch(InvalidateCombo()),
       stopPropositionAnimationHandler: () => store.dispatch(stopPropositionAnimation()),
     );
   }

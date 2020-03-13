@@ -1,6 +1,7 @@
 import 'package:animator/animator.dart';
-import 'package:bible_game/app/theme/themes.dart';
+import 'package:bible_game/app/inventory/components/combo.dart';
 import 'package:bible_game/app/inventory/components/in_game_bonuses.dart';
+import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/games/words_in_word/reducer/state.dart';
 import 'package:bible_game/games/words_in_word/view_model.dart';
 import 'package:bible_game/models/word.dart';
@@ -30,9 +31,8 @@ class WordsInWordControls extends StatelessWidget {
             animation: _viewModel.wordsInWord.propositionAnimation,
             stopAnimationHandler: _viewModel.stopPropositionAnimationHandler,
           ),
-          _ComboDisplay(
+          ComboDisplay(
             combo: _viewModel.inventory.combo,
-            invalidateCombo: _viewModel.invalidateCombo,
             theme: _viewModel.theme,
           ),
           RepaintBoundary(
@@ -350,34 +350,6 @@ class _SlotItemContainer extends StatelessWidget {
       width: slotWidth,
       height: slotWidth,
       child: child,
-    );
-  }
-}
-
-class _ComboDisplay extends StatelessWidget {
-  final double combo;
-  final Function() invalidateCombo;
-  final AppColorTheme theme;
-
-  _ComboDisplay({
-    @required this.combo,
-    @required this.invalidateCombo,
-    @required this.theme,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (combo == 1) {
-      return SizedBox(height: 4);
-    }
-    return Animator(
-      duration: Duration(seconds: 20),
-      endAnimationListener: (_) => invalidateCombo(),
-      builder: (Animation anim) => Container(
-        width: MediaQuery.of(context).size.width * (1 - anim.value),
-        height: 4,
-        decoration: BoxDecoration(color: theme.accentRight),
-      ),
     );
   }
 }

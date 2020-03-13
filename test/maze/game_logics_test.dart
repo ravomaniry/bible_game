@@ -14,6 +14,7 @@ import 'package:bible_game/games/maze/redux/state.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/bonus.dart';
+import 'package:bible_game/models/word.dart';
 import 'package:bible_game/test_helpers/matchers.dart';
 import 'package:bible_game/test_helpers/store.dart';
 import 'package:flutter/widgets.dart';
@@ -21,7 +22,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
 void main() {
-  test("Propose + reveal + path", () {
+  testWidgets("Propose + reveal + path", (tester) async {
     final store = newMockedStore();
     final verse = BibleVerse.from(text: "Abc def dab defgh i dk");
     final board = Board.create(6, 6, 0);
@@ -62,12 +63,16 @@ void main() {
 
     /// One cell
     store.dispatch(proposeMaze([Coordinate(5, 0)]));
+    expect(store.state.game.verse.words[8].resolved, true);
+    expect(store.state.game.inventory.money, 1);
     expect(store.state.maze.revealed[0], [false, false, false, false, false, true]);
     expect(store.state.maze.revealed, toHave2(true, 1));
     expect(store.state.maze.wordsToReveal, [0, 1, 2, 3, 5]);
 
     /// one word
     store.dispatch(proposeMaze([Coordinate(0, 0), Coordinate(0, 1), Coordinate(0, 2)]));
+    expect(store.state.game.verse.words[0].resolved, true);
+    expect(store.state.game.inventory.money, 4);
     expect(store.state.maze.revealed[0][0], true);
     expect(store.state.maze.revealed[1][0], true);
     expect(store.state.maze.revealed[2][0], true);
@@ -114,6 +119,7 @@ void main() {
     // at the end
     store.dispatch(proposeMaze([Coordinate(0, 3), Coordinate(1, 3), Coordinate(2, 3)]));
     expect(store.state.maze.revealed, toHave2(true, 15));
+    await tester.pump(Duration(seconds: 21));
   });
 
   test("Play + Complete + sfx", () {
@@ -367,7 +373,13 @@ void main() {
       ]),
     );
     expect(store.state.maze.wordsToConfirm, [0, 1, 2, 3]);
+    expect(store.state.maze.hints.length, 2);
     expect(store.state.maze.paths.length, 1);
+    expect(store.state.game.verse.words[0].resolved, true);
+    expect(
+      [...store.state.game.verse.words[4].chars, ...store.state.game.verse.words[6].chars],
+      toPass<Char>((c) => c.resolved, 2),
+    );
     await tester.pump(Duration(seconds: 1));
     expect(store.state.maze.newlyRevealed, []);
 
@@ -378,6 +390,7 @@ void main() {
     expect(store.state.maze.revealed, toHave2(true, 6));
     expect(store.state.game.inventory.revealCharBonus1, 0);
     expect(store.state.maze.wordsToConfirm, [0, 1, 2, 3]);
+    expect(store.state.maze.hints.length, 3);
     expect(
       store.state.maze.wordsToReveal,
       anyOf([
@@ -385,9 +398,13 @@ void main() {
         [3]
       ]),
     );
+    expect(
+      [...store.state.game.verse.words[4].chars, ...store.state.game.verse.words[6].chars],
+      toPass<Char>((c) => c.resolved, 3),
+    );
     await tester.pump(Duration(seconds: 1));
 
-    /// Reveal except one char
+    /// Reveal except last char
     await tester.pump();
     await tester.tap(find.byKey(Key("revealCharBonusBtn_2")));
     await tester.pump();
@@ -397,6 +414,7 @@ void main() {
     expect(store.state.maze.wordsToConfirm, [0, 1, 2, 3]);
     expect(store.state.maze.wordsToReveal, []);
     expect(store.state.maze.newlyRevealed, isNotEmpty);
+    expect(store.state.maze.hints.length, 4);
     await tester.pump(Duration(seconds: 1));
     expect(store.state.maze.newlyRevealed, isEmpty);
 
@@ -414,6 +432,13 @@ void main() {
     expect(store.state.maze.revealed, toHave2(true, 7));
     expect(store.state.maze.confirmed.length, 5);
     expect(store.state.game.inventory.revealCharBonus10, 0);
+    expect(store.state.maze.hints.length, 4);
+    await tester.pump(Duration(seconds: 1));
+
+    /// Reveal word -> remove revealed from hint
+    store.dispatch(proposeMaze([Coordinate(2, 2), Coordinate(1, 2), Coordinate(0, 2)]));
+    expect(store.state.maze.hints.length, 2);
+    expect(store.state.maze.revealed, toHave2(true, 8));
     await tester.pump(Duration(seconds: 1));
   });
 }

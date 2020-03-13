@@ -28,6 +28,7 @@ bool useBonusInMaze(Bonus bonus, Store<AppState> store) {
       store.dispatch(updatedWordsToReveal());
       store.dispatch(updatePaths());
       store.dispatch(scheduleInvalidateNewlyRevealed());
+      store.dispatch(updateGameVerseRevealedState());
       return true;
     }
   }
@@ -38,11 +39,16 @@ bool _revealChars(RevealCharBonus bonus, int wordIndex, Random rand, Store<AppSt
   final toReveal = store.state.maze.wordsToReveal;
   final word = store.state.maze.words[wordIndex];
   final board = store.state.maze.board;
+  final hints = List<Coordinate>.from(store.state.maze.hints);
   final revealed = store.state.maze.revealed;
   if (toReveal.contains(wordIndex)) {
     final charIndexes = _getUnrevealedCharIndexes(word, wordIndex, board, revealed);
-    final nextRevealed = _revealRandomChars(bonus, wordIndex, charIndexes, revealed, board, rand);
-    store.dispatch(UpdateMazeState(store.state.maze.copyWith(revealed: nextRevealed)));
+    final nextRevealed =
+        _revealRandomChars(bonus, wordIndex, charIndexes, revealed, board, hints, rand);
+    store.dispatch(UpdateMazeState(store.state.maze.copyWith(
+      revealed: nextRevealed,
+      hints: hints,
+    )));
     return true;
   }
   return false;
@@ -105,6 +111,7 @@ List<List<bool>> _revealRandomChars(
   List<int> charIndexes,
   List<List<bool>> revealed,
   Board board,
+  List<Coordinate> hints,
   Random rand,
 ) {
   charIndexes = [...charIndexes];
@@ -113,6 +120,9 @@ List<List<bool>> _revealRandomChars(
     final charIndex = getRandomElement(charIndexes, rand);
     final point = board.coordinateOf(wordIndex, charIndex);
     revealed[point.y][point.x] = true;
+    if (!hints.contains(point)) {
+      hints.add(point);
+    }
     charIndexes.remove(charIndex);
   }
   return revealed;
@@ -124,7 +134,7 @@ ThunkAction<AppState> updatedWordsToReveal() {
     final newlyRevealed = state.newlyRevealed;
     final words = state.words;
     final wordsToReveal = List<int>.from(state.wordsToReveal);
-    final indexes = _getWordIndexesAt(newlyRevealed, state.board);
+    final indexes = getWordIndexesAt(newlyRevealed, state.board);
     for (final index in indexes) {
       if (_getUnrevealedCharIndexes(words[index], index, state.board, state.revealed).length < 2) {
         wordsToReveal.remove(index);
@@ -136,11 +146,11 @@ ThunkAction<AppState> updatedWordsToReveal() {
   };
 }
 
-List<int> _getWordIndexesAt(List<Coordinate> points, Board board) {
+List<int> getWordIndexesAt(List<Coordinate> points, Board board) {
   final List<int> wordIndexes = [];
   for (final point in points) {
     for (final cell in board.getAt(point.x, point.y).cells) {
-      if (cell.wordIndex >= 0 && !wordIndexes.contains(cell)) {
+      if (cell.wordIndex >= 0 && !wordIndexes.contains(cell.wordIndex)) {
         wordIndexes.add(cell.wordIndex);
       }
     }
@@ -168,5 +178,12 @@ ThunkAction<AppState> updateWordsToConfirm() {
     if (toConfirm.length != state.wordsToConfirm.length) {
       store.dispatch(UpdateMazeState(state.copyWith(wordsToConfirm: toConfirm)));
     }
+  };
+}
+
+ThunkAction<AppState> updateHints(List<Coordinate> points) {
+  return (store) {
+    final hints = store.state.maze.hints.where((p) => !points.contains(p)).toList();
+    store.dispatch(UpdateMazeState(store.state.maze.copyWith(hints: hints)));
   };
 }

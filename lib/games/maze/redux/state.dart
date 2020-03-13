@@ -16,6 +16,7 @@ class MazeState {
   final List<int> wordsToReveal;
   final List<int> wordsToConfirm;
   final List<Coordinate> confirmed;
+  final List<Coordinate> hints;
 
   MazeState({
     @required this.board,
@@ -28,6 +29,7 @@ class MazeState {
     this.wordsToReveal = const [],
     this.confirmed = const [],
     this.wordsToConfirm = const [],
+    this.hints = const [],
   });
 
   factory MazeState.emptyState() {
@@ -50,6 +52,7 @@ class MazeState {
     final List<int> wordsToFind,
     final List<int> wordsToConfirm,
     final List<Coordinate> confirmed,
+    final List<Coordinate> hints,
   }) {
     return MazeState(
       board: board ?? this.board,
@@ -62,6 +65,7 @@ class MazeState {
       wordsToReveal: wordsToFind ?? this.wordsToReveal,
       wordsToConfirm: wordsToConfirm ?? this.wordsToConfirm,
       confirmed: confirmed ?? this.confirmed,
+      hints: hints ?? this.hints,
     );
   }
 

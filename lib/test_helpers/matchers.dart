@@ -51,3 +51,14 @@ bool Function(List<List>) toHave2(value, number) {
     return false;
   };
 }
+
+bool Function(List<T>) toPass<T>(bool Function(T) testFun, number) {
+  return (tested) {
+    final count = tested.where(testFun).length;
+    if (count == number) {
+      return true;
+    }
+    print("Expected to have $number matches but found $count");
+    return false;
+  };
+}

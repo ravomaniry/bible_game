@@ -1,5 +1,6 @@
 import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/game/actions/actions.dart';
+import 'package:bible_game/app/inventory/actions/actions.dart';
 import 'package:bible_game/app/inventory/actions/bonus.dart';
 import 'package:bible_game/games/maze/actions/actions.dart';
 import 'package:bible_game/games/maze/logic/bonus.dart';
@@ -15,7 +16,7 @@ ThunkAction<AppState> proposeMaze(List<Coordinate> cellCoordinates) {
     var state = store.state.maze;
     final board = state.board;
     final words = state.words;
-    final oldRevealed = state.revealed;
+    final prevVerse = store.state.game.verse;
     final cells = cellCoordinates.map((c) => board.getAt(c.x, c.y)).toList();
     final revealedWord = getRevealedWord(cells, state.words);
     if (revealedWord != null) {
@@ -29,10 +30,13 @@ ThunkAction<AppState> proposeMaze(List<Coordinate> cellCoordinates) {
           newlyRevealed: cellCoordinates,
         )));
         store.dispatch(updatePaths());
-        store.dispatch(updateNewlyRevealed(oldRevealed));
+        store.dispatch(updateNewlyRevealed(state.revealed));
         store.dispatch(updatedWordsToReveal());
         store.dispatch(updateWordsToConfirm());
         store.dispatch(useBonus(revealedWord.bonus, false));
+        store.dispatch(updateGameVerseRevealedState());
+        store.dispatch(incrementMoney(prevVerse, store.state.game.verse));
+        store.dispatch(updateHints(cellCoordinates));
         store.state.sfx.playShortSuccess();
         store.dispatch(scheduleInvalidateNewlyRevealed());
       }

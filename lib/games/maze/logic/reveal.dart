@@ -1,5 +1,7 @@
 import 'package:bible_game/app/app_state.dart';
+import 'package:bible_game/app/game/actions/actions.dart';
 import 'package:bible_game/games/maze/actions/actions.dart';
+import 'package:bible_game/games/maze/logic/bonus.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/maze/models/maze_cell.dart';
 import 'package:bible_game/models/word.dart';
@@ -57,4 +59,38 @@ ThunkAction<AppState> updateNewlyRevealed(List<List<bool>> old) {
     }
     store.dispatch(UpdateMazeState(store.state.maze.copyWith(newlyRevealed: newlyRevealed)));
   };
+}
+
+ThunkAction<AppState> updateGameVerseRevealedState() {
+  return (store) {
+    final state = store.state.maze;
+    final verse = store.state.game.verse;
+    var nextVerse = verse.copyWith();
+    final wordIndexes = getWordIndexesAt(state.newlyRevealed, state.board);
+    for (final index in wordIndexes) {
+      var word = state.words[index];
+      for (var i = 0; i < word.length; i++) {
+        final point = state.board.coordinateOf(index, i);
+        if (state.revealed[point.y][point.x]) {
+          word = word.copyWithChar(i, word.chars[i].copyWith(resolved: true));
+        }
+      }
+      if (_wordIsRevealed(word)) {
+        word = word.copyWith(resolved: true);
+      }
+      if (word != state.words[index]) {
+        nextVerse = nextVerse.copyWithWord(word.index, word);
+      }
+    }
+    store.dispatch(UpdateGameVerse(nextVerse));
+  };
+}
+
+bool _wordIsRevealed(Word word) {
+  for (final char in word.chars) {
+    if (!char.resolved) {
+      return false;
+    }
+  }
+  return true;
 }
