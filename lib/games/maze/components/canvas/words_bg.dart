@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/games/maze/components/cell.dart';
@@ -26,7 +28,14 @@ class MazeWordsBackground extends StatelessWidget {
       return RepaintBoundary(
         child: CustomPaint(
           size: Size(computeBoardPxWidth(board), computeBoardPxHeight(board)),
-          painter: _Painter(board, revealed, theme, viewModel.state.confirmed),
+          painter: _Painter(
+            board: board,
+            revealed: revealed,
+            theme: theme,
+            hints: viewModel.state.hints,
+            confirmed: viewModel.state.confirmed,
+            backgrounds: viewModel.state.backgrounds,
+          ),
         ),
       );
     }
@@ -35,38 +44,50 @@ class MazeWordsBackground extends StatelessWidget {
 }
 
 class _Painter extends CustomPainter {
-  final Board _board;
-  final AppColorTheme _theme;
-  final List<List<bool>> _revealed;
-  final List<Coordinate> _confirmed;
+  final Board board;
+  final AppColorTheme theme;
+  final List<List<bool>> revealed;
+  final List<Coordinate> confirmed;
+  final List<Coordinate> hints;
+  final Map<String, ui.Image> backgrounds;
   Paint _revealedPaint;
   Paint _unrevealedPaint;
   Paint _confirmedPaint;
 
-  _Painter(this._board, this._revealed, this._theme, this._confirmed) {
-    _revealedPaint = _getPaint(_theme.neutral, 255);
-    _unrevealedPaint = _getPaint(_theme.neutral, 120);
-    _confirmedPaint = _getPaint(_theme.primary, 255);
+  _Painter({
+    @required this.board,
+    @required this.revealed,
+    @required this.theme,
+    @required this.confirmed,
+    @required this.hints,
+    @required this.backgrounds,
+  }) {
+    _revealedPaint = _getPaint(theme.neutral, 255);
+    _unrevealedPaint = _getPaint(theme.neutral, 120);
+    _confirmedPaint = _getPaint(theme.primary, 255);
   }
 
   @override
   void paint(Canvas canvas, Size size) {
-    for (var x = 0; x < _board.width; x++) {
-      for (var y = 0; y < _board.height; y++) {
-        final cell = _board.getAt(x, y);
+    for (var x = 0; x < board.width; x++) {
+      for (var y = 0; y < board.height; y++) {
+        final cell = board.getAt(x, y);
         if (cell.first.wordIndex >= 0) {
           _paintBackground(x, y, canvas);
         }
       }
     }
-    for (final point in _confirmed) {
+    for (final point in confirmed) {
       _paintConfirmed(point, canvas);
+    }
+    for (final hint in hints) {
+      _paintHint(hint, canvas);
     }
   }
 
   void _paintBackground(int x, int y, Canvas canvas) {
     final rRect = _getRect(x, y);
-    final paint = _revealed[y][x] ? _revealedPaint : _unrevealedPaint;
+    final paint = revealed[y][x] ? _revealedPaint : _unrevealedPaint;
     canvas.drawRRect(rRect, paint);
   }
 
@@ -75,9 +96,25 @@ class _Painter extends CustomPainter {
     canvas.drawRRect(rect, _confirmedPaint);
   }
 
+  void _paintHint(Coordinate point, Canvas canvas) {
+    if (backgrounds != null) {
+      final image = backgrounds["hint"];
+      if (image != null) {
+        final topLeft = Offset(point.x * cellSize, point.y * cellSize);
+        final bottomRight = topLeft + Offset(cellSize, cellSize);
+        paintImage(
+          canvas: canvas,
+          rect: Rect.fromPoints(topLeft, bottomRight),
+          image: image,
+          fit: BoxFit.fill,
+        );
+      }
+    }
+  }
+
   @override
   bool shouldRepaint(_Painter old) {
-    return _revealed != old._revealed;
+    return revealed != old.revealed;
   }
 }
 

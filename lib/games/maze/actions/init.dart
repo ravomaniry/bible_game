@@ -56,6 +56,7 @@ ThunkAction<AppState> _loadBackgrounds() {
         MapEntry("upLeft", "assets/images/maze/up_left.png"),
         MapEntry("upRight", "assets/images/maze/up_right.png"),
         MapEntry("upRight2", "assets/images/maze/up_right_2.png"),
+        MapEntry("hint", "assets/images/maze/hint.png"),
       ];
       for (final path in paths) {
         final bytes = await rootBundle.load(path.value);
