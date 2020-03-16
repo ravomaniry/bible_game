@@ -62,6 +62,8 @@ class MazePaths extends StatelessWidget {
             backgrounds: backgrounds,
             confirmed: viewModel.confirmed,
             hints: viewModel.hints,
+            start: board.start,
+            end: board.end,
           ),
         ),
       );
@@ -70,6 +72,8 @@ class MazePaths extends StatelessWidget {
 }
 
 class _Painter extends CustomPainter {
+  final Coordinate start;
+  final Coordinate end;
   final List<List<Coordinate>> paths;
   final AppColorTheme theme;
   final List<Coordinate> confirmed;
@@ -77,6 +81,8 @@ class _Painter extends CustomPainter {
   final Map<String, ui.Image> backgrounds;
 
   _Painter({
+    @required this.start,
+    @required this.end,
     @required this.paths,
     @required this.confirmed,
     @required this.theme,
@@ -86,10 +92,15 @@ class _Painter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    _paintPaths(canvas);
+    _paintConfirmed(canvas);
+    _paintStartEnd(canvas);
+    _paintHints(canvas);
+  }
+
+  void _paintPaths(Canvas canvas) {
     final linePaint = _getLinePaint(theme);
     final checkpointPaint = _getCheckpointPaint(theme.primary);
-    final confirmedImage = backgrounds["confirmed"];
-
     for (var pathIndex = 0; pathIndex < paths.length; pathIndex++) {
       final path = paths[pathIndex];
       for (var i = 0, max = path.length; i < max; i++) {
@@ -99,12 +110,35 @@ class _Painter extends CustomPainter {
         }
       }
     }
+  }
+
+  void _paintConfirmed(Canvas canvas) {
+    final confirmedImage = backgrounds["confirmed"];
     if (confirmedImage != null) {
       for (final point in confirmed) {
         if (!hints.contains(point)) {
           painImageInRect(point, confirmedImage, canvas);
         }
       }
+    }
+  }
+
+  void _paintHints(Canvas canvas) {
+    if (backgrounds != null) {
+      final image = backgrounds["hint"];
+      if (image != null) {
+        for (final point in hints) {
+          painImageInRect(point, image, canvas);
+        }
+      }
+    }
+  }
+
+  void _paintStartEnd(Canvas canvas) {
+    final startImage = backgrounds["start"];
+    if (startImage != null) {
+      painImageInRect(start, startImage, canvas);
+      painImageInRect(end, startImage, canvas);
     }
   }
 
@@ -140,5 +174,16 @@ RRect _getCheckpointRect(Coordinate point) {
     topLeft.dx + cellSize - _padding,
     topLeft.dy + cellSize - _padding,
     _radius,
+  );
+}
+
+void _painImageInRect(Coordinate point, ui.Image image, canvas) {
+  final topLeft = Offset(point.x * cellSize, point.y * cellSize);
+  final bottomRight = topLeft + Offset(cellSize, cellSize);
+  paintImage(
+    canvas: canvas,
+    rect: Rect.fromPoints(topLeft, bottomRight),
+    image: image,
+    fit: BoxFit.fill,
   );
 }

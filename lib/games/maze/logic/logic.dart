@@ -24,6 +24,7 @@ ThunkAction<AppState> proposeMaze(List<Coordinate> cellCoordinates) {
       if (_isCompleted(board, words, revealed)) {
         store.dispatch(UpdateGameResolvedState(true));
         store.state.sfx.playLongSuccess();
+        store.dispatch(InvalidateCombo());
       } else {
         store.dispatch(UpdateMazeState(state.copyWith(
           revealed: revealed,

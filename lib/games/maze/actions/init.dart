@@ -37,7 +37,6 @@ ThunkAction<AppState> _initState() {
         revealed: initialRevealedState(board),
         wordsToFind: _initialWordsToFind(words),
         wordsToConfirm: _initializeWordsToConfirm(words),
-        confirmed: [board.start, board.end],
       )));
     }
   };
@@ -60,6 +59,7 @@ ThunkAction<AppState> _loadBackgrounds() {
         MapEntry("upRight2", "assets/images/maze/up_right_2.png"),
         MapEntry("hint", "assets/images/maze/hint.png"),
         MapEntry("confirmed", "assets/images/maze/confirmed.png"),
+        MapEntry("start", "assets/images/maze/start.png"),
       ];
       for (final path in paths) {
         final bytes = await rootBundle.load(path.value);

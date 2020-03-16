@@ -83,7 +83,7 @@ List<int> _getUnrevealedCharIndexes(
   final charIndexes = List<int>();
   for (var i = 0, max = word.length; i < max; i++) {
     final point = board.coordinateOf(wordIndex, i);
-    if (!revealed[point.y][point.x]) {
+    if (point != board.start && point != board.end && !revealed[point.y][point.x]) {
       charIndexes.add(i);
     }
   }
@@ -98,7 +98,8 @@ List<int> _getUnconfirmedCharIndexes(
 ) {
   final charIndexes = List<int>();
   for (var i = 0, max = word.length; i < max; i++) {
-    if (!confirmed.contains(board.coordinateOf(wordIndex, i))) {
+    final point = board.coordinateOf(wordIndex, i);
+    if (point != board.start && point != board.end && !confirmed.contains(point)) {
       charIndexes.add(i);
     }
   }

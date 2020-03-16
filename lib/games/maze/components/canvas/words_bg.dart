@@ -50,6 +50,7 @@ class _Painter extends CustomPainter {
   final Map<String, ui.Image> backgrounds;
   Paint _revealedPaint;
   Paint _unrevealedPaint;
+  Paint _startPaint;
 
   _Painter({
     @required this.board,
@@ -60,36 +61,31 @@ class _Painter extends CustomPainter {
   }) {
     _revealedPaint = getFilledRectPaint(theme.neutral, 255);
     _unrevealedPaint = getFilledRectPaint(theme.neutral, 120);
+    _startPaint = getFilledRectPaint(theme.primary, 255);
   }
 
   @override
   void paint(Canvas canvas, Size size) {
+    _paintBackgrounds(canvas);
+    _paintStartEnd(canvas);
+  }
+
+  void _paintBackgrounds(Canvas canvas) {
     for (var x = 0; x < board.width; x++) {
       for (var y = 0; y < board.height; y++) {
         final cell = board.getAt(x, y);
         if (cell.first.wordIndex >= 0) {
-          _paintBackground(x, y, canvas);
+          final rRect = _getRect(x, y);
+          final paint = revealed[y][x] ? _revealedPaint : _unrevealedPaint;
+          canvas.drawRRect(rRect, paint);
         }
       }
     }
-    for (final hint in hints) {
-      _paintHint(hint, canvas);
-    }
   }
 
-  void _paintBackground(int x, int y, Canvas canvas) {
-    final rRect = _getRect(x, y);
-    final paint = revealed[y][x] ? _revealedPaint : _unrevealedPaint;
-    canvas.drawRRect(rRect, paint);
-  }
-
-  void _paintHint(Coordinate point, Canvas canvas) {
-    if (backgrounds != null) {
-      final image = backgrounds["hint"];
-      if (image != null) {
-        painImageInRect(point, image, canvas);
-      }
-    }
+  void _paintStartEnd(Canvas canvas) {
+    canvas.drawRRect(_getRect(board.start.x, board.start.y), _startPaint);
+    canvas.drawRRect(_getRect(board.end.x, board.end.y), _startPaint);
   }
 
   @override
