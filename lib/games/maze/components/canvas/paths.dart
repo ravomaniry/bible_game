@@ -1,4 +1,7 @@
+import 'dart:ui' as ui;
+
 import 'package:bible_game/app/theme/themes.dart';
+import 'package:bible_game/games/maze/components/canvas/words_bg.dart';
 import 'package:bible_game/games/maze/components/cell.dart';
 import 'package:bible_game/games/maze/components/maze_board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
@@ -45,15 +48,21 @@ class MazePaths extends StatelessWidget {
 
   Widget _builder(BuildContext context, PathsViewModel viewModel) {
     final board = viewModel.board;
-    final paths = viewModel.paths;
-    final theme = viewModel.theme;
-    if (board == null) {
+    final backgrounds = viewModel.backgrounds;
+
+    if (board == null || backgrounds == null) {
       return SizedBox.shrink();
     } else {
       return RepaintBoundary(
         child: CustomPaint(
           size: Size(computeBoardPxWidth(board), computeBoardPxHeight(board)),
-          painter: _Painter(paths, theme, board.start, board.end),
+          painter: _Painter(
+            paths: viewModel.paths,
+            theme: viewModel.theme,
+            backgrounds: backgrounds,
+            confirmed: viewModel.confirmed,
+            hints: viewModel.hints,
+          ),
         ),
       );
     }
@@ -61,29 +70,42 @@ class MazePaths extends StatelessWidget {
 }
 
 class _Painter extends CustomPainter {
-  final List<List<Coordinate>> _paths;
-  final AppColorTheme _theme;
-  final Coordinate _start;
-  final Coordinate _end;
+  final List<List<Coordinate>> paths;
+  final AppColorTheme theme;
+  final List<Coordinate> confirmed;
+  final List<Coordinate> hints;
+  final Map<String, ui.Image> backgrounds;
 
-  _Painter(this._paths, this._theme, this._start, this._end);
+  _Painter({
+    @required this.paths,
+    @required this.confirmed,
+    @required this.theme,
+    @required this.backgrounds,
+    @required this.hints,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final linePaint = _getLinePaint(_theme);
-    final rectPaint = _getCheckpointPaint(_theme.primary);
+    final linePaint = _getLinePaint(theme);
+    final checkpointPaint = _getCheckpointPaint(theme.primary);
+    final confirmedImage = backgrounds["confirmed"];
 
-    for (var pathIndex = 0; pathIndex < _paths.length; pathIndex++) {
-      final path = _paths[pathIndex];
+    for (var pathIndex = 0; pathIndex < paths.length; pathIndex++) {
+      final path = paths[pathIndex];
       for (var i = 0, max = path.length; i < max; i++) {
-        _drawCheckpoint(path[i], canvas, rectPaint);
+        _drawCheckpoint(path[i], canvas, checkpointPaint);
         if (i != max - 1) {
           _drawLine(path[i], path[i + 1], canvas, linePaint);
         }
       }
     }
-    _drawCheckpoint(_start, canvas, _getCheckpointPaint(_theme.accentLeft));
-    _drawCheckpoint(_end, canvas, _getCheckpointPaint(_theme.accentLeft));
+    if (confirmedImage != null) {
+      for (final point in confirmed) {
+        if (!hints.contains(point)) {
+          painImageInRect(point, confirmedImage, canvas);
+        }
+      }
+    }
   }
 
   void _drawCheckpoint(Coordinate coordinate, Canvas canvas, Paint paint) {
@@ -96,7 +118,7 @@ class _Painter extends CustomPainter {
 
   @override
   bool shouldRepaint(_Painter old) {
-    return old._paths != _paths;
+    return old.paths != paths;
   }
 }
 

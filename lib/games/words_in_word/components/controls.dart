@@ -31,10 +31,7 @@ class WordsInWordControls extends StatelessWidget {
             animation: _viewModel.wordsInWord.propositionAnimation,
             stopAnimationHandler: _viewModel.stopPropositionAnimationHandler,
           ),
-          ComboDisplay(
-            combo: _viewModel.inventory.combo,
-            theme: _viewModel.theme,
-          ),
+          ComboDisplay(),
           RepaintBoundary(
             child: _SlotsDisplay(
               slots: state.slots,

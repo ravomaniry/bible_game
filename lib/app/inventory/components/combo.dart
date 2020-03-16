@@ -1,19 +1,19 @@
 import 'package:animator/animator.dart';
-import 'package:bible_game/app/theme/themes.dart';
+import 'package:bible_game/app/inventory/combo_viem_model.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 
 class ComboDisplay extends StatelessWidget {
-  final double combo;
-  final AppColorTheme theme;
-
-  ComboDisplay({
-    @required this.combo,
-    @required this.theme,
-  });
-
   @override
   Widget build(BuildContext context) {
-    if (combo == 1) {
+    return StoreConnector(
+      converter: ComboViewModel.converter,
+      builder: _builder,
+    );
+  }
+
+  Widget _builder(BuildContext context, ComboViewModel viewModel) {
+    if (viewModel.combo == 1) {
       return SizedBox(height: 4);
     }
     return Animator(
@@ -21,7 +21,7 @@ class ComboDisplay extends StatelessWidget {
       builder: (Animation anim) => Container(
         width: MediaQuery.of(context).size.width * (1 - anim.value),
         height: 4,
-        decoration: BoxDecoration(color: theme.accentRight),
+        decoration: BoxDecoration(color: viewModel.theme.accentRight),
       ),
     );
   }

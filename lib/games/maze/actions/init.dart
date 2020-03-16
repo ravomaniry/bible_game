@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:bible_game/app/app_state.dart';
+import 'package:bible_game/app/inventory/actions/actions.dart';
 import 'package:bible_game/games/maze/actions/actions.dart';
 import 'package:bible_game/games/maze/create/board_utils.dart';
 import 'package:bible_game/games/maze/create/create_board.dart';
@@ -17,6 +18,7 @@ ThunkAction<AppState> initMaze() {
     store.dispatch(addBonusesToVerse());
     store.dispatch(_initState());
     store.dispatch(_loadBackgrounds());
+    store.dispatch(InvalidateCombo());
   };
 }
 
@@ -57,6 +59,7 @@ ThunkAction<AppState> _loadBackgrounds() {
         MapEntry("upRight", "assets/images/maze/up_right.png"),
         MapEntry("upRight2", "assets/images/maze/up_right_2.png"),
         MapEntry("hint", "assets/images/maze/hint.png"),
+        MapEntry("confirmed", "assets/images/maze/confirmed.png"),
       ];
       for (final path in paths) {
         final bytes = await rootBundle.load(path.value);

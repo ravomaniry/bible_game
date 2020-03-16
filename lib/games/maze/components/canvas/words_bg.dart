@@ -33,7 +33,6 @@ class MazeWordsBackground extends StatelessWidget {
             revealed: revealed,
             theme: theme,
             hints: viewModel.state.hints,
-            confirmed: viewModel.state.confirmed,
             backgrounds: viewModel.state.backgrounds,
           ),
         ),
@@ -47,24 +46,20 @@ class _Painter extends CustomPainter {
   final Board board;
   final AppColorTheme theme;
   final List<List<bool>> revealed;
-  final List<Coordinate> confirmed;
   final List<Coordinate> hints;
   final Map<String, ui.Image> backgrounds;
   Paint _revealedPaint;
   Paint _unrevealedPaint;
-  Paint _confirmedPaint;
 
   _Painter({
     @required this.board,
     @required this.revealed,
     @required this.theme,
-    @required this.confirmed,
     @required this.hints,
     @required this.backgrounds,
   }) {
-    _revealedPaint = _getPaint(theme.neutral, 255);
-    _unrevealedPaint = _getPaint(theme.neutral, 120);
-    _confirmedPaint = _getPaint(theme.primary, 255);
+    _revealedPaint = getFilledRectPaint(theme.neutral, 255);
+    _unrevealedPaint = getFilledRectPaint(theme.neutral, 120);
   }
 
   @override
@@ -77,9 +72,6 @@ class _Painter extends CustomPainter {
         }
       }
     }
-    for (final point in confirmed) {
-      _paintConfirmed(point, canvas);
-    }
     for (final hint in hints) {
       _paintHint(hint, canvas);
     }
@@ -91,23 +83,11 @@ class _Painter extends CustomPainter {
     canvas.drawRRect(rRect, paint);
   }
 
-  void _paintConfirmed(Coordinate point, Canvas canvas) {
-    final rect = _getRect(point.x, point.y);
-    canvas.drawRRect(rect, _confirmedPaint);
-  }
-
   void _paintHint(Coordinate point, Canvas canvas) {
     if (backgrounds != null) {
       final image = backgrounds["hint"];
       if (image != null) {
-        final topLeft = Offset(point.x * cellSize, point.y * cellSize);
-        final bottomRight = topLeft + Offset(cellSize, cellSize);
-        paintImage(
-          canvas: canvas,
-          rect: Rect.fromPoints(topLeft, bottomRight),
-          image: image,
-          fit: BoxFit.fill,
-        );
+        painImageInRect(point, image, canvas);
       }
     }
   }
@@ -132,7 +112,7 @@ RRect _getRect(int x, int y) {
 
 final _paintsCache = Map<String, Paint>();
 
-Paint _getPaint(Color color, int alpha) {
+Paint getFilledRectPaint(Color color, int alpha) {
   final key = "$color-$alpha";
   var paint = _paintsCache[key];
   if (paint == null) {
@@ -142,4 +122,15 @@ Paint _getPaint(Color color, int alpha) {
     _paintsCache[key] = paint;
   }
   return paint;
+}
+
+void painImageInRect(Coordinate point, ui.Image image, canvas) {
+  final topLeft = Offset(point.x * cellSize, point.y * cellSize);
+  final bottomRight = topLeft + Offset(cellSize, cellSize);
+  paintImage(
+    canvas: canvas,
+    rect: Rect.fromPoints(topLeft, bottomRight),
+    image: image,
+    fit: BoxFit.fill,
+  );
 }
