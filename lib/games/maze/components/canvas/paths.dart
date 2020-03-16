@@ -176,14 +176,3 @@ RRect _getCheckpointRect(Coordinate point) {
     _radius,
   );
 }
-
-void _painImageInRect(Coordinate point, ui.Image image, canvas) {
-  final topLeft = Offset(point.x * cellSize, point.y * cellSize);
-  final bottomRight = topLeft + Offset(cellSize, cellSize);
-  paintImage(
-    canvas: canvas,
-    rect: Rect.fromPoints(topLeft, bottomRight),
-    image: image,
-    fit: BoxFit.fill,
-  );
-}
