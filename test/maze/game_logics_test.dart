@@ -324,9 +324,9 @@ void main() {
     //   ⁰ ¹ ² ³
     // ⁰ A B C .
     // ¹ . . D .
-    // ² G F E .
-    // ³ H I J .
-    final verse = BibleVerse.from(text: "Abc d efg hij");
+    // ² G F E L
+    // ³ H I J K
+    final verse = BibleVerse.from(text: "Abc d efg hij kl");
     verse.words[0] = verse.words[0].copyWith(bonus: RevealCharBonus5());
     final words = getWordsInScopeForMaze(verse);
 
@@ -335,6 +335,7 @@ void main() {
     persistMove(Move(Coordinate(2, 1), Coordinate.right, 1, 1), board);
     persistMove(Move(Coordinate(2, 2), Coordinate.left, 2, 3), board);
     persistMove(Move(Coordinate(0, 3), Coordinate.right, 3, 3), board);
+    persistMove(Move(Coordinate(3, 3), Coordinate.up, 4, 2), board);
     board.updateStartEnd(words);
 
     final store = newMockedStore();
@@ -346,7 +347,7 @@ void main() {
       revealed: initialRevealedState(board),
       wordsToReveal: [0, 2, 3],
       wordsToConfirm: [0, 1, 2, 3],
-      confirmed: [Coordinate(0, 0), Coordinate(0, 2)],
+      confirmed: [],
     );
     await tester.pumpWidget(BibleGame(store));
     await tester.pump(Duration(seconds: 1));
@@ -364,7 +365,7 @@ void main() {
     store.dispatch(proposeMaze([Coordinate(0, 0), Coordinate(1, 0), Coordinate(2, 0)]));
     expect(store.state.maze.revealed, toHave2(true, 5));
     expect(store.state.maze.newlyRevealed.length, 5);
-    expect(store.state.maze.confirmed.length, 3);
+    expect(store.state.maze.confirmed.length, 1);
     expect(
       store.state.maze.wordsToReveal,
       anyOf([
@@ -409,7 +410,7 @@ void main() {
     await tester.tap(find.byKey(Key("revealCharBonusBtn_2")));
     await tester.pump();
     expect(store.state.maze.revealed, toHave2(true, 7));
-    expect(store.state.maze.confirmed.length, 3);
+    expect(store.state.maze.confirmed.length, 1);
     expect(store.state.game.inventory.revealCharBonus2, 1);
     expect(store.state.maze.wordsToConfirm, [0, 1, 2, 3]);
     expect(store.state.maze.wordsToReveal, []);
@@ -430,7 +431,7 @@ void main() {
     await tester.tap(find.byKey(Key("revealCharBonusBtn_10")));
     await tester.pump();
     expect(store.state.maze.revealed, toHave2(true, 7));
-    expect(store.state.maze.confirmed.length, 5);
+    expect(store.state.maze.confirmed.length, 3);
     expect(store.state.game.inventory.revealCharBonus10, 0);
     expect(store.state.maze.hints.length, 4);
     await tester.pump(Duration(seconds: 1));
