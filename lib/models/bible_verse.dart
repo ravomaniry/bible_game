@@ -72,7 +72,7 @@ class BibleVerse with EquatableMixin {
   }
 }
 
-final separatorRegex = RegExp("[^a-zàôò]", caseSensitive: false);
+final separatorRegex = RegExp("[^a-zàäèìïòô]", caseSensitive: false);
 
 List<Word> _parseText(String text) {
   var index = 0;
