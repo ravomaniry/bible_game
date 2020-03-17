@@ -1,6 +1,7 @@
 import 'package:bible_game/app/game/components/in_game_header.dart';
 import 'package:bible_game/app/inventory/components/shop.dart';
 import 'package:bible_game/app/inventory/view_model.dart';
+import 'package:bible_game/app/texts.dart';
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,7 @@ class Inventory extends StatelessWidget {
         theme: viewModel.theme,
         header: InGameHeader(),
         children: [
-          _Header(viewModel.theme),
+          _Header(viewModel.theme, viewModel.texts),
           Shop(
             state: viewModel.state,
             theme: viewModel.theme,
@@ -72,13 +73,16 @@ class _InventoryContainer extends StatelessWidget {
                 right: 20,
               ),
               padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(color: theme.neutral, borderRadius: BorderRadius.circular(10), boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withAlpha(160),
-                  blurRadius: 3,
-                  offset: Offset(1, 1),
-                )
-              ]),
+              decoration: BoxDecoration(
+                  color: theme.neutral,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withAlpha(160),
+                      blurRadius: 3,
+                      offset: Offset(1, 1),
+                    )
+                  ]),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: children,
@@ -93,15 +97,16 @@ class _InventoryContainer extends StatelessWidget {
 
 class _Header extends StatelessWidget {
   final AppColorTheme _theme;
+  final AppTexts _texts;
 
-  _Header(this._theme);
+  _Header(this._theme, this._texts);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(bottom: 20),
       child: Text(
-        "Bonus",
+        _texts.bonus,
         style: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.bold,

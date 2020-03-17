@@ -1,6 +1,7 @@
-import 'package:bible_game/db/model.dart';
 import 'package:bible_game/app/game_editor/view_model.dart';
+import 'package:bible_game/app/texts.dart';
 import 'package:bible_game/app/theme/themes.dart';
+import 'package:bible_game/db/model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -15,9 +16,10 @@ class EditorForm extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         VersePickerSection(
-          key: Key("startSection"),
-          label: "Start",
           mode: "start",
+          key: Key("startSection"),
+          texts: _viewModel.texts,
+          label: _viewModel.texts.start,
           theme: _viewModel.theme,
           books: _viewModel.books,
           book: _viewModel.state.startBook,
@@ -30,9 +32,10 @@ class EditorForm extends StatelessWidget {
           verseChangeHandler: _viewModel.startVerseChangeHandler,
         ),
         VersePickerSection(
-          label: "End",
           mode: "end",
           key: Key("endSection"),
+          texts: _viewModel.texts,
+          label: _viewModel.texts.end,
           theme: _viewModel.theme,
           books: _endBooks,
           book: _viewModel.state.endBook,
@@ -55,7 +58,8 @@ class EditorForm extends StatelessWidget {
   }
 
   int _getMaxVerse(int bookId, int chapter) {
-    final numMatch = _viewModel.state.versesNumRefs.where((v) => v.isSameRef(bookId, chapter)).toList();
+    final numMatch =
+        _viewModel.state.versesNumRefs.where((v) => v.isSameRef(bookId, chapter)).toList();
     if (numMatch.length > 0) {
       return numMatch[0].versesNum;
     }
@@ -97,9 +101,11 @@ class VersePickerSection extends StatelessWidget {
   final int maxVerse;
   final Function(int) verseChangeHandler;
   final AppColorTheme theme;
+  final AppTexts texts;
   final Key key;
 
   VersePickerSection({
+    @required this.texts,
     @required this.label,
     @required this.mode,
     @required this.books,
@@ -233,7 +239,7 @@ class _SectionContainer extends StatelessWidget {
         borderRadius: BorderRadius.circular(5),
         boxShadow: [
           BoxShadow(
-            color: Colors.green,
+            color: Colors.black,
             blurRadius: 2,
           )
         ],

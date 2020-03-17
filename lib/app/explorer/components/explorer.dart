@@ -1,9 +1,9 @@
+import 'package:bible_game/app/app_state.dart';
+import 'package:bible_game/app/components/splash_screen.dart';
+import 'package:bible_game/app/explorer/view_model.dart';
 import 'package:bible_game/app/game_editor/components/editor.dart';
 import 'package:bible_game/app/game_editor/components/form.dart';
-import 'package:bible_game/app/components/splash_screen.dart';
 import 'package:bible_game/db/model.dart';
-import 'package:bible_game/app/app_state.dart';
-import 'package:bible_game/app/explorer/view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -24,7 +24,8 @@ class Explorer extends StatelessWidget {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text("Explorer"),
+        backgroundColor: viewModel.theme.primary,
+        title: Text(viewModel.texts.explorer),
       ),
       body: _body(viewModel),
     );
@@ -50,10 +51,11 @@ class _Form extends StatelessWidget {
       key: Key("explorerForm"),
       children: <Widget>[
         VersePickerSection(
-          theme: _viewModel.theme,
           label: "",
-          key: Key("explorerVersePicker"),
           mode: "explorer",
+          theme: _viewModel.theme,
+          texts: _viewModel.texts,
+          key: Key("explorerVersePicker"),
           books: _viewModel.books,
           book: _viewModel.state.activeBook,
           bookChangeHandler: _viewModel.bookChangeHandler,
@@ -80,7 +82,9 @@ class _Form extends StatelessWidget {
 
   int get _maxVerse {
     final state = _viewModel.state;
-    final match = _viewModel.versesNumRef.where((n) => n.isSameRef(state.activeBook, state.activeChapter)).toList();
+    final match = _viewModel.versesNumRef
+        .where((n) => n.isSameRef(state.activeBook, state.activeChapter))
+        .toList();
     return match.isEmpty ? 1 : match.first.versesNum;
   }
 }
@@ -92,10 +96,15 @@ class _VerseDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      key: Key("explorerVersesDisplay"),
-      children: _viewModel.state.verses.map(_itemBuilder).toList(),
-    );
+    final verses = _viewModel.state.verses;
+    if (verses == null) {
+      return SizedBox.shrink();
+    } else {
+      return ListView(
+        key: Key("explorerVersesDisplay"),
+        children: [for (final verse in verses) _itemBuilder(verse)],
+      );
+    }
   }
 
   Widget _itemBuilder(VerseModel verse) {
