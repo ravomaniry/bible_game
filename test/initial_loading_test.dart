@@ -1,3 +1,4 @@
+import 'package:bible_game/app/texts.dart';
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/app/app_state.dart';
@@ -26,6 +27,7 @@ void main() {
       initialState: AppState(
         dba: dba,
         sfx: SfxMock(),
+        texts: AppTexts(),
         editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState(),
@@ -58,6 +60,7 @@ void main() {
       initialState: AppState(
         dba: dba,
         sfx: SfxMock(),
+        texts: AppTexts(),
         editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState(),
@@ -91,6 +94,7 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         sfx: SfxMock(),
+        texts: AppTexts(),
         editor: EditorState(),
         theme: AppColorTheme(),
         dba: DbAdapterMock.withDefaultValues(),

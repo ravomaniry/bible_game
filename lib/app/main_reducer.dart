@@ -7,6 +7,7 @@ import 'package:bible_game/app/explorer/reducer.dart';
 import 'package:bible_game/app/game/reducer/reducer.dart';
 import 'package:bible_game/app/game_editor/reducer/reducer.dart';
 import 'package:bible_game/app/router/reducer.dart';
+import 'package:bible_game/app/texts.dart';
 import 'package:bible_game/app/theme/reducer.dart';
 import 'package:bible_game/games/maze/redux/reducer.dart';
 import 'package:bible_game/games/words_in_word/reducer/reducer.dart';
@@ -15,6 +16,7 @@ AppState mainReducer(AppState state, action) {
   return AppState(
     dba: state.dba,
     sfx: state.sfx,
+    texts: AppTexts(),
     editor: editorReducer(state.editor, action),
     theme: themeReducer(state.theme, action),
     assetBundle: state.assetBundle,

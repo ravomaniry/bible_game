@@ -9,6 +9,7 @@ import 'package:bible_game/app/inventory/actions/actions.dart';
 import 'package:bible_game/app/main_reducer.dart';
 import 'package:bible_game/app/router/actions.dart';
 import 'package:bible_game/app/router/routes.dart';
+import 'package:bible_game/app/texts.dart';
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/games/words_in_word/actions/action_creators.dart';
@@ -45,6 +46,7 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         sfx: SfxMock(),
+        texts: AppTexts(),
         editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState(),
@@ -233,6 +235,7 @@ void main() {
     /// Only high level test of loading next verse, inventory dialog ...
     final state = AppState(
       sfx: SfxMock(),
+      texts: AppTexts(),
       editor: EditorState(),
       theme: AppColorTheme(),
       game: GameState.emptyState(),

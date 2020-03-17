@@ -1,13 +1,14 @@
 import 'package:back_button_interceptor/back_button_interceptor.dart';
-import 'package:bible_game/main.dart';
 import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/config/state.dart';
-import 'package:bible_game/app/game_editor/reducer/state.dart';
 import 'package:bible_game/app/explorer/state.dart';
 import 'package:bible_game/app/game/actions/actions.dart';
 import 'package:bible_game/app/game/reducer/state.dart';
+import 'package:bible_game/app/game_editor/reducer/state.dart';
 import 'package:bible_game/app/main_reducer.dart';
+import 'package:bible_game/app/texts.dart';
 import 'package:bible_game/app/theme/themes.dart';
+import 'package:bible_game/main.dart';
 import 'package:bible_game/test_helpers/asset_bundle.dart';
 import 'package:bible_game/test_helpers/db_adapter_mock.dart';
 import 'package:bible_game/test_helpers/sfx_mock.dart';
@@ -22,6 +23,7 @@ void main() {
     final store = Store<AppState>(
       mainReducer,
       initialState: AppState(
+        texts: AppTexts(),
         sfx: SfxMock(),
         editor: EditorState(),
         theme: AppColorTheme(),

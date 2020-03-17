@@ -5,6 +5,7 @@ import 'package:bible_game/app/game_editor/reducer/state.dart';
 import 'package:bible_game/app/inventory/actions/bonus.dart';
 import 'package:bible_game/app/main_reducer.dart';
 import 'package:bible_game/app/router/routes.dart';
+import 'package:bible_game/app/texts.dart';
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/games/words_in_word/actions/bonus.dart';
 import 'package:bible_game/games/words_in_word/actions/logics.dart';
@@ -106,6 +107,7 @@ void main() {
         middleware: [thunkMiddleware],
         initialState: AppState(
           sfx: SfxMock(),
+          texts: AppTexts(),
           editor: EditorState(),
           theme: AppColorTheme(),
           game: GameState.emptyState().copyWith(
@@ -150,6 +152,7 @@ void main() {
       initialState: AppState(
         assetBundle: null,
         sfx: SfxMock(),
+        texts: AppTexts(),
         editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState().copyWith(

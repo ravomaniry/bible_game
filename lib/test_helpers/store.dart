@@ -6,6 +6,7 @@ import 'package:bible_game/app/game/reducer/state.dart';
 import 'package:bible_game/app/game_editor/reducer/state.dart';
 import 'package:bible_game/app/main_reducer.dart';
 import 'package:bible_game/app/router/routes.dart';
+import 'package:bible_game/app/texts.dart';
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/games/maze/actions/init.dart';
 import 'package:bible_game/games/maze/redux/state.dart';
@@ -34,6 +35,7 @@ Store<AppState> newMockedStore() {
     error: null,
     quitSingleGameDialog: false,
     maze: MazeState.emptyState(),
+    texts: AppTexts(),
   );
   final store = Store<AppState>(
     mainReducer,

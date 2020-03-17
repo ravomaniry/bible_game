@@ -5,6 +5,7 @@ import 'package:bible_game/app/game/reducer/state.dart';
 import 'package:bible_game/app/game_editor/reducer/state.dart';
 import 'package:bible_game/app/inventory/reducer/state.dart';
 import 'package:bible_game/app/router/routes.dart';
+import 'package:bible_game/app/texts.dart';
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/db/db_adapter.dart';
 import 'package:bible_game/db/model.dart';
@@ -29,6 +30,7 @@ class AppState {
   final EditorState editor;
   final ConfigState config;
   final AppColorTheme theme;
+  final AppTexts texts;
 
   AppState({
     this.route = Routes.home,
@@ -45,6 +47,7 @@ class AppState {
     @required this.config,
     @required this.theme,
     @required this.editor,
+    @required this.texts,
   });
 
   factory AppState.initialState(AssetBundle assetBundle) {
@@ -70,6 +73,7 @@ class AppState {
         activeId: null,
         inventory: InventoryState.emptyState(),
       ),
+      texts: AppTexts(),
     );
   }
 }

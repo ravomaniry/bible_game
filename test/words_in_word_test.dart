@@ -12,6 +12,7 @@ import 'package:bible_game/app/inventory/reducer/state.dart';
 import 'package:bible_game/app/main_reducer.dart';
 import 'package:bible_game/app/router/actions.dart';
 import 'package:bible_game/app/router/routes.dart';
+import 'package:bible_game/app/texts.dart';
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/games/words_in_word/actions/action_creators.dart';
 import 'package:bible_game/games/words_in_word/actions/cells_action.dart';
@@ -39,6 +40,7 @@ void main() {
       middleware: [thunkMiddleware],
       initialState: AppState(
         sfx: SfxMock(),
+        texts: AppTexts(),
         editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState(),
@@ -116,6 +118,7 @@ void main() {
     final initialState = AppState(
       editor: EditorState(),
       sfx: SfxMock(),
+      texts: AppTexts(),
       game: GameState.emptyState(),
       theme: AppColorTheme(),
       route: Routes.wordsInWord,
@@ -204,6 +207,7 @@ void main() {
         BibleVerse.from(book: "", bookId: 1, chapter: 1, verse: 1, text: "ABCDEFGHIJKLMNOPQRST");
     final state = AppState(
       sfx: SfxMock(),
+      texts: AppTexts(),
       editor: EditorState(),
       theme: AppColorTheme(),
       game: GameState.emptyState().copyWith(
@@ -313,6 +317,7 @@ void main() {
       initialState: AppState(
         assetBundle: null,
         sfx: SfxMock(),
+        texts: AppTexts(),
         editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState().copyWith(
@@ -370,6 +375,7 @@ void main() {
       initialState: AppState(
         assetBundle: null,
         sfx: SfxMock(),
+        texts: AppTexts(),
         editor: EditorState(),
         theme: AppColorTheme(),
         game: GameState.emptyState().copyWith(
