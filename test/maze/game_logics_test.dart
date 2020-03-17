@@ -320,7 +320,7 @@ void main() {
     ]);
   });
 
-  testWidgets("Bonus", (tester) async {
+  testWidgets("Bonus - revealed - hints", (tester) async {
     //   ⁰ ¹ ² ³
     // ⁰ A B C .
     // ¹ . . D .
@@ -363,7 +363,7 @@ void main() {
 
     /// propose word with bonus inside
     store.dispatch(proposeMaze([Coordinate(0, 0), Coordinate(1, 0), Coordinate(2, 0)]));
-    expect(store.state.maze.revealed, toHave2(true, 5));
+    expect(store.state.maze.revealed, toHave2(true, 3));
     expect(store.state.maze.newlyRevealed.length, 5);
     expect(store.state.maze.confirmed.length, 1);
     expect(
@@ -388,7 +388,7 @@ void main() {
     await tester.pump();
     await tester.tap(find.byKey(Key("revealCharBonusBtn_1")));
     await tester.pump();
-    expect(store.state.maze.revealed, toHave2(true, 6));
+    expect(store.state.maze.revealed, toHave2(true, 3));
     expect(store.state.game.inventory.revealCharBonus1, 0);
     expect(store.state.maze.wordsToConfirm, [0, 1, 2, 3]);
     expect(store.state.maze.hints.length, 3);
@@ -409,7 +409,7 @@ void main() {
     await tester.pump();
     await tester.tap(find.byKey(Key("revealCharBonusBtn_2")));
     await tester.pump();
-    expect(store.state.maze.revealed, toHave2(true, 7));
+    expect(store.state.maze.revealed, toHave2(true, 3));
     expect(store.state.maze.confirmed.length, 1);
     expect(store.state.game.inventory.revealCharBonus2, 1);
     expect(store.state.maze.wordsToConfirm, [0, 1, 2, 3]);
@@ -423,14 +423,14 @@ void main() {
     await tester.pump();
     await tester.tap(find.byKey(Key("revealCharBonusBtn_2")));
     await tester.pump();
-    expect(store.state.maze.revealed, toHave2(true, 7));
+    expect(store.state.maze.revealed, toHave2(true, 3));
     expect(store.state.game.inventory.revealCharBonus2, 1);
     await tester.pump(Duration(seconds: 1));
 
     /// Click on useful bonus
     await tester.tap(find.byKey(Key("revealCharBonusBtn_10")));
     await tester.pump();
-    expect(store.state.maze.revealed, toHave2(true, 7));
+    expect(store.state.maze.revealed, toHave2(true, 3));
     expect(store.state.maze.confirmed.length, 3);
     expect(store.state.game.inventory.revealCharBonus10, 0);
     expect(store.state.maze.hints.length, 4);
@@ -439,7 +439,7 @@ void main() {
     /// Reveal word -> remove revealed from hint
     store.dispatch(proposeMaze([Coordinate(2, 2), Coordinate(1, 2), Coordinate(0, 2)]));
     expect(store.state.maze.hints.length, 2);
-    expect(store.state.maze.revealed, toHave2(true, 8));
+    expect(store.state.maze.revealed, toHave2(true, 6));
     await tester.pump(Duration(seconds: 1));
   });
 }

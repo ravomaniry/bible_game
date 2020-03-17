@@ -21,9 +21,9 @@ bool useBonusInMaze(Bonus bonus, Store<AppState> store) {
     final rand = Random();
     final wordIndex =
         toReveal.isEmpty ? getRandomElement(toConfirm, rand) : getRandomElement(toReveal, rand);
-    final usedToReveal = _revealChars(bonus, wordIndex, rand, store);
+    final usedWithHint = _updateHints(bonus, wordIndex, rand, store);
     final usedToConfirm = _confirmChars(bonus, wordIndex, rand, store);
-    if (usedToReveal || usedToConfirm) {
+    if (usedWithHint || usedToConfirm) {
       store.dispatch(updateNewlyRevealed(oldRevealed));
       store.dispatch(updatedWordsToReveal());
       store.dispatch(updatePaths());
@@ -35,21 +35,19 @@ bool useBonusInMaze(Bonus bonus, Store<AppState> store) {
   return false;
 }
 
-bool _revealChars(RevealCharBonus bonus, int wordIndex, Random rand, Store<AppState> store) {
+bool _updateHints(RevealCharBonus bonus, int wordIndex, Random rand, Store<AppState> store) {
   final toReveal = store.state.maze.wordsToReveal;
   final word = store.state.maze.words[wordIndex];
   final board = store.state.maze.board;
-  final hints = List<Coordinate>.from(store.state.maze.hints);
+  final hints = store.state.maze.hints;
   final revealed = store.state.maze.revealed;
   if (toReveal.contains(wordIndex)) {
-    final charIndexes = _getUnrevealedCharIndexes(word, wordIndex, board, revealed);
-    final nextRevealed =
-        _revealRandomChars(bonus, wordIndex, charIndexes, revealed, board, hints, rand);
-    store.dispatch(UpdateMazeState(store.state.maze.copyWith(
-      revealed: nextRevealed,
-      hints: hints,
-    )));
-    return true;
+    final charIndexes = _getUnrevealedCharIndexes(word, wordIndex, board, revealed, hints);
+    final nextHints = _revealRandomHints(bonus, wordIndex, charIndexes, board, hints, rand);
+    if (nextHints.length > hints.length) {
+      store.dispatch(UpdateMazeState(store.state.maze.copyWith(hints: nextHints)));
+      return true;
+    }
   }
   return false;
 }
@@ -79,11 +77,15 @@ List<int> _getUnrevealedCharIndexes(
   int wordIndex,
   Board board,
   List<List<bool>> revealed,
+  List<Coordinate> hints,
 ) {
   final charIndexes = List<int>();
   for (var i = 0, max = word.length; i < max; i++) {
     final point = board.coordinateOf(wordIndex, i);
-    if (point != board.start && point != board.end && !revealed[point.y][point.x]) {
+    if (point != board.start &&
+        point != board.end &&
+        !revealed[point.y][point.x] &&
+        !hints.contains(point)) {
       charIndexes.add(i);
     }
   }
@@ -106,27 +108,25 @@ List<int> _getUnconfirmedCharIndexes(
   return charIndexes;
 }
 
-List<List<bool>> _revealRandomChars(
+List<Coordinate> _revealRandomHints(
   RevealCharBonus bonus,
   int wordIndex,
   List<int> charIndexes,
-  List<List<bool>> revealed,
   Board board,
   List<Coordinate> hints,
   Random rand,
 ) {
   charIndexes = [...charIndexes];
-  revealed = revealed.map((x) => [...x]).toList();
+  hints = [...hints];
   for (var power = bonus.power; power > 0 && charIndexes.length > 1; power--) {
     final charIndex = getRandomElement(charIndexes, rand);
     final point = board.coordinateOf(wordIndex, charIndex);
-    revealed[point.y][point.x] = true;
     if (!hints.contains(point)) {
       hints.add(point);
     }
     charIndexes.remove(charIndex);
   }
-  return revealed;
+  return hints;
 }
 
 ThunkAction<AppState> updatedWordsToReveal() {
@@ -134,10 +134,13 @@ ThunkAction<AppState> updatedWordsToReveal() {
     final state = store.state.maze;
     final newlyRevealed = state.newlyRevealed;
     final words = state.words;
+    final revealed = state.revealed;
+    final hints = state.hints;
+    final board = state.board;
     final wordsToReveal = List<int>.from(state.wordsToReveal);
-    final indexes = getWordIndexesAt(newlyRevealed, state.board);
+    final indexes = getWordIndexesAt(newlyRevealed, board);
     for (final index in indexes) {
-      if (_getUnrevealedCharIndexes(words[index], index, state.board, state.revealed).length < 2) {
+      if (_getUnrevealedCharIndexes(words[index], index, board, revealed, hints).length < 2) {
         wordsToReveal.remove(index);
       }
     }

@@ -45,16 +45,22 @@ List<List<bool>> reveal(List<Coordinate> cells, List<List<bool>> revealed) {
 
 ThunkAction<AppState> updateNewlyRevealed(List<List<bool>> old) {
   return (store) {
-    final current = store.state.maze.revealed;
+    final revealed = store.state.maze.revealed;
+    final hints = store.state.maze.hints;
     final newlyRevealed = List<Coordinate>.from(store.state.maze.newlyRevealed);
     for (var y = 0; y < old.length; y++) {
       for (var x = 0; x < old[0].length; x++) {
-        if (current[y][x] && !old[y][x]) {
+        if (revealed[y][x] && !old[y][x]) {
           final point = Coordinate(x, y);
           if (!newlyRevealed.contains(point)) {
             newlyRevealed.add(point);
           }
         }
+      }
+    }
+    for (final point in hints) {
+      if (!newlyRevealed.contains(point)) {
+        newlyRevealed.add(point);
       }
     }
     store.dispatch(UpdateMazeState(store.state.maze.copyWith(newlyRevealed: newlyRevealed)));
@@ -71,7 +77,7 @@ ThunkAction<AppState> updateGameVerseRevealedState() {
       var word = state.words[index];
       for (var i = 0; i < word.length; i++) {
         final point = state.board.coordinateOf(index, i);
-        if (state.revealed[point.y][point.x]) {
+        if (state.revealed[point.y][point.x] || state.hints.contains(point)) {
           word = word.copyWithChar(i, word.chars[i].copyWith(resolved: true));
         }
       }
