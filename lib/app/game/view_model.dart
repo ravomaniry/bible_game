@@ -1,13 +1,14 @@
-import 'package:bible_game/models/game.dart';
 import 'package:bible_game/app/app_state.dart';
-import 'package:bible_game/app/game_editor/actions/actions.dart' as EditorActions;
 import 'package:bible_game/app/explorer/actions.dart' as ExplorerActions;
 import 'package:bible_game/app/game/actions/actions.dart';
 import 'package:bible_game/app/game/actions/lists_handler.dart';
 import 'package:bible_game/app/game/actions/next_verse.dart';
 import 'package:bible_game/app/game/reducer/state.dart';
+import 'package:bible_game/app/game_editor/actions/actions.dart' as EditorActions;
+import 'package:bible_game/app/help/actions/init.dart' as HelpAction;
 import 'package:bible_game/app/inventory/actions/actions.dart';
 import 'package:bible_game/app/theme/themes.dart';
+import 'package:bible_game/models/game.dart';
 import 'package:flutter/foundation.dart';
 import 'package:redux/redux.dart';
 
@@ -17,6 +18,7 @@ class GameViewModel {
   final Function() toggleDialog;
   final Function() goToExplorer;
   final Function() goToEditor;
+  final Function() goToHelp;
   final Function() openInventory;
   final Function(GameModelWrapper) selectHandler;
   final Function() nextHandler;
@@ -33,6 +35,7 @@ class GameViewModel {
     @required this.nextHandler,
     @required this.theme,
     @required this.goToEditor,
+    @required this.goToHelp,
     @required this.expandVersesHandler,
   });
 
@@ -48,6 +51,7 @@ class GameViewModel {
       nextHandler: () => store.dispatch(saveGameAndLoadNextVerse()),
       goToEditor: () => store.dispatch(EditorActions.goToEditor()),
       expandVersesHandler: () => store.dispatch(expandVerses()),
+      goToHelp: () => store.dispatch(HelpAction.goToHelp()),
     );
   }
 }

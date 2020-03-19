@@ -6,6 +6,7 @@ import 'package:bible_game/app/error/reducer.dart';
 import 'package:bible_game/app/explorer/reducer.dart';
 import 'package:bible_game/app/game/reducer/reducer.dart';
 import 'package:bible_game/app/game_editor/reducer/reducer.dart';
+import 'package:bible_game/app/help/reducer.dart';
 import 'package:bible_game/app/router/reducer.dart';
 import 'package:bible_game/app/texts.dart';
 import 'package:bible_game/app/theme/reducer.dart';
@@ -29,5 +30,6 @@ AppState mainReducer(AppState state, action) {
     wordsInWord: wordsInWordReducer(state.wordsInWord, action),
     maze: mazeReducer(state.maze, action),
     quitSingleGameDialog: quitSingleGameDialogReducer(state.quitSingleGameDialog, action),
+    help: helpReducer(action, state.help),
   );
 }

@@ -3,6 +3,7 @@ import 'package:bible_game/app/error/state.dart';
 import 'package:bible_game/app/explorer/state.dart';
 import 'package:bible_game/app/game/reducer/state.dart';
 import 'package:bible_game/app/game_editor/reducer/state.dart';
+import 'package:bible_game/app/help/state.dart';
 import 'package:bible_game/app/inventory/reducer/state.dart';
 import 'package:bible_game/app/router/routes.dart';
 import 'package:bible_game/app/texts.dart';
@@ -31,6 +32,7 @@ class AppState {
   final ConfigState config;
   final AppColorTheme theme;
   final AppTexts texts;
+  final HelpState help;
 
   AppState({
     this.route = Routes.home,
@@ -39,6 +41,7 @@ class AppState {
     this.dbIsReady = false,
     this.error,
     this.maze,
+    this.help,
     @required this.sfx,
     @required this.game,
     @required this.dba,

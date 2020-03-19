@@ -3,6 +3,7 @@ enum Routes {
   gameEditor,
   wordsInWord,
   anagram,
-  explorer,
   maze,
+  explorer,
+  help,
 }

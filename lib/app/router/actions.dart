@@ -1,9 +1,9 @@
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:bible_game/app/app_state.dart';
+import 'package:bible_game/app/confirm_quit_dialog/actions.dart';
 import 'package:bible_game/app/explorer/actions.dart';
 import 'package:bible_game/app/game/actions/lists_handler.dart';
 import 'package:bible_game/app/inventory/actions/actions.dart';
-import 'package:bible_game/app/confirm_quit_dialog/actions.dart';
 import 'package:bible_game/app/router/routes.dart';
 import 'package:redux/redux.dart';
 
@@ -36,6 +36,9 @@ void handleBackBtnPress(Store<AppState> store) {
       } else {
         store.dispatch(goToHome());
       }
+      return true;
+    } else if (store.state.route == Routes.help) {
+      store.dispatch(goToHome());
       return true;
     } else {
       if (store.state.quitSingleGameDialog) {
