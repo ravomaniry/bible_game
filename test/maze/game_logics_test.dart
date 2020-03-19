@@ -14,9 +14,9 @@ import 'package:bible_game/games/maze/redux/state.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/bonus.dart';
-import 'package:bible_game/models/word.dart';
 import 'package:bible_game/test_helpers/matchers.dart';
 import 'package:bible_game/test_helpers/store.dart';
+import 'package:bible_game/utils/list.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -320,8 +320,8 @@ void main() {
     ]);
   });
 
-  testWidgets("Bonus - revealed - hints", (tester) async {
-    //   ⁰ ¹ ² ³
+  testWidgets("Bonus - revealed - hints - score", (tester) async {
+    //   ⁰ ¹ ² ³ ⁵
     // ⁰ A B C .
     // ¹ . . D .
     // ² G F E L
@@ -377,10 +377,7 @@ void main() {
     expect(store.state.maze.hints.length, 2);
     expect(store.state.maze.paths.length, 1);
     expect(store.state.game.verse.words[0].resolved, true);
-    expect(
-      [...store.state.game.verse.words[4].chars, ...store.state.game.verse.words[6].chars],
-      toPass<Char>((c) => c.resolved, 2),
-    );
+    expect(store.state.game.inventory.money, 3);
     await tester.pump(Duration(seconds: 1));
     expect(store.state.maze.newlyRevealed, []);
 
@@ -398,10 +395,6 @@ void main() {
         [2],
         [3]
       ]),
-    );
-    expect(
-      [...store.state.game.verse.words[4].chars, ...store.state.game.verse.words[6].chars],
-      toPass<Char>((c) => c.resolved, 3),
     );
     await tester.pump(Duration(seconds: 1));
 
@@ -439,7 +432,68 @@ void main() {
     /// Reveal word -> remove revealed from hint
     store.dispatch(proposeMaze([Coordinate(2, 2), Coordinate(1, 2), Coordinate(0, 2)]));
     expect(store.state.maze.hints.length, 2);
+    expect(store.state.game.inventory.money, 4);
     expect(store.state.maze.revealed, toHave2(true, 6));
     await tester.pump(Duration(seconds: 1));
+  });
+
+  testWidgets("Propose many times + score", (tester) async {
+    //   ⁰ ¹ ² ³
+    // ⁰ A B C D
+    // ¹ . . E .
+    // ² . F . .
+    // ³ D C B A
+    final verse = BibleVerse.from(text: "Abcd defg");
+    verse.words[0] = verse.words[0].copyWith(bonus: RevealCharBonus1());
+    final words = getWordsInScopeForMaze(verse);
+
+    final board = Board.create(4, 4, 1);
+    persistMove(Move(Coordinate(0, 0), Coordinate.right, 0, 4), board);
+    persistMove(Move(Coordinate(3, 0), Coordinate.downLeft, 1, 4), board);
+    persistMove(Move(Coordinate(3, 3), Coordinate.left, 0, 4), board);
+    board.updateStartEnd(words);
+
+    final store = newMockedStore();
+    final state = MazeState(
+      nextId: 1,
+      board: board,
+      backgrounds: null,
+      words: words,
+      revealed: initialRevealedState(board),
+      wordsToReveal: [0, 1],
+      wordsToConfirm: [0, 1],
+      confirmed: [],
+    );
+    store.dispatch(UpdateGameVerse(verse));
+    store.dispatch(UpdateMazeState(state));
+    store.dispatch(GoToAction(Routes.maze));
+
+    /// Propose: use bonus once
+    store.dispatch(proposeMaze([
+      Coordinate(3, 3),
+      Coordinate(2, 3),
+      Coordinate(1, 3),
+      Coordinate(0, 3),
+    ]));
+    expect(store.state.maze.hints.length, 1);
+    expect(store.state.maze.revealed, toHave2(true, 4));
+    expect(store.state.game.verse.words[0].resolved, true);
+    expect(store.state.game.inventory.money, 4);
+    await tester.pump(Duration(seconds: 30));
+    final hints = store.state.maze.hints;
+    store.dispatch(proposeMaze([
+      Coordinate(0, 0),
+      Coordinate(1, 0),
+      Coordinate(2, 0),
+      Coordinate(3, 0),
+    ]));
+    expect(store.state.maze.revealed, toHave2(true, 8));
+    expect(store.state.game.inventory.money, 4);
+    if (haveInCommon(hints, [Coordinate(1, 0), Coordinate(2, 0), Coordinate(3, 0)])) {
+      expect(store.state.maze.hints.length, 0);
+    } else {
+      expect(store.state.maze.hints.length, 1);
+    }
+    await tester.pump(Duration(seconds: 30));
   });
 }

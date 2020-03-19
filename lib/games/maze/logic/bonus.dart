@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:bible_game/app/app_state.dart';
+import 'package:bible_game/app/inventory/actions/actions.dart';
 import 'package:bible_game/games/maze/actions/actions.dart';
 import 'package:bible_game/games/maze/logic/paths.dart';
 import 'package:bible_game/games/maze/logic/reveal.dart';
@@ -28,7 +29,6 @@ bool useBonusInMaze(Bonus bonus, Store<AppState> store) {
       store.dispatch(updatedWordsToReveal());
       store.dispatch(updatePaths());
       store.dispatch(scheduleInvalidateNewlyRevealed());
-      store.dispatch(updateGameVerseRevealedState());
       return true;
     }
   }
@@ -189,5 +189,16 @@ ThunkAction<AppState> updateHints(List<Coordinate> points) {
   return (store) {
     final hints = store.state.maze.hints.where((p) => !points.contains(p)).toList();
     store.dispatch(UpdateMazeState(store.state.maze.copyWith(hints: hints)));
+  };
+}
+
+ThunkAction<AppState> incrementMazeMoney(Word word, List<Coordinate> coordinates) {
+  return (store) {
+    final verse = store.state.game.verse;
+    final hints = store.state.maze.hints;
+    if (!verse.words[word.index].resolved) {
+      final deltaMoney = coordinates.where((c) => !hints.contains(c)).length;
+      store.dispatch(incrementMoney(deltaMoney));
+    }
   };
 }

@@ -10,10 +10,9 @@ import 'package:redux_thunk/redux_thunk.dart';
 ThunkAction<AppState> addBonusesToVerse() {
   return (store) {
     final verse = store.state.game.verse;
-    final verseWithBonus = verse.copyWith(
+    store.dispatch(UpdateGameVerse(verse.copyWith(
       words: verse.words.map(_addRandomBonusToWord).toList(),
-    );
-    store.dispatch(UpdateGameVerse(verseWithBonus));
+    )));
   };
 }
 

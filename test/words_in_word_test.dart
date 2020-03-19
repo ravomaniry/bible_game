@@ -112,9 +112,14 @@ void main() {
     expect(cells.where((c) => c.length == 0).length, 0);
   });
 
-  testWidgets("In game interractivity - Tap + propose", (WidgetTester tester) async {
-    final verse =
-        BibleVerse.from(bookId: 1, book: "Matio", chapter: 1, verse: 1, text: "Ny teny ny Azy");
+  testWidgets("In game interractivity - Tap + propose + score", (WidgetTester tester) async {
+    final verse = BibleVerse.from(
+      bookId: 1,
+      book: "Matio",
+      chapter: 1,
+      verse: 1,
+      text: "Ny teny ny Azy",
+    );
     final initialState = AppState(
       editor: EditorState(),
       sfx: SfxMock(),
@@ -128,8 +133,11 @@ void main() {
       config: ConfigState.initialState(),
       wordsInWord: WordsInWordState.emptyState(),
     );
-    final store =
-        Store<AppState>(mainReducer, middleware: [thunkMiddleware], initialState: initialState);
+    final store = Store<AppState>(
+      mainReducer,
+      middleware: [thunkMiddleware],
+      initialState: initialState,
+    );
     // This is to simulate previous game session
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
       proposition: Word.from("AA", 0, false).chars,
@@ -169,12 +177,12 @@ void main() {
     await tester.tap(find.byKey(Key("proposeBtn")));
     await tester.pump(Duration(milliseconds: 10));
     expect(store.state.wordsInWord.proposition, []);
-    expect(listEquals(store.state.wordsInWord.slots, Word.from("NYTENY", 0, false).chars), true);
-    expect(
-        listEquals(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars), true);
+    expect(store.state.wordsInWord.slots, Word.from("NYTENY", 0, false).chars);
+    expect(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars);
     expect(store.state.wordsInWord.wordsToFind.length, 3);
     expect(store.state.wordsInWord.resolvedWords, []);
     expect(store.state.wordsInWord.propositionAnimation, PropositionAnimations.failure);
+    expect(store.state.game.inventory.money, 0);
 
     // Tap on slot 4(N), 1(Y) => NY and Propose
     // => "Ny" is removed from words to find
@@ -187,14 +195,20 @@ void main() {
     await tester.tap(find.byKey(Key("proposeBtn")));
     await tester.pump(Duration(milliseconds: 10));
     expect(store.state.wordsInWord.proposition, []);
-    expect(listEquals(store.state.wordsInWord.slots, Word.from("NYTENY", 0, false).chars), false);
-    expect(listEquals(store.state.wordsInWord.slotsBackup, Word.from("NYTENY", 0, false).chars),
-        false);
+    expect(store.state.wordsInWord.slots, isNot(Word.from("NYTENY", 0, false).chars));
+    expect(store.state.wordsInWord.slotsBackup, isNot(Word.from("NYTENY", 0, false).chars));
     expect(store.state.wordsInWord.wordsToFind.map((w) => w.value), ["teny", "Azy"]);
-    expect(store.state.wordsInWord.resolvedWords,
-        [Word.from("Ny", 0, false).copyWith(resolved: true)]);
-    expect(store.state.game.verse.words.map((w) => w.value),
-        ["Ny", " ", "teny", " ", "ny", " ", "Azy"]);
+    expect(
+      store.state.wordsInWord.resolvedWords,
+      [Word.from("Ny", 0, false).copyWith(resolved: true)],
+    );
+    expect(
+      store.state.game.verse.words.map((w) => w.value),
+      ["Ny", " ", "teny", " ", "ny", " ", "Azy"],
+    );
+    expect(store.state.game.verse.words[0].resolved, true);
+    expect(store.state.game.verse.words[4].resolved, true);
+    expect(store.state.game.inventory.money, 4);
     expect(store.state.wordsInWord.propositionAnimation, PropositionAnimations.success);
     verify(store.state.sfx.playShortSuccess()).called(1);
     // Animation is removed automatically after 0.5s
@@ -203,8 +217,13 @@ void main() {
   });
 
   testWidgets("Click on bonuses", (WidgetTester tester) async {
-    final verse =
-        BibleVerse.from(book: "", bookId: 1, chapter: 1, verse: 1, text: "ABCDEFGHIJKLMNOPQRST");
+    final verse = BibleVerse.from(
+      book: "",
+      bookId: 1,
+      chapter: 1,
+      verse: 1,
+      text: "ABCDEFGHIJKLMNOPQRST",
+    );
     final state = AppState(
       sfx: SfxMock(),
       texts: AppTexts(),
@@ -366,6 +385,7 @@ void main() {
       expect(countUnrevealedWord(store.state.game.verse.words), 8);
     }
     verify(store.state.sfx.playBonus()).called(1);
+    await tester.pump(Duration(seconds: 30));
   });
 
   test("Play the same game 500 times", () async {

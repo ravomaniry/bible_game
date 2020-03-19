@@ -11,6 +11,7 @@ import 'package:bible_game/games/words_in_word/reducer/state.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/sfx/actions.dart';
+import 'package:bible_game/utils/pair.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
@@ -22,6 +23,7 @@ class ProposeResult {
   final Word revealed;
   final List<Char> slots;
   final List<Word> resolvedWords;
+  final int deltaMoney;
 
   ProposeResult({
     @required this.verse,
@@ -30,6 +32,7 @@ class ProposeResult {
     @required this.revealed,
     @required this.slots,
     @required this.resolvedWords,
+    @required this.deltaMoney,
   });
 }
 
@@ -146,8 +149,9 @@ List<Char> fillSlots(List<Char> prevSlots, List<Word> words) {
         otherWords.add(word);
       }
     }
-    otherWords
-        .sort((a, b) => getAdditionalChars(a, slots).length - getAdditionalChars(b, slots).length);
+    otherWords.sort(
+      (a, b) => getAdditionalChars(a, slots).length - getAdditionalChars(b, slots).length,
+    );
 
     if (otherWords.length > 0) {
       for (final word in otherWords) {
@@ -228,7 +232,7 @@ bool propose(Store<AppState> store) {
   )));
   store.dispatch(UpdateGameVerse(verse));
   if (hasFoundMatch) {
-    store.dispatch(incrementMoney(prevVerse, verse));
+    store.dispatch(incrementMoney(result.deltaMoney));
     store.dispatch(useBonus(result.revealed.bonus, false));
     store.dispatch(triggerPropositionSuccessAnimation());
     store.dispatch(playSuccessSfx(wordsToFind.length == 0));
@@ -250,6 +254,7 @@ ProposeResult _getPropositionResult(WordsInWordState state, BibleVerse verse) {
   final proposition = state.proposition;
   Word revealed;
   var slots = state.slots;
+  var deltaMoney = 0;
   bool hasFoundMatch = false;
 
   for (final word in state.wordsToFind) {
@@ -262,7 +267,9 @@ ProposeResult _getPropositionResult(WordsInWordState state, BibleVerse verse) {
   }
 
   if (hasFoundMatch) {
-    verse = _updateVerseResolvedWords(proposition, verse);
+    final updated = _updateVerseResolvedWords(proposition, verse);
+    verse = updated.first;
+    deltaMoney = updated.last;
   } else {
     slots = state.slotsBackup;
   }
@@ -271,21 +278,24 @@ ProposeResult _getPropositionResult(WordsInWordState state, BibleVerse verse) {
     verse: verse,
     slots: slots,
     revealed: revealed,
+    deltaMoney: deltaMoney,
     wordsToFind: wordsToFind,
     resolvedWords: resolvedWords,
     hasFoundMatch: hasFoundMatch,
   );
 }
 
-BibleVerse _updateVerseResolvedWords(List<Char> proposition, BibleVerse verse) {
+Pair<BibleVerse, int> _updateVerseResolvedWords(List<Char> proposition, BibleVerse verse) {
+  var deltaMoney = 0;
   final words = List<Word>.from(verse.words);
   for (int i = 0; i < words.length; i++) {
     final word = words[i];
     if (!word.resolved && word.sameAsChars(proposition)) {
       words[i] = word.copyWith(resolved: true);
+      deltaMoney += word.chars.where((c) => !c.resolved).length;
     }
   }
-  return verse.copyWith(words: words);
+  return Pair(verse.copyWith(words: words), deltaMoney);
 }
 
 ThunkAction<AppState> shuffleSlotsAction() {

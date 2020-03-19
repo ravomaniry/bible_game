@@ -1,7 +1,6 @@
 import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/game/actions/lists_handler.dart';
 import 'package:bible_game/app/inventory/reducer/state.dart';
-import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/sfx/actions.dart';
 import 'package:redux_thunk/redux_thunk.dart';
@@ -52,13 +51,12 @@ class DecrementBonus {
   DecrementBonus(this.payload);
 }
 
-ThunkAction<AppState> incrementMoney(BibleVerse prevVerse, BibleVerse nextVerse) {
+ThunkAction<AppState> incrementMoney(int delta) {
   return (store) async {
     final state = store.state.game.inventory;
-    final deltaMoney = _getDeltaMoney(prevVerse, nextVerse);
-    final nextMoney = (state.money + deltaMoney * state.combo).round();
+    final nextMoney = (state.money + delta * state.combo).round();
     double nextCombo = state.combo;
-    final deltaCombo = deltaMoney / 10;
+    final deltaCombo = delta / 10;
     if (nextCombo > 1 || deltaCombo >= 0.5) {
       nextCombo += deltaCombo;
     }
@@ -68,19 +66,9 @@ ThunkAction<AppState> incrementMoney(BibleVerse prevVerse, BibleVerse nextVerse)
         combo: nextCombo,
       ),
     ));
-    if (state.combo == 0 && nextCombo > 0) {
+    if (state.combo == 1 && nextCombo > 1) {
       await Future.delayed(Duration(seconds: 20));
       store.dispatch(InvalidateCombo());
     }
   };
-}
-
-int _getDeltaMoney(BibleVerse prevVerse, BibleVerse nextVerse) {
-  int deltaMoney = 0;
-  for (var i = 0; i < prevVerse.words.length; i++) {
-    if (nextVerse.words[i].resolved && nextVerse.words[i] != prevVerse.words[i]) {
-      deltaMoney += prevVerse.words[i].chars.where((c) => !c.resolved).length;
-    }
-  }
-  return deltaMoney;
 }
