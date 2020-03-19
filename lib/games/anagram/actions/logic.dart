@@ -15,7 +15,7 @@ import 'package:redux_thunk/redux_thunk.dart';
 ThunkAction<AppState> initializeAnagram() {
   return (store) {
     store.dispatch(_resolveOneCharWords());
-    store.dispatch(addBonusesToVerse());
+    store.dispatch(addBonusesToVerse(probability: 0.5, power: 0.8));
     store.dispatch(initializeState());
     store.dispatch(_generateSlots());
   };

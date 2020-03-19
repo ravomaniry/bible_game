@@ -4,19 +4,20 @@ import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/game/actions/actions.dart';
 import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/models/word.dart';
+import 'package:flutter/widgets.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 
-ThunkAction<AppState> addBonusesToVerse() {
+ThunkAction<AppState> addBonusesToVerse({@required double probability, @required double power}) {
   return (store) {
     final verse = store.state.game.verse;
     store.dispatch(UpdateGameVerse(verse.copyWith(
-      words: verse.words.map(_addRandomBonusToWord).toList(),
+      words: verse.words.map((w) => _addRandomBonusToWord(w, probability, power)).toList(),
     )));
   };
 }
 
-Word _addRandomBonusToWord(Word word) {
+Word _addRandomBonusToWord(Word word, double probability, double power) {
   final bonusRatio = 1.5;
   final probability = 0.6;
   if (word.isSeparator) {

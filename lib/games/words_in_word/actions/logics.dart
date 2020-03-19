@@ -38,7 +38,7 @@ class ProposeResult {
 
 ThunkAction<AppState> initializeWordsInWord() {
   return (store) {
-    store.dispatch(addBonusesToVerse());
+    store.dispatch(addBonusesToVerse(probability: 0.5, power: 2));
     store.dispatch(initializeState());
     store.dispatch(_fillEmptySlots());
   };

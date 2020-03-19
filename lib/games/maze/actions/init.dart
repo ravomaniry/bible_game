@@ -15,7 +15,7 @@ import 'package:redux_thunk/redux_thunk.dart';
 
 ThunkAction<AppState> initMaze() {
   return (store) async {
-    store.dispatch(addBonusesToVerse());
+    store.dispatch(addBonusesToVerse(probability: 0.6, power: 0.75));
     store.dispatch(_initState());
     store.dispatch(_loadBackgrounds());
     store.dispatch(InvalidateCombo());
