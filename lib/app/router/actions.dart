@@ -28,7 +28,7 @@ void handleBackBtnPress(Store<AppState> store) {
       store.dispatch(help.handleBackButtonPress());
       store.dispatch(dialog.handleBackButtonPress());
     }
-    return false;
+    return shouldHandle;
   };
   BackButtonInterceptor.add(handler, name: "back_btn_handler");
 }

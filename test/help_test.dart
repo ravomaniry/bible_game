@@ -20,13 +20,19 @@ void main() {
         '  }'
         ']';
     when(store.state.assetBundle.loadString("assets/help.json")).thenAnswer(
-      (_) => Future.value(json),
+      (_) async {
+        await Future.delayed(Duration(seconds: 1));
+        return json;
+      },
     );
 
     await tester.pumpWidget(BibleGame(store));
     await tester.pump(Duration(seconds: 1));
     await tester.tap(find.byKey(Key("goToHelp")));
-    await tester.pump(Duration(seconds: 1));
+    await tester.pump();
+    // loading ...
+    expect(store.state.help, null);
+    await tester.pump(Duration(seconds: 2));
 
     /// Load and parse value
     expect(store.state.help.value, [
@@ -41,7 +47,7 @@ void main() {
 
     /// Press back and goes to home
     BackButtonInterceptor.popRoute();
-    await tester.pump();
+    await tester.pump(Duration(seconds: 1));
     expect(find.byKey(Key("home")), findsOneWidget);
   });
 }
