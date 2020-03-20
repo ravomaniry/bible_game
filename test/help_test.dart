@@ -41,6 +41,7 @@ void main() {
 
     /// Press back and goes to home
     BackButtonInterceptor.popRoute();
+    await tester.pump();
     expect(find.byKey(Key("home")), findsOneWidget);
   });
 }

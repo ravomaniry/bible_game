@@ -33,7 +33,7 @@ List<GalleryContent> _parseGallery(value) {
     }
   }
   if (images.isNotEmpty) {
-    return [GalleryContent(value["title"] ?? "", images)];
+    return [GalleryContent(value["title"].toString() ?? "", images)];
   }
   return [];
 }
@@ -43,10 +43,10 @@ List<TextContent> _parseText(value) {
   final inputParagraphs = value["paragraphs"];
   if (inputParagraphs is Iterable) {
     for (final item in inputParagraphs) {
-      final subtitle = item["subtitile"] ?? "";
+      final subtitle = item["subtitle"] ?? "";
       final body = item["body"] ?? "";
       if (subtitle != "" || body != "") {
-        paragraphs.add(ParagraphContent(subtitle, body));
+        paragraphs.add(ParagraphContent("$subtitle", "$body"));
       }
     }
   }

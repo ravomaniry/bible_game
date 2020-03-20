@@ -30,3 +30,11 @@ ThunkAction<AppState> _initHelp() {
     }
   };
 }
+
+ThunkAction<AppState> handleBackButtonPress() {
+  return (store) {
+    if (store.state.route == Routes.help) {
+      store.dispatch(goToHome());
+    }
+  };
+}
