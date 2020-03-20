@@ -21,13 +21,13 @@ class HomeHeader extends StatelessWidget {
             _viewModel.theme.primaryDark,
           ),
           _GoToBtn(
-            stingKey: "goToEdiror",
+            buttonKey: "goToEditor",
             color: _viewModel.theme.primaryDark,
             icon: Icons.add_circle_outline,
             onPressed: _viewModel.goToEditor,
           ),
           _GoToBtn(
-            stingKey: "goToHelp",
+            buttonKey: "goToHelp",
             color: _viewModel.theme.primaryDark,
             icon: Icons.help_outline,
             onPressed: _viewModel.goToHelp,
@@ -62,13 +62,13 @@ class _GoToBtn extends StatelessWidget {
   final Function() onPressed;
   final Color color;
   final IconData icon;
-  final String stingKey;
+  final String buttonKey;
 
   _GoToBtn({
     @required this.icon,
     @required this.color,
     @required this.onPressed,
-    @required this.stingKey,
+    @required this.buttonKey,
   });
 
   @override
@@ -76,7 +76,7 @@ class _GoToBtn extends StatelessWidget {
     return Container(
       child: FlatButton(
         onPressed: onPressed,
-        key: Key(stingKey),
+        key: Key(buttonKey),
         child: Icon(
           icon,
           color: color,

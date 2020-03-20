@@ -5,6 +5,7 @@ import 'package:bible_game/app/game/components/congratulation.dart';
 import 'package:bible_game/app/game/components/home.dart';
 import 'package:bible_game/app/game/components/solution.dart';
 import 'package:bible_game/app/game_editor/components/editor.dart';
+import 'package:bible_game/app/help/components/help.dart';
 import 'package:bible_game/app/router/routes.dart';
 import 'package:bible_game/app/router/view_model.dart';
 import 'package:bible_game/games/anagram/components/anagram.dart';
@@ -44,25 +45,32 @@ class _RouterBuilder extends StatelessWidget {
   });
 
   Widget build(BuildContext context) {
-    if (route == Routes.home) {
-      return Home();
-    } else if (route == Routes.explorer) {
-      return Explorer();
-    } else if (route == Routes.gameEditor) {
-      return GameEditor();
-    } else {
-      if (activeGameIsCompleted) {
-        return Congratulations();
-      } else if (gameIsResolved) {
-        return Solution();
-      } else if (route == Routes.wordsInWord) {
-        return WordsInWord();
-      } else if (route == Routes.anagram) {
-        return Anagram();
-      } else if (route == Routes.maze) {
-        return Maze();
-      }
+    switch (route) {
+      case Routes.home:
+        return Home();
+      case Routes.explorer:
+        return Explorer();
+      case Routes.gameEditor:
+        return GameEditor();
+      case Routes.help:
+        return Help();
+      default:
+        break;
     }
-    return SplashScreen();
+    if (activeGameIsCompleted) {
+      return Congratulations();
+    } else if (gameIsResolved) {
+      return Solution();
+    }
+    switch (route) {
+      case Routes.wordsInWord:
+        return WordsInWord();
+      case Routes.anagram:
+        return Anagram();
+      case Routes.maze:
+        return Maze();
+      default:
+        return SplashScreen();
+    }
   }
 }

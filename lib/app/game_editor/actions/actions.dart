@@ -1,13 +1,13 @@
-import 'package:bible_game/db/model.dart';
-import 'package:bible_game/app/game_editor/actions/action_creators.dart';
-import 'package:bible_game/app/game_editor/reducer/state.dart';
-import 'package:bible_game/models/game.dart';
 import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/error/actions.dart';
 import 'package:bible_game/app/game/actions/init.dart';
+import 'package:bible_game/app/game_editor/actions/action_creators.dart';
+import 'package:bible_game/app/game_editor/reducer/state.dart';
 import 'package:bible_game/app/inventory/reducer/state.dart';
 import 'package:bible_game/app/router/actions.dart';
 import 'package:bible_game/app/router/routes.dart';
+import 'package:bible_game/db/model.dart';
+import 'package:bible_game/models/game.dart';
 import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/utils/retry.dart';
 import 'package:redux/redux.dart';
@@ -17,6 +17,14 @@ ThunkAction<AppState> goToEditor() {
   return (Store<AppState> store) {
     store.dispatch(GoToAction(Routes.gameEditor));
     store.dispatch(startBookChangeHandler(1));
+  };
+}
+
+ThunkAction<AppState> handleBackButtonPress() {
+  return (store) {
+    if (store.state.route == Routes.gameEditor) {
+      store.dispatch(goToHome());
+    }
   };
 }
 
@@ -126,7 +134,8 @@ ThunkAction<AppState> _autoPopulateEndFields() {
 ThunkAction<AppState> _autoSelectEndVerse() {
   return (store) {
     final state = store.state.editor;
-    final match = state.versesNumRefs.where((n) => n.isSameRef(state.endBook, state.endChapter)).toList();
+    final match =
+        state.versesNumRefs.where((n) => n.isSameRef(state.endBook, state.endChapter)).toList();
     if (match.isEmpty) {
       store.dispatch(UpdateEditorState(state.copyWith(endVerse: 1)));
     } else {

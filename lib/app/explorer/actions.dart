@@ -1,11 +1,11 @@
-import 'package:bible_game/db/model.dart';
 import 'package:bible_game/app/app_state.dart';
-import 'package:bible_game/app/game_editor/actions/actions.dart';
 import 'package:bible_game/app/error/actions.dart';
 import 'package:bible_game/app/explorer/state.dart';
+import 'package:bible_game/app/game_editor/actions/actions.dart';
 import 'package:bible_game/app/router/actions.dart';
 import 'package:bible_game/app/router/routes.dart';
 import 'package:bible_game/app/theme/actions.dart';
+import 'package:bible_game/db/model.dart';
 import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/utils/retry.dart';
 import 'package:redux/redux.dart';
@@ -28,6 +28,18 @@ ThunkAction<AppState> goToExplorer() {
 ThunkAction<AppState> resetExplorer() {
   return (store) {
     store.dispatch(UpdateExplorerState(store.state.explorer.reset()));
+  };
+}
+
+ThunkAction<AppState> handleBackButtonPress() {
+  return (store) {
+    if (store.state.route == Routes.explorer) {
+      if (store.state.explorer.submitted) {
+        store.dispatch(resetExplorer());
+      } else {
+        store.dispatch(goToHome());
+      }
+    }
   };
 }
 

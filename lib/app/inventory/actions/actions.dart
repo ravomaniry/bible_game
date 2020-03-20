@@ -1,6 +1,7 @@
 import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/game/actions/lists_handler.dart';
 import 'package:bible_game/app/inventory/reducer/state.dart';
+import 'package:bible_game/app/router/actions.dart';
 import 'package:bible_game/models/bonus.dart';
 import 'package:bible_game/sfx/actions.dart';
 import 'package:redux_thunk/redux_thunk.dart';
@@ -69,6 +70,15 @@ ThunkAction<AppState> incrementMoney(int delta) {
     if (state.combo == 1 && nextCombo > 1) {
       await Future.delayed(Duration(seconds: 20));
       store.dispatch(InvalidateCombo());
+    }
+  };
+}
+
+ThunkAction<AppState> handleBackButtonPress() {
+  return (store) {
+    if (store.state.game.inventory.isOpen) {
+      store.dispatch(CloseInventoryDialog());
+      store.dispatch(goToHome());
     }
   };
 }

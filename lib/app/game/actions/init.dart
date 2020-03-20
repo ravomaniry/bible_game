@@ -1,13 +1,17 @@
+import 'package:bible_game/app/app_state.dart';
+import 'package:bible_game/app/error/actions.dart';
+import 'package:bible_game/app/game/actions/actions.dart';
+import 'package:bible_game/app/game/actions/lists_handler.dart';
+import 'package:bible_game/app/inventory/reducer/state.dart';
+import 'package:bible_game/app/router/actions.dart';
+import 'package:bible_game/app/theme/actions.dart';
+import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/db/db_adapter.dart';
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/models/game.dart';
-import 'package:bible_game/app/error/actions.dart';
-import 'package:bible_game/app/game/actions/actions.dart';
-import 'package:bible_game/app/inventory/reducer/state.dart';
-import 'package:bible_game/app/theme/actions.dart';
-import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/statics/texts.dart';
 import 'package:bible_game/utils/retry.dart';
+import 'package:redux_thunk/redux_thunk.dart';
 
 final defaultInventory = InventoryState.emptyState().copyWith(
   revealCharBonus1: 10,
@@ -100,4 +104,13 @@ Future initializeGamesList(DbAdapter dba, List<BookModel> books, Function dispat
     print(e);
     dispatch(ReceiveError(Errors.unknownDbError()));
   }
+}
+
+ThunkAction<AppState> handleBackButtonPress() {
+  return (store) {
+    if (store.state.game.isResolved) {
+      store.dispatch(saveActiveGame());
+      store.dispatch(goToHome());
+    }
+  };
 }
