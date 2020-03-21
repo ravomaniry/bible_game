@@ -1,6 +1,6 @@
-import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 
-class Cell with EquatableMixin {
+class Cell {
   final int wordIndex;
   final int charIndex;
 
@@ -14,7 +14,10 @@ class Cell with EquatableMixin {
   }
 
   @override
-  List<Object> get props {
-    return [wordIndex, charIndex];
+  int get hashCode => hashValues(wordIndex, charIndex);
+
+  @override
+  bool operator ==(other) {
+    return other is Cell && other.wordIndex == wordIndex && other.charIndex == charIndex;
   }
 }

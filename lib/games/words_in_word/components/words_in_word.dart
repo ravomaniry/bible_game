@@ -1,8 +1,8 @@
-import 'package:bible_game/app/game/components/in_game_header.dart';
+import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/components/splash_screen.dart';
+import 'package:bible_game/app/game/components/in_game_header.dart';
 import 'package:bible_game/games/words_in_word/components/controls.dart';
 import 'package:bible_game/games/words_in_word/components/results.dart';
-import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/games/words_in_word/view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -52,7 +52,7 @@ class WordsInWordBody extends StatelessWidget {
         child: Column(
           children: [
             InGameHeader(),
-            WordsInWordResult(_viewModel),
+            WordsInWordResult.fromViewModel(_viewModel),
             WordsInWordControls(_viewModel),
           ],
         ),

@@ -1,5 +1,5 @@
 import 'package:bible_game/app/app_state.dart';
-import 'package:bible_game/app/confirm_quit_dialog/components/quit_single_game.dart';
+import 'package:bible_game/app/confirm_quit_dialog/dialog.dart';
 import 'package:bible_game/app/db/actions.dart';
 import 'package:bible_game/app/inventory/components/inventory.dart';
 import 'package:bible_game/app/main_reducer.dart';
