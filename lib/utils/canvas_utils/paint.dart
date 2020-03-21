@@ -17,7 +17,7 @@ class CharStyles {
   factory CharStyles.fromTheme(AppColorTheme theme) {
     return CharStyles(
       separator: TextStyle(color: theme.primaryDark, fontWeight: FontWeight.bold),
-      worResolved: TextStyle(color: theme.neutral, fontWeight: FontWeight.bold),
+      worResolved: TextStyle(color: theme.neutral, fontWeight: FontWeight.bold, fontSize: 16),
       charResolved: TextStyle(color: theme.accentLeft),
       unresolved: TextStyle(color: theme.primary.withAlpha(160)),
     );
