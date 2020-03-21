@@ -1,11 +1,14 @@
 import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/games/words_in_word/actions/action_creators.dart';
 import 'package:bible_game/games/words_in_word/components/controls.dart';
-import 'package:bible_game/games/words_in_word/components/results.dart';
 import 'package:bible_game/models/cell.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_thunk/redux_thunk.dart';
+
+final double cellWidth = 24;
+final double cellHeight = 28;
+final double cellMargin = 4;
 
 class UpdateWordsInWordCells {
   List<List<Cell>> payload;
@@ -14,7 +17,7 @@ class UpdateWordsInWordCells {
 }
 
 ThunkAction<AppState> recomputeCells() {
-  return (Store<AppState> store) {
+  return (store) {
     final cells = computeCells(store.state.game.verse.words, store.state.config.screenWidth);
     store.dispatch(UpdateWordsInWordCells(cells));
   };
@@ -29,8 +32,7 @@ ThunkAction<AppState> computeCellsAction(double screenWidth) {
 
 List<List<Cell>> computeCells(List<Word> words, double screenWidth) {
   final List<List<Cell>> cells = [];
-  final cellWidth = WordsInWordResult.cellWidth;
-  final idealMaxWidth = screenWidth - 10;
+  final maxWidth = screenWidth - 10;
   double currentX = 0;
   int currentIndex = 0;
   bool isNewLine = false;
@@ -43,8 +45,8 @@ List<List<Cell>> computeCells(List<Word> words, double screenWidth) {
 
   for (int wordIndex = 0; wordIndex < words.length; wordIndex++) {
     final word = words[wordIndex];
-    final width = cellWidth * word.chars.length.toDouble();
-    if (currentX + width <= idealMaxWidth) {
+    final width = cellWidth * word.chars.length;
+    if (currentX + width <= maxWidth) {
       currentX += width;
       isNewLine = false;
     } else {
@@ -54,8 +56,20 @@ List<List<Cell>> computeCells(List<Word> words, double screenWidth) {
       cells.add([]);
     }
     if (!isNewLine || word.value != " ") {
+      var tmpWidth = 0.0;
+      var overflowed = false;
       for (int charIndex = 0; charIndex < word.chars.length; charIndex++) {
+        tmpWidth += cellWidth;
+        if (tmpWidth > maxWidth) {
+          tmpWidth = 0;
+          currentIndex++;
+          overflowed = true;
+          cells.add([]);
+        }
         cells[currentIndex].add(Cell(wordIndex, charIndex));
+      }
+      if (overflowed) {
+        currentX = maxWidth;
       }
     }
   }

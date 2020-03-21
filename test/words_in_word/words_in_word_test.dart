@@ -58,7 +58,7 @@ void main() {
         bookId: 1,
         chapter: 1,
         verse: 1,
-        text: "Ny filazana ny razan'i Jesosy Kristy",
+        text: "Ab cdefghijkl ny razan'i Jesosy Kristy",
       ),
     ));
     store.dispatch(GoToAction(Routes.wordsInWord));
@@ -66,7 +66,9 @@ void main() {
     expect(store.state.config.screenWidth, 205);
     await Future.delayed(Duration(milliseconds: 10));
     final expectedCells = [
+      // "A-b-_"
       [Cell(0, 0), Cell(0, 1), Cell(1, 0)],
+      // "c-d-e-f-g-h-i-j"
       [
         Cell(2, 0),
         Cell(2, 1),
@@ -77,7 +79,11 @@ void main() {
         Cell(2, 6),
         Cell(2, 7)
       ],
+      // "k-l"
+      [Cell(2, 8), Cell(2, 9)],
+      // "ny "
       [Cell(4, 0), Cell(4, 1), Cell(5, 0)],
+      // "r-a-z-a-n-'-i-_"
       [
         Cell(6, 0),
         Cell(6, 1),
@@ -88,7 +94,9 @@ void main() {
         Cell(8, 0),
         Cell(9, 0)
       ],
+      // "Jesosy "
       [Cell(10, 0), Cell(10, 1), Cell(10, 2), Cell(10, 3), Cell(10, 4), Cell(10, 5), Cell(11, 0)],
+      // "Kristy"
       [Cell(12, 0), Cell(12, 1), Cell(12, 2), Cell(12, 3), Cell(12, 4), Cell(12, 5)]
     ];
     expect(store.state.wordsInWord.cells, expectedCells);
