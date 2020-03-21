@@ -29,7 +29,6 @@ class WordsInWordControls extends StatelessWidget {
             proposition: state.proposition,
             propose: _viewModel.propose,
             animation: _viewModel.wordsInWord.propositionAnimation,
-            stopAnimationHandler: _viewModel.stopPropositionAnimationHandler,
           ),
           ComboDisplay(),
           RepaintBoundary(
@@ -77,14 +76,12 @@ class _PropositionDisplay extends StatelessWidget {
   final List<Char> proposition;
   final AppColorTheme theme;
   final PropositionAnimations animation;
-  final Function() stopAnimationHandler;
 
   _PropositionDisplay({
     @required this.animation,
     @required this.proposition,
     @required this.propose,
     @required this.theme,
-    @required this.stopAnimationHandler,
   });
 
   Function get clickHandler {
@@ -106,7 +103,6 @@ class _PropositionDisplay extends StatelessWidget {
       animationWidget: _PropositionAnimation(
         theme: theme,
         animation: animation,
-        stopAnimationHandler: stopAnimationHandler,
       ),
       child: Text(
         _text,
@@ -174,13 +170,11 @@ class _PropositionContainer extends StatelessWidget {
 
 class _PropositionAnimation extends StatelessWidget {
   final PropositionAnimations animation;
-  final Function() stopAnimationHandler;
   final AppColorTheme theme;
 
   _PropositionAnimation({
     @required this.theme,
     @required this.animation,
-    @required this.stopAnimationHandler,
   });
 
   @override
@@ -189,7 +183,6 @@ class _PropositionAnimation extends StatelessWidget {
       return SizedBox.shrink();
     } else {
       return Animator(
-        endAnimationListener: (_) => stopAnimationHandler(),
         duration: Duration(milliseconds: 200),
         builder: _builder,
       );

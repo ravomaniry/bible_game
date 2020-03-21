@@ -1,3 +1,4 @@
+import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/models/cell.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:flutter/foundation.dart';
@@ -15,6 +16,7 @@ class WordsInWordState {
   final List<Char> slots;
   final List<Char> slotsBackup;
   final List<Char> proposition;
+  final List<Coordinate> newlyRevealed;
   final List<List<int>> slotsDisplayIndexes;
   final PropositionAnimations propositionAnimation;
 
@@ -24,6 +26,7 @@ class WordsInWordState {
     @required this.slotsBackup,
     @required this.proposition,
     @required this.wordsToFind,
+    this.newlyRevealed = const [],
     this.resolvedWords = const [],
     this.slotsDisplayIndexes = const [],
     this.propositionAnimation = PropositionAnimations.none,
@@ -48,6 +51,7 @@ class WordsInWordState {
     List<Word> wordsToFind,
     List<Word> resolvedWords,
     List<List<int>> slotsDisplayIndexes,
+    List<Coordinate> newlyRevealed,
     final PropositionAnimations propositionAnimation,
   }) {
     return WordsInWordState(
@@ -58,6 +62,7 @@ class WordsInWordState {
       wordsToFind: wordsToFind ?? this.wordsToFind,
       resolvedWords: resolvedWords ?? this.resolvedWords,
       slotsDisplayIndexes: slotsDisplayIndexes ?? this.slotsDisplayIndexes,
+      newlyRevealed: newlyRevealed ?? this.newlyRevealed,
       propositionAnimation: propositionAnimation ?? this.propositionAnimation,
     );
   }

@@ -168,7 +168,7 @@ void main() {
     expect(store.state.wordsInWord.wordsToFind.map((w) => w.value), ["Ny", "teny", "Azy"]);
     expect(store.state.wordsInWord.proposition, []);
     // Tap on slot 0(N) and 2(E) => Update proposition => Empty slots 0, 2
-    // Propose => Wrong => trigger Failure animation => play wrong sfx
+    // Propose => Wrong => trigger Failure animation
     await tester.tap(find.byKey(Key("slot_0")));
     await tester.tap(find.byKey(Key("slot_3")));
     await tester.pump(Duration(milliseconds: 10));
@@ -196,6 +196,7 @@ void main() {
     // => "Ny" is removed from words to find
     // => Success animation triggered
     // => Short Success sfx played
+    // => Cells added in newly revealed
     await tester.tap(find.byKey(Key("slot_4")));
     await tester.pump(Duration(milliseconds: 10));
     await tester.tap(find.byKey(Key("slot_1")));
@@ -219,9 +220,17 @@ void main() {
     expect(store.state.game.inventory.money, 4);
     expect(store.state.wordsInWord.propositionAnimation, PropositionAnimations.success);
     verify(store.state.sfx.playShortSuccess()).called(1);
+    final cells = store.state.wordsInWord.cells;
+    final revealed = store.state.wordsInWord.newlyRevealed;
+    expect(cells[revealed[0].y][revealed[0].x], Cell(0, 0));
+    expect(cells[revealed[1].y][revealed[1].x], Cell(0, 1));
+    expect(cells[revealed[2].y][revealed[2].x], Cell(4, 0));
+    expect(cells[revealed[3].y][revealed[3].x], Cell(4, 1));
+
     // Animation is removed automatically after 0.5s
     await tester.pump(Duration(seconds: 1));
     expect(store.state.wordsInWord.propositionAnimation, PropositionAnimations.none);
+    expect(store.state.wordsInWord.newlyRevealed, []);
   });
 
   testWidgets("Click on bonuses", (WidgetTester tester) async {

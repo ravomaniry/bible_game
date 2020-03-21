@@ -4,11 +4,13 @@ import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/game/actions/actions.dart';
 import 'package:bible_game/app/inventory/actions/actions.dart';
 import 'package:bible_game/app/inventory/actions/bonus.dart';
+import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/words_in_word/actions/action_creators.dart';
 import 'package:bible_game/games/words_in_word/actions/bonus.dart';
 import 'package:bible_game/games/words_in_word/actions/cells_action.dart';
 import 'package:bible_game/games/words_in_word/reducer/state.dart';
 import 'package:bible_game/models/bible_verse.dart';
+import 'package:bible_game/models/cell.dart';
 import 'package:bible_game/models/word.dart';
 import 'package:bible_game/sfx/actions.dart';
 import 'package:bible_game/utils/pair.dart';
@@ -24,6 +26,7 @@ class ProposeResult {
   final List<Char> slots;
   final List<Word> resolvedWords;
   final int deltaMoney;
+  final List<Coordinate> newlyRevealed;
 
   ProposeResult({
     @required this.verse,
@@ -33,6 +36,7 @@ class ProposeResult {
     @required this.slots,
     @required this.resolvedWords,
     @required this.deltaMoney,
+    @required this.newlyRevealed,
   });
 }
 
@@ -55,6 +59,7 @@ ThunkAction<AppState> initializeState() {
       slotsBackup: slots,
       resolvedWords: [],
       proposition: [],
+      newlyRevealed: [],
     )));
     store.dispatch(recomputeCells());
   };
@@ -208,10 +213,13 @@ ThunkAction<AppState> slotClickHandler(int index) {
 }
 
 ThunkAction<AppState> proposeWordsInWord() {
-  return (Store<AppState> store) {
+  return (Store<AppState> store) async {
     final hasFoundMatch = propose(store);
     if (hasFoundMatch) {
       store.dispatch(_fillEmptySlots());
+      await Future.delayed(Duration(milliseconds: 500));
+      store.dispatch(_invalidateNewlyRevealed());
+      store.dispatch(stopPropositionAnimation());
     }
   };
 }
@@ -222,15 +230,15 @@ bool propose(Store<AppState> store) {
   final result = _getPropositionResult(state, prevVerse);
   final hasFoundMatch = result.hasFoundMatch;
   final wordsToFind = result.wordsToFind;
-  final verse = result.verse;
 
+  store.dispatch(UpdateGameVerse(result.verse));
   store.dispatch(UpdateWordsInWordState(state.copyWith(
     slots: result.slots,
     proposition: [],
     resolvedWords: result.resolvedWords,
     wordsToFind: wordsToFind,
+    newlyRevealed: result.newlyRevealed,
   )));
-  store.dispatch(UpdateGameVerse(verse));
   if (hasFoundMatch) {
     store.dispatch(incrementMoney(result.deltaMoney));
     store.dispatch(useBonus(result.revealed.bonus, false));
@@ -266,13 +274,15 @@ ProposeResult _getPropositionResult(WordsInWordState state, BibleVerse verse) {
     }
   }
 
+  final revealedCells = List<Cell>();
   if (hasFoundMatch) {
-    final updated = _updateVerseResolvedWords(proposition, verse);
+    final updated = _updateVerseResolvedWords(proposition, verse, revealedCells);
     verse = updated.first;
     deltaMoney = updated.last;
   } else {
     slots = state.slotsBackup;
   }
+  final newlyRevealed = _getCellsCoordinates(revealedCells, state.cells);
 
   return ProposeResult(
     verse: verse,
@@ -282,20 +292,42 @@ ProposeResult _getPropositionResult(WordsInWordState state, BibleVerse verse) {
     wordsToFind: wordsToFind,
     resolvedWords: resolvedWords,
     hasFoundMatch: hasFoundMatch,
+    newlyRevealed: newlyRevealed,
   );
 }
 
-Pair<BibleVerse, int> _updateVerseResolvedWords(List<Char> proposition, BibleVerse verse) {
+Pair<BibleVerse, int> _updateVerseResolvedWords(
+  List<Char> proposition,
+  BibleVerse verse,
+  List<Cell> revealedCells,
+) {
   var deltaMoney = 0;
   final words = List<Word>.from(verse.words);
-  for (int i = 0; i < words.length; i++) {
-    final word = words[i];
+  for (int wIndex = 0; wIndex < words.length; wIndex++) {
+    final word = words[wIndex];
     if (!word.resolved && word.sameAsChars(proposition)) {
-      words[i] = word.copyWith(resolved: true);
+      words[wIndex] = word.copyWith(resolved: true);
       deltaMoney += word.chars.where((c) => !c.resolved).length;
+      for (var cIndex = 0; cIndex < word.length; cIndex++) {
+        revealedCells.add(Cell(wIndex, cIndex));
+      }
     }
   }
   return Pair(verse.copyWith(words: words), deltaMoney);
+}
+
+List<Coordinate> _getCellsCoordinates(List<Cell> cells, List<List<Cell>> positions) {
+  final coordinates = List<Coordinate>();
+  for (final cell in cells) {
+    for (var y = 0; y < positions.length; y++) {
+      for (var x = 0; x < positions[y].length; x++) {
+        if (cell == positions[y][x]) {
+          coordinates.add(Coordinate(x, y));
+        }
+      }
+    }
+  }
+  return coordinates;
 }
 
 ThunkAction<AppState> shuffleSlotsAction() {
@@ -317,5 +349,11 @@ ThunkAction<AppState> shuffleSlotsAction() {
       slots: slots,
       slotsBackup: slotsBackup,
     )));
+  };
+}
+
+ThunkAction<AppState> _invalidateNewlyRevealed() {
+  return (store) {
+    store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(newlyRevealed: [])));
   };
 }

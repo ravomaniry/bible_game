@@ -27,7 +27,6 @@ class WordsInWordViewModel {
   final Function() propose;
   final Function() nextHandler;
   final Function() shuffleSlots;
-  final Function() stopPropositionAnimationHandler;
 
   WordsInWordViewModel({
     @required this.verse,
@@ -43,7 +42,6 @@ class WordsInWordViewModel {
     @required this.nextHandler,
     @required this.shuffleSlots,
     @required this.theme,
-    @required this.stopPropositionAnimationHandler,
   });
 
   static WordsInWordViewModel converter(Store<AppState> store) {
@@ -65,7 +63,6 @@ class WordsInWordViewModel {
       propose: () => store.dispatch(logic.proposeWordsInWord()),
       nextHandler: () => store.dispatch(saveGameAndLoadNextVerse()),
       shuffleSlots: () => store.dispatch(logic.shuffleSlotsAction()),
-      stopPropositionAnimationHandler: () => store.dispatch(stopPropositionAnimation()),
     );
   }
 }
