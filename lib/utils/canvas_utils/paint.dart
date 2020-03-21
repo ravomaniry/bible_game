@@ -16,7 +16,7 @@ class CharStyles {
 
   factory CharStyles.fromTheme(AppColorTheme theme) {
     return CharStyles(
-      separator: TextStyle(color: theme.neutral, fontWeight: FontWeight.bold),
+      separator: TextStyle(color: theme.primaryDark, fontWeight: FontWeight.bold),
       worResolved: TextStyle(color: theme.neutral, fontWeight: FontWeight.bold),
       charResolved: TextStyle(color: theme.accentLeft),
       unresolved: TextStyle(color: theme.primary.withAlpha(160)),
@@ -25,13 +25,14 @@ class CharStyles {
 }
 
 class CharPainterCache {
-  final _cache = Map<String, Map<TextStyle, TextPainter>>();
+  final _textPaintCache = Map<String, Map<TextStyle, TextPainter>>();
+  final _filledRectCache = Map<String, Paint>();
 
-  TextPainter get(String value, TextStyle style) {
-    var byValue = _cache[value];
+  TextPainter getTextPaint(String value, TextStyle style) {
+    var byValue = _textPaintCache[value];
     if (byValue == null) {
       byValue = Map();
-      _cache[value] = byValue;
+      _textPaintCache[value] = byValue;
     }
     var painter = byValue[style];
     if (painter == null) {
@@ -44,5 +45,17 @@ class CharPainterCache {
       byValue[style] = painter;
     }
     return painter;
+  }
+
+  Paint getFilledRectPaint(Color color, {int alpha = 255}) {
+    final key = "${color.toString()}_$alpha";
+    var paint = _filledRectCache[key];
+    if (paint == null) {
+      paint = Paint()
+        ..style = PaintingStyle.fill
+        ..color = color.withAlpha(alpha);
+      _filledRectCache[key] = paint;
+    }
+    return paint;
   }
 }
