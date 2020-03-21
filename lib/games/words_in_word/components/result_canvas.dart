@@ -45,19 +45,29 @@ class ResultPainter extends CustomPainter {
 
   void _drawText(int x, int y, Cell cell, Canvas canvas) {
     final word = verse.words[cell.wordIndex];
-    final char = word.chars[cell.charIndex];
-    if (word.resolved || char.resolved) {
-      final painter = _getTextPainter(word, char);
+    final value = _getTextToDisplay(word, cell.charIndex);
+    if (value != "") {
+      final painter = _getTextPainter(word, value);
       painter.paint(canvas, _getTextOffset(x, y, painter.width, painter.height));
     }
   }
 
-  TextPainter _getTextPainter(Word word, Char char) {
+  String _getTextToDisplay(Word word, int charIndex) {
+    final char = word.chars[charIndex];
+    if (word.isSeparator || word.resolved || char.resolved) {
+      return char.value;
+    } else if (word.bonus != null && charIndex == word.firstUnrevealedIndex) {
+      return String.fromCharCode(0x2B50);
+    }
+    return "";
+  }
+
+  TextPainter _getTextPainter(Word word, String value) {
     var style = word.resolved ? styles.worResolved : styles.charResolved;
     if (word.isSeparator) {
       style = styles.separator;
     }
-    return painters.getTextPaint(char.value, style);
+    return painters.getTextPaint(value, style);
   }
 
   Paint _getBackgroundPaint(Word word, int charIndex) {
@@ -80,8 +90,8 @@ class ResultPainter extends CustomPainter {
 
 Offset _getTextOffset(int x, int y, double textWidth, double textHeight) {
   return Offset(
-    cellWidth * x + (cellSize - textWidth - cellMargin) / 2,
-    marginTop + cellHeight * y + (cellHeight - textHeight) / 2,
+    cellWidth * x + (cellSize - textWidth) / 2 - cellMargin / 4,
+    marginTop + cellHeight * y + (cellHeight - textHeight) / 3,
   );
 }
 
