@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 final marginTop = 5;
 
 class ResultPainter extends CustomPainter {
-  final double margin = 10;
   final CharStyles styles;
   final BibleVerse verse;
   final CharPainterCache painters;
