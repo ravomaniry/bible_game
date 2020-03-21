@@ -24,7 +24,7 @@ class CharStyles {
   }
 }
 
-class CharPainterCache {
+class PaintersCache {
   final _textPaintCache = Map<String, Map<TextStyle, TextPainter>>();
   final _filledRectCache = Map<String, Paint>();
 

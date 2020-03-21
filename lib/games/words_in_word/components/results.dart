@@ -1,7 +1,11 @@
 import 'dart:math';
 
+import 'package:animator/animator.dart';
+import 'package:bible_game/app/theme/themes.dart';
+import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/words_in_word/actions/cells_action.dart';
-import 'package:bible_game/games/words_in_word/components/result_canvas.dart';
+import 'package:bible_game/games/words_in_word/components/result_animation_painter.dart';
+import 'package:bible_game/games/words_in_word/components/result_painter.dart';
 import 'package:bible_game/games/words_in_word/view_model.dart';
 import 'package:bible_game/models/cell.dart';
 import 'package:bible_game/utils/canvas_utils/paint.dart';
@@ -11,7 +15,7 @@ import 'package:flutter/material.dart';
 class WordsInWordResult extends StatefulWidget {
   final WordsInWordViewModel _viewModel;
   final CharStyles styles;
-  final painterCache = CharPainterCache();
+  final painterCache = PaintersCache();
 
   WordsInWordResult(this._viewModel, this.styles);
 
@@ -57,6 +61,11 @@ class _WordsInWordResultState extends State<WordsInWordResult> {
                     styles: widget.styles,
                   ),
                 ),
+                _AnimationRouter(
+                  theme: viewModel.theme,
+                  painters: widget.painterCache,
+                  revealed: viewModel.wordsInWord.newlyRevealed,
+                ),
               ],
             ),
           ),
@@ -64,6 +73,36 @@ class _WordsInWordResultState extends State<WordsInWordResult> {
       );
     }
     return Text("Nothing to show!!!");
+  }
+}
+
+class _AnimationRouter extends StatelessWidget {
+  final AppColorTheme theme;
+  final List<Coordinate> revealed;
+  final PaintersCache painters;
+
+  _AnimationRouter({
+    @required this.theme,
+    @required this.revealed,
+    @required this.painters,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (revealed.isEmpty) {
+      return SizedBox.shrink();
+    }
+    return Animator(
+      duration: const Duration(milliseconds: 400),
+      builder: (animation) => CustomPaint(
+        painter: ResultAnimationPainter(
+          theme: theme,
+          revealed: revealed,
+          painters: painters,
+          animationValue: animation.value,
+        ),
+      ),
+    );
   }
 }
 

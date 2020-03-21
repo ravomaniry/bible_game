@@ -1,13 +1,14 @@
-import 'package:bible_game/main.dart';
-import 'package:bible_game/models/bible_verse.dart';
-import 'package:bible_game/models/word.dart';
 import 'package:bible_game/app/game/actions/actions.dart';
 import 'package:bible_game/app/inventory/actions/actions.dart';
 import 'package:bible_game/app/router/actions.dart';
 import 'package:bible_game/app/router/routes.dart';
-import 'package:bible_game/games/words_in_word/actions/action_creators.dart';
 import 'package:bible_game/games/anagram/actions/logic.dart';
+import 'package:bible_game/games/words_in_word/actions/action_creators.dart';
 import 'package:bible_game/games/words_in_word/actions/cells_action.dart';
+import 'package:bible_game/games/words_in_word/reducer/state.dart';
+import 'package:bible_game/main.dart';
+import 'package:bible_game/models/bible_verse.dart';
+import 'package:bible_game/models/word.dart';
 import 'package:bible_game/test_helpers/store.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -72,7 +73,7 @@ void main() {
 
     /// Propose with partial correct response - do nothing
     await tester.tap(proposeBtn);
-    await tester.pump();
+    await tester.pump(Duration(seconds: 1));
     expect(store.state.wordsInWord.proposition, []);
     expect(store.state.wordsInWord.wordsToFind.length, 3);
     expect(store.state.wordsInWord.slots, Word.from("ABC", 0, false).chars);
@@ -93,6 +94,9 @@ void main() {
     expect(store.state.wordsInWord.wordsToFind.length, 2);
     expect(store.state.wordsInWord.proposition, []);
     expect(store.state.game.inventory.money, 2);
+    expect(store.state.wordsInWord.propositionAnimation, PropositionAnimations.success);
+    await tester.pump(Duration(seconds: 1));
+    expect(store.state.wordsInWord.propositionAnimation, PropositionAnimations.none);
 
     /// Propose and resolve D-E-F-G => only A-B-C is left
     store.dispatch(UpdateWordsInWordState(store.state.wordsInWord.copyWith(
@@ -100,6 +104,7 @@ void main() {
       slots: [null, null, null, null],
       slotsBackup: Word.from("DEFG", 2, false).chars,
     )));
+    await tester.pump();
     store.dispatch(recomputeSlotsIndexes());
     await tester.pump();
     await tester.tap(proposeBtn);
@@ -127,7 +132,7 @@ void main() {
     )));
     await tester.pump(Duration(milliseconds: 10));
     await tester.tap(proposeBtn);
-    await tester.pump(Duration(milliseconds: 10));
+    await tester.pump(Duration(seconds: 1));
     expect(store.state.game.isResolved, true);
   });
 }

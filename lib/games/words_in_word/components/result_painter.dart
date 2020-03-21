@@ -12,7 +12,7 @@ final marginTop = 5;
 class ResultPainter extends CustomPainter {
   final CharStyles styles;
   final BibleVerse verse;
-  final CharPainterCache painters;
+  final PaintersCache painters;
   final List<List<Cell>> cells;
   final AppColorTheme theme;
 

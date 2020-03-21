@@ -178,7 +178,7 @@ void main() {
       proposition: Word.from("AOKA", 0, false).chars,
     )));
     store.dispatch(proposeWordsInWord());
-    await tester.pump();
+    await tester.pump(Duration(seconds: 1));
     expect(find.byKey(Key("expandedVerse")), findsOneWidget);
     expect(store.state.wordsInWord.wordsToFind, []);
     expect(store.state.game.isResolved, true);

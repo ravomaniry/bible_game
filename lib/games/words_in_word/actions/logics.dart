@@ -213,14 +213,19 @@ ThunkAction<AppState> slotClickHandler(int index) {
 }
 
 ThunkAction<AppState> proposeWordsInWord() {
-  return (Store<AppState> store) async {
+  return (Store<AppState> store) {
     final hasFoundMatch = propose(store);
     if (hasFoundMatch) {
       store.dispatch(_fillEmptySlots());
-      await Future.delayed(Duration(milliseconds: 500));
-      store.dispatch(_invalidateNewlyRevealed());
-      store.dispatch(stopPropositionAnimation());
     }
+  };
+}
+
+ThunkAction<AppState> _scheduleAnimDismiss() {
+  return (store) async {
+    await Future.delayed(Duration(milliseconds: 500));
+    store.dispatch(_invalidateNewlyRevealed());
+    store.dispatch(stopPropositionAnimation());
   };
 }
 
@@ -239,6 +244,7 @@ bool propose(Store<AppState> store) {
     wordsToFind: wordsToFind,
     newlyRevealed: result.newlyRevealed,
   )));
+  store.dispatch(_scheduleAnimDismiss());
   if (hasFoundMatch) {
     store.dispatch(incrementMoney(result.deltaMoney));
     store.dispatch(useBonus(result.revealed.bonus, false));
