@@ -5,6 +5,7 @@ it('Extract, compress words', async () => {
     const verses = [
         { book: 1, chapter: 1, verse: 1, text: 'Tamin\'ny faharoa, Tamin\'ny faharoa.' },
         { book: 1, chapter: 1, verse: 2, text: 'Tamin\'ny faharoa, dia tamin\'ny \n faharoa ...' },
+        { book: 1, chapter: 1, verse: 3, text: 'Ny faharoa2' },
     ];
     const words = ['faharoa', 'Tamin'];
     expect(extractWords(verses)).toEqual(words);
@@ -13,6 +14,7 @@ it('Extract, compress words', async () => {
         verses: [
             '1 1 1 _1\'ny _0, _1\'ny _0.',
             '1 1 2 _1\'ny _0, dia tamin\'ny _0 ...',
+            '1 1 3 Ny faharoa2',
         ]
     });
 });

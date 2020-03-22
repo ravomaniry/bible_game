@@ -61,7 +61,7 @@ function compressVerses(verses) {
 }
 
 
-const wordRegex = /[a-zàäèìïòô]+/gi;
+const wordRegex = /[a-z0-9àäèìïòô]+/gi;
 function getWordsInText(text) {
     return text.match(wordRegex) || [];
 }

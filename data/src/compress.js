@@ -4,10 +4,10 @@ const { compressVerses } = require('./compressUtils');
 
 
 function runScript() {
-    const verses = require('../output/verses.json');
+    const verses = require('../full/verses.json');
     const compressed = compressVerses(verses);
     fs.writeFileSync(
-        path.join(__dirname, '..', 'output', 'compresses.txt'),
+        path.join(__dirname, '..', 'output', 'verses.txt'),
         `${compressed.words.join(' ')}\n${compressed.verses.join('\n')}`,
         'utf8'
     );
