@@ -1,7 +1,8 @@
 const fs = require('fs');
+const Path = require('path');
 
-const verses = JSON.parse(fs.readFileSync(__dirname + '/new_testament_verses.json', 'utf8'));
-const books = JSON.parse(fs.readFileSync(__dirname + '/new_testament_books.json', 'utf8'));
+const verses = JSON.parse(fs.readFileSync(Path.join(__dirname,'../full', 'verses.json'), 'utf8'));
+const books = JSON.parse(fs.readFileSync(Path.join(__dirname,'../output', 'books.json'), 'utf8'));
 const counts = {};
 const chars = {};
 
