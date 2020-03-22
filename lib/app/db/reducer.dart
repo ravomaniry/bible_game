@@ -1,6 +1,7 @@
 import 'package:bible_game/app/db/actions.dart';
+import 'package:bible_game/app/db/state.dart';
 
-bool dbReducer(bool state, action) {
+DbState dbReducer(DbState state, action) {
   if (action is UpdateDbState) {
     return action.payload;
   }

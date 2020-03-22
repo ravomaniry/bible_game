@@ -87,7 +87,7 @@ class DbAdapterMock extends Mock implements DbAdapter {
       when(adapter.booksCount).thenAnswer((_) => Future.value((10)));
     }
     if (methods.contains("getVersesCount")) {
-      when(adapter.versesCount).thenAnswer((_) => Future.value((10)));
+      when(adapter.versesCount).thenAnswer((_) => Future.value((31099)));
     }
     if (methods.contains("getBooks")) {
       when(adapter.books).thenAnswer((_) => Future.value([
@@ -101,16 +101,37 @@ class DbAdapterMock extends Mock implements DbAdapter {
         chapter: anyNamed("chapter"),
         verse: anyNamed("verse"),
       )).thenAnswer((_) async {
-        return [VerseModel(book: 1, id: 2, chapter: 3, verse: 4, text: "Ny filazana ny razan'i Jesosy Kristy")];
+        return [
+          VerseModel(
+            book: 1,
+            id: 2,
+            chapter: 3,
+            verse: 4,
+            text: "Ny filazana ny razan'i Jesosy Kristy",
+          )
+        ];
       });
     }
     if (methods.contains("getSingleVerse")) {
       when(adapter.getSingleVerse(any, any, any)).thenAnswer((_) async {
-        return VerseModel(book: 1, id: 2, chapter: 3, verse: 4, text: "Ny filazana ny razan'i Jesosy Kristy");
+        return VerseModel(
+          book: 1,
+          id: 2,
+          chapter: 3,
+          verse: 4,
+          text: "Ny filazana ny razan'i Jesosy Kristy",
+        );
       });
     }
     if (methods.contains("getBookById")) {
-      when(adapter.getBookById(any)).thenAnswer((_) => Future.value(BookModel(id: 1, name: "Genesisy", chapters: 10)));
+      when(adapter.getBookById(any)).thenAnswer((_) => Future.value(BookModel(
+            id: 1,
+            name: "Genesisy",
+            chapters: 10,
+          )));
+    }
+    if (methods.contains("verses.reset")) {
+      when(adapter.resetVerses()).thenAnswer((_) async {});
     }
     if (methods.contains("verses.saveAll")) {
       when(adapter.verseModel.saveAll(any)).thenAnswer((_) => Future.value());

@@ -24,7 +24,7 @@ AppState mainReducer(AppState state, action) {
     config: configReducer(state.config, action),
     error: errorReducer(state.error, action),
     route: routerReducer(state.route, action),
-    dbIsReady: dbReducer(state.dbIsReady, action),
+    dbState: dbReducer(state.dbState, action),
     game: gamesListStateReducer(state.game, action),
     explorer: explorerReducer(state.explorer, action),
     wordsInWord: wordsInWordReducer(state.wordsInWord, action),

@@ -1,4 +1,4 @@
-import 'package:bible_game/app/components/splash_screen.dart';
+import 'package:bible_game/app/splash_screen/splash_screen.dart';
 import 'package:bible_game/app/help/components/gallery/gallery.dart';
 import 'package:bible_game/app/help/components/gallery/models.dart';
 import 'package:bible_game/app/help/components/text/models.dart';

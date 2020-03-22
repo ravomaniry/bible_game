@@ -1,45 +1,47 @@
 import 'package:animator/animator.dart';
-import 'package:bible_game/app/app_state.dart';
-import 'package:bible_game/app/components/oscillator.dart';
+import 'package:bible_game/app/splash_screen/oscillator.dart';
+import 'package:bible_game/app/splash_screen/view_model.dart';
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:redux/redux.dart';
-
-AppColorTheme _converter(Store<AppState> store) => store.state.theme;
 
 class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StoreConnector(
-      converter: _converter,
+      converter: converter,
       builder: _builder,
     );
   }
 
-  Widget _builder(BuildContext context, AppColorTheme theme) {
+  Widget _builder(BuildContext context, SplashScreenViewModel viewModel) {
     return Scaffold(
       key: Key("loader"),
       body: Center(
-        child: SplashScreenBody(theme),
+        child: SplashScreenBody(
+          viewModel.theme,
+          dbStatus: viewModel.dbStatus,
+        ),
       ),
     );
   }
 }
 
 class SplashScreenBody extends StatelessWidget {
-  final AppColorTheme _theme;
+  final AppColorTheme theme;
+  final double dbStatus;
 
-  SplashScreenBody(this._theme);
+  SplashScreenBody(this.theme, {this.dbStatus = 0});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        WordsOscillator(_theme),
-        _BarAnimator(_theme),
+        WordsOscillator(theme),
+        _BarAnimator(theme),
+        _DbStatus(theme, dbStatus),
       ],
     );
   }
@@ -80,5 +82,28 @@ class _Bar extends StatelessWidget {
         borderRadius: BorderRadius.all(Radius.circular(5)),
       ),
     );
+  }
+}
+
+class _DbStatus extends StatelessWidget {
+  final AppColorTheme _theme;
+  final double _dbStatus;
+
+  _DbStatus(this._theme, this._dbStatus);
+
+  @override
+  Widget build(BuildContext context) {
+    if (_dbStatus > 0 && _dbStatus < 100) {
+      return Text(
+        (_dbStatus * 100).toStringAsFixed(1),
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: _theme.primary,
+        ),
+      );
+    } else {
+      return SizedBox.shrink();
+    }
   }
 }

@@ -1,4 +1,4 @@
-import 'package:bible_game/app/components/oscillator.dart';
+import 'package:bible_game/app/splash_screen/oscillator.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

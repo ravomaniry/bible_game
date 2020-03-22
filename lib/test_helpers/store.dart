@@ -31,7 +31,6 @@ Store<AppState> newMockedStore() {
     explorer: ExplorerState(),
     route: Routes.home,
     wordsInWord: WordsInWordState.emptyState(),
-    dbIsReady: false,
     error: null,
     quitSingleGameDialog: false,
     maze: MazeState.emptyState(),

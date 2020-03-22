@@ -1,5 +1,5 @@
 import 'package:bible_game/app/app_state.dart';
-import 'package:bible_game/app/components/splash_screen.dart';
+import 'package:bible_game/app/splash_screen/splash_screen.dart';
 import 'package:bible_game/app/game/components/in_game_header.dart';
 import 'package:bible_game/games/words_in_word/components/controls.dart';
 import 'package:bible_game/games/words_in_word/components/results.dart';

@@ -25,7 +25,7 @@ void main() {
     expect(explorerFinder, findsOneWidget);
     expect(form, findsOneWidget);
     expect(versesDisplay, findsNothing);
-    expect(store.state.dbIsReady, true);
+    expect(store.state.dbState.isReady, true);
     expect(store.state.game.books.length, 2);
 
     /// select verse and load: book 2: 3: 4

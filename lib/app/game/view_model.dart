@@ -43,7 +43,7 @@ class GameViewModel {
     return GameViewModel(
       state: store.state.game,
       theme: store.state.theme,
-      isReady: store.state.dbIsReady,
+      isReady: store.state.dbState.isReady,
       toggleDialog: () => store.dispatch(ToggleGamesEditorDialog()),
       goToExplorer: () => store.dispatch(ExplorerActions.goToExplorer()),
       openInventory: () => store.dispatch(OpenInventoryDialog(false)),

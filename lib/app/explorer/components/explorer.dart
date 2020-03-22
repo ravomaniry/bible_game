@@ -1,5 +1,5 @@
 import 'package:bible_game/app/app_state.dart';
-import 'package:bible_game/app/components/splash_screen.dart';
+import 'package:bible_game/app/splash_screen/splash_screen.dart';
 import 'package:bible_game/app/explorer/view_model.dart';
 import 'package:bible_game/app/game_editor/components/editor.dart';
 import 'package:bible_game/app/game_editor/components/form.dart';

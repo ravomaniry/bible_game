@@ -1,4 +1,5 @@
 import 'package:bible_game/app/config/state.dart';
+import 'package:bible_game/app/db/state.dart';
 import 'package:bible_game/app/error/state.dart';
 import 'package:bible_game/app/explorer/state.dart';
 import 'package:bible_game/app/game/reducer/state.dart';
@@ -24,7 +25,8 @@ class AppState {
   final MazeState maze;
   final bool quitSingleGameDialog;
   final DbAdapter dba;
-  final bool dbIsReady;
+  final DbState dbState;
+
   final ErrorState error;
   final AssetBundle assetBundle;
   final ExplorerState explorer;
@@ -38,7 +40,7 @@ class AppState {
     this.route = Routes.home,
     this.wordsInWord,
     this.quitSingleGameDialog = false,
-    this.dbIsReady = false,
+    this.dbState = const DbState(),
     this.error,
     this.maze,
     this.help,

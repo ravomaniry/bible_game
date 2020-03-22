@@ -22,11 +22,17 @@ class DbAdapter {
 
   Future<int> saveGame(GameModel game) => game.save();
 
-  Future<int> get booksCount => bookModel?.select(columnsToSelect: [BookModelFields.name.count()])?.toCount();
+  Future<int> get booksCount =>
+      bookModel?.select(columnsToSelect: [BookModelFields.name.count()])?.toCount();
 
-  Future<int> get versesCount => verseModel?.select(columnsToSelect: [VerseModelFields.id.count()])?.toCount();
+  Future<int> get versesCount =>
+      verseModel?.select(columnsToSelect: [VerseModelFields.id.count()])?.toCount();
 
   Future<List<BookModel>> get books => bookModel?.select()?.toList();
+
+  Future resetVerses() async {
+    await db.execSQL("DELETE FROM ${TableVerseModel.getInstance.tableName};");
+  }
 
   Future<List<VerseModel>> getVerses(int bookId, {int chapter, int verse}) async {
     if (verseModel == null) {
