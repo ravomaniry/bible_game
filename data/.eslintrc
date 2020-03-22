@@ -1,0 +1,90 @@
+{
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 2018,
+        "sourceType": "module",
+        "project": "./tsconfig.json"
+    },
+    "env": {
+        "es6": true,
+        "node": true,
+        "jest/globals": true
+    },
+    "plugins": [
+        "jest",
+        "import"
+    ],
+    "extends": [
+        "eslint:recommended"
+    ],
+    "rules": {
+        "indent": "off",
+        "@typescript-eslint/no-var-requires": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/member-delimiter-style": "off",
+        "@typescript-eslint/camelcase": "off",
+        "no-console": "off",
+        "@typescript-eslint/interface-name-prefix": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/array-type": "warn",
+        "eqeqeq": "warn",
+        "no-template-curly-in-string": "warn",
+        "@typescript-eslint/explicit-member-accessibility": "off",
+        "@typescript-eslint/no-empty-interface": "warn",
+        "semi": "warn",
+        "no-mixed-operators": [
+            "error",
+            {
+                "groups": [
+                    [
+                        "&",
+                        "|",
+                        "^",
+                        "~",
+                        "<<",
+                        ">>",
+                        ">>>"
+                    ],
+                    [
+                        "==",
+                        "!=",
+                        "===",
+                        "!==",
+                        ">",
+                        ">=",
+                        "<",
+                        "<="
+                    ],
+                    [
+                        "&&",
+                        "||"
+                    ],
+                    [
+                        "in",
+                        "instanceof"
+                    ]
+                ],
+                "allowSamePrecedence": true
+            }
+        ],
+        "@typescript-eslint/no-use-before-define": [
+            "error",
+            {
+                "functions": false
+            }
+        ],
+        "@typescript-eslint/no-object-literal-type-assertion": "off",
+        "@typescript-eslint/indent": "error",
+        "prefer-const": "warn",
+        "no-shadow": [
+            "error",
+            {
+                "builtinGlobals": false,
+                "hoist": "functions",
+                "allow": []
+            }
+        ],
+        "import/no-webpack-loader-syntax": 2
+    }
+}
