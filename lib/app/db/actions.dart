@@ -69,7 +69,7 @@ Future checkAndUpdateVerses(DbAdapter dba, AssetBundle assetBundle, Function dis
       for (var i = 1; i < linesNum; i++) {
         if (lines[i].isNotEmpty) {
           verses.add(parseVerse(lines[i], words));
-          if (verses.length == 100) {
+          if (verses.length == 200) {
             await retry(() => dba.verseModel.saveAll(verses));
             verses = [];
             dispatch(UpdateDbState(DbState(isReady: false, status: i / linesNum)));
