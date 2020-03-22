@@ -1,9 +1,10 @@
-import 'package:bible_game/app/splash_screen/splash_screen.dart';
+import 'package:bible_game/app/game_editor/components/editor.dart';
 import 'package:bible_game/app/help/components/gallery/gallery.dart';
 import 'package:bible_game/app/help/components/gallery/models.dart';
 import 'package:bible_game/app/help/components/text/models.dart';
 import 'package:bible_game/app/help/components/text/text.dart';
 import 'package:bible_game/app/help/view_model.dart';
+import 'package:bible_game/app/splash_screen/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -23,15 +24,50 @@ class Help extends StatelessWidget {
     if (viewModel.state?.value == null) {
       return SplashScreen();
     }
-    return ListView(
-      key: Key("helpScreen"),
+    return Column(
       children: [
-        for (final item in viewModel.state.value)
-          if (item is TextContent)
-            HelpText(item, viewModel.theme, key: item.key)
-          else if (item is GalleryContent)
-            HelpGallery(item, viewModel.theme, key: item.key)
+        _HelpBody(viewModel),
+        _HelpButton(viewModel),
       ],
+    );
+  }
+}
+
+class _HelpBody extends StatelessWidget {
+  final HelpViewModel _viewModel;
+
+  _HelpBody(this._viewModel);
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: ListView(
+        key: Key("helpScreen"),
+        children: [
+          for (final item in _viewModel.state.value)
+            if (item is TextContent)
+              HelpText(item, _viewModel.theme, key: item.key)
+            else if (item is GalleryContent)
+              HelpGallery(item, _viewModel.theme, key: item.key)
+        ],
+      ),
+    );
+  }
+}
+
+class _HelpButton extends StatelessWidget {
+  final HelpViewModel _viewModel;
+
+  _HelpButton(this._viewModel);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: OkButton(
+        btnKey: "closeHelpBtn",
+        theme: _viewModel.theme,
+        onClick: _viewModel.closeHandler,
+      ),
     );
   }
 }

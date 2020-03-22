@@ -24,6 +24,9 @@ class AssetBundleMock extends Mock implements AssetBundle {
       return "filazana Jesosy Kristy\n"
           "1 2 3 Ny _0 ny razan'i _1 _2";
     });
+    when(assetBundle.loadString("assets/help.json")).thenAnswer(
+      (_) async => "[]",
+    );
     return assetBundle;
   }
 }

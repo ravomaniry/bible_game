@@ -49,5 +49,12 @@ void main() {
     BackButtonInterceptor.popRoute();
     await tester.pump(Duration(seconds: 1));
     expect(find.byKey(Key("home")), findsOneWidget);
+
+    await tester.tap(find.byKey(Key("goToHelp")));
+    await tester.pump(Duration(seconds: 1));
+    expect(find.byKey(Key("helpScreen")), findsOneWidget);
+    await tester.tap(find.byKey(Key("closeHelpBtn")));
+    await tester.pump();
+    expect(find.byKey(Key("home")), findsOneWidget);
   });
 }

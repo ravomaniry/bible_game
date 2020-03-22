@@ -33,10 +33,12 @@ class GameEditor extends StatelessWidget {
 class OkButton extends StatelessWidget {
   final Function onClick;
   final AppColorTheme theme;
+  final String btnKey;
 
   OkButton({
     @required this.onClick,
     @required this.theme,
+    this.btnKey,
   });
 
   @override
@@ -45,7 +47,7 @@ class OkButton extends StatelessWidget {
       alignment: Alignment.center,
       child: RaisedButton(
         color: theme.primary,
-        key: Key("editorOkBtn"),
+        key: Key(btnKey ?? "editorOkBtn"),
         onPressed: onClick,
         child: Icon(
           Icons.thumb_up,

@@ -2,6 +2,7 @@ import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/db/state.dart';
 import 'package:bible_game/app/error/actions.dart';
 import 'package:bible_game/app/game/actions/init.dart';
+import 'package:bible_game/app/help/actions/init.dart';
 import 'package:bible_game/db/db_adapter.dart';
 import 'package:bible_game/db/model.dart';
 import 'package:bible_game/statics/texts.dart';
@@ -55,10 +56,10 @@ Future checkAndUpdateBooks(DbAdapter dba, AssetBundle assetBundle, Function disp
 Future checkAndUpdateVerses(DbAdapter dba, AssetBundle assetBundle, Function dispatch) async {
   try {
     final count = await retry<int>(() => dba.versesCount);
-    print("$count verses found");
     if (count == null) {
       dispatch(ReceiveError(Errors.unknownDbError()));
     } else if (count < 30000) {
+      dispatch(goToHelp());
       await dba.resetVerses();
       final source = await retry<String>(() => assetBundle.loadString("assets/db/verses.txt"));
       var verses = List<VerseModel>();

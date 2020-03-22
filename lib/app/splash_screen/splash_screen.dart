@@ -95,7 +95,7 @@ class _DbStatus extends StatelessWidget {
   Widget build(BuildContext context) {
     if (_dbStatus > 0 && _dbStatus < 100) {
       return Text(
-        (_dbStatus * 100).toStringAsFixed(1),
+        "${(_dbStatus * 100).toStringAsFixed(1)}%",
         style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
