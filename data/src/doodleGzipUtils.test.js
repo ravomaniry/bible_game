@@ -55,7 +55,6 @@ it('getSequenceDelta', () => {
 
 it('Extract sequences', () => {
     const lines = Array(100).fill('aa aa aa aa b aa');
-    console.log(extractSequences(lines));
     expect(extractSequences(lines)).toEqual([" aa ",
         'a aa',
         'aa a',
@@ -76,4 +75,15 @@ it('lineToSequenceIndexes', () => {
     const sequences = ['aa', 'a', 'b'];
     expect(lineToSequenceIndexes('aaa', sequences)).toEqual([1, 2]);
     expect(lineToSequenceIndexes('ba aa', sequences)).toEqual([3, 2, 1]);
+});
+
+
+it('Compress', () => {
+    const lines = ['abcabc', 'abc']; // 2 bits - 01101101101100
+    const { header, body } = gzipTxt(lines);
+    expect(header).toEqual('a_b_c');
+    expect(body.length).toEqual(3);
+    expect(body[0]).toEqual(parseInt('01101101', 2)); // a:01 b:10 c:11 a:01
+    expect(body[1]).toEqual(parseInt('10110001', 2)); // b:10 c:11 sep: 00 a:01
+    expect(body[2]).toEqual(parseInt('10110000', 2)); // b:10 c:11 0000
 });

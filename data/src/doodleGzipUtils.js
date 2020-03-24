@@ -25,12 +25,14 @@ function extractSequences(lines) {
 
 function formatBody(lines, sequences) {
     console.log('formatBody');
-    const charSize = getCharSize(sequences);
-    const separator = addZeroes('0', charSize);
-    let binayString = separator;
+    const charSize = getCharSize(sequences.length);
+    const separator = addZeroesBefore('0', charSize);
+    let binayString = '';
     lines.forEach((line, i) => {
         const indexes = lineToSequenceIndexes(line, sequences);
-        const binaries = indexes.map((index) => addZeroes(index.toString(2), charSize)).join('');
+        const binaries = indexes
+            .map((index) => addZeroesBefore(index.toString(2), charSize))
+            .join('');
         binayString += binaries + separator;
         if (i % 1000 === 0) {
             console.log('   ', i);
@@ -39,7 +41,7 @@ function formatBody(lines, sequences) {
     return binayString;
 }
 
-function addZeroes(str, charSize) {
+function addZeroesBefore(str, charSize) {
     while (str.length < charSize) {
         str = '0' + str;
     }
@@ -48,11 +50,11 @@ function addZeroes(str, charSize) {
 
 
 function binaryStringToBytes(binaryStr) {
-    binaryStr += '0'.repeat(8 - binaryStr.length % 8)
+    binaryStr += '0'.repeat(8 - binaryStr.length % 8);
     const length = binaryStr.length / 8;
     const buffer = Buffer.alloc(length);
     for (let i = 0; i < length; i++) {
-        const str = binaryStr.substring(i * 8, i * 8 + 1);
+        const str = binaryStr.substring(i * 8, i * 8 + 8);
         buffer[i] = parseInt(str, 2);
     }
     return buffer;
@@ -185,6 +187,7 @@ module.exports = {
     gzipTxt,
     getTextSize,
     getCharSize,
+    addZeroesBefore,
     getCharCombinations,
     countCharCombinations,
     getSequenceDelta,
