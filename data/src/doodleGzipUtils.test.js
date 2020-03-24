@@ -4,7 +4,7 @@ const { gzipTxt, countCharCombinations, getCharCombinations, getCharSize,
 
 
 it('getCharSize', () => {
-    expect(getCharSize(2)).toEqual(1);
+    expect(getCharSize(2)).toEqual(2);
     expect(getCharSize(3)).toEqual(2);
     expect(getCharSize(5)).toEqual(3);
     expect(getCharSize(10)).toEqual(4);
@@ -12,13 +12,8 @@ it('getCharSize', () => {
 
 
 it('All sequences', () => {
-    expect(getCharCombinations(['a', 'b'], 3)).toEqual([
+    expect(getCharCombinations(['a', 'b'], 3, ['aaa bbb bba'])).toEqual([
         'aaa',
-        'aab',
-        'aba',
-        'abb',
-        'baa',
-        'bab',
         'bba',
         'bbb'
     ]);
@@ -26,14 +21,17 @@ it('All sequences', () => {
 
 
 it('countSequences', () => {
-    const lines = ['ab abc ba', 'bb bc'];
+    const lines = ['ababcba', 'bbabc'];
     const chars = ['a', 'b', 'c'];
-    const length = 2;
-    expect(countCharCombinations(lines, chars, length)).toEqual([
-        { value: 'ab', n: 2 },
-        { value: 'bc', n: 2 },
-        { value: 'ba', n: 1 },
-        { value: 'bb', n: 1 },
+    expect(countCharCombinations(lines, chars, [2, 3])).toEqual([
+        { value: 'ba', n: 3 },
+        { value: 'ab', n: 3 },
+        { value: 'bab', n: 2 },
+        { value: 'abc', n: 2 },
+        { value: 'bba', n: 1 },
+        { value: 'cba', n: 1 },
+        { value: 'bcb', n: 1 },
+        { value: 'aba', n: 1 },
     ]);
 });
 
@@ -41,14 +39,14 @@ it('countSequences', () => {
 it('getTextSize', () => {
     const chars = ['a', 'b', 'c'];
     const totalLength = 20;
-    expect(getTextSize(chars, totalLength)).toEqual(8 * 6 + 2 * 20);
+    expect(getTextSize(chars, totalLength)).toEqual(80);
 });
 
 
 it('getSequenceDelta', () => {
     const totalLength = 100;
     const nextLength = 70;
-    const chars = ['a', 'b', ' '];
+    const chars = ['a', 'b'];
     const current = 8 * 6 + totalLength * 2;
     const next = 8 * 9 + nextLength * 2;
     expect(getSequenceDelta({ value: 'aa', n: 30 }, chars, totalLength)).toEqual(next - current);
@@ -56,12 +54,26 @@ it('getSequenceDelta', () => {
 
 
 it('Extract sequences', () => {
-    const lines = Array(10).fill('aa aa b aa');
-    expect(extractSequences(lines)).toEqual(['aa', 'a', ' ', 'b']);
-})
+    const lines = Array(100).fill('aa aa aa aa b aa');
+    console.log(extractSequences(lines));
+    expect(extractSequences(lines)).toEqual([" aa ",
+        'a aa',
+        'aa a',
+        'b aa',
+        ' b a',
+        'a b ',
+        'aa b',
+        ' aa',
+        'aa ',
+        'a a',
+        'a',
+        ' ',
+        'b'
+    ]);
+});
 
 it('lineToSequenceIndexes', () => {
     const sequences = ['aa', 'a', 'b'];
-    expect(lineToSequenceIndexes('aaa', sequences)).toEqual([0, 1]);
-    expect(lineToSequenceIndexes('ba aa', sequences)).toEqual([2, 1, 0]);
+    expect(lineToSequenceIndexes('aaa', sequences)).toEqual([1, 2]);
+    expect(lineToSequenceIndexes('ba aa', sequences)).toEqual([3, 2, 1]);
 });

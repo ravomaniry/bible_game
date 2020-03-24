@@ -8,8 +8,9 @@ function compressVerses() {
     const lines = verses.map(({ book, chapter, verse, text }) =>
         `${book} ${chapter} ${verse} ${text}`
     );
-    const data = gzipTxt(lines);
-    fs.writeFileSync(path.join(__dirname, '..', 'output', 'compressed'), data);
+    const { header, body } = gzipTxt(lines);
+    fs.writeFileSync(path.join(__dirname, '..', 'output', 'verse_words.txt'), header, 'utf8');
+    fs.writeFileSync(path.join(__dirname, '..', 'output', 'verses.nothing'), body);
 }
 
 compressVerses();

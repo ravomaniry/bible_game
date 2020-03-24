@@ -75,5 +75,6 @@ function cleanString(value) {
 module.exports = {
     extractWords,
     compressVerses,
+    getWordsInText,
     replaceVersesWords,
 }

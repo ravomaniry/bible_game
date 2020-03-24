@@ -1,15 +1,17 @@
 function gzipTxt(lines) {
     const sequences = extractSequences(lines);
-    const header = Buffer.from(sequences.join(' '), 'utf8');
+    const header = sequences.join('_');
     const body = binaryStringToBytes(formatBody(lines, sequences));
-    return Buffer.concat([header, body]);
+    return { header, body };
 }
 
 
 function extractSequences(lines) {
     let totalLength = lines.map((x) => x.length).reduce((a, b) => a + b);
-    const chars = ['__'].concat(extractChars(lines));
-    const allSequences = countCharCombinations(lines, chars, 2);
+    const chars = extractChars(lines);
+    console.log(chars.length, 'chars');
+    const allSequences = countCharCombinations(lines, chars, [4, 3]);
+    console.log(allSequences.length, 'sequences');
     const sequences = chars;
     for (const sequence of allSequences) {
         const delta = getSequenceDelta(sequence, sequences, totalLength);
@@ -20,7 +22,6 @@ function extractSequences(lines) {
     }
     return sequences.sort((a, b) => b.length - a.length);
 }
-
 
 function formatBody(lines, sequences) {
     console.log('formatBody');
@@ -65,7 +66,7 @@ function lineToSequenceIndexes(line, sequences) {
         let foundMatch = false;
         for (let i = 0, max = sequences.length; i < max; i++) {
             if (remaining.startsWith(sequences[i])) {
-                indexes.push(i);
+                indexes.push(i + 1); // 1 is for the separator char
                 remaining = remaining.substring(sequences[i].length);
                 foundMatch = true;
                 break;
@@ -96,13 +97,16 @@ function extractChars(lines) {
  * @param {string[]} chars
  * @param {number} length
  */
-function countCharCombinations(lines, chars, length) {
+function countCharCombinations(lines, chars, lengths) {
     console.log('countCharCombinations');
     const occurences = new Map();
-    const sequences = getCharCombinations(chars, length);
+    const combinations = lengths
+        .map((length) => getCharCombinations(chars, length, lines))
+        .reduce((a, b) => a.concat(b));
     for (let i = lines.length - 1; i >= 0; i--) {
         const line = lines[i];
-        for (const seq of sequences) {
+        for (let seqIndex = combinations.length; seqIndex >= 0; seqIndex--) {
+            const seq = combinations[seqIndex];
             const matches = line.split(seq).length - 1;
             if (matches) {
                 occurences.set(seq, (occurences.get(seq) || 0) + matches);
@@ -114,23 +118,43 @@ function countCharCombinations(lines, chars, length) {
     }
     const count = [];
     occurences.forEach((n, value) => count.push({ n, value }));
+    count.sort((a, b) => b.value.length - a.value.length);
+    removeSubstrings(count);
     count.sort((a, b) => b.n - a.n);
     return count;
 }
 
-
-function getCharCombinations(chars, length) {
+function getCharCombinations(chars, length, lines) {
+    const sample = lines.slice(0, 500).join(' ');
     let sequences = Array.from(chars);
     for (let gen = 1; gen < length; gen++) {
         const tmp = sequences;
         sequences = [];
         for (const seq of tmp) {
-            for (const char of chars) {
-                sequences.push(seq + char);
+            chars.forEach((char) => {
+                const comb = seq + char;
+                if (sample.includes(comb)) {
+                    sequences.push(comb);
+                }
+            });
+        }
+    }
+    return sequences.filter((seq) => sample.includes(seq));
+}
+
+function removeSubstrings(combinatonCount) {
+    for (let i = combinatonCount.length - 1; i >= 0; i--) {
+        for (let j = 0; j < i; j++) {
+            if (
+                combinatonCount[i] &&
+                combinatonCount[j] &&
+                combinatonCount[j].n === combinatonCount[i].n &&
+                combinatonCount[j].value.includes(combinatonCount[i].value)) {
+                combinatonCount.splice(i, 1);
+                continue;
             }
         }
     }
-    return sequences;
 }
 
 
@@ -143,14 +167,14 @@ function getSequenceDelta(sequence, sequences, totalLength) {
 }
 
 function getTextSize(chars, totalLength) {
-    const header = 8 * chars.map((x) => x.length + 1).reduce((a, b) => a + b);
+    const header = Buffer.from(chars.join('_'), 'utf8').byteLength * 8;
     const body = getCharSize(chars.length) * totalLength;
     return header + body;
 }
 
 function getCharSize(charsCount) {
     let size = 0;
-    while (Math.pow(2, size) < charsCount) {
+    while (Math.pow(2, size) <= charsCount) {
         size++;
     }
     return size;
