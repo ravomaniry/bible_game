@@ -10,7 +10,7 @@ function compressVerses() {
     );
     const { header, body } = gzipTxt(lines);
     fs.writeFileSync(path.join(__dirname, '..', 'output', 'verse_words.txt'), header, 'utf8');
-    fs.writeFileSync(path.join(__dirname, '..', 'output', 'verses.nothing'), body);
+    fs.writeFileSync(path.join(__dirname, '..', 'output', 'verses.ddlzip'), body);
 }
 
 compressVerses();
