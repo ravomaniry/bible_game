@@ -1,9 +1,9 @@
-import 'package:bible_game/app/help/components/text/models.dart';
+import 'package:bible_game/app/help/components/models.dart';
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:flutter/widgets.dart';
 
 class HelpText extends StatelessWidget {
-  final TextContent _content;
+  final HelpSection _content;
   final AppColorTheme _theme;
 
   HelpText(this._content, this._theme, {key: Key}) : super(key: key);
@@ -14,9 +14,9 @@ class HelpText extends StatelessWidget {
       child: Column(
         children: [
           _Title(_content.title, _theme),
-          for (var i = 0; i < _content.paragraphs.length; i++)
+          for (var i = 0; i < _content.contents.length; i++)
             _Paragraph(
-              _content.paragraphs[i],
+              _content.contents[i],
               i,
             )
         ],
@@ -46,7 +46,7 @@ class _Title extends StatelessWidget {
 }
 
 class _Paragraph extends StatelessWidget {
-  final ParagraphContent _value;
+  final HelpParagraph _value;
 
   _Paragraph(this._value, int index) : super(key: Key(index.toString()));
 

@@ -1,12 +1,12 @@
-import 'package:bible_game/app/help/components/gallery/models.dart';
+import 'package:bible_game/app/help/components/models.dart';
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:flutter/widgets.dart';
 
-class HelpGallery extends StatelessWidget {
-  final GalleryContent _content;
+class Gallery extends StatelessWidget {
+  final HelpGallery _content;
   final AppColorTheme _theme;
 
-  HelpGallery(this._content, this._theme, {key: Key}) : super(key: key);
+  Gallery(this._content, this._theme, {key: Key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class _Title extends StatelessWidget {
 }
 
 class _ImageItem extends StatelessWidget {
-  final HelpImageRef image;
+  final HelpGalleryImage image;
 
   _ImageItem(this.image) : super(key: image.key);
 

@@ -1,7 +1,6 @@
 import 'dart:convert';
 
-import 'package:bible_game/app/help/components/gallery/models.dart';
-import 'package:bible_game/app/help/components/text/models.dart';
+import 'package:bible_game/app/help/components/models.dart';
 
 List<dynamic> parseHelp(String value) {
   final help = List();
@@ -21,37 +20,37 @@ List<dynamic> parseHelp(String value) {
   return help;
 }
 
-List<GalleryContent> _parseGallery(value) {
-  final images = List<HelpImageRef>();
+List<HelpGallery> _parseGallery(value) {
+  final images = List<HelpGalleryImage>();
   final inputImages = value["images"];
   if (inputImages is Iterable) {
     for (final item in inputImages) {
-      final image = HelpImageRef(item["title"] ?? "", item["path"] ?? "");
+      final image = HelpGalleryImage(item["title"] ?? "", item["path"] ?? "");
       if (image.path != "") {
         images.add(image);
       }
     }
   }
   if (images.isNotEmpty) {
-    return [GalleryContent(value["title"].toString() ?? "", images)];
+    return [HelpGallery(value["title"].toString() ?? "", images)];
   }
   return [];
 }
 
-List<TextContent> _parseText(value) {
-  final paragraphs = List<ParagraphContent>();
+List<HelpSection> _parseText(value) {
+  final paragraphs = List<HelpParagraph>();
   final inputParagraphs = value["paragraphs"];
   if (inputParagraphs is Iterable) {
     for (final item in inputParagraphs) {
       final subtitle = item["subtitle"] ?? "";
       final body = item["body"] ?? "";
       if (subtitle != "" || body != "") {
-        paragraphs.add(ParagraphContent("$subtitle", "$body"));
+        paragraphs.add(HelpParagraph("$subtitle", "$body"));
       }
     }
   }
   if (paragraphs.isNotEmpty) {
-    return [TextContent(value["title"] ?? "", paragraphs)];
+    return [HelpSection(value["title"] ?? "", paragraphs)];
   }
   return [];
 }

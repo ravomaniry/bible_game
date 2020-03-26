@@ -1,5 +1,5 @@
 import 'package:back_button_interceptor/back_button_interceptor.dart';
-import 'package:bible_game/app/help/components/text/models.dart';
+import 'package:bible_game/app/help/components/models.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/test_helpers/store.dart';
 import 'package:flutter/widgets.dart';
@@ -36,9 +36,9 @@ void main() {
 
     /// Load and parse value
     expect(store.state.help.value, [
-      TextContent("1", [
-        ParagraphContent("1.1", "1.1 body"),
-        ParagraphContent("1.2", "1.2 body"),
+      HelpSection("1", [
+        HelpParagraph("1.1", "1.1 body"),
+        HelpParagraph("1.2", "1.2 body"),
       ]),
     ]);
 
