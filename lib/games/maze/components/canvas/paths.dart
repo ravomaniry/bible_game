@@ -2,7 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:bible_game/games/maze/components/canvas/words_bg.dart';
-import 'package:bible_game/games/maze/components/cell.dart';
+import 'package:bible_game/games/maze/components/config.dart';
 import 'package:bible_game/games/maze/components/maze_board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/maze/redux/paths_view_model.dart';

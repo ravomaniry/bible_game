@@ -1,5 +1,5 @@
 import 'package:bible_game/app/theme/themes.dart';
-import 'package:bible_game/games/maze/components/cell.dart';
+import 'package:bible_game/games/maze/components/config.dart';
 import 'package:bible_game/games/words_in_word/actions/cells_action.dart';
 import 'package:bible_game/models/bible_verse.dart';
 import 'package:bible_game/models/cell.dart';

@@ -51,7 +51,6 @@ ThunkAction<AppState> _loadBackgrounds() {
         MapEntry("forest", "assets/images/maze/forest.png"),
         MapEntry("frontier", "assets/images/maze/frontier.png"),
         MapEntry("downLeft", "assets/images/maze/down_left.png"),
-        MapEntry("word", "assets/images/maze/word.png"),
         MapEntry("downRight", "assets/images/maze/down_right.png"),
         MapEntry("downLeft2", "assets/images/maze/down_left_2.png"),
         MapEntry("upLeft", "assets/images/maze/up_left.png"),

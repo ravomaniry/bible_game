@@ -1,5 +1,5 @@
 import 'package:animator/animator.dart';
-import 'package:bible_game/games/maze/components/cell.dart';
+import 'package:bible_game/games/maze/components/config.dart';
 import 'package:bible_game/games/maze/components/maze_board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/games/maze/redux/animations_view_model.dart';

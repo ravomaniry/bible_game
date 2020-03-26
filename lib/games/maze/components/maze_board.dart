@@ -1,6 +1,6 @@
 import 'package:bible_game/app/splash_screen/splash_screen.dart';
 import 'package:bible_game/app/theme/themes.dart';
-import 'package:bible_game/games/maze/components/cell.dart';
+import 'package:bible_game/games/maze/components/config.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/redux/board_view_model.dart';
 import 'package:flutter/material.dart';

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:bible_game/games/maze/components/cell.dart';
+import 'package:bible_game/games/maze/components/config.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:bible_game/utils/pair.dart';

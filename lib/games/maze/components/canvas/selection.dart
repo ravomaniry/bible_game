@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:bible_game/app/app_state.dart';
 import 'package:bible_game/app/theme/themes.dart';
-import 'package:bible_game/games/maze/components/cell.dart';
+import 'package:bible_game/games/maze/components/config.dart';
 import 'package:bible_game/games/maze/models/coordinate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';

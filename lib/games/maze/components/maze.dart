@@ -10,7 +10,7 @@ import 'package:bible_game/games/maze/components/canvas/paths.dart';
 import 'package:bible_game/games/maze/components/canvas/selection.dart';
 import 'package:bible_game/games/maze/components/canvas/words.dart';
 import 'package:bible_game/games/maze/components/canvas/words_bg.dart';
-import 'package:bible_game/games/maze/components/cell.dart';
+import 'package:bible_game/games/maze/components/config.dart';
 import 'package:bible_game/games/maze/components/footer.dart';
 import 'package:bible_game/games/maze/components/maze_board.dart';
 import 'package:bible_game/games/maze/components/scroller.dart';

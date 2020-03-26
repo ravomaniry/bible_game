@@ -1,5 +1,5 @@
 import 'package:bible_game/app/app_state.dart';
-import 'package:bible_game/games/maze/components/cell.dart';
+import 'package:bible_game/games/maze/components/config.dart';
 import 'package:bible_game/games/maze/components/maze_board.dart';
 import 'package:bible_game/games/maze/models/board.dart';
 import 'package:bible_game/games/maze/redux/board_view_model.dart';
