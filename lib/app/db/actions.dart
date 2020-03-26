@@ -1,4 +1,5 @@
 import 'package:bible_game/app/app_state.dart';
+import 'package:bible_game/app/db/extract_verse.dart';
 import 'package:bible_game/app/db/state.dart';
 import 'package:bible_game/app/error/actions.dart';
 import 'package:bible_game/app/game/actions/init.dart';
@@ -54,58 +55,43 @@ Future checkAndUpdateBooks(DbAdapter dba, AssetBundle assetBundle, Function disp
 }
 
 Future checkAndUpdateVerses(DbAdapter dba, AssetBundle assetBundle, Function dispatch) async {
-  try {
-    final count = await retry<int>(() => dba.versesCount);
-    if (count == null) {
-      dispatch(ReceiveError(Errors.unknownDbError()));
-    } else if (count < 30000) {
-      dispatch(goToHelp());
-      await dba.resetVerses();
-      final source = await retry<String>(() => assetBundle.loadString("assets/db/verses.txt"));
-      var verses = List<VerseModel>();
-      final lines = source.split("\n");
-      final words = lines[0].split(" ");
-      final linesNum = lines.length;
-      for (var i = 1; i < linesNum; i++) {
-        if (lines[i].isNotEmpty) {
-          verses.add(parseVerse(lines[i], words));
-          if (verses.length == 200) {
-            await retry(() => dba.verseModel.saveAll(verses));
-            verses = [];
-            dispatch(UpdateDbState(DbState(isReady: false, status: i / linesNum)));
-          }
+//  try {
+  final count = await retry<int>(() => dba.versesCount);
+  if (count == null) {
+    dispatch(ReceiveError(Errors.unknownDbError()));
+  } else if (count < 30000) {
+    dispatch(goToHelp());
+    await dba.resetVerses();
+
+    final lines = await loadVerses(assetBundle);
+    var verses = List<VerseModel>();
+    final linesNum = lines.length;
+    for (var i = 0; i < linesNum; i++) {
+      if (lines[i].isNotEmpty) {
+        verses.add(parseVerse(lines[i]));
+        if (verses.length == 200) {
+          await retry(() => dba.verseModel.saveAll(verses));
+          verses = [];
+          dispatch(UpdateDbState(DbState(isReady: false, status: i / linesNum)));
         }
       }
-      if (verses.isNotEmpty) {
-        await retry(() => dba.verseModel.saveAll(verses));
-      }
     }
-  } catch (e) {
-    dispatch(ReceiveError(Errors.unknownDbError()));
-    print("%%%%%%%%%%%% Error in checkAndUpdateVerses %%%%%%%%%%%%%");
-    print(e);
+    if (verses.isNotEmpty) {
+      await retry(() => dba.verseModel.saveAll(verses));
+    }
   }
+//  } catch (e) {
+//    dispatch(ReceiveError(Errors.unknownDbError()));
+//    print("%%%%%%%%%%%% Error in checkAndUpdateVerses %%%%%%%%%%%%%");
+//    print(e);
+//  }
 }
 
-VerseModel parseVerse(String line, List<String> words) {
-  var text = "";
-  final bookIdStr = _getFirstWord(line);
-  line = line.substring(bookIdStr.length + 1);
-  final chapterStr = _getFirstWord(line);
-  line = line.substring(chapterStr.length + 1);
-  final verseStr = _getFirstWord(line);
-  line = line.substring(verseStr.length + 1);
-  for (var i = 0, max = line.length; i < max; i++) {
-    final char = line[i];
-    if (char == "_") {
-      final num = _getWordIndex(line, i + 1);
-      text += words[int.parse(num, radix: 36)];
-      i += num.length;
-    } else {
-      text += char;
-    }
-  }
-
+VerseModel parseVerse(String line) {
+  final bookIdStr = _getNthWord(line, 0);
+  final chapterStr = _getNthWord(line, 1);
+  final verseStr = _getNthWord(line, 2);
+  final text = line.substring(bookIdStr.length + chapterStr.length + verseStr.length + 3);
   return VerseModel(
     book: int.parse(bookIdStr, radix: 10),
     chapter: int.parse(chapterStr, radix: 10),
@@ -114,16 +100,16 @@ VerseModel parseVerse(String line, List<String> words) {
   );
 }
 
-String _getFirstWord(String value) {
-  return value.substring(0, value.indexOf(" "));
-}
-
-final _numRegex = RegExp("[a-z0-9]+", caseSensitive: false);
-
-String _getWordIndex(String line, int start) {
-  var base36 = "";
-  for (var i = start; i < line.length && _numRegex.hasMatch(line[i]); i++) {
-    base36 += line[i];
+String _getNthWord(String value, int n) {
+  var index = 0;
+  for (var i = 0, length = value.length; i < length; i++) {
+    if (value[i] == " ") {
+      index++;
+    } else {
+      if (index == n) {
+        return value.substring(i, value.indexOf(" ", i));
+      }
+    }
   }
-  return base36;
+  return "";
 }

@@ -22,9 +22,8 @@ import 'package:redux_thunk/redux_thunk.dart';
 
 void main() {
   test("Parse verse", () {
-    final words = ["Tamin", "voalohany", "Andriamanitra"];
-    final line = "1 2 3 _0'ny _1 _2.";
-    final model = parseVerse(line, words);
+    final line = "1 2 3 Tamin'ny voalohany Andriamanitra.";
+    final model = parseVerse(line);
     expect(model.book, 1);
     expect(model.chapter, 2);
     expect(model.verse, 3);
@@ -55,14 +54,14 @@ void main() {
 
   testWidgets("Db initialization success", (WidgetTester tester) async {
     List<BookModel> booksListMock = [];
-    defaultGames.forEach((game) {
+    for (final game in defaultGames) {
       if (booksListMock.where((b) => b.id == game.startBook).isEmpty) {
         booksListMock.add(BookModel(id: game.startBook, name: "Book ${game.startBook}"));
       }
       if (booksListMock.where((b) => b.id == game.endBook).isEmpty) {
         booksListMock.add(BookModel(id: game.endBook, name: "Book ${game.endBook}"));
       }
-    });
+    }
 
     final dba = DbAdapterMock();
     DbAdapterMock.mockMethods(dba, ["verses.saveAll", "books.saveAll", "games.saveAll"]);
