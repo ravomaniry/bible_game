@@ -10,7 +10,7 @@ function extractSequences(lines) {
     let totalLength = lines.map((x) => x.length).reduce((a, b) => a + b);
     const chars = extractChars(lines);
     console.log(chars.length, 'chars');
-    const allSequences = countCharCombinations(lines, chars, [4, 3]);
+    const allSequences = countCharCombinations(lines, chars, [4, 3, 2]);
     console.log(allSequences.length, 'sequences');
     const sequences = chars;
     for (const sequence of allSequences) {
