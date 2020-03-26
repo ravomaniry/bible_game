@@ -2,27 +2,24 @@ import 'package:bible_game/app/help/models.dart';
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:flutter/widgets.dart';
 
-class Gallery extends StatelessWidget {
+class HelpGalleryView extends StatelessWidget {
   final HelpGallery _value;
   final AppColorTheme _theme;
 
-  Gallery(this._value, this._theme, Key key) : super(key: key);
+  HelpGalleryView(this._value, this._theme) : super(key: _value.key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
-      ),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            _Title(this._value.title, _theme),
-            for (final image in _value.images) _ImageItem(image)
-          ],
+    return Column(
+      children: [
+        _Title(this._value.title, _theme),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: [for (final image in _value.images) _ImageItem(image)],
+          ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -52,12 +49,17 @@ class _ImageItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    return Stack(
       children: [
-        Image(
-          image: AssetImage(image.path),
-          fit: BoxFit.fitHeight,
+        Padding(
+          padding: EdgeInsets.only(right: 10),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: 240),
+            child: Image(
+              image: AssetImage(image.path),
+              fit: BoxFit.fitHeight,
+            ),
+          ),
         ),
         Text(image.title),
       ],

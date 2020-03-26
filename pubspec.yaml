@@ -58,6 +58,7 @@ flutter:
     - assets/images/
     - assets/sfx/
     - assets/images/maze/
+    - assets/images/help/
     - assets/help.json
   #  - images/a_dot_ham.jpeg
 

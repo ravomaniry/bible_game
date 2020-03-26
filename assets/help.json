@@ -1,11 +1,26 @@
 [
   {
-    "type": "text",
+    "type": "section",
     "title": "miTeny",
-    "paragraphs": [
+    "contents": [
       {
-        "subtitle": "Teny fohy:",
-        "body": "Ny tanjona amin’ity lalao ity dia ny hamantarana ny andinin-tSoratra Marina amin’ny alalan’ny lalao.\nAhitana karazan-dalao telo ato amin’ity laharana ity."
+        "type": "gallery",
+        "title": "Tongasoa",
+        "images": [
+          {
+            "title": "1",
+            "path": "assets/images/help/tongasoa_1.png"
+          },
+          {
+            "title": "2",
+            "path": "assets/images/help/tongasoa_2.png"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "title": "Pejy tonga soa",
+        "text": "Ity pejy ity no ahitanao ny: \n1- Bokotra hanokafana ny Baiboly, \n2- Bokotra hamoronana lalao vaovao, \n3 - Bokora manokatra ity fanampiana ity,\nary koa ny lisitry ny lalao efa misy."
       }
     ]
   }
