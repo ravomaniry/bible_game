@@ -62,7 +62,6 @@ void main() {
         booksListMock.add(BookModel(id: game.endBook, name: "Book ${game.endBook}"));
       }
     }
-
     final dba = DbAdapterMock();
     DbAdapterMock.mockMethods(dba, ["verses.saveAll", "books.saveAll", "games.saveAll"]);
     final store = Store<AppState>(

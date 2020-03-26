@@ -55,36 +55,35 @@ Future checkAndUpdateBooks(DbAdapter dba, AssetBundle assetBundle, Function disp
 }
 
 Future checkAndUpdateVerses(DbAdapter dba, AssetBundle assetBundle, Function dispatch) async {
-//  try {
-  final count = await retry<int>(() => dba.versesCount);
-  if (count == null) {
-    dispatch(ReceiveError(Errors.unknownDbError()));
-  } else if (count < 30000) {
-    dispatch(goToHelp());
-    await dba.resetVerses();
-
-    final lines = await loadVerses(assetBundle);
-    var verses = List<VerseModel>();
-    final linesNum = lines.length;
-    for (var i = 0; i < linesNum; i++) {
-      if (lines[i].isNotEmpty) {
-        verses.add(parseVerse(lines[i]));
-        if (verses.length == 200) {
-          await retry(() => dba.verseModel.saveAll(verses));
-          verses = [];
-          dispatch(UpdateDbState(DbState(isReady: false, status: i / linesNum)));
+  try {
+    final count = await retry<int>(() => dba.versesCount);
+    if (count == null) {
+      dispatch(ReceiveError(Errors.unknownDbError()));
+    } else if (count < 30000) {
+      dispatch(goToHelp());
+      await dba.resetVerses();
+      final lines = await loadVerses(assetBundle);
+      var verses = List<VerseModel>();
+      final linesNum = lines.length;
+      for (var i = 0; i < linesNum; i++) {
+        if (lines[i].isNotEmpty) {
+          verses.add(parseVerse(lines[i]));
+          if (verses.length == 200) {
+            await retry(() => dba.verseModel.saveAll(verses));
+            verses = [];
+            dispatch(UpdateDbState(DbState(isReady: false, status: i / linesNum)));
+          }
         }
       }
+      if (verses.isNotEmpty) {
+        await retry(() => dba.verseModel.saveAll(verses));
+      }
     }
-    if (verses.isNotEmpty) {
-      await retry(() => dba.verseModel.saveAll(verses));
-    }
+  } catch (e) {
+    dispatch(ReceiveError(Errors.unknownDbError()));
+    print("%%%%%%%%%%%% Error in checkAndUpdateVerses %%%%%%%%%%%%%");
+    print(e);
   }
-//  } catch (e) {
-//    dispatch(ReceiveError(Errors.unknownDbError()));
-//    print("%%%%%%%%%%%% Error in checkAndUpdateVerses %%%%%%%%%%%%%");
-//    print(e);
-//  }
 }
 
 VerseModel parseVerse(String line) {
