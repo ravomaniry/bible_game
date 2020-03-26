@@ -1,12 +1,12 @@
-import 'package:bible_game/app/help/components/models.dart';
+import 'package:bible_game/app/help/models.dart';
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:flutter/widgets.dart';
 
 class Gallery extends StatelessWidget {
-  final HelpGallery _content;
+  final HelpGallery _value;
   final AppColorTheme _theme;
 
-  Gallery(this._content, this._theme, {key: Key}) : super(key: key);
+  Gallery(this._value, this._theme, Key key) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +18,8 @@ class Gallery extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         child: Row(
           children: [
-            _Title(this._content.title, _theme),
-            for (final image in _content.images) _ImageItem(image)
+            _Title(this._value.title, _theme),
+            for (final image in _value.images) _ImageItem(image)
           ],
         ),
       ),

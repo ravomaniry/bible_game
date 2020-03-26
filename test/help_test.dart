@@ -1,5 +1,5 @@
 import 'package:back_button_interceptor/back_button_interceptor.dart';
-import 'package:bible_game/app/help/components/models.dart';
+import 'package:bible_game/app/help/models.dart';
 import 'package:bible_game/main.dart';
 import 'package:bible_game/test_helpers/store.dart';
 import 'package:flutter/widgets.dart';
@@ -11,11 +11,40 @@ void main() {
     final store = newMockedStore();
     final json = '['
         '  {'
-        '    "type": "text",'
+        '    "type": "section",'
         '    "title": "1",'
-        '    "paragraphs": ['
-        '      { "subtitle": "1.1", "body": "1.1 body" },'
-        '      { "subtitle": "1.2", "body": "1.2 body" }'
+        '    "contents": ['
+        '      {'
+        '         "type": "paragraph",'
+        '         "title": "1.1",'
+        '         "text": "1.1 body"'
+        '      },'
+        '      {'
+        '        "type": "gallery",'
+        '        "title": "1.2",'
+        '        "images": ['
+        '          {"title": "1.2.1", "path": "121.jpg"},'
+        '          {"title": "1.2.2", "path": "122.jpg"}'
+        '        ]'
+        '      },'
+        '      {'
+        '        "type": "paragraph",'
+        '        "title": "1.3",'
+        '        "text": "1.3 body"'
+        '      },'
+        '      {'
+        '        "type": "ingored",'
+        '        "title": "Ingored"'
+        '      }'
+        '    ]'
+        '  },'
+        '  {'
+        '    "type": "gallery",'
+        '    "images": ['
+        '      {'
+        '        "title": "hello",'
+        '        "path": "world.jpg"'
+        '      }'
         '    ]'
         '  }'
         ']';
@@ -35,11 +64,16 @@ void main() {
     await tester.pump(Duration(seconds: 2));
 
     /// Load and parse value
-    expect(store.state.help.value, [
+    expect(store.state.help.value, <HelpUiItem>[
       HelpSection("1", [
         HelpParagraph("1.1", "1.1 body"),
-        HelpParagraph("1.2", "1.2 body"),
+        HelpGallery(
+          "1.2",
+          [HelpGalleryImage("1.2.1", "121.jpg"), HelpGalleryImage("1.2.2", "122.jpg")],
+        ),
+        HelpParagraph("1.3", "1.3 body"),
       ]),
+      HelpGallery("", [HelpGalleryImage("hello", "world.jpg")]),
     ]);
 
     /// display help screen
