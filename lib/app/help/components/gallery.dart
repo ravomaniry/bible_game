@@ -1,5 +1,7 @@
 import 'package:bible_game/app/help/models.dart';
 import 'package:bible_game/app/theme/themes.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 class HelpGalleryView extends StatelessWidget {
@@ -16,7 +18,7 @@ class HelpGalleryView extends StatelessWidget {
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
-            children: [for (final image in _value.images) _ImageItem(image)],
+            children: [for (final image in _value.images) _ImageItem(image, _theme)],
           ),
         ),
       ],
@@ -44,25 +46,52 @@ class _Title extends StatelessWidget {
 
 class _ImageItem extends StatelessWidget {
   final HelpGalleryImage image;
+  final AppColorTheme _theme;
 
-  _ImageItem(this.image) : super(key: image.key);
+  _ImageItem(this.image, this._theme) : super(key: image.key);
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Padding(
-          padding: EdgeInsets.only(right: 10),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxHeight: 240),
-            child: Image(
-              image: AssetImage(image.path),
-              fit: BoxFit.fitHeight,
+    return Container(
+      decoration: BoxDecoration(
+        color: _theme.primary,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      padding: const EdgeInsets.all(2),
+      margin: const EdgeInsets.all(1),
+      child: Column(
+        children: [
+          Container(
+            height: 200,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: Image(
+                image: AssetImage(image.path),
+                fit: BoxFit.fitHeight,
+              ),
             ),
           ),
-        ),
-        Text(image.title),
-      ],
+          _ImageTitle(image.title, _theme),
+        ],
+      ),
+    );
+  }
+}
+
+class _ImageTitle extends StatelessWidget {
+  final String _value;
+  final AppColorTheme _theme;
+
+  _ImageTitle(this._value, this._theme);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      _value,
+      style: TextStyle(
+        color: _theme.neutral,
+        fontSize: 12,
+      ),
     );
   }
 }

@@ -10,11 +10,15 @@ class HelpParagraphView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _Title(_value.title, _theme, _value.key),
-        _Text(_value.text),
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _Title(_value.title, _theme, _value.key),
+          _Text(_value.text),
+        ],
+      ),
     );
   }
 }
@@ -31,10 +35,9 @@ class _Title extends StatelessWidget {
     return Text(
       _value,
       style: TextStyle(
-        color: _theme.accentLeft,
+        fontSize: 16,
+        color: _theme.primary,
         fontWeight: FontWeight.bold,
-        fontSize: 18,
-        decoration: TextDecoration.underline,
       ),
     );
   }

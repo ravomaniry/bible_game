@@ -1,5 +1,5 @@
-import 'package:bible_game/app/help/models.dart';
 import 'package:bible_game/app/help/components/router.dart';
+import 'package:bible_game/app/help/models.dart';
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:flutter/widgets.dart';
 
@@ -12,6 +12,7 @@ class HelpSectionView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _Title(_value.title, _theme),
         _Body(_value.contents, _theme),
@@ -32,8 +33,9 @@ class _Title extends StatelessWidget {
       child: Text(
         _value,
         style: TextStyle(
+          fontSize: 24,
           color: _theme.accentLeft,
-          fontSize: 20,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );
@@ -48,8 +50,10 @@ class _Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Padding(
+      padding: const EdgeInsets.all(6),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [for (final item in _value) helpComponentRouter(item, _theme)],
       ),
     );
