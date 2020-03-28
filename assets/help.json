@@ -27,7 +27,7 @@
       {
         "type": "paragraph",
         "title": "",
-        "text": "Ity pejy ity no miseho raha vao manokatra ny miTeny ianao.\nAhitana ny: \n1- Bokotra manokatra ny Baiboly, \n2- Bokotra hamoronana lalao vaovao, \n3- Bokora manokatra ity fanampiana ity,\n4- ary koa ny lisitry ny lalao efa misy."
+        "text": "Ity pejy ity no miseho raha vao manokatra ny miTeny ianao.\nAhitana ny: \n(1) Bokotra manokatra ny Baiboly, \n(2) Bokotra hamoronana lalao vaovao, \n(3) Bokora manokatra ity fanampiana ity,\n(4) ary koa ny lisitry ny lalao efa misy."
       }
     ]
   },
@@ -57,6 +57,36 @@
         "type": "paragraph",
         "title": "",
         "text": "Ny tanjona dia ny hamantatra ilay andinin-tSoratra Masina iray. Ireo karazany telo ireo no hita ato anatin'ity kilalao ity."
+      },
+      {
+        "type": "gallery",
+        "title": "Kadoa",
+        "images": [
+          {
+            "title": "Kadoa",
+            "path": "assets/images/help/bonus.png"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "title": "",
+        "text": "Ny kadoa dia ahafahana maneho ny ampahan'ireo teny izay hotadiavina."
+      },
+      {
+        "type": "gallery",
+        "title": "Valiny",
+        "images": [
+          {
+            "title": "Valiny",
+            "path": "assets/images/help/result.png"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "title": "",
+        "text": "Rehefa vita ny andinin-teny iray dia miseho toy izao.\n(1) Ahafahana mamaky ny andinin-tSoratra Masina eo alohan'ilay andininy vao vita.\n(2) Manokatra ny teny manaraka"
       },
       {
         "type": "paragraph",
