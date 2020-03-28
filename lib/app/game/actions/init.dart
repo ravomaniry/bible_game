@@ -31,7 +31,7 @@ final defaultGames = [
     inventory: defaultInventory,
     model: GameModel(
       id: 1,
-      name: "Pentatioka",
+      name: "Genesisy - Deotoronomia",
       startBook: 1,
       startChapter: 1,
       startVerse: 1,
