@@ -61,10 +61,11 @@ Future checkAndUpdateVerses(DbAdapter dba, AssetBundle assetBundle, Function dis
       dispatch(ReceiveError(Errors.unknownDbError()));
     } else if (count < 30000) {
       dispatch(goToHelp());
+      dispatch(UpdateDbState(DbState(isReady: false, status: 0.01)));
       await dba.resetVerses();
       final lines = await loadVerses(assetBundle);
+      final batchSize = 1000;
       final linesNum = lines.length;
-      final batchSize = 500;
       var verses = List<VerseModel>();
       for (var i = 0; i < linesNum; i++) {
         if (lines[i].isNotEmpty) {
