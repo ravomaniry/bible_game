@@ -23,8 +23,8 @@ void main() {
         '        "type": "gallery",'
         '        "title": "1.2",'
         '        "images": ['
-        '          {"title": "1.2.1", "path": "121.jpg"},'
-        '          {"title": "1.2.2", "path": "122.jpg"}'
+        '          {"title": "1.2.1", "path": "assets/images/help/home.png"},'
+        '          {"title": "1.2.2", "path": "assets/images/help/bonus.png"}'
         '        ]'
         '      },'
         '      {'
@@ -43,7 +43,7 @@ void main() {
         '    "images": ['
         '      {'
         '        "title": "hello",'
-        '        "path": "world.jpg"'
+        '        "path": "assets/images/help/wiw.png"'
         '      }'
         '    ]'
         '  }'
@@ -69,11 +69,14 @@ void main() {
         HelpParagraph("1.1", "1.1 body"),
         HelpGallery(
           "1.2",
-          [HelpGalleryImage("1.2.1", "121.jpg"), HelpGalleryImage("1.2.2", "122.jpg")],
+          [
+            HelpGalleryImage("1.2.1", "assets/images/help/home.png"),
+            HelpGalleryImage("1.2.2", "assets/images/help/bonus.png")
+          ],
         ),
         HelpParagraph("1.3", "1.3 body"),
       ]),
-      HelpGallery("", [HelpGalleryImage("hello", "world.jpg")]),
+      HelpGallery("", [HelpGalleryImage("hello", "assets/images/help/wiw.png")]),
     ]);
 
     /// display help screen
