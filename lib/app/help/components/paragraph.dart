@@ -13,19 +13,19 @@ class HelpParagraphView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _Title(_value.title, _theme, _value.key),
+        ParagraphTitle(_value.title, _theme, _value.key),
         _Text(_value.text),
       ],
     );
   }
 }
 
-class _Title extends StatelessWidget {
+class ParagraphTitle extends StatelessWidget {
   final String _value;
   final AppColorTheme _theme;
   final Key key;
 
-  _Title(this._value, this._theme, this.key) : super(key: key);
+  ParagraphTitle(this._value, this._theme, this.key) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

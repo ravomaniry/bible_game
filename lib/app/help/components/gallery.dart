@@ -1,3 +1,4 @@
+import 'package:bible_game/app/help/components/paragraph.dart';
 import 'package:bible_game/app/help/models.dart';
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +14,9 @@ class HelpGalleryView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _Title(this._value.title, _theme),
+        ParagraphTitle(this._value.title, _theme, this.key),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
@@ -23,28 +25,6 @@ class HelpGalleryView extends StatelessWidget {
         ),
       ],
     );
-  }
-}
-
-class _Title extends StatelessWidget {
-  final String _value;
-  final AppColorTheme _theme;
-
-  _Title(this._value, this._theme);
-
-  @override
-  Widget build(BuildContext context) {
-    if (_value.isEmpty) {
-      return SizedBox.shrink();
-    } else {
-      return Text(
-        _value,
-        style: TextStyle(
-          color: _theme.primary,
-          fontWeight: FontWeight.bold,
-        ),
-      );
-    }
   }
 }
 
