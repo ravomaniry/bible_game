@@ -1,26 +1,67 @@
 [
   {
     "type": "section",
-    "title": "miTeny",
+    "title": "Teny Mana",
+    "contents": [
+      {
+        "type": "paragraph",
+        "title": "Mombamomba",
+        "text": "Miarahaba anao ary faly manonona ny fiandanan'i Jesosy Kristy tomponstika aminao.\nNy miTeny dia kilalao (jeux) manodidina ny Baiboly izay hahafahanao miala voly sady mamaky Tenin'Andriamanitra."
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "title": "1- Pejy tongasoa",
     "contents": [
       {
         "type": "gallery",
-        "title": "Tongasoa",
+        "title": "",
         "images": [
           {
-            "title": "1",
-            "path": "assets/images/help/tongasoa_1.png"
-          },
-          {
-            "title": "2",
-            "path": "assets/images/help/tongasoa_2.png"
+            "title": "1- Tonga soa",
+            "path": "assets/images/help/home.png"
           }
         ]
       },
       {
         "type": "paragraph",
-        "title": "Pejy tonga soa",
-        "text": "Ity pejy ity no ahitanao ny: \n1- Bokotra hanokafana ny Baiboly, \n2- Bokotra hamoronana lalao vaovao, \n3 - Bokora manokatra ity fanampiana ity,\nary koa ny lisitry ny lalao efa misy."
+        "title": "",
+        "text": "Ity pejy ity no miseho raha vao manokatra ny miTeny ianao.\nAhitana ny: \n1- Bokotra manokatra ny Baiboly, \n2- Bokotra hamoronana lalao vaovao, \n3- Bokora manokatra ity fanampiana ity,\n4- ary koa ny lisitry ny lalao efa misy."
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "title": "2- Ny lalao",
+    "contents": [
+      {
+        "type": "gallery",
+        "title": "",
+        "images": [
+          {
+            "title": "Teny maro na teny iray",
+            "path": "assets/images/help/wiw.png"
+          },
+          {
+            "title": "Teny mikorontana",
+            "path": "assets/images/help/anagram.png"
+          },
+          {
+            "title": "Lalan-teny",
+            "path": "assets/images/help/maze.png"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "title": "",
+        "text": "Ny tanjona dia ny hamantatra ilay andinin-tSoratra Masina iray. Ireo karazany telo ireo no hita ato anatin'ity kilalao ity."
+      },
+      {
+        "type": "paragraph",
+        "title": "Teny maro na teny iray",
+        "text": "Miloko manga ny 'écran' rehefa ity karazany iray ity no lalaovina. Misy litera maromaro azo hisafidianana hamoronana teny. Tsy voatery ampiasaina avokoa ny litera rehetra fa raha vao mahavita teny misy ao amin'ilay andinina dia afaka alefa."
       }
     ]
   }

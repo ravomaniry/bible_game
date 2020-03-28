@@ -34,13 +34,17 @@ class _Title extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      _value,
-      style: TextStyle(
-        color: _theme.primary,
-        fontWeight: FontWeight.bold,
-      ),
-    );
+    if (_value.isEmpty) {
+      return SizedBox.shrink();
+    } else {
+      return Text(
+        _value,
+        style: TextStyle(
+          color: _theme.primary,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+    }
   }
 }
 

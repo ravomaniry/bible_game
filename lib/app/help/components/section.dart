@@ -1,6 +1,7 @@
 import 'package:bible_game/app/help/components/router.dart';
 import 'package:bible_game/app/help/models.dart';
 import 'package:bible_game/app/theme/themes.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class HelpSectionView extends StatelessWidget {
@@ -11,15 +12,20 @@ class HelpSectionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _Title(_value.title, _theme),
-        _Body(_value.contents, _theme),
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _Title(_value.title, _theme),
+          _Body(_value.contents, _theme),
+        ],
+      ),
     );
   }
 }
+
+final _shadowColor = Colors.grey;
 
 class _Title extends StatelessWidget {
   final String _value;
@@ -29,13 +35,21 @@ class _Title extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Padding(
+      padding: const EdgeInsets.only(left: 10),
       child: Text(
         _value,
         style: TextStyle(
           fontSize: 24,
           color: _theme.accentLeft,
           fontWeight: FontWeight.bold,
+          shadows: [
+            Shadow(
+              color: _shadowColor,
+              offset: Offset(2, 1),
+              blurRadius: 1,
+            ),
+          ],
         ),
       ),
     );

@@ -10,15 +10,12 @@ class HelpParagraphView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _Title(_value.title, _theme, _value.key),
-          _Text(_value.text),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _Title(_value.title, _theme, _value.key),
+        _Text(_value.text),
+      ],
     );
   }
 }
@@ -32,14 +29,21 @@ class _Title extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      _value,
-      style: TextStyle(
-        fontSize: 16,
-        color: _theme.primary,
-        fontWeight: FontWeight.bold,
-      ),
-    );
+    if (_value.isEmpty) {
+      return SizedBox.shrink();
+    } else {
+      return Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: Text(
+          _value,
+          style: TextStyle(
+            fontSize: 16,
+            color: _theme.primary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+    }
   }
 }
 

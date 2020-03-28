@@ -149,12 +149,11 @@ class VersePickerSection extends StatelessWidget {
           value: label,
           theme: theme,
         ),
-        Table(
-          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+        Column(
           children: [
-            TableRow(
+            Row(
               children: [
-                Text("Boky"),
+                _RowText(texts.book),
                 _BookPicker(
                   keyValue: "${mode}Book",
                   books: books,
@@ -163,9 +162,9 @@ class VersePickerSection extends StatelessWidget {
                 ),
               ],
             ),
-            TableRow(
+            Row(
               children: [
-                Text("Toko"),
+                _RowText(texts.chapter),
                 GenericDropdown(
                   keyValue: "${mode}Chapter",
                   value: chapter,
@@ -176,9 +175,9 @@ class VersePickerSection extends StatelessWidget {
                 ),
               ],
             ),
-            TableRow(
+            Row(
               children: [
-                Text("Andininy"),
+                _RowText(texts.verse),
                 GenericDropdown(
                   keyValue: "${mode}Verse",
                   value: verse,
@@ -302,16 +301,13 @@ class GenericDropdown<ItemType> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        children: <Widget>[
-          DropdownButton<int>(
-            key: Key("_$keyValue"),
-            value: value,
-            onChanged: changeHandler,
-            items: _buildItems(),
-          ),
-        ],
+    return Expanded(
+      flex: 2,
+      child: DropdownButton<int>(
+        key: Key("_$keyValue"),
+        value: value,
+        onChanged: changeHandler,
+        items: _buildItems(),
       ),
     );
   }
@@ -326,5 +322,19 @@ class GenericDropdown<ItemType> extends StatelessWidget {
           ),
         )
         .toList();
+  }
+}
+
+class _RowText extends StatelessWidget {
+  final String _value;
+
+  _RowText(this._value);
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      flex: 1,
+      child: Text(_value),
+    );
   }
 }
