@@ -1,5 +1,7 @@
-import 'package:bible_game/models/game.dart';
+import 'dart:math';
+
 import 'package:bible_game/app/theme/themes.dart';
+import 'package:bible_game/models/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
@@ -115,7 +117,7 @@ class _Progress extends StatelessWidget {
   _Progress(this._game, this._theme);
 
   String get _percentage {
-    final value = _game.resolvedVersesCount / _game.model.versesCount;
+    final value = min(1, _game.resolvedVersesCount / _game.model.versesCount);
     return "${(100 * value).round()} %";
   }
 
