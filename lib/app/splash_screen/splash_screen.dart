@@ -1,6 +1,7 @@
 import 'package:animator/animator.dart';
 import 'package:bible_game/app/splash_screen/oscillator.dart';
 import 'package:bible_game/app/splash_screen/view_model.dart';
+import 'package:bible_game/app/texts.dart';
 import 'package:bible_game/app/theme/themes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,7 @@ class SplashScreen extends StatelessWidget {
       body: Center(
         child: SplashScreenBody(
           viewModel.theme,
+          viewModel.texts,
           dbStatus: viewModel.dbStatus,
         ),
       ),
@@ -29,10 +31,11 @@ class SplashScreen extends StatelessWidget {
 }
 
 class SplashScreenBody extends StatelessWidget {
+  final AppTexts texts;
   final AppColorTheme theme;
   final double dbStatus;
 
-  SplashScreenBody(this.theme, {this.dbStatus = 0});
+  SplashScreenBody(this.theme, this.texts, {this.dbStatus = 0});
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +45,7 @@ class SplashScreenBody extends StatelessWidget {
         WordsOscillator(theme),
         _BarAnimator(theme),
         _DbStatus(theme, dbStatus),
+        Text(texts.splashMessage),
       ],
     );
   }

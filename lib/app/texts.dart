@@ -1,4 +1,5 @@
 class AppTexts {
+  final splashMessage = "no lalana sy fahamarinana ary fiainana";
   final explorer = "Vakiteny";
   final book = "Boky";
   final chapter = "Toko";
