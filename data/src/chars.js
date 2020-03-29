@@ -4,7 +4,7 @@ const path = require('path');
 
 async function uniqueChars() {
     const start = new Date().getTime();
-    const content = await fs.promises.readFile(path.join(__dirname, 'verses.json'));
+    const content = await fs.promises.readFile(path.join(__dirname, '..', 'full', 'verses.json'));
     const verses = JSON.parse(content);
     const chars = [];
     for (const { text } of verses) {
