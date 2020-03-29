@@ -9,4 +9,5 @@ class AppTexts {
   final yes = "Eny";
   final no = "Tsia";
   final confirmQuit = "Hakatona ve ny lalao?";
+  final congratulation = "Arahabaina fa vita hatramin'ny farany ny lalao.";
 }
