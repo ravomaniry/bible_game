@@ -3,7 +3,7 @@ class AppTexts {
   final explorer = "Vakiteny";
   final book = "Boky";
   final chapter = "Toko";
-  final verse = "Anininy";
+  final verse = "Andininy";
   final start = "Manomboka amin'ny";
   final end = "Hatramin'ny";
   final bonus = "Kadoa";
