@@ -1,12 +1,12 @@
 [
   {
     "type": "section",
-    "title": "Teny Mana",
+    "title": "TenyMana",
     "contents": [
       {
         "type": "paragraph",
         "title": "Mombamomba",
-        "text": "Miarahaba anao ary faly manonona ny fiandanan'i Jesosy Kristy tomponstika aminao.\nNy miTeny dia kilalao (jeux) manodidina ny Baiboly izay hahafahanao miala voly sady mamaky Tenin'Andriamanitra."
+        "text": "Miarahaba anao ary faly manonona ny fiandanan'i Jesosy Kristy tomponstika aminao.\nNy TenyMana dia kilalaon-teny manodidina ny Baiboly."
       }
     ]
   },
@@ -27,7 +27,7 @@
       {
         "type": "paragraph",
         "title": "",
-        "text": "Ity pejy ity no miseho raha vao manokatra ny miTeny ianao.\nAhitana ny: \n(1) Bokotra manokatra ny Baiboly, \n(2) Bokotra hamoronana lalao vaovao, \n(3) Bokora manokatra ity fanampiana ity,\n(4) ary koa ny lisitry ny lalao efa misy."
+        "text": "Ity pejy ity no miseho raha vao manokatra ny TenyMana ianao.\nAhitana ny: \n(1) Bokotra manokatra ny Baiboly, \n(2) Bokotra hamoronana lalao vaovao, \n(3) Bokora manokatra ity fanampiana ity,\n(4) Lisitry ny lalao azo tohizana."
       }
     ]
   },
@@ -40,7 +40,7 @@
         "title": "",
         "images": [
           {
-            "title": "Teny maro na teny iray",
+            "title": "Teny miafina",
             "path": "assets/images/help/wiw.png"
           },
           {
@@ -56,11 +56,16 @@
       {
         "type": "paragraph",
         "title": "",
-        "text": "Ny tanjona dia ny hamantatra ilay andinin-tSoratra Masina iray. Ireo karazany telo ireo no hita ato anatin'ity kilalao ity."
+        "text": "Ny tanjona amin'ireo lalao ireo dia ny hamantatra ilay andinin-tSoratra voafidy (1). Ireo karazany telo ireo no hita ato anatin'ity kilalao ity."
+      },
+      {
+        "type": "paragraph",
+        "title": "Kadoa",
+        "text": "Ny kadoa dia ahafahana mahazo fanampiana amin'ny famantarana ireo teny ao anatin'ilay andinin-tSoratra Masina. Ity pejy ity no ahafahana (mividy) kadoa ary afaka ampiasaina izany rehefa any anaty kilalao."
       },
       {
         "type": "gallery",
-        "title": "Kadoa",
+        "title": "",
         "images": [
           {
             "title": "Kadoa",
@@ -70,28 +75,106 @@
       },
       {
         "type": "paragraph",
-        "title": "",
-        "text": "Ny kadoa dia ahafahana maneho ny ampahan'ireo teny izay hotadiavina."
+        "title": "Valiny",
+        "text": "Isaky ny mahavaha andininy iray dia miseho ity pejy ity izay maneho feno ilay andininy. \n(1) Manokatra manontolo ny toko hatreo amin'ilay teny novahana.\n(2) Miroso amin'ny andininy manaraka."
       },
       {
         "type": "gallery",
-        "title": "Valiny",
+        "title": "",
         "images": [
           {
             "title": "Valiny",
             "path": "assets/images/help/result.png"
           }
         ]
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "title": "Teny miafina (manga)",
+    "contents": [
+      {
+        "type": "paragraph",
+        "title": "",
+        "text": "Misy litera maromaro afaka hisafidianana miseho izay mety hahavitana teny iray na maromaro (5). Ny tanjona dia mitady ireo litera mahavita iray amin'ireo teny ireo."
+      },
+      {
+        "type": "gallery",
+        "title": "",
+        "images": [
+          {
+            "title": "Teny miafina",
+            "path": "assets/images/help/wiw.png"
+          }
+        ]
       },
       {
         "type": "paragraph",
         "title": "",
-        "text": "Rehefa vita ny andinin-teny iray dia miseho toy izao.\n(1) Ahafahana mamaky ny andinin-tSoratra Masina eo alohan'ilay andininy vao vita.\n(2) Manokatra ny teny manaraka"
+        "text": "(1) Boky, toko ary andininy \n(2) Vola ahafahana mividy kadoa \n(3) Valiny \n(4) Teny hita no sady bokotra manokatra ilay teny raha toa ka marina \n(5) Litera azo isafidianana \n(6) kadoa mampiseho ampahan-teny."
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "title": "Teny mikorontana (maitso)",
+    "contents": [
+      {
+        "type": "paragraph",
+        "title": "",
+        "text": "Ny tanjona amin'ity lalao iray ity dia mandamina ireo litera omena hahavitana teny iray. Tsy maintsy ampiasaina avokoa ireo litera rehetra izay miseho."
+      },
+      {
+        "type": "gallery",
+        "title": "",
+        "images": [
+          {
+            "title": "Teny miafina",
+            "path": "assets/images/help/anagram.png"
+          }
+        ]
       },
       {
         "type": "paragraph",
-        "title": "Teny maro na teny iray",
-        "text": "Miloko manga ny 'écran' rehefa ity karazany iray ity no lalaovina. Misy litera maromaro azo hisafidianana hamoronana teny. Tsy voatery ampiasaina avokoa ny litera rehetra fa raha vao mahavita teny misy ao amin'ilay andinina dia afaka alefa."
+        "title": "",
+        "text": "(1) Boky, toko ary andininy \n(2) Vola ahafahana mividy kadoa \n(3) Valiny \n(4) Teny hita no sady bokotra manokatra ilay teny raha toa ka marina \n(5) Teny mikorontana \n(6) kadoa mampiseho ampahan-teny."
+      }
+    ]
+  },
+  {
+    "type": "section",
+    "title": "Lalan-teny (mena)",
+    "contents": [
+      {
+        "type": "paragraph",
+        "title": "",
+        "text": "Ny tanjona amin'ity lalao iray ity ny ampifandraisana ny finadohana sy ny fiafaran'ny teny.\nTsy voatery ho hita avokoa ny teny rehetra fa ireo izay teny mampifandray ny voalohany sy ny farany ihany no mila tadiavina."
+      },
+      {
+        "type": "paragraph",
+        "title": "",
+        "text": "Ampifandraisina ny litera hamoronana teny ary misy tsipika mena izay teny vita. Ny teny afaka mifampitohy dia: \n- Teny mifanapaka \n- Teny manomboka eo anilan'ny litera farany amin'ny teny mialoha azy (mifanao havia sy havanana na ambony sy ambany)."
+      },
+      {
+        "type": "gallery",
+        "title": "",
+        "images": [
+          {
+            "title": "Teny miafina",
+            "path": "assets/images/help/maze.png"
+          }
+        ]
+      },
+      {
+        "type": "paragraph",
+        "title": "",
+        "text": "(1) Boky, toko ary andininy \n(2) Vola ahafahana mividy kadoa"
+      },
+      {
+        "type": "paragraph",
+        "title": "",
+        "text": "(3) Fiantombohana \n(4) Fiafarana \n(5) Teny voatsipika \n(6) Kadoa \n(7) Marika kadoa izay miala rehefa voasokatra. \n(8) Marika kadoa izay tsy miala intsony."
       }
     ]
   }
