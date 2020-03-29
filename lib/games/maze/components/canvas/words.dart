@@ -76,7 +76,7 @@ class _Painter extends CustomPainter {
   String _getText(int x, int y) {
     final cell = _board.getAt(x, y).first;
     if (cell.wordIndex >= 0) {
-      return _wordsToFind[cell.wordIndex].chars[cell.charIndex].comparisonValue.toUpperCase();
+      return _wordsToFind[cell.wordIndex].chars[cell.charIndex].value.toUpperCase();
     }
     return null;
   }
