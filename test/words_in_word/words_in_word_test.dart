@@ -50,8 +50,8 @@ void main() {
         config: ConfigState.initialState(),
       ),
     );
-    // reminder: cellWidth = 24 | screenWidth -= 10
-    store.dispatch(UpdateScreenWidth(205));
+    // reminder: cellWidth = 24 | screenWidth -= 4
+    store.dispatch(UpdateScreenWidth(200));
     store.dispatch(UpdateGameVerse(
       BibleVerse.from(
         book: "",
@@ -63,7 +63,7 @@ void main() {
     ));
     store.dispatch(GoToAction(Routes.wordsInWord));
     store.dispatch(initializeWordsInWord());
-    expect(store.state.config.screenWidth, 205);
+    expect(store.state.config.screenWidth, 200);
     await Future.delayed(Duration(milliseconds: 10));
     final expectedCells = [
       // "A-b-_"

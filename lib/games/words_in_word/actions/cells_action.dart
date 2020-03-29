@@ -32,7 +32,7 @@ ThunkAction<AppState> computeCellsAction(double screenWidth) {
 
 List<List<Cell>> computeCells(List<Word> words, double screenWidth) {
   final List<List<Cell>> cells = [];
-  final maxWidth = screenWidth - 10;
+  final maxWidth = screenWidth - 4;
   double currentX = 0;
   int currentIndex = 0;
   bool isNewLine = false;
