@@ -37,22 +37,16 @@ class _ImageItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: _theme.primary,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      padding: const EdgeInsets.all(2),
+      color: _theme.primary,
       margin: const EdgeInsets.all(1),
       child: Column(
         children: [
-          Container(
-            height: 200,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: Image(
-                image: AssetImage(image.path),
-                fit: BoxFit.fitHeight,
-              ),
+          Padding(
+            padding: EdgeInsets.only(left: 1, right: 1),
+            child: Image(
+              image: AssetImage(image.path),
+              fit: BoxFit.fitHeight,
+              height: 240,
             ),
           ),
           _ImageTitle(image.title, _theme),

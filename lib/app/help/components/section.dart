@@ -12,8 +12,14 @@ class HelpSectionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10),
+    return Container(
+      padding: const EdgeInsets.only(top: 5),
+      margin: EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(5),
+        boxShadow: [BoxShadow(color: Colors.grey, blurRadius: 2)],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
