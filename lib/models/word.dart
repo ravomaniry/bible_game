@@ -137,10 +137,16 @@ class Char with EquatableMixin {
     var comparisonValue = value.toLowerCase();
     switch (comparisonValue) {
       case "à":
+      case "ä":
         return "a";
       case "ô":
       case "ò":
         return "o";
+      case "è":
+        return "e";
+      case "ì":
+      case "ï":
+        return "i";
       default:
         return comparisonValue;
     }
